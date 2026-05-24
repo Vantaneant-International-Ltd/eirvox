@@ -1,0 +1,156 @@
+@import './tokens.css';
+
+/* ─── RESET ──────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--evx-paper);
+  color: var(--evx-warm-black);
+  font-family: var(--evx-font-sans);
+  font-size: var(--evx-type-body-size);
+  font-weight: var(--evx-type-body-weight);
+  line-height: var(--evx-type-body-lh);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── HEADING ELEMENTS ───────────────────────────────────────────────────── */
+
+h1 {
+  font-family: var(--evx-type-h1-family);
+  font-weight: var(--evx-type-h1-weight);
+  font-size: var(--evx-type-h1-size);
+  line-height: var(--evx-type-h1-lh);
+  letter-spacing: var(--evx-type-h1-ls);
+}
+
+h2 {
+  font-family: var(--evx-type-h2-family);
+  font-weight: var(--evx-type-h2-weight);
+  font-size: var(--evx-type-h2-size);
+  line-height: var(--evx-type-h2-lh);
+  letter-spacing: var(--evx-type-h2-ls);
+}
+
+h3 {
+  font-family: var(--evx-font-sans);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.30;
+  letter-spacing: -0.01em;
+}
+
+/* ─── UTILITY CLASSES ────────────────────────────────────────────────────── */
+
+.evx-display {
+  font-family: var(--evx-type-display-family);
+  font-weight: var(--evx-type-display-weight);
+  font-size: var(--evx-type-display-size);
+  line-height: var(--evx-type-display-lh);
+  letter-spacing: var(--evx-type-display-ls);
+}
+
+.evx-body {
+  font-family: var(--evx-type-body-family);
+  font-weight: var(--evx-type-body-weight);
+  font-size: var(--evx-type-body-size);
+  line-height: var(--evx-type-body-lh);
+}
+
+.evx-caption {
+  font-family: var(--evx-type-caption-family);
+  font-weight: var(--evx-type-caption-weight);
+  font-size: var(--evx-type-caption-size);
+  line-height: var(--evx-type-caption-lh);
+  letter-spacing: var(--evx-type-caption-ls);
+}
+
+.evx-label {
+  font-family: var(--evx-type-label-family);
+  font-weight: var(--evx-type-label-weight);
+  font-size: var(--evx-type-label-size);
+  letter-spacing: var(--evx-type-label-ls);
+  text-transform: uppercase;
+}
+
+/* Once per page — Newsreader Italic */
+.evx-accent {
+  font-family: var(--evx-type-accent-family);
+  font-style: var(--evx-type-accent-style);
+  font-weight: var(--evx-type-accent-weight);
+  font-size: var(--evx-type-accent-size);
+  line-height: var(--evx-type-accent-lh);
+}
+
+/* ─── LAYOUT UTILITIES ───────────────────────────────────────────────────── */
+
+/* Reading column — body prose capped at 620px */
+.reading-column {
+  max-width: var(--evx-type-body-column);
+}
+
+/* Page container — responsive page margins, max canvas 1920px */
+.page-container {
+  width: 100%;
+  max-width: var(--evx-max-canvas);
+  margin-inline: auto;
+  padding-inline: var(--evx-space-md); /* mobile: 16px */
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    padding-inline: var(--evx-space-2xl); /* tablet: 64px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding-inline: var(--evx-space-3xl); /* desktop: 96px */
+  }
+}

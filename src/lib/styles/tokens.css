@@ -1,0 +1,105 @@
+/* ─── ÉIRVOX DESIGN TOKENS v0.1 ─────────────────────────────────────────── */
+
+:root {
+
+  /* ── COLOUR · NEUTRALS ─────────────────────────────────────────────────── */
+
+  --evx-black:       #0A0A0A;  /* deck heroes, ink                            */
+  --evx-warm-black:  #141210;  /* body text, footers                          */
+  --evx-graphite:    #1F2124;  /* image backings                              */
+  --evx-paper:       #F6F4EF;  /* page ground                                 */
+  --evx-white:       #FFFFFF;  /* cards, modals                               */
+  --evx-rule-dark:   #2A2A2A;  /* rules on warm-black backgrounds             */
+  --evx-rule-light:  #DDD9D2;  /* rules on paper backgrounds                  */
+  --evx-ink-soft:    #4A4641;  /* secondary text                              */
+
+  /* ── COLOUR · BRAND ACCENT ─────────────────────────────────────────────── */
+  /* THE ONLY saturated colour. CTA · Verified mark · active state · nothing else */
+
+  --evx-fox-orange:  #E8742C;
+
+  /* ── COLOUR · MARQUE ACCENTS ────────────────────────────────────────────── */
+  /* Used inside automotive listings ONLY — at most once per page             */
+
+  --evx-audi-red:             #C8102E;  /* RS / R8                            */
+  --evx-mercedes-champagne:   #C9A961;  /* AMG                                */
+  --evx-bmw-blue:             #1C69D4;  /* M — thin rule only, never fill     */
+  --evx-vw-red:               #C8102E;  /* GTI / R                            */
+
+  /* ── SPACING ────────────────────────────────────────────────────────────── */
+  /* Seven steps. No half-values.                                             */
+
+  --evx-space-xs:   4px;   /* inline gaps, icon nudges                       */
+  --evx-space-sm:   8px;   /* label–value pairs                              */
+  --evx-space-md:   16px;  /* card padding, form rows                        */
+  --evx-space-lg:   24px;  /* grid gutters                                   */
+  --evx-space-xl:   40px;  /* section internals                              */
+  --evx-space-2xl:  64px;  /* page margin tablet, section breaks             */
+  --evx-space-3xl:  96px;  /* page margin desktop, major section breaks      */
+
+  /* ── TYPOGRAPHY ─────────────────────────────────────────────────────────── */
+
+  --evx-font-sans:  'Inter Tight', system-ui, sans-serif;
+  --evx-font-serif: 'Newsreader', Georgia, serif;
+  --evx-font-mono:  'JetBrains Mono', 'Courier New', monospace;
+
+  /* Display — Inter Tight Medium 500 */
+  --evx-type-display-family:   var(--evx-font-sans);
+  --evx-type-display-weight:   500;
+  --evx-type-display-size:     64px;
+  --evx-type-display-lh:       1.04;
+  --evx-type-display-ls:       -0.02em;
+
+  /* H1 — Inter Tight Medium 500 */
+  --evx-type-h1-family:        var(--evx-font-sans);
+  --evx-type-h1-weight:        500;
+  --evx-type-h1-size:          44px;
+  --evx-type-h1-lh:            1.10;
+  --evx-type-h1-ls:            -0.02em;
+
+  /* H2 — Inter Tight Medium 500 */
+  --evx-type-h2-family:        var(--evx-font-sans);
+  --evx-type-h2-weight:        500;
+  --evx-type-h2-size:          28px;
+  --evx-type-h2-lh:            1.20;
+  --evx-type-h2-ls:            -0.015em;
+
+  /* Body — Inter Tight Regular 400 */
+  --evx-type-body-family:      var(--evx-font-sans);
+  --evx-type-body-weight:      400;
+  --evx-type-body-size:        16px;
+  --evx-type-body-lh:          1.60;
+  --evx-type-body-column:      620px;
+
+  /* Caption — JetBrains Mono Regular 400 */
+  --evx-type-caption-family:   var(--evx-font-mono);
+  --evx-type-caption-weight:   400;
+  --evx-type-caption-size:     12px;
+  --evx-type-caption-lh:       1.40;
+  --evx-type-caption-ls:       0.02em;
+
+  /* Label — Inter Tight Medium 500, uppercase */
+  --evx-type-label-family:     var(--evx-font-sans);
+  --evx-type-label-weight:     500;
+  --evx-type-label-size:       11px;
+  --evx-type-label-ls:         0.18em;
+
+  /* Accent — Newsreader Italic 400 — once per page */
+  --evx-type-accent-family:    var(--evx-font-serif);
+  --evx-type-accent-style:     italic;
+  --evx-type-accent-weight:    400;
+  --evx-type-accent-size:      44px;
+  --evx-type-accent-lh:        1.10;
+
+  /* ── MOTION ─────────────────────────────────────────────────────────────── */
+  /* The ONLY transition permitted anywhere on the site                       */
+
+  --evx-transition: opacity 200ms ease-out;
+
+  /* ── GRID ───────────────────────────────────────────────────────────────── */
+
+  --evx-max-canvas:  1920px;
+  --evx-cols-desk:   12;
+  --evx-cols-tab:    6;
+  --evx-cols-mob:    4;
+}
