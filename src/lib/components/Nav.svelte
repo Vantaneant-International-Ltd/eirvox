@@ -8,8 +8,7 @@
       <a href="/#/" class="wordmark">Éirvox</a>
       <nav class="nav-links">
         <a href="/#/automotive" class="nav-link">Buy</a>
-        <a href="/#/" class="nav-link">Sell</a>
-        <a href="/#/" class="nav-link">Categories</a>
+        <a href="/#/sell" class="nav-link">Sell</a>
         <a href="/#/about" class="nav-link">About</a>
       </nav>
     </div>
@@ -23,7 +22,7 @@
       />
     </div>
     <div class="nav-right">
-      <a href="/#/" class="login-link">Log in</a>
+      <a href="/#/login" class="login-link">Log in</a>
     </div>
     <button class="hamburger" aria-label="Menu" type="button">
       <span></span>

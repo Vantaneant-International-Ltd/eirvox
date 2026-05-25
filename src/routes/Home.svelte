@@ -90,7 +90,7 @@
         <Button variant="ghost">DM Seller</Button>
       </div>
       <VerifiedMark />
-      <p class="evx-caption p-trust">One human reads every message — that's Renato.</p>
+      <p class="evx-caption p-trust">Every enquiry is reviewed manually by the ÉIRVOX team.</p>
     </div>
 
   </section>

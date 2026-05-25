@@ -11,7 +11,7 @@
     { label: 'GRIP',          value: 'Alcantara, perforated at the nine and three positions. OEM black contrast stitching.' },
     { label: 'TOP MARKER',    value: 'None. The wheel is unmarked at twelve.' },
     { label: 'COMPATIBILITY', value: 'AMG GT (C190, X290). DSG and MCT transmissions. Retains OEM paddle shifters.' },
-    { label: 'ORIGIN',        value: 'Hand-laid in Stuttgart. Trim and final QC in Dublin.' },
+    { label: 'ORIGIN',        value: 'Designed and specified in Dublin. Manufactured overseas, final QC and photography in Ireland.' },
     { label: 'WEIGHT',        value: '1.21 kg dry.' },
     { label: 'INCLUDES',      value: 'OEM AMG horn module, mounting hardware, ÉIRVOX certificate of authenticity, original transit case.' },
     { label: 'WARRANTY',      value: 'Twelve months on the carbon shell. Returns accepted within fourteen days if uninstalled.' },
@@ -157,7 +157,7 @@
           <VerifiedMark />
         </div>
 
-        <p class="trust-line">One human reads every message — that is Renato.</p>
+        <p class="trust-line">Every enquiry is reviewed manually by the ÉIRVOX team.</p>
 
         <div class="trust-steps" aria-hidden="true">
           <span class="trust-step">01</span>
@@ -176,7 +176,7 @@
             <span class="sec-title">Description</span>
           </div>
           <div class="reading-col">
-            <p class="body-lg">A two-piece carbon shell hand-laid in Stuttgart, finished and trimmed in Dublin. Built around the original AMG horn module — installation is reversible and concours-correct.</p>
+            <p class="body-lg">A two-piece carbon shell manufactured to ÉIRVOX specifications, finished and QC'd in Dublin. Built around the original AMG horn module — installation is reversible and concours-correct.</p>
             <p class="body-md">The weave is 3K, the resin is matte. The grips at nine and three are Alcantara, perforated where the thumbs sit and stitched in OEM black thread. There is no top marker; the wheel is centred by feel, the way the car was designed.</p>
             <p class="body-md">This is not a replica and it is not a tuner part. It is what AMG would have built if AMG had been willing to make ten of them.</p>
           </div>
@@ -209,7 +209,7 @@
             <span class="sec-title">Provenance</span>
           </div>
           <div class="reading-col">
-            <p class="body-md">Sourced direct from one workshop in Stuttgart that supplies AMG's own carbon division. We take five each quarter. They are trimmed, assembled and photographed at our address in Dublin 02 before being listed.</p>
+            <p class="body-md">Manufactured to ÉIRVOX specifications. We take five pieces each quarter. Each is inspected, verified, assembled and photographed at our address in Dublin 02 before being listed.</p>
             <p class="body-md">If the piece is wrong in any way — fitment, finish, materials — it goes back. The ones on the shelf are the ones that passed.</p>
             <p class="signature">— Renato, Dublin</p>
           </div>
