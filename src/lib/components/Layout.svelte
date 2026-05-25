@@ -19,9 +19,15 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    animation: evx-fade-in 200ms ease-out both;
   }
 
   .layout-main {
     flex: 1;
+  }
+
+  @keyframes evx-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 </style>
