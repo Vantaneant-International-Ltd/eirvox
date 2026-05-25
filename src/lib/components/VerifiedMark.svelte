@@ -1,9 +1,15 @@
+<script lang="ts">
+  export let compact: boolean = false
+</script>
+
 <div class="verified">
   <div class="badge-row">
     <span class="mark" aria-hidden="true"></span>
     <span class="badge-text">Sold by ÉIRVOX · Verified</span>
   </div>
-  <p class="escrow-text">Payment held in escrow until delivery confirmed.</p>
+  {#if !compact}
+    <p class="escrow-text">Payment held in escrow until delivery confirmed.</p>
+  {/if}
 </div>
 
 <style>
@@ -44,5 +50,6 @@
     letter-spacing: var(--evx-type-caption-ls);
     color: var(--evx-ink-soft);
     padding-left: calc(8px + var(--evx-space-sm));
+    margin: 0;
   }
 </style>

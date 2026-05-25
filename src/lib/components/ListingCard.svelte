@@ -1,8 +1,7 @@
 <script lang="ts">
-  import MarqueRule from './MarqueRule.svelte'
   import VerifiedMark from './VerifiedMark.svelte'
 
-  export let marque: 'audi' | 'mercedes' | 'bmw' | 'volkswagen' = 'mercedes'
+  export let marque: string = ''
   export let title: string = ''
   export let subtitle: string = ''
   export let price: string = ''
@@ -12,6 +11,10 @@
   export let sku: string = ''
   export let lotNumber: number = 0
   export let totalLots: number = 0
+
+  function pad(n: number): string {
+    return n.toString().padStart(2, '0')
+  }
 </script>
 
 <a class="listing-card" href="/#/automotive/{slug}">
@@ -24,23 +27,22 @@
         <span class="placeholder-text">PRODUCT 4:3</span>
       </div>
     {/if}
-    <span class="lot-number">Lot {lotNumber}/{totalLots}</span>
+    <span class="lot-number">{pad(lotNumber)} / {pad(totalLots)}</span>
+    <span class="sku-overlay">{sku}</span>
   </div>
 
   <div class="card-body">
-    <span class="sku">{sku}</span>
-    <div class="marque-row">
-      <MarqueRule {marque} text={marque} />
-    </div>
+    <span class="marque-label">{marque}</span>
     <h3 class="card-title">{title}</h3>
     {#if subtitle}
       <p class="card-subtitle">{subtitle}</p>
     {/if}
+    <hr class="card-rule" />
     <div class="price-row">
       <span class="price">{price}</span>
-      <span class="location">{location}</span>
+      <span class="card-location">{location}</span>
     </div>
-    <VerifiedMark />
+    <VerifiedMark compact />
   </div>
 </a>
 
@@ -96,6 +98,16 @@
   .lot-number {
     position: absolute;
     top: var(--evx-space-sm);
+    left: var(--evx-space-sm);
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--evx-rule-dark);
+  }
+
+  .sku-overlay {
+    position: absolute;
+    bottom: var(--evx-space-sm);
     right: var(--evx-space-sm);
     font-family: var(--evx-font-mono);
     font-size: 11px;
@@ -110,15 +122,13 @@
     padding-top: var(--evx-space-md);
   }
 
-  .sku {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
+  .marque-label {
+    font-family: var(--evx-type-label-family);
+    font-weight: var(--evx-type-label-weight);
+    font-size: var(--evx-type-label-size);
+    letter-spacing: var(--evx-type-label-ls);
+    text-transform: uppercase;
     color: var(--evx-ink-soft);
-  }
-
-  .marque-row {
-    margin-bottom: var(--evx-space-xs);
   }
 
   .card-title {
@@ -132,12 +142,19 @@
   }
 
   .card-subtitle {
-    font-family: var(--evx-font-sans);
-    font-weight: 400;
+    font-family: var(--evx-type-accent-family);
+    font-style: var(--evx-type-accent-style);
+    font-weight: var(--evx-type-accent-weight);
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.5;
     color: var(--evx-ink-soft);
     margin: 0;
+  }
+
+  .card-rule {
+    border: none;
+    border-top: 1px solid var(--evx-rule-light);
+    margin: var(--evx-space-xs) 0;
   }
 
   .price-row {
@@ -149,11 +166,12 @@
   .price {
     font-family: var(--evx-font-sans);
     font-weight: 500;
-    font-size: 18px;
+    font-size: 24px;
+    letter-spacing: -0.01em;
     color: var(--evx-warm-black);
   }
 
-  .location {
+  .card-location {
     font-family: var(--evx-font-mono);
     font-size: 11px;
     letter-spacing: 0.04em;
