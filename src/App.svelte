@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
+  import { initAuth } from './lib/auth';
   import Home from './routes/Home.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
@@ -17,6 +19,7 @@
   import Login from './routes/Login.svelte';
   import Account from './routes/Account.svelte';
   import Messages from './routes/Messages.svelte';
+  import Admin from './routes/Admin.svelte';
   import Sitemap from './routes/Sitemap.svelte';
   import NotFound from './routes/NotFound.svelte';
   import Terms from './routes/Terms.svelte';
@@ -29,6 +32,11 @@
   import TradeProfile from './routes/TradeProfile.svelte';
   import TradeApply from './routes/TradeApply.svelte';
   import CookieBanner from './lib/CookieBanner.svelte';
+  import AuthGuard from './components/AuthGuard.svelte';
+
+  onMount(() => {
+    initAuth();
+  });
 
   const CATEGORIES = [
     'automotive',
@@ -64,20 +72,34 @@
   <DriveIndex />
 {:else if driveParams}
   <DriveIssue issueSlug={driveParams.slug} />
+
+<!-- ════ Seller routes ════ -->
 {:else if path === '/sell/apply'}
   <SellerApply />
 {:else if path === '/sell/create'}
-  <SellerCreate />
+  <AuthGuard requireRole="seller">
+    <SellerCreate />
+  </AuthGuard>
 {:else if path === '/sell/dashboard'}
-  <SellerDashboard />
+  <AuthGuard requireRole="seller">
+    <SellerDashboard />
+  </AuthGuard>
 {:else if path === '/sell'}
   <Sell />
+
+<!-- ════ Reserve routes ════ -->
 {:else if reserveDriveParams}
-  <ReserveDrive issueSlug={reserveDriveParams.slug} />
+  <AuthGuard requireAuth={true}>
+    <ReserveDrive issueSlug={reserveDriveParams.slug} />
+  </AuthGuard>
 {:else if path === '/reserve'}
   <Reserve />
 {:else if reserveParams}
-  <ReserveCheckout listingSlug={reserveParams.slug} />
+  <AuthGuard requireAuth={true}>
+    <ReserveCheckout listingSlug={reserveParams.slug} />
+  </AuthGuard>
+
+<!-- ════ TRADE routes ════ -->
 {:else if path === '/trade'}
   <TradeLanding />
 {:else if path === '/trade/apply'}
@@ -86,22 +108,42 @@
   <TradeProfile categorySlug={tradeProfileParams.categorySlug} slug={tradeProfileParams.slug} />
 {:else if tradeCategoryParams && !TRADE_RESERVED_PATHS.includes(tradeCategoryParams.categorySlug)}
   <TradeCategory categorySlug={tradeCategoryParams.categorySlug} />
+
 {:else if path === '/trust'}
   <Trust />
 {:else if path === '/about'}
   <About />
 {:else if path === '/login'}
   <Login />
+
+<!-- ════ Account + Messages (auth required) ════ -->
 {:else if path === '/messages'}
-  <Messages />
+  <AuthGuard requireAuth={true}>
+    <Messages />
+  </AuthGuard>
 {:else if path === '/account'}
-  <Account tab="overview" />
+  <AuthGuard requireAuth={true}>
+    <Account tab="overview" />
+  </AuthGuard>
 {:else if path === '/account/orders'}
-  <Account tab="orders" />
+  <AuthGuard requireAuth={true}>
+    <Account tab="orders" />
+  </AuthGuard>
 {:else if path === '/account/saved'}
-  <Account tab="saved" />
+  <AuthGuard requireAuth={true}>
+    <Account tab="saved" />
+  </AuthGuard>
 {:else if path === '/account/settings'}
-  <Account tab="settings" />
+  <AuthGuard requireAuth={true}>
+    <Account tab="settings" />
+  </AuthGuard>
+
+<!-- ════ Admin ════ -->
+{:else if path === '/admin'}
+  <AuthGuard requireRole="admin">
+    <Admin />
+  </AuthGuard>
+
 {:else if path === '/sitemap'}
   <Sitemap />
 {:else if path === '/terms'}

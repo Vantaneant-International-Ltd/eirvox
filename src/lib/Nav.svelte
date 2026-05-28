@@ -1,10 +1,44 @@
 <script lang="ts">
   import { currentPath, navigate, isActive } from './router';
   import { getUnreadCount } from '../data/user';
+  import { auth, signOut } from './auth';
 
   let menuOpen = false;
+  let userMenuOpen = false;
+  let userMenuEl: HTMLDivElement;
 
   $: unreadCount = getUnreadCount();
+
+  // Derived auth state
+  $: profile = $auth.profile;
+  $: user = $auth.user;
+  $: signedIn = !!user;
+  $: role = profile?.role;
+  $: showAdminLink = role === 'admin';
+  $: showSellerLink = role === 'seller' || role === 'admin';
+
+  $: initials = (() => {
+    if (!user) return '';
+    const name = profile?.full_name ?? user.user_metadata?.full_name ?? user.email ?? '';
+    const trimmed = name.trim();
+    if (!trimmed) return '?';
+    const parts = trimmed.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return trimmed.slice(0, 2).toUpperCase();
+  })();
+
+  function handleClickOutside(e: MouseEvent) {
+    if (userMenuOpen && userMenuEl && !userMenuEl.contains(e.target as Node)) {
+      userMenuOpen = false;
+    }
+  }
+
+  async function handleLogout() {
+    userMenuOpen = false;
+    menuOpen = false;
+    await signOut();
+    navigate('/');
+  }
 
   const categories = [
     { label: 'Automotive', path: '/automotive' },
@@ -29,8 +63,11 @@
   function handleNav(path: string) {
     navigate(path);
     menuOpen = false;
+    userMenuOpen = false;
   }
 </script>
+
+<svelte:window on:click={handleClickOutside} />
 
 <header class="nav">
   <div class="nav__inner page-container">
@@ -89,27 +126,59 @@
         Sell
       </button>
 
-      <button
-        class="nav__messages"
-        on:click={() => handleNav('/messages')}
-        aria-label="Messages{unreadCount > 0 ? ` (${unreadCount} unread)` : ''}"
-      >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-          <path d="M2 3h12v8H6l-3 3v-3H2V3z" stroke-linejoin="round"/>
-        </svg>
-        {#if unreadCount > 0}
-          <span class="nav__messages-badge">{unreadCount}</span>
-        {/if}
-      </button>
+      {#if signedIn}
+        <button
+          class="nav__messages"
+          on:click={() => handleNav('/messages')}
+          aria-label="Messages{unreadCount > 0 ? ` (${unreadCount} unread)` : ''}"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M2 3h12v8H6l-3 3v-3H2V3z" stroke-linejoin="round"/>
+          </svg>
+          {#if unreadCount > 0}
+            <span class="nav__messages-badge">{unreadCount}</span>
+          {/if}
+        </button>
 
-      <button class="nav__account" on:click={() => handleNav('/account')} aria-label="Account">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-          <circle cx="8" cy="5.5" r="2.8"/>
-          <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/>
-        </svg>
-      </button>
+        <div class="nav__user" bind:this={userMenuEl}>
+          <button
+            class="nav__avatar"
+            on:click={() => userMenuOpen = !userMenuOpen}
+            aria-haspopup="true"
+            aria-expanded={userMenuOpen}
+            aria-label="Account menu"
+          >
+            <span class="nav__avatar-initials">{initials}</span>
+            {#if role === 'admin'}<span class="nav__avatar-dot" aria-hidden="true"></span>{/if}
+          </button>
 
-      <button class="nav__login" on:click={() => handleNav('/login')}>Log in</button>
+          {#if userMenuOpen}
+            <div class="nav__user-menu" role="menu">
+              <div class="nav__user-head">
+                <span class="evx-caption nav__user-role">
+                  {#if role === 'admin'}ADMIN{:else if role === 'seller'}SELLER{:else}BUYER{/if}
+                </span>
+                <span class="nav__user-email">{user?.email ?? ''}</span>
+              </div>
+              <button class="nav__user-item" on:click={() => handleNav('/account')} role="menuitem">Account</button>
+              <button class="nav__user-item" on:click={() => handleNav('/messages')} role="menuitem">
+                Messages
+                {#if unreadCount > 0}<span class="nav__user-badge">{unreadCount}</span>{/if}
+              </button>
+              {#if showSellerLink}
+                <button class="nav__user-item" on:click={() => handleNav('/sell/dashboard')} role="menuitem">My listings</button>
+              {/if}
+              {#if showAdminLink}
+                <button class="nav__user-item nav__user-item--accent" on:click={() => handleNav('/admin')} role="menuitem">Admin</button>
+              {/if}
+              <div class="nav__user-divider" aria-hidden="true"></div>
+              <button class="nav__user-item" on:click={handleLogout} role="menuitem">Log out</button>
+            </div>
+          {/if}
+        </div>
+      {:else}
+        <button class="nav__login" on:click={() => handleNav('/login')}>Log in</button>
+      {/if}
 
       <!-- Mobile hamburger -->
       <button
@@ -160,15 +229,34 @@
         {/each}
         <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
         <li><button class="nav__drawer-link" on:click={() => handleNav('/trade')}>TRADE</button></li>
-        <li>
-          <button class="nav__drawer-link" on:click={() => handleNav('/messages')}>
-            Messages
-            {#if unreadCount > 0}<span class="nav__drawer-badge">{unreadCount}</span>{/if}
-          </button>
-        </li>
-        <li><button class="nav__drawer-link" on:click={() => handleNav('/account')}>Account</button></li>
         <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/sell')}>Sell on Éirvox</button></li>
-        <li><button class="nav__drawer-link" on:click={() => handleNav('/login')}>Log in</button></li>
+
+        {#if signedIn}
+          <li class="nav__drawer-divider" aria-hidden="true"></li>
+          <li class="nav__drawer-user">
+            <span class="evx-caption nav__drawer-role">
+              {#if role === 'admin'}ADMIN{:else if role === 'seller'}SELLER{:else}BUYER{/if}
+            </span>
+            <span class="nav__drawer-email">{user?.email ?? ''}</span>
+          </li>
+          <li><button class="nav__drawer-link" on:click={() => handleNav('/account')}>Account</button></li>
+          <li>
+            <button class="nav__drawer-link" on:click={() => handleNav('/messages')}>
+              Messages
+              {#if unreadCount > 0}<span class="nav__drawer-badge">{unreadCount}</span>{/if}
+            </button>
+          </li>
+          {#if showSellerLink}
+            <li><button class="nav__drawer-link" on:click={() => handleNav('/sell/dashboard')}>My listings</button></li>
+          {/if}
+          {#if showAdminLink}
+            <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/admin')}>Admin</button></li>
+          {/if}
+          <li><button class="nav__drawer-link" on:click={handleLogout}>Log out</button></li>
+        {:else}
+          <li class="nav__drawer-divider" aria-hidden="true"></li>
+          <li><button class="nav__drawer-link" on:click={() => handleNav('/login')}>Log in</button></li>
+        {/if}
       </ul>
     </div>
   {/if}
@@ -308,8 +396,7 @@
 
   .nav__login:hover { opacity: 0.60; }
 
-  .nav__messages,
-  .nav__account {
+  .nav__messages {
     position: relative;
     background: none;
     border: none;
@@ -321,8 +408,7 @@
     transition: var(--evx-transition);
   }
 
-  .nav__messages:hover,
-  .nav__account:hover { opacity: 0.60; }
+  .nav__messages:hover { opacity: 0.60; }
 
   .nav__messages-badge {
     position: absolute;
@@ -340,6 +426,130 @@
     font-weight: 500;
     border-radius: 7px;
     line-height: 1;
+  }
+
+  /* ── User avatar + dropdown ── */
+  .nav__user { position: relative; }
+
+  .nav__avatar {
+    width: 30px; height: 30px;
+    background: var(--evx-warm-black);
+    color: var(--evx-paper);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    border-radius: 50%;
+    transition: var(--evx-transition);
+    position: relative;
+  }
+  .nav__avatar:hover { opacity: 0.82; }
+
+  .nav__avatar-initials { line-height: 1; }
+
+  .nav__avatar-dot {
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 8px; height: 8px;
+    background: var(--evx-fox-orange);
+    border-radius: 50%;
+    border: 1.5px solid var(--evx-paper);
+  }
+
+  .nav__user-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 220px;
+    background: var(--evx-paper);
+    border: 1px solid var(--evx-rule-light);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    z-index: 200;
+    padding: var(--evx-space-xs);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav__user-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--evx-space-sm) var(--evx-space-md);
+    border-bottom: 1px solid var(--evx-rule-light);
+    margin-bottom: var(--evx-space-xs);
+  }
+  .nav__user-role { color: var(--evx-fox-orange); }
+  .nav__user-email {
+    font-family: var(--evx-font-display);
+    font-size: 13px;
+    color: var(--evx-warm-black);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nav__user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--evx-space-sm) var(--evx-space-md);
+    background: none;
+    border: none;
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    color: var(--evx-warm-black);
+    cursor: pointer;
+    text-align: left;
+    transition: background 200ms ease;
+  }
+  .nav__user-item:hover { background: rgba(0,0,0,0.04); }
+  .nav__user-item--accent { color: var(--evx-fox-orange); }
+
+  .nav__user-badge {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    min-width: 18px; height: 18px;
+    padding: 0 5px;
+    background: var(--evx-fox-orange);
+    color: var(--evx-white);
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 9px;
+    line-height: 1;
+  }
+
+  .nav__user-divider {
+    height: 1px;
+    background: var(--evx-rule-light);
+    margin: var(--evx-space-xs) 0;
+  }
+
+  /* Mobile drawer user-block additions */
+  .nav__drawer-divider {
+    height: 1px;
+    background: var(--evx-rule-light);
+    margin: var(--evx-space-sm) 0;
+  }
+
+  .nav__drawer-user {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-bottom: var(--evx-space-sm);
+  }
+
+  .nav__drawer-role { color: var(--evx-fox-orange); }
+  .nav__drawer-email {
+    font-family: var(--evx-font-display);
+    font-size: 13px;
+    color: var(--evx-ink-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .nav__hamburger {
@@ -459,7 +669,7 @@
     .nav__login,
     .nav__sell,
     .nav__messages,
-    .nav__account,
+    .nav__user,
     .nav__centre { display: none; }
 
     .nav__hamburger { display: flex; }

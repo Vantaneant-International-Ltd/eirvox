@@ -13,5 +13,8 @@
     "svelte": "^5.55.3",
     "typescript": "^6.0.2",
     "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.2"
   }
 }

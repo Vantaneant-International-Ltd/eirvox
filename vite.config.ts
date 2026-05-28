@@ -6,6 +6,7 @@ export default defineConfig({
   base: '/',
   plugins: [svelte()],
   build: {
-    outDir: 'docs'
+    outDir: 'docs',
+    chunkSizeWarningLimit: 800
   }
 })
