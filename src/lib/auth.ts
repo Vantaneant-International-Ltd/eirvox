@@ -217,5 +217,12 @@ function friendlyAuthError(msg: string): string {
   }
   if (m.includes('rate limit')) return 'Too many attempts. Wait a minute and try again.';
   if (m.includes('email rate limit')) return 'Too many emails sent. Wait a few minutes.';
+  // Trigger failures on the profiles table
+  if (m.includes('database error saving new user') || m.includes('handle_new_user')) {
+    return 'Database trigger error — your auth.users → profiles trigger is failing. Open Supabase → SQL Editor and run the patch in supabase/fix-profiles-trigger.sql, then try again.';
+  }
+  if (m.includes('violates row-level security')) {
+    return 'Row Level Security blocked that write. The profiles table needs an INSERT policy for new users (see supabase/fix-profiles-trigger.sql).';
+  }
   return msg;
 }
