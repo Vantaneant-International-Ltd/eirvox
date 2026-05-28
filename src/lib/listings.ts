@@ -1,0 +1,491 @@
+// ============================================================
+// ÉIRVOX — Listing helpers (Supabase-backed)
+// CRUD + storage upload + reservations
+// ============================================================
+
+import { supabase } from './supabase';
+import { getCurrentUser } from './auth';
+
+// ── Types ───────────────────────────────────────────────────
+
+export type ListingStatus =
+  | 'draft'
+  | 'pending_review'
+  | 'active'
+  | 'reserved'
+  | 'sold'
+  | 'removed';
+
+export interface Category {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  sort_order: number;
+}
+
+export interface ListingImage {
+  id: string;
+  listing_id: string;
+  storage_path: string;
+  public_url: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface ListingSpec {
+  id: string;
+  listing_id: string;
+  label: string;
+  value: string;
+  sort_order: number;
+}
+
+export interface Listing {
+  id: string;
+  seller_id: string;
+  category_id: string | null;
+  category_slug: string | null;
+  title: string;
+  subtitle: string | null;
+  description: string | null;
+  condition: string | null;
+  price: number;
+  original_price: number | null;
+  currency: string;
+  accepts_offers: boolean;
+  shipping_available: boolean;
+  collection_available: boolean;
+  shipping_cost: number | null;
+  city: string | null;
+  status: ListingStatus;
+  views_count: number;
+  created_at: string;
+  updated_at: string;
+  published_at: string | null;
+}
+
+export interface ListingWithExtras extends Listing {
+  images: ListingImage[];
+  specs: ListingSpec[];
+}
+
+export interface CreateListingInput {
+  seller_id: string;
+  category_id?: string | null;
+  category_slug?: string | null;
+  title: string;
+  subtitle?: string | null;
+  description?: string | null;
+  condition?: string | null;
+  price: number;
+  original_price?: number | null;
+  accepts_offers?: boolean;
+  shipping_available?: boolean;
+  collection_available?: boolean;
+  shipping_cost?: number | null;
+  city?: string | null;
+  status?: ListingStatus;
+}
+
+export interface UpdateListingInput extends Partial<CreateListingInput> {}
+
+export interface SpecInput {
+  label: string;
+  value: string;
+}
+
+export interface Result<T> {
+  ok: boolean;
+  data?: T;
+  error?: string;
+}
+
+// ── Categories ──────────────────────────────────────────────
+
+export async function getCategories(): Promise<Category[]> {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .order('sort_order', { ascending: true });
+
+  if (error) {
+    console.warn('[listings] getCategories error:', error.message);
+    return [];
+  }
+  return (data ?? []) as Category[];
+}
+
+// ── Listing CRUD ────────────────────────────────────────────
+
+export async function createListing(input: CreateListingInput): Promise<Result<Listing>> {
+  const payload = {
+    status: 'draft' as ListingStatus,
+    currency: 'EUR',
+    accepts_offers: true,
+    shipping_available: true,
+    collection_available: true,
+    ...input,
+  };
+
+  const { data, error } = await supabase
+    .from('listings')
+    .insert(payload)
+    .select('*')
+    .single();
+
+  if (error) return { ok: false, error: friendlyError(error.message) };
+  return { ok: true, data: data as Listing };
+}
+
+export async function updateListing(
+  id: string,
+  patch: UpdateListingInput
+): Promise<Result<Listing>> {
+  // If marking active/pending, set published_at
+  const payload: Record<string, unknown> = { ...patch };
+  if (patch.status === 'active' || patch.status === 'pending_review') {
+    payload.published_at = new Date().toISOString();
+  }
+
+  const { data, error } = await supabase
+    .from('listings')
+    .update(payload)
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  if (error) return { ok: false, error: friendlyError(error.message) };
+  return { ok: true, data: data as Listing };
+}
+
+/** Soft-delete: mark as removed instead of dropping the row. */
+export async function deleteListing(id: string): Promise<Result<null>> {
+  const { error } = await supabase
+    .from('listings')
+    .update({ status: 'removed' as ListingStatus })
+    .eq('id', id);
+
+  if (error) return { ok: false, error: friendlyError(error.message) };
+  return { ok: true, data: null };
+}
+
+/** Set the listing status — used by Mark as Sold / Reserved / etc. */
+export async function setListingStatus(
+  id: string,
+  status: ListingStatus
+): Promise<Result<Listing>> {
+  return updateListing(id, { status });
+}
+
+/** Get all of a seller's listings (any status) with their cover image. */
+export async function getSellerListings(sellerId: string): Promise<ListingWithExtras[]> {
+  const { data: listings, error } = await supabase
+    .from('listings')
+    .select('*')
+    .eq('seller_id', sellerId)
+    .neq('status', 'removed')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.warn('[listings] getSellerListings error:', error.message);
+    return [];
+  }
+
+  // Fetch images for these listings
+  const ids = (listings ?? []).map(l => l.id);
+  let images: ListingImage[] = [];
+  if (ids.length > 0) {
+    const { data: imgs } = await supabase
+      .from('listing_images')
+      .select('*')
+      .in('listing_id', ids)
+      .order('sort_order', { ascending: true });
+    images = (imgs ?? []) as ListingImage[];
+  }
+
+  return (listings ?? []).map(l => ({
+    ...(l as Listing),
+    images: images.filter(i => i.listing_id === l.id),
+    specs: [],
+  }));
+}
+
+/** Get a single listing with images + specs (for /sell/edit). */
+export async function getListingFull(id: string): Promise<ListingWithExtras | null> {
+  const { data: listing, error } = await supabase
+    .from('listings')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error || !listing) return null;
+
+  const [imgsRes, specsRes] = await Promise.all([
+    supabase.from('listing_images').select('*').eq('listing_id', id).order('sort_order', { ascending: true }),
+    supabase.from('listing_specs').select('*').eq('listing_id', id).order('sort_order', { ascending: true }),
+  ]);
+
+  return {
+    ...(listing as Listing),
+    images: (imgsRes.data ?? []) as ListingImage[],
+    specs: (specsRes.data ?? []) as ListingSpec[],
+  };
+}
+
+// ── Image upload ────────────────────────────────────────────
+
+const LISTING_IMAGES_BUCKET = 'listing-images';
+
+export interface UploadProgress {
+  uploaded: number;
+  total: number;
+  filename: string;
+}
+
+/** Upload one image. Stored at <seller_id>/<listing_id>/<random>.<ext>. */
+export async function uploadListingImage(
+  sellerId: string,
+  listingId: string,
+  file: File,
+  sortOrder: number
+): Promise<Result<ListingImage>> {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const rand = crypto.randomUUID().slice(0, 8);
+  const path = `${sellerId}/${listingId}/${rand}.${ext}`;
+
+  const { error: upErr } = await supabase
+    .storage
+    .from(LISTING_IMAGES_BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: false });
+
+  if (upErr) return { ok: false, error: friendlyError(upErr.message) };
+
+  const { data: urlData } = supabase
+    .storage
+    .from(LISTING_IMAGES_BUCKET)
+    .getPublicUrl(path);
+
+  const { data, error: dbErr } = await supabase
+    .from('listing_images')
+    .insert({
+      listing_id: listingId,
+      storage_path: path,
+      public_url: urlData.publicUrl,
+      sort_order: sortOrder,
+    })
+    .select('*')
+    .single();
+
+  if (dbErr) return { ok: false, error: friendlyError(dbErr.message) };
+  return { ok: true, data: data as ListingImage };
+}
+
+export async function deleteListingImage(image: ListingImage): Promise<Result<null>> {
+  // Best-effort: remove the storage object too
+  await supabase.storage.from(LISTING_IMAGES_BUCKET).remove([image.storage_path]);
+
+  const { error } = await supabase
+    .from('listing_images')
+    .delete()
+    .eq('id', image.id);
+
+  if (error) return { ok: false, error: friendlyError(error.message) };
+  return { ok: true, data: null };
+}
+
+/** Update sort_order for a list of images in the given order. */
+export async function reorderImages(orderedIds: string[]): Promise<Result<null>> {
+  // Batch into updates — Supabase has no array UPDATE in PostgREST.
+  const ops = orderedIds.map((id, idx) =>
+    supabase.from('listing_images').update({ sort_order: idx }).eq('id', id)
+  );
+  const results = await Promise.all(ops);
+  const failed = results.find(r => r.error);
+  if (failed?.error) return { ok: false, error: friendlyError(failed.error.message) };
+  return { ok: true, data: null };
+}
+
+// ── Specs (replace-on-save model) ───────────────────────────
+
+/** Replace all specs for a listing with the given list (in order). */
+export async function setListingSpecs(
+  listingId: string,
+  specs: SpecInput[]
+): Promise<Result<null>> {
+  // Delete existing
+  const { error: delErr } = await supabase
+    .from('listing_specs')
+    .delete()
+    .eq('listing_id', listingId);
+  if (delErr) return { ok: false, error: friendlyError(delErr.message) };
+
+  if (specs.length === 0) return { ok: true, data: null };
+
+  const rows = specs
+    .filter(s => s.label.trim() && s.value.trim())
+    .map((s, idx) => ({
+      listing_id: listingId,
+      label: s.label.trim(),
+      value: s.value.trim(),
+      sort_order: idx,
+    }));
+
+  if (rows.length === 0) return { ok: true, data: null };
+
+  const { error: insErr } = await supabase
+    .from('listing_specs')
+    .insert(rows);
+
+  if (insErr) return { ok: false, error: friendlyError(insErr.message) };
+  return { ok: true, data: null };
+}
+
+// ── Spec templates (client-side) ────────────────────────────
+
+export const specTemplates: Record<string, string[]> = {
+  automotive:   ['Make', 'Model', 'Year', 'Part Type', 'OEM / Aftermarket', 'Compatibility'],
+  watches:      ['Brand', 'Reference', 'Movement', 'Case Size', 'Dial', 'Year'],
+  fashion:      ['Brand', 'Size', 'Material', 'Colour', 'Season'],
+  tech:         ['Brand', 'Model', 'Storage', 'Condition Notes'],
+  'home-design':['Designer / Brand', 'Material', 'Dimensions', 'Period'],
+  'audio-vinyl':['Brand', 'Model', 'Format', 'Year', 'Condition'],
+  art:          ['Artist', 'Medium', 'Dimensions', 'Year', 'Edition'],
+};
+
+// ── Reservations (seller side) ──────────────────────────────
+
+export type ReservationStatus =
+  | 'pending_deposit'
+  | 'reserved'
+  | 'confirmed'
+  | 'shipped'
+  | 'completed'
+  | 'cancelled';
+
+export interface Reservation {
+  id: string;
+  listing_id: string;
+  seller_id: string;
+  buyer_id: string;
+  deposit_amount: number;
+  balance_amount: number;
+  status: ReservationStatus;
+  notes: string | null;
+  reserved_at: string;
+  updated_at: string;
+}
+
+export interface ReservationWithListing extends Reservation {
+  listing: Pick<Listing, 'id' | 'title' | 'price' | 'city'> | null;
+  buyer: { id: string; full_name: string | null; email: string | null } | null;
+}
+
+export async function getSellerReservations(
+  sellerId: string
+): Promise<ReservationWithListing[]> {
+  const { data, error } = await supabase
+    .from('reservations')
+    .select(`
+      *,
+      listing:listings ( id, title, price, city ),
+      buyer:profiles!reservations_buyer_id_fkey ( id, full_name, email )
+    `)
+    .eq('seller_id', sellerId)
+    .order('reserved_at', { ascending: false });
+
+  if (error) {
+    console.warn('[listings] getSellerReservations error:', error.message);
+    return [];
+  }
+  return (data ?? []) as ReservationWithListing[];
+}
+
+export async function updateReservationStatus(
+  id: string,
+  status: ReservationStatus
+): Promise<Result<Reservation>> {
+  const { data, error } = await supabase
+    .from('reservations')
+    .update({ status })
+    .eq('id', id)
+    .select('*')
+    .single();
+  if (error) return { ok: false, error: friendlyError(error.message) };
+  return { ok: true, data: data as Reservation };
+}
+
+export const reservationStatusLabel: Record<ReservationStatus, string> = {
+  pending_deposit: 'Awaiting deposit',
+  reserved:        'Reserved',
+  confirmed:       'Confirmed',
+  shipped:         'Shipped',
+  completed:       'Completed',
+  cancelled:       'Cancelled',
+};
+
+export const listingStatusLabel: Record<ListingStatus, string> = {
+  draft:          'Draft',
+  pending_review: 'Pending review',
+  active:         'Active',
+  reserved:       'Reserved',
+  sold:           'Sold',
+  removed:        'Removed',
+};
+
+// ── Stats for the dashboard ─────────────────────────────────
+
+export interface SellerStats {
+  activeListings: number;
+  totalListings: number;
+  totalViews: number;
+  totalSales: number;
+}
+
+export async function getSellerStats(sellerId: string): Promise<SellerStats> {
+  // 1. Listings counts + views sum
+  const { data: listings, error: lErr } = await supabase
+    .from('listings')
+    .select('status, views_count')
+    .eq('seller_id', sellerId);
+
+  // 2. Total sales (completed reservations)
+  const { data: reservations, error: rErr } = await supabase
+    .from('reservations')
+    .select('status')
+    .eq('seller_id', sellerId)
+    .eq('status', 'completed');
+
+  if (lErr) console.warn('[listings] stats listings error:', lErr.message);
+  if (rErr) console.warn('[listings] stats reservations error:', rErr.message);
+
+  const list = listings ?? [];
+  return {
+    activeListings: list.filter(l => l.status === 'active').length,
+    totalListings:  list.filter(l => l.status !== 'removed').length,
+    totalViews:     list.reduce((sum, l) => sum + (l.views_count ?? 0), 0),
+    totalSales:     (reservations ?? []).length,
+  };
+}
+
+// ── Error mapping ──────────────────────────────────────────
+
+function friendlyError(msg: string): string {
+  const m = msg.toLowerCase();
+  if (m.includes('infinite recursion')) {
+    return 'Database policy is misconfigured. Run supabase/v04-marketplace-schema.sql to fix it.';
+  }
+  if (m.includes('does not exist') || m.includes('schema cache')) {
+    return 'A required table is missing. Run supabase/v04-marketplace-schema.sql in Supabase.';
+  }
+  if (m.includes('row-level security')) {
+    return 'Permission denied — make sure your seller account is approved.';
+  }
+  if (m.includes('bucket not found')) {
+    return 'Storage buckets missing. Run supabase/v04-marketplace-schema.sql in Supabase.';
+  }
+  if (m.includes('exceeded the maximum')) {
+    return 'That file is too large — keep image uploads under 6 MB.';
+  }
+  return msg;
+}

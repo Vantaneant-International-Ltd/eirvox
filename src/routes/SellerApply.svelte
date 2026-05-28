@@ -4,12 +4,50 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import { auth } from '../lib/auth';
+  import {
+    applyAsSeller,
+    getMySeller,
+    sellerStatusLabel,
+    type Seller,
+  } from '../lib/sellers';
 
-  onMount(() => applySeo(seo.sellApply()));
+  onMount(async () => {
+    applySeo(seo.sellApply());
+
+    // Wait for auth to initialise before deciding what to do
+    const waitForInit = () => new Promise<void>(resolve => {
+      const unsub = auth.subscribe(s => {
+        if (s.initialised) { unsub(); resolve(); }
+      });
+    });
+    await waitForInit();
+
+    // If not signed in: stash return path and bounce to login
+    const a = $auth;
+    if (!a.user) {
+      try { sessionStorage.setItem('eirvox-return-to', '/sell/apply'); } catch {}
+      navigate('/login');
+      return;
+    }
+
+    // If they already have a seller record, fetch it and show status
+    existing = await getMySeller();
+    if (existing) {
+      step = 6; // dedicated "already applied" view
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    initialising = false;
+  });
 
   // ── Multi-step state ───────────────────────────────────────
   let step = 1;
   const TOTAL_STEPS = 5;
+  let initialising = true;
+  let existing: Seller | null = null;
+  let submitting = false;
+  let submitError = '';
 
   // Step 1 — Business info
   let tradingName = '';
@@ -58,8 +96,36 @@
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  function submit() {
-    if (step4Valid) step = 5;
+  async function submit() {
+    if (!step4Valid || submitting) return;
+    submitError = '';
+    submitting = true;
+
+    const result = await applyAsSeller({
+      trading_name: tradingName,
+      handle: handle.trim() || undefined,
+      email,
+      phone,
+      city,
+      trading_since: tradingSince || undefined,
+      primary_category: primaryCategory,
+      what_they_sell: whatYouSell,
+      inventory_count: inventoryCount,
+      price_low: priceRangeLow ? Number(priceRangeLow) : null,
+      price_high: priceRangeHigh ? Number(priceRangeHigh) : null,
+      sourcing_method: sourcingMethod,
+      tier,
+    });
+
+    submitting = false;
+
+    if (!result.ok) {
+      submitError = result.error ?? 'Could not submit your application. Try again.';
+      return;
+    }
+    existing = result.data ?? null;
+    step = 5;
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   const categories = [
@@ -422,15 +488,22 @@
           <button class="evx-btn evx-btn--ghost" on:click={prev}>← Back</button>
           <div class="step-nav__right">
             <span class="evx-caption step-nav__count">Step 4 of 4</span>
-            <button class="evx-btn evx-btn--primary" on:click={submit} disabled={!step4Valid}>
-              Submit application →
+            <button class="evx-btn evx-btn--primary" on:click={submit} disabled={!step4Valid || submitting}>
+              {submitting ? 'Submitting…' : 'Submit application →'}
             </button>
           </div>
         </div>
+
+        {#if submitError}
+          <div class="apply-error" role="alert">
+            <span class="evx-label">ERROR</span>
+            <p>{submitError}</p>
+          </div>
+        {/if}
       </div>
 
-    <!-- ════ STEP 5 · CONFIRMATION ════ -->
-    {:else}
+    <!-- ════ STEP 5 · CONFIRMATION (just submitted) ════ -->
+    {:else if step === 5}
       <div class="confirm">
         <span class="evx-label confirm__label">APPLICATION RECEIVED</span>
         <h2 class="confirm__h">
@@ -466,12 +539,88 @@
         </div>
 
         <div class="confirm__actions">
-          <button class="evx-btn evx-btn--primary" on:click={() => navigate('/')}>
-            Back to marketplace →
+          <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/dashboard')}>
+            View your dashboard →
           </button>
-          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/dashboard')}>
-            Preview seller dashboard
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/')}>
+            Back to marketplace
           </button>
+        </div>
+      </div>
+
+    <!-- ════ STEP 6 · ALREADY APPLIED ════ -->
+    {:else if existing}
+      <div class="confirm">
+        <span class="evx-label confirm__label">
+          {existing.status === 'approved' ? 'APPROVED' :
+           existing.status === 'rejected' ? 'NOT APPROVED' :
+           existing.status === 'suspended' ? 'ACCOUNT SUSPENDED' :
+           'APPLICATION ON FILE'}
+        </span>
+        <h2 class="confirm__h">
+          {#if existing.status === 'approved'}
+            You're in.
+            <em class="confirm__italic">Welcome to ÉIRVOX.</em>
+          {:else if existing.status === 'rejected'}
+            We weren't able to approve this round.
+          {:else if existing.status === 'suspended'}
+            Your seller account is paused.
+          {:else}
+            We've already received your application.
+          {/if}
+        </h2>
+
+        <div class="apply-status">
+          <span class="evx-label apply-status__label">STATUS</span>
+          <div class="apply-status__row">
+            <span class="apply-status__pill apply-status__pill--{existing.status}">
+              <span class="apply-status__dot"></span>
+              {sellerStatusLabel[existing.status]}
+            </span>
+            <span class="evx-caption apply-status__date">
+              Submitted {new Date(existing.applied_at).toLocaleDateString('en-IE')}
+            </span>
+          </div>
+          <dl class="apply-status__details">
+            <dt>Trading name</dt><dd>{existing.trading_name}</dd>
+            <dt>Tier</dt><dd>{existing.tier === 'atelier' ? 'Atelier · €19/mo · 5%' : existing.tier === 'verified' ? 'Verified · €0/mo · 7%' : 'House · invite'}</dd>
+            <dt>Category</dt><dd>{existing.primary_category ?? '—'}</dd>
+            <dt>City</dt><dd>{existing.city ?? '—'}</dd>
+          </dl>
+        </div>
+
+        {#if existing.status === 'pending'}
+          <p class="confirm__body">
+            We review every application — usually within 48 hours, occasionally up to 5 working days during
+            high-volume weeks. We'll email you the moment there's a decision.
+          </p>
+        {:else if existing.status === 'rejected'}
+          <p class="confirm__body">
+            We didn't approve your application this time, but you can apply again in the next cohort.
+            If you'd like a quick note on why, email <a href="mailto:renato@eirvox.ie" class="apply-link">renato@eirvox.ie</a>.
+          </p>
+        {:else if existing.status === 'suspended'}
+          <p class="confirm__body">
+            Your account is currently paused. Please email <a href="mailto:renato@eirvox.ie" class="apply-link">renato@eirvox.ie</a> to discuss next steps.
+          </p>
+        {/if}
+
+        <div class="confirm__actions">
+          {#if existing.status === 'approved'}
+            <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/dashboard')}>
+              Open your dashboard →
+            </button>
+            <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/create')}>
+              Create a listing
+            </button>
+          {:else}
+            <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/dashboard')}>
+              View your dashboard →
+            </button>
+            <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/')}>
+              Back to marketplace
+            </button>
+          {/if}
         </div>
       </div>
     {/if}
@@ -782,6 +931,58 @@
 
   .evx-btn:disabled { opacity: 0.40; cursor: not-allowed; }
   .evx-btn:disabled:hover { opacity: 0.40; }
+
+  /* Submit error */
+  .apply-error {
+    margin-top: var(--evx-space-md);
+    padding: var(--evx-space-md);
+    border-left: 2px solid var(--evx-fox-orange);
+    background: rgba(232, 116, 44, 0.06);
+    display: flex; flex-direction: column;
+    gap: var(--evx-space-xs);
+  }
+  .apply-error span { color: var(--evx-fox-orange); }
+  .apply-error p { font-size: 14px; line-height: 1.6; color: var(--evx-warm-black); }
+
+  /* Existing-status panel */
+  .apply-status {
+    border: 1px solid var(--evx-rule-light);
+    padding: var(--evx-space-lg);
+    display: flex; flex-direction: column;
+    gap: var(--evx-space-md);
+  }
+  .apply-status__label { color: var(--evx-ink-soft); }
+  .apply-status__row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--evx-space-sm); }
+  .apply-status__pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border: 1px solid currentColor;
+    color: var(--evx-ink-soft);
+  }
+  .apply-status__pill--pending   { color: var(--evx-fox-orange); }
+  .apply-status__pill--approved  { color: #4a8c5b; }
+  .apply-status__pill--rejected  { color: var(--evx-ink-soft); }
+  .apply-status__pill--suspended { color: var(--evx-ink-soft); }
+  .apply-status__dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .apply-status__date { color: var(--evx-ink-soft); }
+  .apply-status__details {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--evx-space-xs) var(--evx-space-md);
+    margin-top: var(--evx-space-sm);
+    padding-top: var(--evx-space-md);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  .apply-status__details dt { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--evx-ink-soft); padding-top: 2px; text-transform: uppercase; }
+  .apply-status__details dd { font-size: 14px; color: var(--evx-warm-black); }
+  .apply-link { color: var(--evx-warm-black); text-decoration: underline; text-underline-offset: 3px; }
 
   /* Confirmation */
   .confirm {

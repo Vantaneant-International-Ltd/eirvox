@@ -10,6 +10,7 @@
   import Sell from './routes/Sell.svelte';
   import SellerApply from './routes/SellerApply.svelte';
   import SellerCreate from './routes/SellerCreate.svelte';
+  import SellerEdit from './routes/SellerEdit.svelte';
   import SellerDashboard from './routes/SellerDashboard.svelte';
   import Reserve from './routes/Reserve.svelte';
   import ReserveCheckout from './routes/ReserveCheckout.svelte';
@@ -56,6 +57,7 @@
   $: reserveParams = matchRoute('/reserve/:slug', path);
   $: tradeProfileParams = matchRoute('/trade/:categorySlug/:slug', path);
   $: tradeCategoryParams = matchRoute('/trade/:categorySlug', path);
+  $: sellEditParams = matchRoute('/sell/edit/:listingId', path);
   $: categoryMatch = CATEGORIES.find(c => path === `/${c}`) ?? null;
 
   // Trade slugs that should NOT match as categories
@@ -77,12 +79,16 @@
 {:else if path === '/sell/apply'}
   <SellerApply />
 {:else if path === '/sell/create'}
-  <AuthGuard requireRole="seller">
+  <AuthGuard requireAuth={true}>
     <SellerCreate />
   </AuthGuard>
 {:else if path === '/sell/dashboard'}
-  <AuthGuard requireRole="seller">
+  <AuthGuard requireAuth={true}>
     <SellerDashboard />
+  </AuthGuard>
+{:else if sellEditParams}
+  <AuthGuard requireAuth={true}>
+    <SellerEdit listingId={sellEditParams.listingId} />
   </AuthGuard>
 {:else if path === '/sell'}
   <Sell />
