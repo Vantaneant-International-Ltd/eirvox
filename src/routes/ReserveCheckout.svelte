@@ -5,8 +5,13 @@
   import { navigate } from '../lib/router';
   import { getListingBySlug, getSeller, formatPrice } from '../data/listings';
   import { currentUser } from '../data/user';
+  import { applySeo, seo } from '../lib/seo';
 
   export let listingSlug: string;
+
+  $: if (typeof document !== 'undefined' && listing) {
+    applySeo(seo.reserveCheckout(listing.title, listing.slug));
+  }
 
   $: listing = getListingBySlug(listingSlug);
   $: seller = listing ? getSeller(listing.sellerId) : undefined;
@@ -62,7 +67,7 @@
 
 <Nav />
 
-<main class="rc-page">
+<main id="main-content" class="rc-page">
   <div class="page-container">
 
     {#if !listing || !seller}

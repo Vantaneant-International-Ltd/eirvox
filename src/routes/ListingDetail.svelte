@@ -12,8 +12,19 @@
     type Category,
   } from '../data/listings';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
 
   export let slug: string;
+
+  $: if (typeof document !== 'undefined' && listing) {
+    applySeo(seo.listing(
+      listing.title,
+      listing.subtitle,
+      formatPrice(listing.price),
+      listing.city,
+      listing.slug,
+    ));
+  }
 
   $: listing = getListingBySlug(slug);
   $: seller = listing ? getSeller(listing.sellerId) : undefined;
@@ -40,7 +51,7 @@
 <Nav />
 
 {#if !listing || !seller}
-  <main class="detail-404 page-container">
+  <main id="main-content" class="detail-404 page-container">
     <h1 class="evx-heading">Listing not found.</h1>
     <p>This listing may have been removed or the URL is incorrect.</p>
     <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/automotive')}>
@@ -48,7 +59,7 @@
     </button>
   </main>
 {:else}
-  <main class="detail">
+  <main id="main-content" class="detail">
     <div class="page-container">
       <!-- Breadcrumb -->
       <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -357,6 +368,28 @@
           </div>
         </section>
       {/if}
+    </div>
+
+    <!-- Mobile sticky reserve bar -->
+    <div class="sticky-cta" role="region" aria-label="Reserve actions">
+      <div class="sticky-cta__price">
+        <span class="evx-caption sticky-cta__price-label">FROM</span>
+        <span class="sticky-cta__price-val">{formatPrice(listing.price)}</span>
+      </div>
+      <div class="sticky-cta__btns">
+        <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/messages')}>
+          Message
+        </button>
+        {#if listing.isDrive}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate(`/reserve/drive/${listing.driveIssue ? listing.driveIssue.toLowerCase().replace('drv-', '00') : '003'}-mercedes-amg-gt`)}>
+            Reserve · €49
+          </button>
+        {:else}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate(`/reserve/${listing.slug}`)}>
+            Reserve · €49
+          </button>
+        {/if}
+      </div>
     </div>
   </main>
 {/if}
@@ -866,6 +899,38 @@
     gap: var(--evx-space-xl);
   }
 
+  /* Sticky mobile CTA bar */
+  .sticky-cta {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    background: var(--evx-paper);
+    border-top: 1px solid var(--evx-rule-light);
+    padding: var(--evx-space-sm) var(--evx-space-md);
+    padding-bottom: calc(var(--evx-space-sm) + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--evx-space-md);
+  }
+  .sticky-cta__price {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+  }
+  .sticky-cta__price-label { color: var(--evx-ink-soft); font-size: 10px; }
+  .sticky-cta__price-val {
+    font-family: var(--evx-font-display);
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+  .sticky-cta__btns { display: flex; gap: var(--evx-space-sm); flex-shrink: 0; }
+
   @media (max-width: 1023px) {
     .detail__body { grid-template-columns: 1fr; }
     .detail__below { grid-template-columns: 1fr; }
@@ -875,5 +940,7 @@
   @media (max-width: 767px) {
     .more-from__grid, .similar__grid { grid-template-columns: 1fr; }
     .panel__seller-stats { grid-template-columns: 1fr 1fr; }
+    .detail { padding-bottom: 80px; }
+    .sticky-cta { display: flex; }
   }
 </style>

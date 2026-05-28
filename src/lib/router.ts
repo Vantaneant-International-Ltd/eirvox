@@ -12,7 +12,16 @@ export const currentPath = writable<string>(getPath());
 if (typeof window !== 'undefined') {
   window.addEventListener('hashchange', () => {
     currentPath.set(getPath());
-    window.scrollTo(0, 0);
+    // Scroll to top + send focus to main content for keyboard/AT users.
+    // Defer to next frame so the new route has mounted.
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      const main = document.getElementById('main-content');
+      if (main) {
+        main.setAttribute('tabindex', '-1');
+        main.focus({ preventScroll: true });
+      }
+    });
   });
 }
 

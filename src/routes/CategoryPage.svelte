@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import ListingCard from '../lib/ListingCard.svelte';
@@ -12,8 +13,13 @@
     type Condition,
   } from '../data/listings';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
 
   export let category: string;
+
+  $: if (typeof document !== 'undefined' && category && meta) {
+    applySeo(seo.category(category, meta.label, allListings.length));
+  }
 
   $: cat = category as Category;
   $: meta = getCategoryMeta(cat);
@@ -23,6 +29,9 @@
   let selectedCondition: Condition | '' = '';
   let maxPrice = 0;
   let sortBy: 'relevance' | 'price-asc' | 'price-desc' | 'newest' = 'relevance';
+  let mobileFiltersOpen = false;
+
+  $: activeFilterCount = (selectedCondition ? 1 : 0) + (maxPrice ? 1 : 0);
 
   $: filtered = allListings
     .filter(l => !selectedCondition || l.condition === selectedCondition)
@@ -61,7 +70,7 @@
 
 <Nav />
 
-<main class="category">
+<main id="main-content" class="category">
   <div class="page-container">
     <!-- Breadcrumb -->
     <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -104,11 +113,28 @@
 
     <!-- Body -->
     <div class="cat-body">
-      <!-- Filter sidebar -->
-      <aside class="sidebar">
+      <!-- Filter sidebar / mobile drawer -->
+      {#if mobileFiltersOpen}
+        <div
+          class="sidebar-backdrop"
+          on:click={() => mobileFiltersOpen = false}
+          on:keydown={(e) => e.key === 'Escape' && (mobileFiltersOpen = false)}
+          role="button"
+          tabindex="-1"
+          aria-label="Close filters"
+        ></div>
+      {/if}
+      <aside class="sidebar" class:sidebar--open={mobileFiltersOpen} aria-label="Filters">
         <div class="sidebar__header">
           <span class="evx-label">Filters</span>
-          <button class="evx-caption sidebar__reset" on:click={reset}>Reset</button>
+          <div class="sidebar__head-right">
+            <button class="evx-caption sidebar__reset" on:click={reset}>Reset</button>
+            <button
+              class="sidebar__close"
+              on:click={() => mobileFiltersOpen = false}
+              aria-label="Close filters"
+            >×</button>
+          </div>
         </div>
 
         <!-- Condition -->
@@ -153,19 +179,31 @@
         <div class="filter-note evx-caption">
           All listings ship across Ireland and Northern Ireland unless noted.
         </div>
+
+        <!-- Apply (drawer footer, mobile only) -->
+        <button class="evx-btn evx-btn--primary sidebar__apply" on:click={() => mobileFiltersOpen = false}>
+          Show {filtered.length} listings
+        </button>
       </aside>
 
       <!-- Main grid -->
       <div class="cat-main">
         <!-- Sort + active filter bar -->
         <div class="sort-bar">
+          <button
+            class="sort-bar__filters-toggle evx-caption"
+            on:click={() => mobileFiltersOpen = true}
+            aria-label="Open filters"
+          >
+            ☰ FILTERS{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ''}
+          </button>
           <span class="evx-caption sort-bar__count">
             {filtered.length} of {allListings.length}
             {#if selectedCondition}<span class="sort-bar__chip">{selectedCondition} ✕</span>{/if}
           </span>
           <div class="sort-bar__right">
             <span class="evx-caption sort-bar__label">SORT</span>
-            <select class="sort-bar__select evx-caption" bind:value={sortBy}>
+            <select class="sort-bar__select evx-caption" bind:value={sortBy} aria-label="Sort listings">
               <option value="relevance">Relevance</option>
               <option value="newest">Newest first</option>
               <option value="price-asc">Price: low to high</option>
@@ -468,9 +506,65 @@
 
   .seo-block__text { color: var(--evx-ink-soft); line-height: 1.8; }
 
+  /* Mobile filter drawer triggers */
+  .sort-bar__filters-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--evx-rule-light);
+    padding: 8px 12px;
+    cursor: pointer;
+    color: var(--evx-warm-black);
+    font-family: var(--evx-font-mono);
+    transition: var(--evx-transition);
+  }
+  .sort-bar__filters-toggle:hover { border-color: var(--evx-warm-black); }
+
+  .sidebar__head-right { display: flex; align-items: center; gap: var(--evx-space-md); }
+  .sidebar__close {
+    display: none;
+    background: none; border: none;
+    color: var(--evx-warm-black);
+    font-size: 24px; line-height: 1;
+    cursor: pointer; padding: 4px 8px;
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(26, 26, 26, 0.55);
+    z-index: 95;
+    cursor: pointer;
+  }
+
+  .sidebar__apply { display: none; width: 100%; margin-top: var(--evx-space-lg); }
+
   @media (max-width: 1023px) {
     .cat-body { grid-template-columns: 1fr; }
-    .sidebar { position: static; display: none; }
+
+    /* Sidebar becomes a slide-in drawer */
+    .sidebar {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 320px;
+      max-width: 88vw;
+      background: var(--evx-paper);
+      z-index: 100;
+      padding: var(--evx-space-lg);
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 280ms ease;
+      display: flex;
+      box-shadow: -2px 0 24px rgba(0,0,0,0.10);
+    }
+    .sidebar--open { transform: translateX(0); }
+    .sidebar-backdrop { display: block; }
+    .sidebar__close { display: inline-block; }
+    .sidebar__apply { display: inline-flex; }
+
+    .sort-bar__filters-toggle { display: inline-block; }
+    .sort-bar { gap: var(--evx-space-sm); flex-wrap: wrap; }
+    .sort-bar__count { order: 3; flex-basis: 100%; }
+
     .listing-grid { grid-template-columns: repeat(2, 1fr); }
     .cat-header { flex-direction: column; align-items: flex-start; }
   }

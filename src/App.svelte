@@ -17,7 +17,8 @@
   import Login from './routes/Login.svelte';
   import Account from './routes/Account.svelte';
   import Messages from './routes/Messages.svelte';
-  import ComingSoon from './routes/ComingSoon.svelte';
+  import Sitemap from './routes/Sitemap.svelte';
+  import NotFound from './routes/NotFound.svelte';
 
   const CATEGORIES = [
     'automotive',
@@ -78,9 +79,8 @@
   <Account tab="saved" />
 {:else if path === '/account/settings'}
   <Account tab="settings" />
+{:else if path === '/sitemap'}
+  <Sitemap />
 {:else}
-  <ComingSoon
-    title="Coming soon."
-    description="This section isn't ready yet. Use the navigation above to browse the marketplace."
-  />
+  <NotFound />
 {/if}

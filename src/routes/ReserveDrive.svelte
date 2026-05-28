@@ -1,11 +1,15 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { getListingBySlug, formatPrice } from '../data/listings';
   import { currentUser } from '../data/user';
+  import { applySeo, seo } from '../lib/seo';
 
   export let issueSlug: string;
+
+  onMount(() => applySeo(seo.reserveDrive(issueSlug)));
 
   // Map issue slug → DRIVE listing data
   $: listing = getListingBySlug('amg-gt-carbon-steering-wheel');
@@ -63,7 +67,7 @@
 
 <Nav />
 
-<main class="rd-page">
+<main id="main-content" class="rd-page">
   <div class="page-container">
 
     {#if !listing}

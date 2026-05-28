@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { categories } from '../data/listings';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.sellCreate()));
 
   let step = 1;
   const TOTAL_STEPS = 6;
@@ -116,7 +120,7 @@
 
 <Nav />
 
-<main class="create-page">
+<main id="main-content" class="create-page">
   <div class="page-container">
 
     <!-- Header / context -->

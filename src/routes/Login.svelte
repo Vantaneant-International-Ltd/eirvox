@@ -1,7 +1,11 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.login()));
 
   let email = '';
   let submitted = false;
@@ -13,7 +17,7 @@
 
 <Nav />
 
-<main class="login-page">
+<main id="main-content" class="login-page">
   <div class="login-inner page-container">
 
     {#if submitted}

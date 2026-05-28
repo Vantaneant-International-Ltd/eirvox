@@ -1,9 +1,13 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
 
   export let issueSlug: string;
+
+  onMount(() => applySeo(seo.driveIssue(issueSlug)));
 
   $: isIssue003 = issueSlug === '003-mercedes-amg-gt' || !issueSlug;
 
@@ -22,7 +26,7 @@
 
 <Nav />
 
-<main class="drive-issue">
+<main id="main-content" class="drive-issue">
   <!-- DRIVE nav bar -->
   <div class="di-bar page-container">
     <button class="di-bar__drive evx-caption" on:click={() => navigate('/drive')}>

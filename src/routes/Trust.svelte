@@ -1,7 +1,11 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.trust()));
 
   let faqOpen: Record<number, boolean> = {};
   function toggleFaq(i: number) { faqOpen = { ...faqOpen, [i]: !faqOpen[i] }; }
@@ -32,7 +36,7 @@
 
 <Nav />
 
-<main class="trust-page">
+<main id="main-content" class="trust-page">
   <div class="page-container">
 
     <header class="trust-hero">

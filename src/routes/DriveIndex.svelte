@@ -1,7 +1,11 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.drive()));
 
   const issues = [
     {
@@ -57,7 +61,7 @@
 
 <Nav />
 
-<main class="drive-index">
+<main id="main-content" class="drive-index">
   <div class="page-container">
 
     <header class="di-header">

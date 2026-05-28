@@ -3,6 +3,7 @@
   import Footer from '../lib/Footer.svelte';
   import ListingCard from '../lib/ListingCard.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
   import {
     currentUser,
     orders,
@@ -19,6 +20,8 @@
   import { getListingBySlug, formatPrice } from '../data/listings';
 
   export let tab: string = 'overview';
+
+  $: if (typeof document !== 'undefined' && tab) applySeo(seo.account(tab));
 
   $: activeReservations = getActiveReservations();
   $: unreadCount = getUnreadCount();
@@ -122,7 +125,7 @@
 
 <Nav />
 
-<main class="acct-page">
+<main id="main-content" class="acct-page">
   <div class="page-container">
 
     <!-- Header -->
@@ -1063,8 +1066,35 @@
   @media (max-width: 1023px) {
     .acct-body { grid-template-columns: 1fr; }
     .acct-side { position: static; }
-    .acct-nav { flex-direction: row; flex-wrap: wrap; gap: var(--evx-space-sm); }
-    .acct-nav__cta { width: 100%; }
+    .acct-side__profile { padding-bottom: 0; border-bottom: none; }
+    .acct-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 0;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--evx-rule-light);
+      scrollbar-width: none;
+    }
+    .acct-nav::-webkit-scrollbar { display: none; }
+    .acct-nav__item {
+      flex-shrink: 0;
+      padding: var(--evx-space-sm) var(--evx-space-md);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      gap: var(--evx-space-sm);
+    }
+    .acct-nav__item--active {
+      background: transparent;
+      color: var(--evx-warm-black);
+      border-bottom-color: var(--evx-fox-orange);
+    }
+    .acct-nav__item--active .acct-nav__count { color: var(--evx-fox-orange); }
+    .acct-nav__item--seller {
+      margin-top: 0; padding-top: var(--evx-space-sm);
+      border-top: none; border-left: 1px solid var(--evx-rule-light);
+      padding-left: var(--evx-space-lg);
+    }
+    .acct-nav__cta { width: 100%; margin-top: var(--evx-space-md); }
     .saved-grid { grid-template-columns: repeat(2, 1fr); }
     .shortcuts { grid-template-columns: 1fr; }
     .acct-stats { grid-template-columns: 1fr; }
@@ -1076,7 +1106,7 @@
 
   @media (max-width: 767px) {
     .acct-header { flex-direction: column; align-items: flex-start; }
-    .acct-nav__item { padding: var(--evx-space-sm); }
+    .acct-side__profile { display: none; }
     .saved-grid { grid-template-columns: 1fr; }
     .orders__head, .orders__row { grid-template-columns: 1fr 110px; }
     .orders__head span:nth-child(3), .orders__head span:nth-child(4),

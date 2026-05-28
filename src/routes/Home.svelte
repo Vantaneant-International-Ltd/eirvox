@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import ListingCard from '../lib/ListingCard.svelte';
@@ -10,6 +11,9 @@
     formatPrice,
   } from '../data/listings';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.home()));
 
   const featured = getFeaturedListings(12);
   const recent = getRecentListings(8);

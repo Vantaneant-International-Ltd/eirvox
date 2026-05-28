@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import SellerPill from '../lib/SellerPill.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
   import {
     conversations,
     getConversation,
@@ -12,6 +14,8 @@
     type Conversation,
   } from '../data/user';
   import { formatPrice } from '../data/listings';
+
+  onMount(() => applySeo(seo.messages()));
 
   export let conversationId: string = conversations[0]?.id ?? '';
 
@@ -80,7 +84,7 @@
 
 <Nav />
 
-<main class="msg-page">
+<main id="main-content" class="msg-page">
   <div class="page-container">
 
     <!-- Header -->

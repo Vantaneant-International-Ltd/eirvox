@@ -1,7 +1,11 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.sellApply()));
 
   // ── Multi-step state ───────────────────────────────────────
   let step = 1;
@@ -87,7 +91,7 @@
 
 <Nav />
 
-<main class="apply-page">
+<main id="main-content" class="apply-page">
   <div class="page-container">
 
     <!-- Header -->
