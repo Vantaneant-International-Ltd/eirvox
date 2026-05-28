@@ -1,12 +1,29 @@
 <script lang="ts">
   import type { Listing } from '../data/listings';
   import { getSeller, formatPrice } from '../data/listings';
+  import { savedItems } from '../data/user';
   import SellerPill from './SellerPill.svelte';
   import { navigate } from './router';
 
   export let listing: Listing;
+  export let showBookmark: boolean = true;
 
   $: seller = getSeller(listing.sellerId);
+
+  let saved = savedItems.includes(listing.slug);
+
+  function toggleSave(e: MouseEvent) {
+    e.stopPropagation();
+    saved = !saved;
+  }
+
+  function handleBookmarkKey(e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.stopPropagation();
+      e.preventDefault();
+      saved = !saved;
+    }
+  }
 
   const bg = [
     '#2A2825', '#3A3632', '#31302D', '#282624',
@@ -30,6 +47,29 @@
     {#if listing.isDrive}
       <span class="evx-caption card__drive-badge">{listing.driveIssue}</span>
     {/if}
+
+    {#if showBookmark}
+      <button
+        type="button"
+        class="card__bookmark"
+        class:card__bookmark--saved={saved}
+        on:click={toggleSave}
+        on:keydown={handleBookmarkKey}
+        aria-label={saved ? 'Remove from saved' : 'Save for later'}
+        aria-pressed={saved}
+      >
+        {#if saved}
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="currentColor" aria-hidden="true">
+            <path d="M1 1h12v14L7 11l-6 4V1z"/>
+          </svg>
+        {:else}
+          <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M1 1h12v14L7 11l-6 4V1z"/>
+          </svg>
+        {/if}
+      </button>
+    {/if}
+
     <div class="card__placeholder">
       <span class="evx-caption card__placeholder-text">{listing.title}</span>
     </div>
@@ -99,6 +139,25 @@
     padding: 2px 6px;
     z-index: 1;
   }
+
+  .card__bookmark {
+    position: absolute;
+    top: var(--evx-space-md);
+    right: var(--evx-space-md);
+    width: 28px; height: 28px;
+    background: rgba(26, 26, 26, 0.55);
+    border: none;
+    color: var(--evx-paper);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 200ms ease, color 200ms ease;
+    z-index: 2;
+  }
+  .card__bookmark:hover { background: rgba(26, 26, 26, 0.80); }
+  .card__bookmark--saved { color: var(--evx-fox-orange); background: rgba(26, 26, 26, 0.80); }
+  .card__bookmark:focus-visible { outline: 2px solid var(--evx-fox-orange); outline-offset: 2px; }
 
   .card__placeholder {
     display: flex;

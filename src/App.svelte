@@ -7,10 +7,14 @@
   import DriveIssue from './routes/DriveIssue.svelte';
   import Sell from './routes/Sell.svelte';
   import SellerApply from './routes/SellerApply.svelte';
+  import SellerCreate from './routes/SellerCreate.svelte';
+  import SellerDashboard from './routes/SellerDashboard.svelte';
   import Reserve from './routes/Reserve.svelte';
   import Trust from './routes/Trust.svelte';
   import About from './routes/About.svelte';
   import Login from './routes/Login.svelte';
+  import Account from './routes/Account.svelte';
+  import Messages from './routes/Messages.svelte';
   import ComingSoon from './routes/ComingSoon.svelte';
 
   const CATEGORIES = [
@@ -42,6 +46,10 @@
   <DriveIssue issueSlug={driveParams.slug} />
 {:else if path === '/sell/apply'}
   <SellerApply />
+{:else if path === '/sell/create'}
+  <SellerCreate />
+{:else if path === '/sell/dashboard'}
+  <SellerDashboard />
 {:else if path === '/sell'}
   <Sell />
 {:else if path === '/reserve'}
@@ -53,15 +61,15 @@
 {:else if path === '/login'}
   <Login />
 {:else if path === '/messages'}
-  <ComingSoon
-    title="Messages."
-    description="Your inbox, offers, and negotiations — all in one place. Available when buyer accounts launch in H2 2026."
-  />
+  <Messages />
 {:else if path === '/account'}
-  <ComingSoon
-    title="Account."
-    description="Your dashboard, listings, orders, and saved searches. Available when buyer accounts launch in H2 2026."
-  />
+  <Account tab="overview" />
+{:else if path === '/account/orders'}
+  <Account tab="orders" />
+{:else if path === '/account/saved'}
+  <Account tab="saved" />
+{:else if path === '/account/settings'}
+  <Account tab="settings" />
 {:else}
   <ComingSoon
     title="Coming soon."

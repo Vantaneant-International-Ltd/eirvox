@@ -1,7 +1,10 @@
 <script lang="ts">
   import { currentPath, navigate, isActive } from './router';
+  import { getUnreadCount } from '../data/user';
 
   let menuOpen = false;
+
+  $: unreadCount = getUnreadCount();
 
   const categories = [
     { label: 'Automotive', path: '/automotive' },
@@ -9,6 +12,14 @@
     { label: 'Fashion', path: '/fashion' },
     { label: 'Tech', path: '/tech' },
   ];
+
+  const sellerSections = [
+    { label: 'Apply', path: '/sell/apply' },
+    { label: 'Create', path: '/sell/create' },
+    { label: 'Dashboard', path: '/sell/dashboard' },
+  ];
+
+  $: isSellerRoute = $currentPath.startsWith('/sell');
 
   function handleNav(path: string) {
     navigate(path);
@@ -61,6 +72,26 @@
         Sell
       </button>
 
+      <button
+        class="nav__messages"
+        on:click={() => handleNav('/messages')}
+        aria-label="Messages{unreadCount > 0 ? ` (${unreadCount} unread)` : ''}"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M2 3h12v8H6l-3 3v-3H2V3z" stroke-linejoin="round"/>
+        </svg>
+        {#if unreadCount > 0}
+          <span class="nav__messages-badge">{unreadCount}</span>
+        {/if}
+      </button>
+
+      <button class="nav__account" on:click={() => handleNav('/account')} aria-label="Account">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <circle cx="8" cy="5.5" r="2.8"/>
+          <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/>
+        </svg>
+      </button>
+
       <button class="nav__login" on:click={() => handleNav('/login')}>Log in</button>
 
       <!-- Mobile hamburger -->
@@ -76,6 +107,29 @@
     </nav>
   </div>
 
+  <!-- Seller sub-bar (only on /sell/* routes) -->
+  {#if isSellerRoute}
+    <div class="nav__seller-bar">
+      <div class="nav__seller-bar-inner page-container">
+        <span class="evx-caption nav__seller-label">SELLER</span>
+        <span class="nav__seller-sep">·</span>
+        <button
+          class="nav__seller-link"
+          class:nav__seller-link--active={$currentPath === '/sell'}
+          on:click={() => handleNav('/sell')}
+        >Tiers</button>
+        {#each sellerSections as item}
+          <button
+            class="nav__seller-link"
+            class:nav__seller-link--active={$currentPath === item.path}
+            on:click={() => handleNav(item.path)}
+          >{item.label}</button>
+        {/each}
+        <span class="nav__seller-cohort evx-caption">COHORT 03 · CLOSES 14 JUN</span>
+      </div>
+    </div>
+  {/if}
+
   <!-- Mobile drawer -->
   {#if menuOpen}
     <div class="nav__drawer" role="navigation" aria-label="Mobile navigation">
@@ -88,6 +142,13 @@
           </li>
         {/each}
         <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
+        <li>
+          <button class="nav__drawer-link" on:click={() => handleNav('/messages')}>
+            Messages
+            {#if unreadCount > 0}<span class="nav__drawer-badge">{unreadCount}</span>{/if}
+          </button>
+        </li>
+        <li><button class="nav__drawer-link" on:click={() => handleNav('/account')}>Account</button></li>
         <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/sell')}>Sell on Éirvox</button></li>
         <li><button class="nav__drawer-link" on:click={() => handleNav('/login')}>Log in</button></li>
       </ul>
@@ -226,6 +287,40 @@
 
   .nav__login:hover { opacity: 0.60; }
 
+  .nav__messages,
+  .nav__account {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--evx-warm-black);
+    display: flex;
+    align-items: center;
+    transition: var(--evx-transition);
+  }
+
+  .nav__messages:hover,
+  .nav__account:hover { opacity: 0.60; }
+
+  .nav__messages-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 14px; height: 14px;
+    padding: 0 4px;
+    background: var(--evx-fox-orange);
+    color: var(--evx-white);
+    font-family: var(--evx-font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    border-radius: 7px;
+    line-height: 1;
+  }
+
   .nav__hamburger {
     display: none;
     flex-direction: column;
@@ -276,6 +371,64 @@
     color: var(--evx-fox-orange);
   }
 
+  .nav__drawer-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px; height: 18px;
+    padding: 0 6px;
+    background: var(--evx-fox-orange);
+    color: var(--evx-white);
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    border-radius: 9px;
+    margin-left: 8px;
+    line-height: 1;
+  }
+
+  /* Seller sub-bar */
+  .nav__seller-bar {
+    background: rgba(232, 116, 44, 0.04);
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+
+  .nav__seller-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--evx-space-lg);
+    height: 36px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav__seller-bar-inner::-webkit-scrollbar { display: none; }
+
+  .nav__seller-label { color: var(--evx-fox-orange); flex-shrink: 0; }
+
+  .nav__seller-sep { color: var(--evx-rule-light); flex-shrink: 0; }
+
+  .nav__seller-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--evx-font-display);
+    font-size: 13px;
+    color: var(--evx-warm-black);
+    cursor: pointer;
+    transition: var(--evx-transition);
+    white-space: nowrap;
+  }
+
+  .nav__seller-link:hover { opacity: 0.60; }
+  .nav__seller-link--active { color: var(--evx-fox-orange); font-weight: 500; }
+
+  .nav__seller-cohort {
+    color: var(--evx-ink-soft);
+    margin-left: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   @media (max-width: 1023px) {
     .nav__centre { max-width: 280px; }
   }
@@ -284,6 +437,8 @@
     .nav__links,
     .nav__login,
     .nav__sell,
+    .nav__messages,
+    .nav__account,
     .nav__centre { display: none; }
 
     .nav__hamburger { display: flex; }

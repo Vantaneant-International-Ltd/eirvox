@@ -161,8 +161,11 @@
       <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
         Apply to sell →
       </button>
-      <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/trust')}>
-        Read the fees
+      <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/dashboard')}>
+        Preview the dashboard
+      </button>
+      <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/create')}>
+        Try the listing flow
       </button>
     </div>
 
