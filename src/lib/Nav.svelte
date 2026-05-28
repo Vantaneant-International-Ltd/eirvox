@@ -13,6 +13,11 @@
     { label: 'Tech', path: '/tech' },
   ];
 
+  const directories = [
+    { label: 'DRIVE', path: '/drive' },
+    { label: 'TRADE', path: '/trade' },
+  ];
+
   const sellerSections = [
     { label: 'Apply', path: '/sell/apply' },
     { label: 'Create', path: '/sell/create' },
@@ -31,8 +36,8 @@
   <div class="nav__inner page-container">
     <!-- Wordmark -->
     <div class="nav__left">
-      <button class="nav__wordmark" on:click={() => handleNav('/')}>
-        <span class="nav__e">É</span><span class="nav__rest">irvox</span>
+      <button class="nav__wordmark" on:click={() => handleNav('/')} aria-label="ÉIRVOX home">
+        <img src="/brand/wordmark.svg" alt="ÉIRVOX" class="nav__wordmark-img" />
       </button>
     </div>
 
@@ -63,6 +68,18 @@
               on:click={() => handleNav(cat.path)}
             >
               {cat.label}
+            </button>
+          </li>
+        {/each}
+        <li class="nav__sep" aria-hidden="true"></li>
+        {#each directories as d}
+          <li>
+            <button
+              class="nav__link nav__link--directory"
+              class:nav__link--active={isActive(d.path, $currentPath)}
+              on:click={() => handleNav(d.path)}
+            >
+              {d.label}
             </button>
           </li>
         {/each}
@@ -142,6 +159,7 @@
           </li>
         {/each}
         <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
+        <li><button class="nav__drawer-link" on:click={() => handleNav('/trade')}>TRADE</button></li>
         <li>
           <button class="nav__drawer-link" on:click={() => handleNav('/messages')}>
             Messages
@@ -175,9 +193,8 @@
   .nav__left { flex-shrink: 0; }
 
   .nav__wordmark {
-    display: flex;
-    align-items: baseline;
-    gap: 0;
+    display: inline-flex;
+    align-items: center;
     background: none;
     border: none;
     padding: 0;
@@ -185,21 +202,10 @@
     line-height: 1;
   }
 
-  .nav__e {
-    font-family: var(--evx-font-editorial);
-    font-style: italic;
-    font-size: 22px;
-    font-weight: 400;
+  .nav__wordmark-img {
+    height: 22px;
+    width: auto;
     color: var(--evx-warm-black);
-    letter-spacing: -0.01em;
-  }
-
-  .nav__rest {
-    font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: 20px;
-    color: var(--evx-warm-black);
-    letter-spacing: -0.015em;
   }
 
   .nav__centre {
@@ -270,6 +276,21 @@
 
   .nav__link--active::after { transform: scaleX(1); }
   .nav__link:hover { opacity: 0.60; }
+
+  .nav__link--directory {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .nav__sep {
+    width: 1px;
+    height: 14px;
+    background: var(--evx-rule-light);
+    margin: 0 -8px;
+    align-self: center;
+  }
 
   .nav__sell { }
 

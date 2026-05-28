@@ -19,6 +19,16 @@
   import Messages from './routes/Messages.svelte';
   import Sitemap from './routes/Sitemap.svelte';
   import NotFound from './routes/NotFound.svelte';
+  import Terms from './routes/Terms.svelte';
+  import Privacy from './routes/Privacy.svelte';
+  import Cookies from './routes/Cookies.svelte';
+  import AcceptableUse from './routes/AcceptableUse.svelte';
+  import Returns from './routes/Returns.svelte';
+  import TradeLanding from './routes/TradeLanding.svelte';
+  import TradeCategory from './routes/TradeCategory.svelte';
+  import TradeProfile from './routes/TradeProfile.svelte';
+  import TradeApply from './routes/TradeApply.svelte';
+  import CookieBanner from './lib/CookieBanner.svelte';
 
   const CATEGORIES = [
     'automotive',
@@ -36,7 +46,12 @@
   $: driveParams = matchRoute('/drive/:slug', path);
   $: reserveDriveParams = matchRoute('/reserve/drive/:slug', path);
   $: reserveParams = matchRoute('/reserve/:slug', path);
+  $: tradeProfileParams = matchRoute('/trade/:categorySlug/:slug', path);
+  $: tradeCategoryParams = matchRoute('/trade/:categorySlug', path);
   $: categoryMatch = CATEGORIES.find(c => path === `/${c}`) ?? null;
+
+  // Trade slugs that should NOT match as categories
+  const TRADE_RESERVED_PATHS = ['apply'];
 </script>
 
 {#if path === '/'}
@@ -63,6 +78,14 @@
   <Reserve />
 {:else if reserveParams}
   <ReserveCheckout listingSlug={reserveParams.slug} />
+{:else if path === '/trade'}
+  <TradeLanding />
+{:else if path === '/trade/apply'}
+  <TradeApply />
+{:else if tradeProfileParams && !TRADE_RESERVED_PATHS.includes(tradeProfileParams.categorySlug)}
+  <TradeProfile categorySlug={tradeProfileParams.categorySlug} slug={tradeProfileParams.slug} />
+{:else if tradeCategoryParams && !TRADE_RESERVED_PATHS.includes(tradeCategoryParams.categorySlug)}
+  <TradeCategory categorySlug={tradeCategoryParams.categorySlug} />
 {:else if path === '/trust'}
   <Trust />
 {:else if path === '/about'}
@@ -81,6 +104,18 @@
   <Account tab="settings" />
 {:else if path === '/sitemap'}
   <Sitemap />
+{:else if path === '/terms'}
+  <Terms />
+{:else if path === '/privacy'}
+  <Privacy />
+{:else if path === '/cookies'}
+  <Cookies />
+{:else if path === '/acceptable-use'}
+  <AcceptableUse />
+{:else if path === '/returns'}
+  <Returns />
 {:else}
   <NotFound />
 {/if}
+
+<CookieBanner />

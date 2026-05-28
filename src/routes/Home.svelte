@@ -172,6 +172,41 @@
     </div>
   </section>
 
+  <!-- TRADE BAND ────────────────────────────────────── -->
+  <section class="trade-band page-container">
+    <div class="trade-band__inner">
+      <div class="trade-band__left">
+        <span class="evx-caption trade-band__pre">DIRECTORY · ÉIRVOX TRADE</span>
+        <h2 class="trade-band__h">Find verified tradespeople across Ireland.</h2>
+        <p class="trade-band__sub">
+          ID-checked, credential-verified, admitted by application.
+          Flat monthly fee — no per-lead charges.
+        </p>
+        <div class="trade-band__actions">
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/trade')}>
+            Browse all trades →
+          </button>
+          <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/trade/apply')}>
+            List your trade
+          </button>
+        </div>
+      </div>
+      <div class="trade-band__cats">
+        {#each [
+          { slug: 'electricians', label: 'Electricians' },
+          { slug: 'plumbers',     label: 'Plumbers' },
+          { slug: 'mechanics',    label: 'Mechanics' },
+          { slug: 'carpenters',   label: 'Carpenters' },
+        ] as c}
+          <button class="trade-band__cat" on:click={() => navigate(`/trade/${c.slug}`)}>
+            <span class="trade-band__cat-label">{c.label}</span>
+            <span class="evx-caption trade-band__cat-arrow">→</span>
+          </button>
+        {/each}
+      </div>
+    </div>
+  </section>
+
   <!-- SELL CTA ────────────────────────────────────── -->
   <section class="sell-cta page-container">
     <div class="sell-cta__inner">
@@ -550,6 +585,60 @@
     color: var(--evx-ink-soft);
   }
 
+  /* TRADE BAND */
+  .trade-band {
+    padding-top: var(--evx-space-2xl);
+    padding-bottom: var(--evx-space-2xl);
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+  .trade-band__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--evx-space-3xl);
+    align-items: center;
+  }
+  .trade-band__left { display: flex; flex-direction: column; gap: var(--evx-space-md); }
+  .trade-band__pre { color: var(--evx-fox-orange); }
+  .trade-band__h {
+    font-family: var(--evx-font-display);
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--evx-warm-black);
+    line-height: 1.15;
+  }
+  .trade-band__sub {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--evx-ink-soft);
+    max-width: 480px;
+  }
+  .trade-band__actions { display: flex; gap: var(--evx-space-sm); flex-wrap: wrap; margin-top: var(--evx-space-sm); }
+
+  .trade-band__cats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--evx-rule-light);
+  }
+  .trade-band__cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--evx-space-md) var(--evx-space-lg);
+    background: none;
+    border: none;
+    border-right: 1px solid var(--evx-rule-light);
+    border-bottom: 1px solid var(--evx-rule-light);
+    cursor: pointer;
+    transition: background 200ms ease;
+  }
+  .trade-band__cat:hover { background: rgba(0,0,0,0.02); }
+  .trade-band__cat:nth-child(2n) { border-right: none; }
+  .trade-band__cat:nth-last-child(-n+2) { border-bottom: none; }
+  .trade-band__cat-label { font-family: var(--evx-font-display); font-size: 14px; font-weight: 500; color: var(--evx-warm-black); }
+  .trade-band__cat-arrow { color: var(--evx-ink-soft); }
+
   /* SELL CTA */
   .sell-cta {
     padding-top: var(--evx-space-2xl);
@@ -600,6 +689,7 @@
     .drive-band__inner { flex-direction: column; align-items: flex-start; }
     .drive-band__right { align-items: flex-start; }
     .sell-cta__inner { flex-direction: column; align-items: flex-start; }
+    .trade-band__inner { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 767px) {

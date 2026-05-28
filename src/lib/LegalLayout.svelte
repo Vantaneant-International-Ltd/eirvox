@@ -1,0 +1,260 @@
+<script lang="ts">
+  import Nav from './Nav.svelte';
+  import Footer from './Footer.svelte';
+  import { navigate } from './router';
+
+  export let title: string;
+  export let lastUpdated: string = '1 June 2026';
+  export let sections: { num: string; id: string; label: string }[] = [];
+  export let intro: string = '';
+</script>
+
+<Nav />
+
+<main id="main-content" class="legal-page">
+  <div class="page-container">
+
+    <header class="legal-header">
+      <span class="evx-caption legal-header__pre">LEGAL · ÉIRVOX SYSTEMS LTD</span>
+      <h1 class="legal-title">{title}</h1>
+      {#if intro}
+        <p class="legal-intro">{intro}</p>
+      {/if}
+      <p class="legal-meta evx-caption">Last updated: {lastUpdated} · Effective immediately</p>
+    </header>
+
+    <div class="legal-body">
+      <!-- Sticky section nav -->
+      {#if sections.length > 0}
+        <aside class="legal-toc" aria-label="Sections">
+          <span class="evx-label legal-toc__title">CONTENTS</span>
+          <ul class="legal-toc__list">
+            {#each sections as s}
+              <li>
+                <a href="#{s.id}" class="legal-toc__link">
+                  <span class="legal-toc__num evx-caption">{s.num}</span>
+                  <span class="legal-toc__label">{s.label}</span>
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </aside>
+      {/if}
+
+      <div class="legal-content">
+        <slot />
+
+        <div class="legal-footer-note">
+          <span class="evx-label legal-footer-note__label">QUESTIONS?</span>
+          <p class="legal-footer-note__body">
+            Anything unclear, anything to flag — email
+            <a href="mailto:renato@eirvox.ie" class="legal-link">renato@eirvox.ie</a>
+            and we'll come back to you within 48 hours.
+          </p>
+        </div>
+
+        <div class="legal-cross">
+          <span class="evx-caption">RELATED</span>
+          <div class="legal-cross__links">
+            <button on:click={() => navigate('/terms')}>Terms</button>
+            <button on:click={() => navigate('/privacy')}>Privacy</button>
+            <button on:click={() => navigate('/cookies')}>Cookies</button>
+            <button on:click={() => navigate('/acceptable-use')}>Acceptable Use</button>
+            <button on:click={() => navigate('/returns')}>Returns &amp; Refunds</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<Footer />
+
+<style>
+  .legal-page { flex: 1; padding-bottom: var(--evx-space-3xl); }
+
+  /* Header */
+  .legal-header {
+    padding-top: var(--evx-space-2xl);
+    padding-bottom: var(--evx-space-xl);
+    border-bottom: 1px solid var(--evx-rule-light);
+    margin-bottom: var(--evx-space-2xl);
+    max-width: 760px;
+  }
+
+  .legal-header__pre { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-md); }
+
+  .legal-title {
+    font-family: var(--evx-font-display);
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    color: var(--evx-warm-black);
+    margin-bottom: var(--evx-space-lg);
+    line-height: 1;
+  }
+
+  .legal-intro { font-size: 16px; line-height: 1.7; color: var(--evx-ink-soft); margin-bottom: var(--evx-space-md); }
+  .legal-meta { color: var(--evx-ink-soft); }
+
+  /* Body layout */
+  .legal-body {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: var(--evx-space-3xl);
+    align-items: start;
+  }
+
+  /* Section nav */
+  .legal-toc {
+    position: sticky;
+    top: 80px;
+    border-right: 1px solid var(--evx-rule-light);
+    padding-right: var(--evx-space-md);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .legal-toc__title { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-md); }
+
+  .legal-toc__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .legal-toc__link {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--evx-space-sm);
+    padding: 6px 0;
+    align-items: baseline;
+    color: var(--evx-warm-black);
+    text-decoration: none;
+    transition: var(--evx-transition);
+  }
+  .legal-toc__link:hover { opacity: 0.65; }
+
+  .legal-toc__num { color: var(--evx-ink-soft); }
+
+  .legal-toc__label {
+    font-family: var(--evx-font-display);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Content area */
+  .legal-content {
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-2xl);
+  }
+
+  /* Default styles for slot content */
+  :global(.legal-content .legal-section) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-md);
+    padding-top: var(--evx-space-xl);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  :global(.legal-content .legal-section:first-child) {
+    padding-top: 0;
+    border-top: none;
+  }
+  :global(.legal-content .legal-section__num) {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--evx-fox-orange);
+  }
+  :global(.legal-content .legal-section__h) {
+    font-family: var(--evx-font-display);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--evx-warm-black);
+    line-height: 1.2;
+    scroll-margin-top: 80px;
+  }
+  :global(.legal-content .legal-section p) {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--evx-ink-soft);
+    margin-bottom: var(--evx-space-md);
+  }
+  :global(.legal-content .legal-section p:last-child) { margin-bottom: 0; }
+  :global(.legal-content .legal-section strong) { color: var(--evx-warm-black); font-weight: 500; }
+  :global(.legal-content .legal-section ul) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-sm);
+    padding-left: var(--evx-space-lg);
+    list-style: none;
+    margin-bottom: var(--evx-space-md);
+  }
+  :global(.legal-content .legal-section ul li) {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--evx-ink-soft);
+    position: relative;
+  }
+  :global(.legal-content .legal-section ul li::before) {
+    content: '·';
+    position: absolute;
+    left: -16px;
+    color: var(--evx-fox-orange);
+    font-weight: 700;
+  }
+  :global(.legal-content .legal-link),
+  :global(.legal-content a) {
+    color: var(--evx-warm-black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Footer note + cross-links */
+  .legal-footer-note {
+    padding: var(--evx-space-lg);
+    background: rgba(232, 116, 44, 0.04);
+    border-left: 2px solid var(--evx-fox-orange);
+  }
+  .legal-footer-note__label { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-sm); }
+  .legal-footer-note__body { font-size: 14px; line-height: 1.7; color: var(--evx-ink-soft); }
+
+  .legal-link {
+    color: var(--evx-warm-black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .legal-cross {
+    border-top: 1px solid var(--evx-rule-light);
+    padding-top: var(--evx-space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-sm);
+  }
+  .legal-cross > span { color: var(--evx-ink-soft); }
+  .legal-cross__links { display: flex; flex-wrap: wrap; gap: var(--evx-space-md); }
+  .legal-cross__links button {
+    background: none; border: none; padding: 0;
+    color: var(--evx-warm-black);
+    cursor: pointer;
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: var(--evx-transition);
+  }
+  .legal-cross__links button:hover { opacity: 0.65; }
+
+  @media (max-width: 1023px) {
+    .legal-body { grid-template-columns: 1fr; }
+    .legal-toc { display: none; }
+  }
+</style>

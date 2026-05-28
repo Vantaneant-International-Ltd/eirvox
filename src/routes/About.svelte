@@ -14,6 +14,7 @@
   <div class="page-container">
 
     <header class="about-hero">
+      <img src="/brand/wordmark.svg" alt="ÉIRVOX" class="about-hero__mark" />
       <h1 class="about-hero__title">
         A premium marketplace<br/>
         <em class="about-hero__italic">that publishes its own pieces.</em>
@@ -128,6 +129,14 @@
     border-bottom: 1px solid var(--evx-rule-light);
     margin-bottom: var(--evx-space-2xl);
     max-width: 760px;
+  }
+
+  .about-hero__mark {
+    height: 36px;
+    width: auto;
+    color: var(--evx-warm-black);
+    display: block;
+    margin-bottom: var(--evx-space-xl);
   }
 
   .about-hero__title {
