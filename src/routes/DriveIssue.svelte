@@ -55,7 +55,12 @@
       </p>
 
       <div class="di-hero__ctas">
-        <a href="#reserve" class="evx-btn evx-btn--primary">Reserve · €49 deposit</a>
+        <button class="evx-btn evx-btn--primary" on:click={() => navigate('/reserve/drive/003-mercedes-amg-gt')}>
+          Reserve allocation · €49 deposit
+        </button>
+        <a href="#reserve" class="evx-btn evx-btn--ghost">
+          Open enquiry form
+        </a>
         <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/reserve')}>
           How DRIVE reservations work →
         </button>
@@ -229,13 +234,13 @@
               </div>
 
               <button type="submit" class="evx-btn evx-btn--primary di-form-submit">
-                Reserve · €49 deposit
+                Send enquiry
               </button>
 
               <p class="evx-caption di-form-fine">
-                Deposit refundable except on failed QC. Balance €4,201 invoiced before dispatch.
-                <button type="button" class="di-form-fine-link" on:click={() => navigate('/reserve')}>
-                  How reservations work →
+                Or skip the form and go straight to the full reservation flow:
+                <button type="button" class="di-form-fine-link" on:click={() => navigate('/reserve/drive/003-mercedes-amg-gt')}>
+                  Reserve allocation · €49 →
                 </button>
               </p>
             </form>

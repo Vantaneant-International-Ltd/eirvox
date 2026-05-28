@@ -43,6 +43,65 @@
     removedSaved = new Set(removedSaved);
   }
 
+  // Expanded order rows
+  let expandedOrders: Set<string> = new Set();
+  function toggleOrder(id: string) {
+    if (expandedOrders.has(id)) expandedOrders.delete(id);
+    else expandedOrders.add(id);
+    expandedOrders = new Set(expandedOrders);
+  }
+
+  // Timeline data per order status
+  type TimelineStep = { key: string; label: string; date?: string };
+  function getTimeline(status: OrderStatus, reservedAt: string): TimelineStep[] {
+    const base: TimelineStep[] = [
+      { key: 'reserved',  label: 'Reserved',       date: reservedAt },
+      { key: 'paid',      label: 'Deposit paid',   date: status !== 'reserved' ? reservedAt : undefined },
+      { key: 'confirmed', label: 'Seller confirmed' },
+      { key: 'arranged',  label: 'Deal arranged' },
+      { key: 'completed', label: 'Completed' },
+    ];
+    if (status === 'confirmed') { base[2].date = reservedAt; }
+    if (status === 'shipped')   { base[2].date = '2026-05-16'; base[3].date = '2026-05-22'; }
+    if (status === 'completed') {
+      base[2].date = '2026-04-29';
+      base[3].date = '2026-05-02';
+      base[4].date = '2026-05-05';
+    }
+    return base;
+  }
+  function currentStepIndex(status: OrderStatus): number {
+    if (status === 'reserved')  return 1;  // awaiting payment confirmation
+    if (status === 'confirmed') return 2;
+    if (status === 'shipped')   return 3;
+    if (status === 'completed') return 4;
+    return 0;
+  }
+  // Actions per status
+  function statusActions(status: OrderStatus): { label: string; href: string; primary?: boolean }[] {
+    switch (status) {
+      case 'reserved':  return [
+        { label: 'Pay deposit', href: '/messages', primary: true },
+        { label: 'Message seller', href: '/messages' },
+      ];
+      case 'confirmed': return [
+        { label: 'Pay balance', href: '/messages', primary: true },
+        { label: 'Message seller', href: '/messages' },
+      ];
+      case 'shipped':   return [
+        { label: 'Confirm receipt', href: '/messages', primary: true },
+        { label: 'Track shipment', href: '/messages' },
+      ];
+      case 'completed': return [
+        { label: 'Leave review', href: '/messages', primary: true },
+        { label: 'View listing', href: '/automotive' },
+      ];
+      case 'cancelled': return [
+        { label: 'Browse marketplace', href: '/automotive', primary: true },
+      ];
+    }
+  }
+
   function statusColor(s: OrderStatus): string {
     switch (s) {
       case 'reserved':  return 'status--reserved';
@@ -236,26 +295,91 @@
               {#each orders as order}
                 {@const listing = getOrderListing(order)}
                 {@const seller = getOrderSeller(order)}
+                {@const isOpen = expandedOrders.has(order.id)}
                 {#if listing && seller}
-                  <button class="orders__row" on:click={() => navigate(`/listing/${listing.slug}`)}>
-                    <div class="orders__item">
-                      <div class="orders__thumb"></div>
-                      <div class="orders__info">
-                        <strong>{listing.title}</strong>
-                        <span class="evx-caption">{order.id} · from {seller.name}</span>
-                        {#if order.notes}
-                          <span class="evx-caption orders__note">{order.notes}</span>
-                        {/if}
+                  <div class="orders__group">
+                    <button
+                      class="orders__row"
+                      class:orders__row--open={isOpen}
+                      on:click={() => toggleOrder(order.id)}
+                      aria-expanded={isOpen}
+                    >
+                      <div class="orders__item">
+                        <div class="orders__thumb"></div>
+                        <div class="orders__info">
+                          <strong>{listing.title}</strong>
+                          <span class="evx-caption">{order.id} · from {seller.name}</span>
+                          {#if order.notes}
+                            <span class="evx-caption orders__note">{order.notes}</span>
+                          {/if}
+                        </div>
                       </div>
-                    </div>
-                    <span class="status {statusColor(order.status)}">
-                      <span class="status__dot"></span>
-                      {statusLabel[order.status]}
-                    </span>
-                    <span class="orders__right orders__deposit">€{order.deposit}</span>
-                    <span class="orders__right">{formatPrice(order.balance)}</span>
-                    <span class="orders__right evx-caption">{order.reservedAt}</span>
-                  </button>
+                      <span class="status {statusColor(order.status)}">
+                        <span class="status__dot"></span>
+                        {statusLabel[order.status]}
+                      </span>
+                      <span class="orders__right orders__deposit">€{order.deposit}</span>
+                      <span class="orders__right">{formatPrice(order.balance)}</span>
+                      <span class="orders__right evx-caption">
+                        {order.reservedAt}
+                        <span class="orders__chev" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+                      </span>
+                    </button>
+
+                    {#if isOpen}
+                      {@const timeline = getTimeline(order.status, order.reservedAt)}
+                      {@const currentIdx = currentStepIndex(order.status)}
+                      {@const actions = statusActions(order.status)}
+                      <div class="orders__expand">
+                        <!-- Timeline -->
+                        <div class="timeline">
+                          <span class="evx-label timeline__label">PROGRESS</span>
+                          <div class="timeline__steps">
+                            {#each timeline as step, i}
+                              <div
+                                class="timeline__step"
+                                class:timeline__step--done={i < currentIdx}
+                                class:timeline__step--active={i === currentIdx}
+                              >
+                                <span class="timeline__dot"></span>
+                                <div class="timeline__body">
+                                  <span class="timeline__step-label">{step.label}</span>
+                                  {#if step.date}
+                                    <span class="evx-caption timeline__step-date">{step.date}</span>
+                                  {:else if i === currentIdx}
+                                    <span class="evx-caption timeline__step-date timeline__step-date--pending">In progress</span>
+                                  {:else}
+                                    <span class="evx-caption timeline__step-date timeline__step-date--upcoming">—</span>
+                                  {/if}
+                                </div>
+                              </div>
+                            {/each}
+                          </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="orders__actions">
+                          <span class="evx-label orders__actions-label">NEXT STEPS</span>
+                          <div class="orders__actions-row">
+                            {#each actions as act}
+                              <button
+                                class="evx-btn {act.primary ? 'evx-btn--primary' : 'evx-btn--ghost'} evx-btn--sm"
+                                on:click|stopPropagation={() => navigate(act.href)}
+                              >
+                                {act.label}
+                              </button>
+                            {/each}
+                            <button
+                              class="evx-btn evx-btn--ghost evx-btn--sm"
+                              on:click|stopPropagation={() => navigate(`/listing/${listing.slug}`)}
+                            >
+                              View item
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
                 {/if}
               {/each}
             </div>
@@ -711,6 +835,77 @@
 
   .orders__deposit { font-family: var(--evx-font-display); font-weight: 500; }
 
+  /* Expanded row + timeline */
+  .orders__group {
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+  .orders__group:last-child { border-bottom: none; }
+  .orders__row { border-bottom: none; }
+  .orders__row--open {
+    background: rgba(0,0,0,0.02);
+  }
+  .orders__chev {
+    display: inline-block;
+    margin-left: var(--evx-space-sm);
+    color: var(--evx-ink-soft);
+    font-size: 14px;
+  }
+
+  .orders__expand {
+    padding: var(--evx-space-lg) var(--evx-space-md) var(--evx-space-lg);
+    border-top: 1px solid var(--evx-rule-light);
+    background: rgba(0,0,0,0.02);
+    display: flex; flex-direction: column;
+    gap: var(--evx-space-xl);
+  }
+
+  /* Timeline */
+  .timeline { display: flex; flex-direction: column; gap: var(--evx-space-md); }
+  .timeline__label { color: var(--evx-ink-soft); }
+  .timeline__steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--evx-space-md);
+    position: relative;
+  }
+  .timeline__step {
+    display: flex; flex-direction: column;
+    gap: var(--evx-space-sm);
+    padding-left: var(--evx-space-md);
+    border-left: 2px solid var(--evx-rule-light);
+    opacity: 0.40;
+  }
+  .timeline__step--done { opacity: 1; border-left-color: var(--evx-warm-black); }
+  .timeline__step--active {
+    opacity: 1;
+    border-left-color: var(--evx-fox-orange);
+  }
+  .timeline__dot {
+    width: 8px; height: 8px;
+    background: var(--evx-rule-light);
+    border-radius: 50%;
+    margin-left: -19px;
+    margin-bottom: 2px;
+  }
+  .timeline__step--done .timeline__dot { background: var(--evx-warm-black); }
+  .timeline__step--active .timeline__dot { background: var(--evx-fox-orange); }
+
+  .timeline__body { display: flex; flex-direction: column; gap: 2px; }
+  .timeline__step-label {
+    font-family: var(--evx-font-display);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--evx-warm-black);
+  }
+  .timeline__step-date { color: var(--evx-ink-soft); }
+  .timeline__step-date--pending { color: var(--evx-fox-orange); }
+  .timeline__step-date--upcoming { color: var(--evx-rule-light); }
+
+  /* Actions */
+  .orders__actions { display: flex; flex-direction: column; gap: var(--evx-space-md); }
+  .orders__actions-label { color: var(--evx-ink-soft); }
+  .orders__actions-row { display: flex; flex-wrap: wrap; gap: var(--evx-space-sm); }
+
   .orders__legend {
     display: flex;
     flex-direction: column;
@@ -875,6 +1070,7 @@
     .acct-stats { grid-template-columns: 1fr; }
     .orders__head, .orders__row { grid-template-columns: 1.5fr 120px 80px 100px; }
     .orders__head span:nth-child(5), .orders__row > *:nth-child(5) { display: none; }
+    .timeline__steps { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-md); }
     .profile-row { grid-template-columns: 1fr; }
   }
 
@@ -885,6 +1081,7 @@
     .orders__head, .orders__row { grid-template-columns: 1fr 110px; }
     .orders__head span:nth-child(3), .orders__head span:nth-child(4),
     .orders__row > *:nth-child(3), .orders__row > *:nth-child(4) { display: none; }
+    .timeline__steps { grid-template-columns: 1fr; }
     .activity__row { grid-template-columns: 1fr; }
     .activity__time { font-size: 10px; }
   }

@@ -174,6 +174,120 @@
       </div>
     </section>
 
+    <!-- 05 Buyer Protection Guarantee -->
+    <section class="trust-section">
+      <span class="evx-caption trust-section__num">05 · BUYER PROTECTION GUARANTEE</span>
+      <div class="trust-section__inner">
+        <div class="trust-section__left">
+          <h2 class="trust-section__heading">What's covered. What isn't.</h2>
+          <p class="trust-section__sub">
+            We refund the buyer first, then sort it out with the seller. The guarantee covers the cases
+            below — written plainly so there's no argument about it later.
+          </p>
+        </div>
+
+        <div class="coverage">
+          <!-- Covered -->
+          <div class="coverage__col coverage__col--covered">
+            <span class="evx-label coverage__head">COVERED</span>
+            <ul class="coverage__list">
+              {#each [
+                { t: 'Item not as described', d: 'Material defect, undisclosed damage, wrong reference, missing accessories.' },
+                { t: 'Item not received', d: 'Lost in transit, never shipped, or tracking shows non-delivery after 14 days.' },
+                { t: 'Counterfeit items', d: 'Independent authentication fails — full refund + audit of the seller account.' },
+                { t: 'Seller no-show', d: 'Seller goes dark after deposit. Full refund and credit on your next reservation.' },
+              ] as item}
+                <li class="coverage__item">
+                  <span class="coverage__mark coverage__mark--good">+</span>
+                  <div>
+                    <strong>{item.t}</strong>
+                    <span>{item.d}</span>
+                  </div>
+                </li>
+              {/each}
+            </ul>
+          </div>
+
+          <!-- Not covered -->
+          <div class="coverage__col coverage__col--excluded">
+            <span class="evx-label coverage__head coverage__head--excluded">NOT COVERED</span>
+            <ul class="coverage__list">
+              {#each [
+                { t: 'Buyer\'s remorse', d: 'Changed your mind after delivery and the item matches the listing — that\'s a private resale, not our problem to fix.' },
+                { t: 'Minor cosmetic differences', d: 'Within the seller\'s stated condition. "Excellent" means light hairlines — those aren\'t a defect.' },
+                { t: 'Market value changes', d: 'Price drops or rises after purchase. We\'re not a financial product.' },
+                { t: 'Dispute filed after the window', d: 'Seven days from delivery confirmation. Outside that, the platform stops mediating.' },
+              ] as item}
+                <li class="coverage__item">
+                  <span class="coverage__mark coverage__mark--bad">−</span>
+                  <div>
+                    <strong>{item.t}</strong>
+                    <span>{item.d}</span>
+                  </div>
+                </li>
+              {/each}
+            </ul>
+          </div>
+        </div>
+
+        <div class="resolution">
+          <span class="evx-label resolution__label">RESOLUTION TIMELINE</span>
+          <div class="resolution__row">
+            <div class="resolution__cell">
+              <span class="resolution__num">24h</span>
+              <span class="evx-caption resolution__cell-label">FIRST RESPONSE</span>
+            </div>
+            <div class="resolution__cell">
+              <span class="resolution__num">5d</span>
+              <span class="evx-caption resolution__cell-label">MOST DISPUTES RESOLVED</span>
+            </div>
+            <div class="resolution__cell">
+              <span class="resolution__num">14d</span>
+              <span class="evx-caption resolution__cell-label">COMPLEX CASES (AUTH, FORENSIC)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 How to file a dispute -->
+    <section class="trust-section">
+      <span class="evx-caption trust-section__num">06 · FILING A DISPUTE</span>
+      <div class="trust-section__inner">
+        <div class="trust-section__left">
+          <h2 class="trust-section__heading">How to file.</h2>
+          <p class="trust-section__sub">
+            Three steps. We work in your timezone — Dublin office hours plus Saturday morning cover.
+          </p>
+        </div>
+
+        <ol class="dispute-steps">
+          {#each [
+            { n: '01', t: 'Open a dispute in Messages.', d: 'On the conversation with the seller, click the "Report dispute" link in the thread header. Tell us what happened in plain English — no template required.' },
+            { n: '02', t: 'Send us your evidence.', d: 'Photos of the item as received, the original listing, tracking screenshots, the seller\'s messages. Anything that documents the mismatch.' },
+            { n: '03', t: 'We mediate within 48 hours.', d: 'Both sides see our findings. If the buyer wins, the refund is processed the same day. If the seller wins, the buyer is told why with the evidence.' },
+          ] as step}
+            <li class="dispute-step">
+              <span class="evx-label dispute-step__num">{step.n}</span>
+              <div class="dispute-step__body">
+                <strong class="dispute-step__title">{step.t}</strong>
+                <p class="dispute-step__desc">{step.d}</p>
+              </div>
+            </li>
+          {/each}
+        </ol>
+
+        <div class="dispute-contact">
+          <span class="evx-caption dispute-contact__label">URGENT OR HIGH-VALUE?</span>
+          <p class="dispute-contact__body">
+            Items above €5,000, suspected counterfeit, or anything time-critical —
+            email <a href="mailto:disputes@eirvox.ie" class="dispute-contact__link">disputes@eirvox.ie</a> directly
+            and a senior team member responds within four hours during office hours.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ -->
     <section class="trust-faq">
       <span class="evx-caption trust-section__num">COMMON QUESTIONS</span>
@@ -325,6 +439,125 @@
     line-height: 1.5;
   }
 
+  /* ── 05 Coverage matrix ── */
+  .coverage {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--evx-space-md);
+  }
+
+  .coverage__col {
+    border: 1px solid var(--evx-rule-light);
+    padding: var(--evx-space-lg);
+  }
+  .coverage__col--covered { border-left: 3px solid #4a8c5b; }
+  .coverage__col--excluded { border-left: 3px solid var(--evx-ink-soft); }
+
+  .coverage__head { color: #4a8c5b; display: block; margin-bottom: var(--evx-space-lg); }
+  .coverage__head--excluded { color: var(--evx-ink-soft); }
+
+  .coverage__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-md);
+  }
+  .coverage__item {
+    display: flex;
+    gap: var(--evx-space-md);
+    align-items: flex-start;
+    padding-bottom: var(--evx-space-md);
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+  .coverage__item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .coverage__mark {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--evx-font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .coverage__mark--good { color: #4a8c5b; border: 1.5px solid #4a8c5b; }
+  .coverage__mark--bad { color: var(--evx-ink-soft); border: 1.5px solid var(--evx-ink-soft); }
+
+  .coverage__item strong {
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--evx-warm-black);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .coverage__item span {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--evx-ink-soft);
+    display: block;
+  }
+
+  /* Resolution timeline */
+  .resolution {
+    margin-top: var(--evx-space-xl);
+    padding: var(--evx-space-lg);
+    background: rgba(232,116,44,0.04);
+    border-left: 2px solid var(--evx-fox-orange);
+  }
+  .resolution__label { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-md); }
+  .resolution__row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--evx-space-lg);
+  }
+  .resolution__cell {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .resolution__num {
+    font-family: var(--evx-font-display);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--evx-warm-black);
+    line-height: 1;
+  }
+  .resolution__cell-label { color: var(--evx-ink-soft); line-height: 1.4; }
+
+  /* ── 06 Dispute steps ── */
+  .dispute-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-md);
+  }
+  .dispute-step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: var(--evx-space-lg);
+    padding: var(--evx-space-md);
+    border: 1px solid var(--evx-rule-light);
+  }
+  .dispute-step__num { color: var(--evx-fox-orange); margin-top: 2px; }
+  .dispute-step__body { display: flex; flex-direction: column; gap: var(--evx-space-xs); }
+  .dispute-step__title {
+    font-family: var(--evx-font-display);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--evx-warm-black);
+  }
+  .dispute-step__desc { font-size: 14px; line-height: 1.65; color: var(--evx-ink-soft); }
+
+  .dispute-contact {
+    margin-top: var(--evx-space-lg);
+    padding: var(--evx-space-lg);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  .dispute-contact__label { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-sm); }
+  .dispute-contact__body { font-size: 14px; line-height: 1.7; color: var(--evx-ink-soft); }
+  .dispute-contact__link { color: var(--evx-warm-black); text-decoration: underline; text-underline-offset: 3px; }
+
   .trust-faq {
     padding-top: var(--evx-space-2xl);
     margin-bottom: var(--evx-space-2xl);
@@ -375,6 +608,9 @@
     .trust-section__inner { grid-template-columns: 1fr; }
     .trust-auth__steps { grid-template-columns: 1fr 1fr; }
     .trust-auth__protocol { grid-template-columns: 1fr; }
+    .coverage { grid-template-columns: 1fr; }
+    .resolution__row { grid-template-columns: 1fr; gap: var(--evx-space-md); }
+    .dispute-step { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 767px) {

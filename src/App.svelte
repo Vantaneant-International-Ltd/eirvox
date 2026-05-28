@@ -10,6 +10,8 @@
   import SellerCreate from './routes/SellerCreate.svelte';
   import SellerDashboard from './routes/SellerDashboard.svelte';
   import Reserve from './routes/Reserve.svelte';
+  import ReserveCheckout from './routes/ReserveCheckout.svelte';
+  import ReserveDrive from './routes/ReserveDrive.svelte';
   import Trust from './routes/Trust.svelte';
   import About from './routes/About.svelte';
   import Login from './routes/Login.svelte';
@@ -31,6 +33,8 @@
 
   $: listingParams = matchRoute('/listing/:slug', path);
   $: driveParams = matchRoute('/drive/:slug', path);
+  $: reserveDriveParams = matchRoute('/reserve/drive/:slug', path);
+  $: reserveParams = matchRoute('/reserve/:slug', path);
   $: categoryMatch = CATEGORIES.find(c => path === `/${c}`) ?? null;
 </script>
 
@@ -52,8 +56,12 @@
   <SellerDashboard />
 {:else if path === '/sell'}
   <Sell />
+{:else if reserveDriveParams}
+  <ReserveDrive issueSlug={reserveDriveParams.slug} />
 {:else if path === '/reserve'}
   <Reserve />
+{:else if reserveParams}
+  <ReserveCheckout listingSlug={reserveParams.slug} />
 {:else if path === '/trust'}
   <Trust />
 {:else if path === '/about'}

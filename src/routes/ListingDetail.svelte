@@ -123,11 +123,11 @@
           <!-- CTA block -->
           <div class="panel__ctas">
             {#if listing.isDrive}
-              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={() => navigate('/drive/003-mercedes-amg-gt')}>
+              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={() => navigate(`/reserve/drive/${listing.driveIssue ? listing.driveIssue.toLowerCase().replace('drv-', '00') : '003'}-mercedes-amg-gt`)}>
                 Reserve allocation — €49 deposit
               </button>
             {:else}
-              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={() => navigate('/reserve')}>
+              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={() => navigate(`/reserve/${listing.slug}`)}>
                 Reserve for €49
               </button>
             {/if}
@@ -135,6 +135,45 @@
               Message seller
             </button>
           </div>
+
+          <!-- Expandable: How reservation works -->
+          <details class="hrw">
+            <summary class="hrw__summary">
+              <span class="hrw__icon" aria-hidden="true">+</span>
+              <span class="hrw__title">How reservation works</span>
+            </summary>
+            <ol class="hrw__steps">
+              <li class="hrw__step">
+                <span class="evx-label hrw__num">01</span>
+                <span class="hrw__step-text">
+                  <strong>Pay €49 deposit.</strong>
+                  We email a Revolut payment link — usually within the hour.
+                </span>
+              </li>
+              <li class="hrw__step">
+                <span class="evx-label hrw__num">02</span>
+                <span class="hrw__step-text">
+                  <strong>We hold the item.</strong>
+                  Off the market while you arrange the deal with {seller.name}.
+                </span>
+              </li>
+              <li class="hrw__step">
+                <span class="evx-label hrw__num">03</span>
+                <span class="hrw__step-text">
+                  <strong>You agree the deal in Messages.</strong>
+                  Price, viewing, delivery — direct with the seller.
+                </span>
+              </li>
+              <li class="hrw__step">
+                <span class="evx-label hrw__num">04</span>
+                <span class="hrw__step-text">
+                  <strong>Deposit credits against balance.</strong>
+                  €49 deducted from your final amount. Full refund if the deal doesn't proceed.
+                </span>
+              </li>
+            </ol>
+            <a class="hrw__more evx-caption" href="#/trust">Full buyer protection details →</a>
+          </details>
 
           <!-- Trust rows -->
           <div class="panel__trust">
@@ -519,6 +558,69 @@
 
   .panel__cta-main { width: 100%; justify-content: space-between; }
   .panel__cta-offer { width: 100%; }
+
+  /* How reservation works — expandable */
+  .hrw {
+    margin-top: var(--evx-space-md);
+    border-top: 1px solid var(--evx-rule-light);
+    padding-top: var(--evx-space-md);
+  }
+  .hrw__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--evx-space-sm);
+    cursor: pointer;
+    list-style: none;
+    padding: var(--evx-space-xs) 0;
+    color: var(--evx-warm-black);
+    font-family: var(--evx-font-display);
+    font-size: 13px;
+    font-weight: 500;
+    transition: var(--evx-transition);
+  }
+  .hrw__summary::-webkit-details-marker { display: none; }
+  .hrw__summary:hover { opacity: 0.70; }
+  .hrw__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border: 1px solid var(--evx-rule-light);
+    color: var(--evx-ink-soft);
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    line-height: 1;
+    transition: transform 200ms ease;
+  }
+  .hrw[open] .hrw__icon { transform: rotate(45deg); }
+  .hrw__steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: var(--evx-space-md);
+    padding-top: var(--evx-space-md);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  .hrw__step {
+    display: flex;
+    gap: var(--evx-space-md);
+    padding: var(--evx-space-sm) 0;
+    border-bottom: 1px solid var(--evx-rule-light);
+    align-items: flex-start;
+  }
+  .hrw__step:last-child { border-bottom: none; }
+  .hrw__num { color: var(--evx-fox-orange); flex-shrink: 0; margin-top: 2px; }
+  .hrw__step-text { font-size: 13px; line-height: 1.65; color: var(--evx-ink-soft); }
+  .hrw__step-text strong { color: var(--evx-warm-black); font-weight: 500; }
+  .hrw__more {
+    display: inline-block;
+    margin-top: var(--evx-space-md);
+    color: var(--evx-warm-black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: var(--evx-transition);
+  }
+  .hrw__more:hover { opacity: 0.70; }
 
   .panel__trust {
     display: flex;
