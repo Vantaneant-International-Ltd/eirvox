@@ -1,57 +1,95 @@
 <script lang="ts">
+  import { currentPath, navigate, isActive } from './router';
+
   let menuOpen = false;
+
+  const categories = [
+    { label: 'Automotive', path: '/automotive' },
+    { label: 'Watches', path: '/watches' },
+    { label: 'Fashion', path: '/fashion' },
+    { label: 'Tech', path: '/tech' },
+  ];
+
+  function handleNav(path: string) {
+    navigate(path);
+    menuOpen = false;
+  }
 </script>
 
 <header class="nav">
   <div class="nav__inner page-container">
+    <!-- Wordmark -->
     <div class="nav__left">
-      <a href="/#/" class="nav__wordmark">
-        <svg class="nav__mark" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="10.5" stroke="#E8742C" stroke-width="1.5"/>
-          <circle cx="12" cy="12" r="5" fill="#E8742C"/>
-        </svg>
-        <span>Éirvox</span>
-      </a>
+      <button class="nav__wordmark" on:click={() => handleNav('/')}>
+        <span class="nav__e">É</span><span class="nav__rest">irvox</span>
+      </button>
     </div>
 
+    <!-- Search -->
     <div class="nav__centre">
-      <input
-        type="search"
-        class="nav__search evx-caption"
-        placeholder="Search the house…"
-        aria-label="Search"
-      />
+      <div class="nav__search-wrap">
+        <svg class="nav__search-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="8.5" y1="8.5" x2="11" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <input
+          type="search"
+          class="nav__search evx-caption"
+          placeholder="Search listings — make, model, category…"
+          aria-label="Search listings"
+        />
+      </div>
     </div>
 
-    <nav class="nav__right">
+    <!-- Nav links + actions -->
+    <nav class="nav__right" aria-label="Main navigation">
       <ul class="nav__links">
-        <li><a href="/#/automotive" class="nav__link">Buy</a></li>
-        <li><a href="/#/enquire" class="nav__link">Sell</a></li>
-        <li><a href="/#/automotive" class="nav__link">Categories</a></li>
-        <li><a href="/#/about" class="nav__link">About</a></li>
+        {#each categories as cat}
+          <li>
+            <button
+              class="nav__link"
+              class:nav__link--active={isActive(cat.path, $currentPath)}
+              on:click={() => handleNav(cat.path)}
+            >
+              {cat.label}
+            </button>
+          </li>
+        {/each}
       </ul>
-      <a href="/#/" class="nav__login">Log in</a>
+
+      <button class="evx-btn evx-btn--primary evx-btn--sm nav__sell" on:click={() => handleNav('/sell')}>
+        Sell
+      </button>
+
+      <button class="nav__login" on:click={() => handleNav('/login')}>Log in</button>
+
+      <!-- Mobile hamburger -->
       <button
         class="nav__hamburger"
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
         on:click={() => menuOpen = !menuOpen}
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        <span class="nav__bar" class:nav__bar--open={menuOpen}></span>
+        <span class="nav__bar" class:nav__bar--open={menuOpen}></span>
       </button>
     </nav>
   </div>
 
+  <!-- Mobile drawer -->
   {#if menuOpen}
-    <div class="nav__mobile-menu">
-      <ul class="nav__mobile-links">
-        <li><a href="/#/automotive" on:click={() => menuOpen = false}>Buy</a></li>
-        <li><a href="/#/enquire" on:click={() => menuOpen = false}>Sell</a></li>
-        <li><a href="/#/automotive" on:click={() => menuOpen = false}>Categories</a></li>
-        <li><a href="/#/about" on:click={() => menuOpen = false}>About</a></li>
-        <li><a href="/#/" on:click={() => menuOpen = false}>Log in</a></li>
+    <div class="nav__drawer" role="navigation" aria-label="Mobile navigation">
+      <ul class="nav__drawer-links">
+        {#each categories as cat}
+          <li>
+            <button class="nav__drawer-link" on:click={() => handleNav(cat.path)}>
+              {cat.label}
+            </button>
+          </li>
+        {/each}
+        <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
+        <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/sell')}>Sell on Éirvox</button></li>
+        <li><button class="nav__drawer-link" on:click={() => handleNav('/login')}>Log in</button></li>
       </ul>
     </div>
   {/if}
@@ -70,61 +108,66 @@
     display: flex;
     align-items: center;
     gap: var(--evx-space-xl);
-    padding-top: var(--evx-space-md);
-    padding-bottom: var(--evx-space-md);
+    height: 60px;
   }
 
-  .nav__left {
-    flex-shrink: 0;
-  }
+  .nav__left { flex-shrink: 0; }
 
   .nav__wordmark {
     display: flex;
-    align-items: center;
-    gap: var(--evx-space-sm);
-    font-family: 'Inter Tight', sans-serif;
-    font-weight: 500;
-    font-size: 20px;
+    align-items: baseline;
+    gap: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .nav__e {
+    font-family: var(--evx-font-editorial);
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 400;
     color: var(--evx-warm-black);
-    text-decoration: none;
     letter-spacing: -0.01em;
   }
 
-  .nav__mark {
-    flex-shrink: 0;
+  .nav__rest {
+    font-family: var(--evx-font-display);
+    font-weight: 500;
+    font-size: 20px;
+    color: var(--evx-warm-black);
+    letter-spacing: -0.015em;
   }
 
   .nav__centre {
     flex: 1;
-    max-width: 480px;
+    max-width: 400px;
   }
 
+  .nav__search-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--evx-space-sm);
+    border-bottom: 1px solid var(--evx-rule-light);
+    padding-bottom: 6px;
+  }
+
+  .nav__search-icon { color: var(--evx-ink-soft); flex-shrink: 0; }
+
   .nav__search {
-    width: 100%;
+    flex: 1;
     background: transparent;
     border: none;
-    border-bottom: 1px solid var(--evx-rule-light);
-    padding: var(--evx-space-xs) 0;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.02em;
+    padding: 0;
     color: var(--evx-warm-black);
     outline: none;
   }
 
-  .nav__search::placeholder {
-    color: var(--evx-ink-soft);
-  }
-
-  .nav__search:focus {
-    border-bottom-color: var(--evx-warm-black);
-  }
-
-  /* Remove default search styling */
+  .nav__search::placeholder { color: var(--evx-ink-soft); }
   .nav__search::-webkit-search-decoration,
-  .nav__search::-webkit-search-cancel-button {
-    -webkit-appearance: none;
-  }
+  .nav__search::-webkit-search-cancel-button { -webkit-appearance: none; }
 
   .nav__right {
     display: flex;
@@ -137,85 +180,112 @@
   .nav__links {
     display: flex;
     gap: var(--evx-space-xl);
-    list-style: none;
   }
 
   .nav__link {
-    font-family: 'Inter Tight', sans-serif;
+    font-family: var(--evx-font-display);
     font-size: 14px;
     font-weight: 400;
     color: var(--evx-warm-black);
-    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     transition: var(--evx-transition);
+    position: relative;
   }
 
-  .nav__link:hover {
-    opacity: 0.60;
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--evx-fox-orange);
+    transform: scaleX(0);
+    transition: transform 200ms ease;
   }
+
+  .nav__link--active::after { transform: scaleX(1); }
+  .nav__link:hover { opacity: 0.60; }
+
+  .nav__sell { }
 
   .nav__login {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 16px;
+    font-family: var(--evx-font-display);
+    font-size: 14px;
     font-weight: 400;
     color: var(--evx-warm-black);
-    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
     transition: var(--evx-transition);
   }
 
-  .nav__login:hover {
-    opacity: 0.60;
-  }
+  .nav__login:hover { opacity: 0.60; }
 
   .nav__hamburger {
     display: none;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     padding: 4px;
     cursor: pointer;
     background: none;
     border: none;
   }
 
-  .nav__hamburger span {
+  .nav__bar {
     display: block;
     width: 20px;
     height: 1px;
     background: var(--evx-warm-black);
+    transition: all 200ms ease;
+    transform-origin: center;
   }
 
-  .nav__mobile-menu {
+  .nav__drawer {
     background: var(--evx-paper);
     border-top: 1px solid var(--evx-rule-light);
-    padding: var(--evx-space-lg) var(--evx-space-md);
+    padding: var(--evx-space-xl) var(--evx-page-margin);
   }
 
-  .nav__mobile-links {
-    list-style: none;
+  .nav__drawer-links {
     display: flex;
     flex-direction: column;
     gap: var(--evx-space-lg);
   }
 
-  .nav__mobile-links a {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 18px;
+  .nav__drawer-link {
+    font-family: var(--evx-font-display);
+    font-size: 20px;
     font-weight: 400;
     color: var(--evx-warm-black);
-    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--evx-transition);
+  }
+
+  .nav__drawer-link:hover { opacity: 0.60; }
+
+  .nav__drawer-link--sell {
+    color: var(--evx-fox-orange);
+  }
+
+  @media (max-width: 1023px) {
+    .nav__centre { max-width: 280px; }
   }
 
   @media (max-width: 767px) {
     .nav__links,
-    .nav__login {
-      display: none;
-    }
+    .nav__login,
+    .nav__sell,
+    .nav__centre { display: none; }
 
-    .nav__hamburger {
-      display: flex;
-    }
-
-    .nav__centre {
-      display: none;
-    }
+    .nav__hamburger { display: flex; }
   }
 </style>
