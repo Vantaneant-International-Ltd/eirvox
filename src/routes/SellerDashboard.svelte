@@ -5,6 +5,7 @@
   import { navigate, currentPath } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import { auth } from '../lib/auth';
+  import { supabase, withTimeout } from '../lib/supabase';
   import {
     getMySeller,
     updateSellerProfile,
@@ -40,6 +41,8 @@
   let listings: ListingWithExtras[] = [];
   let reservations: ReservationWithListing[] = [];
   let loading = true;
+  type LoadStatus = 'ok' | 'no-seller' | 'db-error' | 'timeout';
+  let loadStatus: LoadStatus = 'ok';
   let loadError = '';
 
   // Profile-tab state
@@ -56,20 +59,75 @@
 
   async function load() {
     loading = true;
+    loadStatus = 'ok';
     loadError = '';
 
-    seller = await getMySeller();
-    if (!seller) {
-      loadError = 'No seller record found.';
+    const user = $auth.user;
+    if (!user) {
+      loadStatus = 'db-error';
+      loadError = 'No signed-in session.';
       loading = false;
       return;
     }
 
-    [stats, listings, reservations] = await Promise.all([
-      getSellerStats(seller.id),
-      getSellerListings(seller.id),
-      getSellerReservations(seller.id),
+    // 1. Fetch the seller row with a 10s timeout. Do it directly so we
+    //    can distinguish three outcomes: timeout · DB error · no row.
+    const result = await withTimeout(
+      supabase
+        .from('sellers')
+        .select('*')
+        .eq('profile_id', user.id)
+        .maybeSingle(),
+      10_000,
+      'sellers'
+    );
+
+    if (!result.ok) {
+      loading = false;
+      if (result.reason === 'timeout') {
+        loadStatus = 'timeout';
+        loadError = 'Supabase didn\'t reply in 10 seconds — most often the PostgREST schema cache is stale. Run supabase/v04-rls-reset.sql then refresh.';
+      } else {
+        loadStatus = 'db-error';
+        loadError = result.error instanceof Error ? result.error.message : 'Database error.';
+      }
+      return;
+    }
+
+    const { data, error } = result.value;
+    if (error) {
+      loading = false;
+      loadStatus = 'db-error';
+      const m = (error.message ?? '').toLowerCase();
+      if (m.includes('infinite recursion')) {
+        loadError = 'A profiles RLS policy is recursing. Run supabase/v04-rls-reset.sql in Supabase SQL Editor — it drops every policy on the affected tables and rebuilds the clean set.';
+      } else if (m.includes('does not exist') || m.includes('schema cache')) {
+        loadError = 'A required table is missing. Run supabase/v04-marketplace-schema.sql first.';
+      } else {
+        loadError = error.message;
+      }
+      return;
+    }
+
+    seller = (data as Seller | null) ?? null;
+
+    // No seller row yet — this is a normal state for buyers who haven't applied.
+    if (!seller) {
+      loading = false;
+      loadStatus = 'no-seller';
+      return;
+    }
+
+    // 2. Seller exists — fetch stats + listings + reservations in parallel,
+    //    each with its own timeout so one stuck query doesn't block the page.
+    const [statsR, listingsR, resR] = await Promise.all([
+      withTimeout(Promise.resolve(getSellerStats(seller.id)), 10_000, 'stats'),
+      withTimeout(Promise.resolve(getSellerListings(seller.id)), 10_000, 'listings'),
+      withTimeout(Promise.resolve(getSellerReservations(seller.id)), 10_000, 'reservations'),
     ]);
+    if (statsR.ok)     stats        = statsR.value;
+    if (listingsR.ok)  listings     = listingsR.value;
+    if (resR.ok)       reservations = resR.value;
 
     // Seed profile editor
     editTradingName = seller.trading_name ?? '';
@@ -229,24 +287,65 @@
       {/each}
     </div>
 
-    <!-- ── Loading / error ── -->
-    {#if loading && !seller}
+    <!-- ── Loading ── -->
+    {#if loading}
       <div class="dash-state">
         <span class="evx-label">LOADING…</span>
         <p>Fetching your seller record.</p>
       </div>
 
-    {:else if loadError}
-      <div class="dash-state dash-state--err">
-        <span class="evx-label">ERROR</span>
-        <p>{loadError}</p>
+    <!-- ── No seller record (normal for buyers) ── -->
+    {:else if loadStatus === 'no-seller'}
+      <div class="dash-state dash-state--pending">
+        <span class="evx-label">NOT A SELLER YET</span>
+        <h2 class="dash-state__h">You haven't applied to sell.</h2>
+        <p>
+          ÉIRVOX sellers are admitted by cohort. Cohort 03 is open until 14 June 2026.
+          Application takes about three minutes — we review every one within 48 hours.
+        </p>
         <div class="dash-state__actions">
-          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/sell/apply')}>
+          <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
             Apply to sell →
+          </button>
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell')}>
+            Read the tiers
+          </button>
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/account')}>
+            Your account
           </button>
         </div>
       </div>
 
+    <!-- ── Timeout (probably stale PostgREST cache) ── -->
+    {:else if loadStatus === 'timeout'}
+      <div class="dash-state dash-state--err">
+        <span class="evx-label">SUPABASE TIMED OUT</span>
+        <h2 class="dash-state__h">The database didn't reply in time.</h2>
+        <p>{loadError}</p>
+        <div class="dash-state__actions">
+          <button class="evx-btn evx-btn--primary" on:click={load}>Retry</button>
+          <a class="evx-btn evx-btn--ghost"
+             href="https://github.com/Vantaneant-International-Ltd/eirvox/blob/renato/supabase/v04-rls-reset.sql"
+             target="_blank" rel="noopener noreferrer"
+             style="text-decoration:none;">View the SQL fix →</a>
+        </div>
+      </div>
+
+    <!-- ── DB error ── -->
+    {:else if loadStatus === 'db-error'}
+      <div class="dash-state dash-state--err">
+        <span class="evx-label">DATABASE ERROR</span>
+        <h2 class="dash-state__h">We couldn't load your seller record.</h2>
+        <p>{loadError}</p>
+        <div class="dash-state__actions">
+          <button class="evx-btn evx-btn--primary" on:click={load}>Retry</button>
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/apply')}>
+            Apply to sell
+          </button>
+        </div>
+      </div>
+
+    <!-- ── Pending review ── -->
     {:else if seller && seller.status === 'pending'}
       <div class="dash-state dash-state--pending">
         <span class="evx-label">UNDER REVIEW</span>

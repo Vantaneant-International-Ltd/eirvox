@@ -5,7 +5,8 @@
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import { auth } from '../lib/auth';
-  import { getMySeller, type Seller } from '../lib/sellers';
+  import { supabase, withTimeout } from '../lib/supabase';
+  import { type Seller } from '../lib/sellers';
   import {
     getCategories,
     createListing,
@@ -24,6 +25,9 @@
   let categories: Category[] = [];
   let categoriesError = '';
   let booting = true;
+  type BootStatus = 'ok' | 'no-seller' | 'not-approved' | 'db-error' | 'timeout';
+  let bootStatus: BootStatus = 'ok';
+  let bootError = '';
 
   onMount(async () => {
     applySeo(seo.sellCreate());
@@ -42,13 +46,54 @@
       return;
     }
 
-    seller = await getMySeller();
-    if (!seller) {
+    // Fetch the seller row with a 10-second timeout.
+    const sellerR = await withTimeout(
+      supabase
+        .from('sellers')
+        .select('*')
+        .eq('profile_id', a.user.id)
+        .maybeSingle(),
+      10_000,
+      'sellers'
+    );
+
+    if (!sellerR.ok) {
+      bootStatus = sellerR.reason === 'timeout' ? 'timeout' : 'db-error';
+      bootError = sellerR.reason === 'timeout'
+        ? 'Supabase didn\'t reply in 10 seconds. Run supabase/v04-rls-reset.sql to clear the schema cache.'
+        : 'Database error.';
       booting = false;
       return;
     }
 
-    categories = await getCategories();
+    if (sellerR.value.error) {
+      const m = (sellerR.value.error.message ?? '').toLowerCase();
+      bootStatus = 'db-error';
+      bootError = m.includes('infinite recursion')
+        ? 'A profiles RLS policy is recursing. Run supabase/v04-rls-reset.sql in Supabase SQL Editor.'
+        : (m.includes('does not exist') || m.includes('schema cache'))
+          ? 'A required table is missing. Run supabase/v04-marketplace-schema.sql.'
+          : sellerR.value.error.message;
+      booting = false;
+      return;
+    }
+
+    seller = (sellerR.value.data as Seller | null) ?? null;
+    if (!seller) {
+      bootStatus = 'no-seller';
+      booting = false;
+      return;
+    }
+    if (seller.status !== 'approved') {
+      bootStatus = 'not-approved';
+      booting = false;
+      return;
+    }
+
+    // Fetch categories (also timeout-protected)
+    const catR = await withTimeout(Promise.resolve(getCategories()), 10_000, 'categories');
+    categories = catR.ok ? catR.value : [];
+
     if (categories.length === 0) {
       categoriesError = 'No categories were returned from Supabase. Run supabase/v04-marketplace-schema.sql to seed them.';
     }
@@ -269,7 +314,25 @@
         <p>Fetching your seller record and categories.</p>
       </div>
 
-    {:else if !seller}
+    {:else if bootStatus === 'timeout' || bootStatus === 'db-error'}
+      <div class="cs-state cs-state--err">
+        <span class="evx-label">
+          {bootStatus === 'timeout' ? 'SUPABASE TIMED OUT' : 'DATABASE ERROR'}
+        </span>
+        <h2>We couldn't reach your seller record.</h2>
+        <p>{bootError}</p>
+        <div class="cs-state__actions">
+          <a class="evx-btn evx-btn--primary"
+             href="https://github.com/Vantaneant-International-Ltd/eirvox/blob/renato/supabase/v04-rls-reset.sql"
+             target="_blank" rel="noopener noreferrer"
+             style="text-decoration:none;">View the SQL fix →</a>
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/dashboard')}>
+            Back to dashboard
+          </button>
+        </div>
+      </div>
+
+    {:else if bootStatus === 'no-seller'}
       <div class="cs-state cs-state--err">
         <span class="evx-label">NOT A SELLER YET</span>
         <h2>You need an approved seller account to create listings.</h2>
@@ -281,7 +344,7 @@
         </div>
       </div>
 
-    {:else if seller.status !== 'approved'}
+    {:else if bootStatus === 'not-approved' && seller}
       <div class="cs-state">
         <span class="evx-label">PENDING APPROVAL</span>
         <h2>Your seller account is {seller.status}.</h2>

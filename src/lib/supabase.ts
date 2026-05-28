@@ -54,6 +54,38 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
   return data as Profile | null;
 }
 
+/** Race a promise against a timeout. Returns a Result-style object so
+ *  callers can present a sensible UI instead of a forever-spinner.
+ *  Common cause of timeouts: PostgREST schema cache out of sync after
+ *  RLS policy changes — run supabase/v04-rls-reset.sql to clear. */
+export async function withTimeout<T>(
+  promise: PromiseLike<T>,
+  ms = 10_000,
+  label = 'query'
+): Promise<{ ok: true; value: T } | { ok: false; reason: 'timeout' | 'error'; error?: unknown }> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const value = await Promise.race<T>([
+      promise as Promise<T>,
+      new Promise<T>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`Timeout (${ms}ms) waiting for ${label}`)),
+          ms
+        );
+      }),
+    ]);
+    return { ok: true, value };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg.toLowerCase().includes('timeout')) {
+      return { ok: false, reason: 'timeout' };
+    }
+    return { ok: false, reason: 'error', error: e };
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 /** Update a profile. Caller must be the owner (enforced by RLS). */
 export async function updateProfile(
   userId: string,
