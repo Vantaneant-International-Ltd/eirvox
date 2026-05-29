@@ -3,15 +3,20 @@
   import { currentPath, navigate, isActive } from '../lib/router';
   import { auth, signOut } from '../lib/auth';
   import { getAdminStats, type AdminStats } from '../lib/admin';
+  import { getWaitlistCount } from '../lib/waitlist';
 
   export let title: string = 'Admin';
 
   // Pending badges — refresh on mount and on path change so each
   // navigation update the sidebar counts.
   let stats: AdminStats | null = null;
+  let waitlistCount = 0;
 
   async function refreshStats() {
-    stats = await getAdminStats();
+    [stats, waitlistCount] = await Promise.all([
+      getAdminStats(),
+      getWaitlistCount(),
+    ]);
   }
 
   onMount(refreshStats);
@@ -20,17 +25,25 @@
   $: profile = $auth.profile;
   $: user = $auth.user;
 
-  // Sidebar nav items
-  const NAV: Array<{ path: string; label: string; badgeKey?: keyof AdminStats }> = [
+  // Sidebar nav items. `badgeSource` resolves to a number at render time.
+  type BadgeSource = keyof AdminStats | 'waitlist';
+  const NAV: Array<{ path: string; label: string; badgeSource?: BadgeSource }> = [
     { path: '/admin',               label: 'Dashboard' },
-    { path: '/admin/listings',      label: 'Listings',      badgeKey: 'pending_listings' },
-    { path: '/admin/sellers',       label: 'Sellers',       badgeKey: 'pending_sellers' },
+    { path: '/admin/listings',      label: 'Listings',      badgeSource: 'pending_listings' },
+    { path: '/admin/sellers',       label: 'Sellers',       badgeSource: 'pending_sellers' },
     { path: '/admin/reservations',  label: 'Reservations' },
-    { path: '/admin/trade',         label: 'TRADE',         badgeKey: 'pending_trade' },
+    { path: '/admin/trade',         label: 'TRADE',         badgeSource: 'pending_trade' },
     { path: '/admin/users',         label: 'Users' },
+    { path: '/admin/waitlist',      label: 'Waitlist',      badgeSource: 'waitlist' },
     { path: '/admin/categories',    label: 'Categories' },
     { path: '/admin/settings',      label: 'Settings' },
   ];
+
+  function badgeValue(source: BadgeSource | undefined): number {
+    if (!source) return 0;
+    if (source === 'waitlist') return waitlistCount;
+    return stats?.[source] ?? 0;
+  }
 
   function active(p: string): boolean {
     if (p === '/admin') return $currentPath === '/admin';
@@ -56,14 +69,14 @@
 
     <nav class="admin-sidebar__nav" aria-label="Admin navigation">
       {#each NAV as item}
-        {@const badge = item.badgeKey && stats ? stats[item.badgeKey] : 0}
+        {@const badge = badgeValue(item.badgeSource)}
         <a
           href={`#${item.path}`}
           class="admin-nav-link"
           class:is-active={active(item.path)}
         >
           <span class="admin-nav-link__label">{item.label}</span>
-          {#if badge && badge > 0}
+          {#if badge > 0}
             <span class="admin-nav-link__badge">{badge}</span>
           {/if}
         </a>
