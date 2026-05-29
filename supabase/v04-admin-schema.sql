@@ -245,37 +245,43 @@ UPDATE public.reservations
 --     reservations/tradespeople for the admin dashboard feed.
 -- =============================================================
 
-CREATE OR REPLACE VIEW public.admin_activity_recent AS
+-- NOTE: status columns across the four source tables may be different
+-- enum types (listing_status, seller_status, etc.) depending on how
+-- earlier schema runs created them. UNION ALL needs one shared type,
+-- so we cast every status to text. Same for the label column.
+
+DROP VIEW IF EXISTS public.admin_activity_recent;
+CREATE VIEW public.admin_activity_recent AS
   SELECT
-    'listing'::text  AS kind,
-    l.id             AS ref_id,
-    l.title          AS label,
-    l.status         AS status,
-    l.created_at     AS at
+    'listing'::text          AS kind,
+    l.id                     AS ref_id,
+    l.title::text            AS label,
+    l.status::text           AS status,
+    l.created_at             AS at
   FROM public.listings l
-  WHERE l.status != 'removed'
+  WHERE l.status::text != 'removed'
   UNION ALL
   SELECT
     'seller'::text,
     s.id,
-    s.trading_name,
-    s.status,
+    s.trading_name::text,
+    s.status::text,
     s.created_at
   FROM public.sellers s
   UNION ALL
   SELECT
     'reservation'::text,
     r.id,
-    coalesce(r.reference, 'EVX-' || upper(substr(replace(r.id::text, '-', ''), 1, 8))),
-    r.status,
+    coalesce(r.reference, 'EVX-' || upper(substr(replace(r.id::text, '-', ''), 1, 8)))::text,
+    r.status::text,
     r.reserved_at
   FROM public.reservations r
   UNION ALL
   SELECT
     'tradesperson'::text,
     t.id,
-    t.name,
-    t.status,
+    t.name::text,
+    t.status::text,
     t.created_at
   FROM public.tradespeople t;
 
