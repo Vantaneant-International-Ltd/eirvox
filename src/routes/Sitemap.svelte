@@ -4,30 +4,37 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
-  import { categories, listings } from '../data/listings';
-  import { conversations } from '../data/user';
+  import { getCategories, getRecentListings, type Category, type ListingWithExtras } from '../lib/api';
 
-  onMount(() => applySeo(seo.sitemap()));
+  let categories: Category[] = [];
+  let sampleListings: ListingWithExtras[] = [];
 
-  const marketplace = [
+  onMount(async () => {
+    applySeo(seo.sitemap());
+    [categories, sampleListings] = await Promise.all([
+      getCategories(),
+      getRecentListings(8),
+    ]);
+  });
+
+  $: marketplace = [
     { path: '/',                 label: 'Home',                  desc: 'Marketplace landing — DRIVE hero, featured, recent.' },
     ...categories.map(c => ({
       path: `/${c.slug}`,
-      label: c.label,
-      desc: `${c.description.split('.')[0]}.`,
+      label: c.name,
+      desc: c.description ? `${c.description.split('.')[0]}.` : '',
     })),
   ];
 
   const drive = [
-    { path: '/drive', label: 'DRIVE — all issues', desc: 'Issue index. Currently open: 003. Upcoming: 004.' },
-    { path: '/drive/003-mercedes-amg-gt', label: 'DRIVE 003 — Mercedes-AMG GT', desc: 'Issue 003. Carbon steering wheel. 5 of 8 remaining.' },
+    { path: '/drive', label: 'DRIVE — all issues', desc: 'Issue index. House-produced enthusiast objects.' },
   ];
 
   const seller = [
     { path: '/sell',            label: 'Sell on Éirvox',       desc: 'Tier comparison · cohort schedule · what we look for.' },
     { path: '/sell/apply',      label: 'Apply to sell',         desc: 'Five-step application for Cohort 03.' },
     { path: '/sell/create',     label: 'Create a listing',      desc: 'Six-step listing flow.' },
-    { path: '/sell/dashboard',  label: 'Seller dashboard',      desc: 'Preview of the seller dashboard.' },
+    { path: '/sell/dashboard',  label: 'Seller dashboard',      desc: 'Manage listings + reservations.' },
   ];
 
   const buyer = [
@@ -35,14 +42,18 @@
     { path: '/account/orders',    label: 'Reservations',      desc: 'Expandable timeline + per-status actions.' },
     { path: '/account/saved',     label: 'Saved items',       desc: 'Listings you\'ve kept for later.' },
     { path: '/account/settings',  label: 'Settings',          desc: 'Profile · notifications · account actions.' },
-    { path: '/messages',          label: 'Messages',          desc: `${conversations.length} conversations.` },
-    { path: '/login',             label: 'Sign in',           desc: 'Magic-link sign-in.' },
+    { path: '/messages',          label: 'Messages',          desc: 'Conversations with sellers.' },
+    { path: '/login',             label: 'Sign in',           desc: 'Email + password sign-in.' },
   ];
 
   const transactional = [
     { path: '/reserve',                                label: 'How reservations work',     desc: 'The explainer page — €49 deposit walkthrough.' },
-    { path: '/reserve/tudor-black-bay-58',              label: 'Reserve · marketplace item', desc: 'Sample 3-step checkout: Tudor Black Bay 58.' },
-    { path: '/reserve/drive/003-mercedes-amg-gt',       label: 'Reserve · DRIVE allocation', desc: 'Sample DRIVE allocation checkout.' },
+    { path: '/search',                                 label: 'Search',                    desc: 'Search listings + tradespeople.' },
+  ];
+
+  const trade = [
+    { path: '/trade',           label: 'TRADE',                 desc: 'Verified tradespeople directory.' },
+    { path: '/trade/apply',     label: 'Apply to TRADE',        desc: 'Application for tradespeople.' },
   ];
 
   const trust = [
@@ -52,17 +63,14 @@
 
   const utility = [
     { path: '/sitemap', label: 'Sitemap (this page)',  desc: 'Every page on the platform.' },
-    { path: '/404',     label: '404 example',          desc: 'Not found state — try any unknown route.' },
   ];
 
-  // Most-visited listings sample
-  const sampleListings = listings.slice(0, 8);
-
-  const sections = [
+  $: sections = [
     { title: 'Marketplace', rows: marketplace },
     { title: 'DRIVE',       rows: drive },
     { title: 'Sellers',     rows: seller },
     { title: 'Account',     rows: buyer },
+    { title: 'TRADE',       rows: trade },
     { title: 'Transactional', rows: transactional },
     { title: 'House',       rows: trust },
     { title: 'Utility',     rows: utility },
@@ -103,19 +111,27 @@
 
       <!-- Sample listings -->
       <section class="sm-section">
-        <h2 class="sm-section__title">Sample listings ({listings.length} total)</h2>
-        <ul class="sm-rows">
-          {#each sampleListings as l}
-            <li class="sm-row">
-              <button class="sm-row__link" on:click={() => navigate(`/listing/${l.slug}`)}>
-                <span class="evx-caption sm-row__path">/listing/{l.slug}</span>
-                <span class="sm-row__label">{l.title}</span>
-                <span class="sm-row__desc">{l.subcategory} · {l.city}</span>
-              </button>
-            </li>
-          {/each}
-        </ul>
-        <button class="evx-caption sm-section__more" on:click={() => navigate('/automotive')}>
+        <h2 class="sm-section__title">Recent listings</h2>
+        {#if sampleListings.length === 0}
+          <p style="color: var(--evx-ink-soft); font-size: 13px;">
+            No listings yet — they'll appear here as soon as Cohort 03 sellers post their first.
+          </p>
+        {:else}
+          <ul class="sm-rows">
+            {#each sampleListings as l (l.id)}
+              <li class="sm-row">
+                <button class="sm-row__link" on:click={() => navigate(`/listing/${l.slug ?? l.id}`)}>
+                  <span class="evx-caption sm-row__path">/listing/{l.slug ?? l.id}</span>
+                  <span class="sm-row__label">{l.title}</span>
+                  <span class="sm-row__desc">
+                    {l.subcategory ?? l.category_slug ?? ''}{(l.subcategory || l.category_slug) && l.city ? ' · ' : ''}{l.city ?? ''}
+                  </span>
+                </button>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+        <button class="evx-caption sm-section__more" on:click={() => navigate('/')}>
           See all categories →
         </button>
       </section>

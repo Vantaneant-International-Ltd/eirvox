@@ -20,7 +20,15 @@
   import Login from './routes/Login.svelte';
   import Account from './routes/Account.svelte';
   import Messages from './routes/Messages.svelte';
-  import Admin from './routes/Admin.svelte';
+  import AdminDashboard from './routes/admin/Dashboard.svelte';
+  import AdminListings from './routes/admin/Listings.svelte';
+  import AdminSellers from './routes/admin/Sellers.svelte';
+  import AdminReservations from './routes/admin/Reservations.svelte';
+  import AdminTrade from './routes/admin/Trade.svelte';
+  import AdminUsers from './routes/admin/Users.svelte';
+  import AdminCategories from './routes/admin/Categories.svelte';
+  import AdminSettings from './routes/admin/Settings.svelte';
+  import Search from './routes/Search.svelte';
   import Sitemap from './routes/Sitemap.svelte';
   import NotFound from './routes/NotFound.svelte';
   import Terms from './routes/Terms.svelte';
@@ -49,7 +57,10 @@
     'art',
   ];
 
-  $: path = $currentPath;
+  // Path with hash query string stripped (admin pages use ?status=… as
+  // a soft filter hint, but the router itself only matches the path).
+  $: rawPath = $currentPath;
+  $: path = rawPath.includes('?') ? rawPath.slice(0, rawPath.indexOf('?')) : rawPath;
 
   $: listingParams = matchRoute('/listing/:slug', path);
   $: driveParams = matchRoute('/drive/:slug', path);
@@ -147,9 +158,39 @@
 <!-- ════ Admin ════ -->
 {:else if path === '/admin'}
   <AuthGuard requireRole="admin">
-    <Admin />
+    <AdminDashboard />
+  </AuthGuard>
+{:else if path === '/admin/listings'}
+  <AuthGuard requireRole="admin">
+    <AdminListings />
+  </AuthGuard>
+{:else if path === '/admin/sellers'}
+  <AuthGuard requireRole="admin">
+    <AdminSellers />
+  </AuthGuard>
+{:else if path === '/admin/reservations'}
+  <AuthGuard requireRole="admin">
+    <AdminReservations />
+  </AuthGuard>
+{:else if path === '/admin/trade'}
+  <AuthGuard requireRole="admin">
+    <AdminTrade />
+  </AuthGuard>
+{:else if path === '/admin/users'}
+  <AuthGuard requireRole="admin">
+    <AdminUsers />
+  </AuthGuard>
+{:else if path === '/admin/categories'}
+  <AuthGuard requireRole="admin">
+    <AdminCategories />
+  </AuthGuard>
+{:else if path === '/admin/settings'}
+  <AuthGuard requireRole="admin">
+    <AdminSettings />
   </AuthGuard>
 
+{:else if path === '/search'}
+  <Search />
 {:else if path === '/sitemap'}
   <Sitemap />
 {:else if path === '/terms'}

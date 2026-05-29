@@ -1,47 +1,77 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import SellerPill from '../lib/SellerPill.svelte';
-  import { navigate } from '../lib/router';
-  import { getListingBySlug, getSeller, formatPrice } from '../data/listings';
-  import { currentUser } from '../data/user';
+  import { navigate, currentPath } from '../lib/router';
+  import {
+    getListingBySlug,
+    createReservation,
+    formatPrice,
+    getSiteSettings,
+    type ListingWithExtras,
+    type SiteSettings,
+  } from '../lib/api';
+  import { auth } from '../lib/auth';
   import { applySeo, seo } from '../lib/seo';
 
   export let listingSlug: string;
 
-  $: if (typeof document !== 'undefined' && listing) {
-    applySeo(seo.reserveCheckout(listing.title, listing.slug));
-  }
+  // ── State ──
+  let loading = true;
+  let listing: ListingWithExtras | null = null;
+  let settings: SiteSettings | null = null;
+  $: seller = listing?.seller ?? null;
 
-  $: listing = getListingBySlug(listingSlug);
-  $: seller = listing ? getSeller(listing.sellerId) : undefined;
-
+  // Step state
   let step = 1;
   const TOTAL_STEPS = 4;
 
-  // Step 2 — buyer details
-  let name = `${currentUser.firstName} ${currentUser.lastName}`;
-  let email = currentUser.email;
-  let phone = currentUser.phone;
+  // Buyer details (prefilled from auth profile)
+  let name = '';
+  let email = '';
+  let phone = '';
   let delivery: 'collection' | 'shipping' | 'either' = 'either';
   let note = '';
 
-  // Step 3 — payment ack
+  // Payment ack
   let paymentAcknowledged = false;
 
-  // Generate a deterministic reference like EV-2026-0847
-  function genReference(slug: string): string {
-    let hash = 0;
-    for (let i = 0; i < slug.length; i++) hash = (hash * 31 + slug.charCodeAt(i)) >>> 0;
-    const n = (hash % 9000) + 1000;
-    return `EV-2026-${n}`;
-  }
+  // After confirm — real reference from DB
+  let reference = '';
+  let submitting = false;
+  let submitError = '';
 
-  $: reference = listing ? genReference(listing.slug) : 'EV-2026-0000';
+  // Display tier for SellerPill
+  $: tier = ((seller?.tier ?? 'verified').toUpperCase()) as 'HOUSE' | 'ATELIER' | 'VERIFIED';
+  $: depositAmount = settings?.deposit.amount_eur ?? 49;
 
-  $: step1Valid = !!listing;
+  // Validation
   $: step2Valid = name.trim() && email.trim() && phone.trim() && delivery;
   $: step3Valid = paymentAcknowledged;
+
+  onMount(async () => {
+    if (!$auth.user) {
+      try { sessionStorage.setItem('eirvox-return-to', $currentPath); } catch {}
+      navigate('/login');
+      return;
+    }
+    [listing, settings] = await Promise.all([
+      getListingBySlug(listingSlug),
+      getSiteSettings(),
+    ]);
+    loading = false;
+
+    // Prefill from profile
+    const p = $auth.profile;
+    name  = p?.full_name ?? '';
+    email = p?.email ?? $auth.user?.email ?? '';
+    phone = p?.phone ?? '';
+
+    if (listing) {
+      applySeo(seo.reserveCheckout(listing.title, listing.slug ?? listing.id));
+    }
+  });
 
   function next() {
     if (step < TOTAL_STEPS) {
@@ -55,14 +85,40 @@
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }
-  function confirm() {
-    if (step3Valid) {
-      step = 4;
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
+
+  async function confirm() {
+    if (!step3Valid || !listing || !seller) return;
+    submitError = '';
+    submitting = true;
+
+    const notes = [
+      `Name: ${name.trim()}`,
+      `Email: ${email.trim()}`,
+      `Phone: ${phone.trim()}`,
+      `Delivery: ${delivery}`,
+      note.trim() ? `Note: ${note.trim()}` : '',
+    ].filter(Boolean).join(' · ');
+
+    const r = await createReservation({
+      listing_id: listing.id,
+      seller_id:  seller.id,
+      deposit_amount: depositAmount,
+      notes,
+    });
+
+    submitting = false;
+    if (!r.ok) { submitError = r.error ?? 'Could not create reservation.'; return; }
+
+    reference = r.data?.reference ?? '';
+    step = 4;
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   const stepLabels = ['Item', 'Your details', 'Payment', 'Confirmed'];
+
+  // Defensive accessors for nullable fields
+  $: sellerName = seller?.trading_name ?? 'the seller';
+  $: sellerLocation = seller?.city ?? '';
 </script>
 
 <Nav />
@@ -70,12 +126,16 @@
 <main id="main-content" class="rc-page">
   <div class="page-container">
 
-    {#if !listing || !seller}
+    {#if loading}
+      <div class="rc-404">
+        <span class="evx-label" style="color: var(--evx-fox-orange);">LOADING…</span>
+      </div>
+    {:else if !listing || !seller}
       <div class="rc-404">
         <span class="evx-label rc-404__label">LISTING NOT FOUND</span>
         <h1 class="rc-404__h">We couldn't find that listing.</h1>
         <p class="rc-404__sub">It may have been sold, removed, or the link is incorrect.</p>
-        <button class="evx-btn evx-btn--primary" on:click={() => navigate('/automotive')}>
+        <button class="evx-btn evx-btn--primary" on:click={() => navigate('/')}>
           Browse marketplace →
         </button>
       </div>
@@ -83,15 +143,15 @@
 
       <!-- Header -->
       <header class="rc-header">
-        <button class="rc-back evx-caption" on:click={() => navigate(`/listing/${listing.slug}`)}>
+        <button class="rc-back evx-caption" on:click={() => navigate(`/listing/${listing.slug ?? listing.id}`)}>
           ← Back to listing
         </button>
 
         {#if step < 4}
-          <span class="evx-caption rc-header__pre">RESERVE · €49 REFUNDABLE DEPOSIT</span>
+          <span class="evx-caption rc-header__pre">RESERVE · {formatPrice(depositAmount)} REFUNDABLE DEPOSIT</span>
           <h1 class="rc-title">Reserve this item.</h1>
           <p class="rc-sub">
-            Four steps. The deposit is fully refundable until the item ships — no commitment until you and {seller.name} agree the deal.
+            Four steps. The deposit is fully refundable until the item ships — no commitment until you and {sellerName} agree the deal.
           </p>
         {/if}
       </header>
@@ -125,26 +185,31 @@
             </div>
 
             <div class="item-card">
-              <div class="item-card__image" style="background: {listing.isDrive ? '#3a2820' : '#2A2825'}">
-                {#if listing.isDrive}
-                  <span class="evx-caption item-card__drive">{listing.driveIssue}</span>
+              <div class="item-card__image" style="background: #2A2825;">
+                {#if listing.cover_image}
+                  <img src={listing.cover_image} alt={listing.title} style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" />
+                {:else}
+                  <span class="evx-caption item-card__placeholder">{listing.title}</span>
                 {/if}
-                <span class="evx-caption item-card__placeholder">{listing.title}</span>
               </div>
               <div class="item-card__body">
-                <span class="evx-label item-card__eyebrow">
-                  {listing.subcategory} · {listing.condition}
-                </span>
+                {#if listing.subcategory || listing.condition}
+                  <span class="evx-label item-card__eyebrow">
+                    {listing.subcategory ?? ''}{listing.subcategory && listing.condition ? ' · ' : ''}{listing.condition ?? ''}
+                  </span>
+                {/if}
                 <h3 class="item-card__title">{listing.title}</h3>
                 {#if listing.subtitle}
                   <p class="item-card__subtitle">{listing.subtitle}</p>
                 {/if}
                 <div class="item-card__price-row">
                   <span class="item-card__price">{formatPrice(listing.price)}</span>
-                  <span class="evx-caption item-card__city">{listing.city}</span>
+                  {#if listing.city}
+                    <span class="evx-caption item-card__city">{listing.city}</span>
+                  {/if}
                 </div>
                 <div class="item-card__seller">
-                  <SellerPill tier={seller.tier} name={seller.name} rating={seller.rating} compact={false} />
+                  <SellerPill tier={tier} name={sellerName} rating={seller.rating ?? null} compact={false} />
                 </div>
               </div>
             </div>
@@ -152,7 +217,7 @@
             <div class="rc-notice rc-notice--accent">
               <span class="evx-label rc-notice__label">NOT A PURCHASE</span>
               <p class="rc-notice__body">
-                This is not a purchase. The €49 deposit holds the item off the market while you and the seller
+                This is not a purchase. The {formatPrice(depositAmount)} deposit holds the item off the market while you and the seller
                 arrange the deal directly — price agreement, inspection, delivery. The full {formatPrice(listing.price)}
                 isn't paid until both sides are ready.
               </p>
@@ -169,7 +234,7 @@
                 </div>
                 <div class="rc-summary__row">
                   <span>Seller</span>
-                  <span class="rc-summary__val">{seller.name}</span>
+                  <span class="rc-summary__val">{sellerName}</span>
                 </div>
                 <div class="rc-summary__row">
                   <span>Asking price</span>
@@ -177,7 +242,7 @@
                 </div>
                 <div class="rc-summary__row rc-summary__row--total">
                   <span>Deposit today</span>
-                  <span class="rc-summary__val rc-summary__val--accent">€49</span>
+                  <span class="rc-summary__val rc-summary__val--accent">{formatPrice(depositAmount)}</span>
                 </div>
               </div>
               <p class="evx-caption rc-summary__note">Fully refundable until the item ships.</p>
@@ -226,7 +291,7 @@
                 <span class="evx-caption field-label">DELIVERY PREFERENCE</span>
                 <div class="radio-list">
                   {#each [
-                    { value: 'collection', label: 'Collection', desc: `Pick up from ${listing.city}.` },
+                    { value: 'collection', label: 'Collection', desc: listing.city ? `Pick up from ${listing.city}.` : 'Pick up from the seller.' },
                     { value: 'shipping',   label: 'Shipping',   desc: 'Tracked & insured to your address.' },
                     { value: 'either',     label: 'Either',     desc: 'I\'m happy with whatever works for the seller.' },
                   ] as opt}
@@ -264,7 +329,7 @@
                 </div>
                 <div class="rc-summary__row rc-summary__row--total">
                   <span>Deposit today</span>
-                  <span class="rc-summary__val rc-summary__val--accent">€49</span>
+                  <span class="rc-summary__val rc-summary__val--accent">{formatPrice(depositAmount)}</span>
                 </div>
               </div>
             </div>
@@ -288,8 +353,8 @@
             <div class="rc-section">
               <h2 class="rc-h2">Payment.</h2>
               <p class="rc-section__sub">
-                We'll send you a Revolut payment link by email within the hour. Once the €49 lands,
-                we confirm the reservation with {seller.name}.
+                We'll send you a Revolut payment link by email within the hour. Once the {formatPrice(depositAmount)} lands,
+                we confirm the reservation with {sellerName}.
               </p>
             </div>
 
@@ -298,13 +363,13 @@
                 <div class="pay-method__radio"><span class="pay-method__dot"></span></div>
                 <div class="pay-method__info">
                   <strong class="pay-method__title">Revolut payment link</strong>
-                  <span class="evx-caption pay-method__sub">€49 deposit · sent to {email || 'your email'} within the hour</span>
+                  <span class="evx-caption pay-method__sub">{formatPrice(depositAmount)} deposit · sent to {email || 'your email'} within the hour</span>
                 </div>
                 <span class="evx-caption pay-method__tag">CURRENT</span>
               </div>
               <p class="pay-method__body">
                 After you confirm the reservation below, our team sends a Revolut payment link
-                to your email. Click the link, pay €49, and the reservation is live.
+                to your email. Click the link, pay {formatPrice(depositAmount)}, and the reservation is live.
               </p>
             </div>
 
@@ -326,10 +391,17 @@
             <label class="pay-ack">
               <input type="checkbox" bind:checked={paymentAcknowledged} class="pay-ack__box" />
               <span class="pay-ack__body">
-                I understand the deposit is <strong>€49 refundable</strong> until the item ships,
+                I understand the deposit is <strong>{formatPrice(depositAmount)} refundable</strong> until the item ships,
                 and that I'll receive a Revolut payment link by email within the hour.
               </span>
             </label>
+
+            {#if submitError}
+              <div style="border: 1px solid rgba(198, 40, 40, 0.4); background: rgba(198, 40, 40, 0.06); padding: var(--evx-space-md); margin-top: var(--evx-space-md);">
+                <span class="evx-label" style="color: #C62828;">RESERVATION FAILED</span>
+                <p style="font-size: 13px; color: #C62828; margin-top: 4px;">{submitError}</p>
+              </div>
+            {/if}
           </section>
 
           <aside class="rc-side">
@@ -342,7 +414,11 @@
                 </div>
                 <div class="rc-summary__row">
                   <span>Seller</span>
-                  <span class="rc-summary__val">{seller.name}</span>
+                  <span class="rc-summary__val">{sellerName}</span>
+                </div>
+                <div class="rc-summary__row">
+                  <span>Asking price</span>
+                  <span class="rc-summary__val">{formatPrice(listing.price)}</span>
                 </div>
                 <div class="rc-summary__row">
                   <span>Delivery</span>
@@ -356,7 +432,7 @@
                 </div>
                 <div class="rc-summary__row rc-summary__row--total">
                   <span>Deposit today</span>
-                  <span class="rc-summary__val rc-summary__val--accent">€49</span>
+                  <span class="rc-summary__val rc-summary__val--accent">{formatPrice(depositAmount)}</span>
                 </div>
               </div>
               <p class="evx-caption rc-summary__note">
@@ -367,11 +443,11 @@
         </div>
 
         <div class="step-nav step-nav--split">
-          <button class="evx-btn evx-btn--ghost" on:click={prev}>← Back</button>
+          <button class="evx-btn evx-btn--ghost" on:click={prev} disabled={submitting}>← Back</button>
           <div class="step-nav__right">
             <span class="evx-caption step-nav__count">Step 3 of 3</span>
-            <button class="evx-btn evx-btn--primary" on:click={confirm} disabled={!step3Valid}>
-              Confirm reservation →
+            <button class="evx-btn evx-btn--primary" on:click={confirm} disabled={!step3Valid || submitting}>
+              {submitting ? 'Reserving…' : 'Confirm reservation →'}
             </button>
           </div>
         </div>
@@ -385,7 +461,7 @@
           </h2>
           <p class="confirm__body">
             We've logged your reservation for the {listing.title}.
-            A Revolut payment link for €49 is on its way to <strong>{email}</strong> — usually within the hour,
+            A Revolut payment link for {formatPrice(depositAmount)} is on its way to <strong>{email}</strong> — usually within the hour,
             always within four.
           </p>
 
@@ -400,11 +476,11 @@
             </div>
             <div class="confirm__detail">
               <span class="evx-caption confirm__detail-label">DEPOSIT</span>
-              <span class="confirm__detail-val confirm__detail-val--accent">€49 · refundable</span>
+              <span class="confirm__detail-val confirm__detail-val--accent">{formatPrice(depositAmount)} · refundable</span>
             </div>
             <div class="confirm__detail">
               <span class="evx-caption confirm__detail-label">SELLER</span>
-              <span class="confirm__detail-val">{seller.name} · {seller.location}</span>
+              <span class="confirm__detail-val">{sellerName}{sellerLocation ? ` · ${sellerLocation}` : ''}</span>
             </div>
           </div>
 
@@ -421,7 +497,7 @@
               <li class="confirm__step">
                 <span class="evx-label confirm__step-num">02</span>
                 <div>
-                  <strong>We confirm with {seller.name}.</strong>
+                  <strong>We confirm with {sellerName}.</strong>
                   <span>Item is held off the market — usually within 4 hours of payment.</span>
                 </div>
               </li>
@@ -436,7 +512,7 @@
                 <span class="evx-label confirm__step-num">04</span>
                 <div>
                   <strong>Deposit credits against the balance.</strong>
-                  <span>€49 deducted from the final amount. Refund if the deal doesn't proceed.</span>
+                  <span>{formatPrice(depositAmount)} deducted from the final amount. Refund if the deal doesn't proceed.</span>
                 </div>
               </li>
             </ol>
@@ -559,13 +635,6 @@
     align-items: center;
     justify-content: center;
     position: relative;
-  }
-  .item-card__drive {
-    position: absolute;
-    top: var(--evx-space-sm); left: var(--evx-space-sm);
-    background: var(--evx-fox-orange);
-    color: var(--evx-white);
-    padding: 2px 6px;
   }
   .item-card__placeholder { color: rgba(245,242,237,0.30); text-align: center; padding: 0 var(--evx-space-md); line-height: 1.5; }
 

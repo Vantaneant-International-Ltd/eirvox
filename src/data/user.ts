@@ -1,8 +1,37 @@
 // ============================================================
 // ÉIRVOX — Mock user, orders, saved items, messages, activity
+// ------------------------------------------------------------
+// Account/Messages still consume this mock store. Real reservation
+// data lives in Supabase (see lib/api.ts → getMySavedListings etc.).
+// The helpers below now return undefined for listing/seller lookups
+// because the static listings file was removed in v0.4 Prompt D.
 // ============================================================
 
-import { getListingBySlug, getSeller, formatPrice, type Listing, type Seller } from './listings';
+// Minimal stubs so type signatures still compile.
+type Listing = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle?: string;
+  price: number;
+  city: string;
+  category: string;
+  subcategory?: string;
+  condition?: string;
+  sellerId: string;
+};
+
+type Seller = {
+  id: string;
+  name: string;
+  tier: 'HOUSE' | 'ATELIER' | 'VERIFIED';
+  rating: number;
+  location: string;
+  city: string;
+  responseTime: string;
+  since: string;
+  handle: string;
+};
 
 // ── User profile ─────────────────────────────────────────────
 
@@ -338,22 +367,12 @@ export function getUnreadCount(): number {
   return conversations.reduce((sum, c) => sum + c.unread, 0);
 }
 
-export function getOrderListing(order: Order): Listing | undefined {
-  return getListingBySlug(order.listingSlug);
-}
-
-export function getOrderSeller(order: Order): Seller | undefined {
-  const listing = getOrderListing(order);
-  return listing ? getSeller(listing.sellerId) : undefined;
-}
-
-export function getConversationListing(c: Conversation): Listing | undefined {
-  return getListingBySlug(c.listingSlug);
-}
-
-export function getConversationSeller(c: Conversation): Seller | undefined {
-  return getSeller(c.sellerId);
-}
+// Listing/seller lookups are stubs after Prompt D removed the static
+// listings file. Pages that need live data should call lib/api.ts.
+export function getOrderListing(_order: Order): Listing | undefined { return undefined; }
+export function getOrderSeller(_order: Order): Seller | undefined  { return undefined; }
+export function getConversationListing(_c: Conversation): Listing | undefined { return undefined; }
+export function getConversationSeller(_c: Conversation): Seller | undefined { return undefined; }
 
 export function getActiveReservations(): Order[] {
   return orders.filter(o => o.status === 'reserved' || o.status === 'confirmed' || o.status === 'shipped');

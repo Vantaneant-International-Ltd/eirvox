@@ -4,25 +4,30 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo } from '../lib/seo';
-  import {
-    tradeCategories,
-    getTradeCategoriesWithCounts,
-    getFeaturedTradespeople,
-    tradespeople,
-  } from '../data/tradespeople';
+  import { getTradeCategories, getTradespeople, type TradeCategory, type Tradesperson } from '../lib/api';
 
-  onMount(() => applySeo({
-    title: 'TRADE · Verified tradespeople',
-    description: "Ireland's verified independent tradespeople. ID-checked, credential-verified, admitted by application. Flat monthly fee, no per-lead charges.",
-    path: '/trade',
-  }));
+  let categories: TradeCategory[] = [];
+  let featured: Tradesperson[] = [];
+  let loading = true;
 
-  $: categories = getTradeCategoriesWithCounts();
-  $: featured = getFeaturedTradespeople(6);
-  $: totalCount = tradespeople.length;
+  $: totalCount = categories.reduce((sum, c) => sum + (c.count ?? 0), 0);
 
   let searchQ = '';
   let countyFilter = '';
+
+  onMount(async () => {
+    applySeo({
+      title: 'TRADE · Verified tradespeople',
+      description: "Ireland's verified independent tradespeople. ID-checked, credential-verified, admitted by application. Flat monthly fee, no per-lead charges.",
+      path: '/trade',
+    });
+
+    [categories, featured] = await Promise.all([
+      getTradeCategories(),
+      getTradespeople({ sort: 'rating', limit: 6 }),
+    ]);
+    loading = false;
+  });
 </script>
 
 <Nav />
@@ -32,7 +37,9 @@
 
     <!-- Hero -->
     <header class="trade-hero">
-      <span class="evx-caption trade-hero__pre">DIRECTORY · ÉIRVOX TRADE · {totalCount} VERIFIED</span>
+      <span class="evx-caption trade-hero__pre">
+        DIRECTORY · ÉIRVOX TRADE{loading ? '' : ` · ${totalCount} VERIFIED`}
+      </span>
       <h1 class="trade-hero__title">TRADE.</h1>
       <p class="trade-hero__sub">
         Ireland's verified independent tradespeople. Every person listed is
@@ -87,7 +94,7 @@
             on:change={() => searchQ && navigate(`/trade/${searchQ}`)}
           >
             <option value="">All trades</option>
-            {#each tradeCategories as cat}
+            {#each categories as cat}
               <option value={cat.slug}>{cat.name}</option>
             {/each}
           </select>
@@ -115,22 +122,22 @@
     <section class="trade-cats">
       <div class="trade-cats__head">
         <span class="evx-label">Browse by trade</span>
-        <span class="evx-caption trade-cats__total">{tradeCategories.length} categories</span>
+        <span class="evx-caption trade-cats__total">{categories.length} categories</span>
       </div>
       <div class="trade-cats__grid">
         {#each categories as cat}
           <button
             class="trade-cat"
-            class:trade-cat--empty={cat.count === 0}
-            on:click={() => cat.count > 0 && navigate(`/trade/${cat.slug}`)}
-            disabled={cat.count === 0}
+            class:trade-cat--empty={(cat.count ?? 0) === 0}
+            on:click={() => (cat.count ?? 0) > 0 && navigate(`/trade/${cat.slug}`)}
+            disabled={(cat.count ?? 0) === 0}
           >
             <div class="trade-cat__body">
               <span class="trade-cat__name">{cat.name}</span>
-              <span class="evx-caption trade-cat__desc">{cat.description}</span>
+              <span class="evx-caption trade-cat__desc">{cat.description ?? ''}</span>
             </div>
             <span class="evx-caption trade-cat__count">
-              {cat.count > 0 ? `${cat.count} ${cat.count === 1 ? 'verified' : 'verified'}` : 'Coming soon'}
+              {(cat.count ?? 0) > 0 ? `${cat.count} verified` : 'Coming soon'}
             </span>
           </button>
         {/each}
@@ -148,26 +155,47 @@
           Browse all →
         </button>
       </div>
-      <div class="trade-featured__grid">
-        {#each featured as t}
-          <button class="t-card" on:click={() => navigate(`/trade/${t.trade}/${t.slug}`)}>
-            <div class="t-card__avatar">{t.name.charAt(0)}</div>
-            <div class="t-card__body">
-              <span class="t-card__pro evx-caption">PRO</span>
-              <h3 class="t-card__name">{t.name}</h3>
-              <span class="evx-caption t-card__trade">
-                {tradeCategories.find(c => c.slug === t.trade)?.name} · {t.county}
-              </span>
-              <p class="t-card__tagline">{t.tagline}</p>
-              <div class="t-card__stats">
-                <span class="t-card__stat">★ {t.rating.toFixed(2)} <em>({t.reviewCount})</em></span>
-                <span class="t-card__stat">{t.yearsExperience}y exp</span>
-                {#if t.availableNow}<span class="t-card__avail">● Available</span>{/if}
+      {#if loading}
+        <div class="trade-featured__grid">
+          {#each Array(6) as _, i (i)}
+            <div class="t-card" style="opacity: 0.5; pointer-events: none;">
+              <div class="t-card__avatar">·</div>
+              <div class="t-card__body">
+                <span class="t-card__pro evx-caption">PRO</span>
+                <h3 class="t-card__name" style="background: var(--evx-rule-light); height: 16px; width: 60%;"></h3>
+                <p class="t-card__tagline" style="background: var(--evx-rule-light); height: 12px; width: 90%; margin-top: 8px;"></p>
               </div>
             </div>
-          </button>
-        {/each}
-      </div>
+          {/each}
+        </div>
+      {:else if featured.length === 0}
+        <div style="padding: var(--evx-space-2xl); border: 1px dashed var(--evx-rule-light); text-align: center; color: var(--evx-ink-soft);">
+          <p>No verified Pros yet — they'll appear here as soon as the first tradespeople are admitted.</p>
+        </div>
+      {:else}
+        <div class="trade-featured__grid">
+          {#each featured as t (t.id)}
+            <button class="t-card" on:click={() => navigate(`/trade/${t.trade}/${t.slug ?? t.id}`)}>
+              <div class="t-card__avatar">{t.name.charAt(0)}</div>
+              <div class="t-card__body">
+                {#if t.tier === 'pro'}<span class="t-card__pro evx-caption">PRO</span>{/if}
+                <h3 class="t-card__name">{t.name}</h3>
+                <span class="evx-caption t-card__trade">
+                  {categories.find(c => c.slug === t.trade)?.name ?? t.trade}{t.county ? ` · ${t.county}` : ''}
+                </span>
+                {#if t.tagline}<p class="t-card__tagline">{t.tagline}</p>{/if}
+                <div class="t-card__stats">
+                  {#if typeof t.rating === 'number' && t.rating > 0}
+                    <span class="t-card__stat">★ {t.rating.toFixed(2)} <em>({t.review_count})</em></span>
+                  {/if}
+                  {#if t.years_experience}<span class="t-card__stat">{t.years_experience}y exp</span>{/if}
+                  {#if t.available_now}<span class="t-card__avail">● Available</span>{/if}
+                </div>
+              </div>
+            </button>
+          {/each}
+        </div>
+      {/if}
     </section>
 
     <!-- How it works -->

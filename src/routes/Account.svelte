@@ -4,6 +4,7 @@
   import ListingCard from '../lib/ListingCard.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import { onMount } from 'svelte';
   import {
     currentUser,
     orders,
@@ -17,7 +18,8 @@
     statusLabel,
     type OrderStatus,
   } from '../data/user';
-  import { getListingBySlug, formatPrice } from '../data/listings';
+  import { formatPrice, getMySavedListings, type ListingWithExtras } from '../lib/api';
+  import { auth } from '../lib/auth';
 
   export let tab: string = 'overview';
 
@@ -25,9 +27,15 @@
 
   $: activeReservations = getActiveReservations();
   $: unreadCount = getUnreadCount();
-  $: savedListings = savedItems
-    .map(slug => getListingBySlug(slug))
-    .filter((l): l is NonNullable<typeof l> => l !== undefined);
+
+  // Live saved listings from Supabase. We keep `savedItems` mock for legacy slugs
+  // but only render the live ones — when the user has none yet, show empty state.
+  let savedListings: ListingWithExtras[] = [];
+  onMount(async () => {
+    if ($auth.user) {
+      savedListings = await getMySavedListings();
+    }
+  });
 
   // Settings form state
   let editingProfile = false;
@@ -213,7 +221,7 @@
             <button class="acct-stat" on:click={() => navigate('/account/saved')}>
               <span class="evx-label acct-stat__label">SAVED ITEMS</span>
               <span class="acct-stat__val">{savedItems.length}</span>
-              <span class="evx-caption acct-stat__sub">Across {new Set(savedListings.map(l => l.category)).size} categories</span>
+              <span class="evx-caption acct-stat__sub">Across {new Set(savedListings.map(l => l.category_slug)).size} categories</span>
             </button>
             <button class="acct-stat acct-stat--accent" on:click={() => navigate('/messages')}>
               <span class="evx-label acct-stat__label acct-stat__label--accent">UNREAD MESSAGES</span>
@@ -415,11 +423,11 @@
             </p>
 
             <div class="saved-grid">
-              {#each savedListings as listing}
-                <div class="saved-card" class:saved-card--removed={removedSaved.has(listing.slug)}>
+              {#each savedListings as listing (listing.id)}
+                <div class="saved-card" class:saved-card--removed={removedSaved.has(listing.id)}>
                   <ListingCard {listing} />
-                  <button class="saved-card__remove evx-caption" on:click|stopPropagation={() => toggleRemove(listing.slug)}>
-                    {removedSaved.has(listing.slug) ? 'Undo' : 'Remove'}
+                  <button class="saved-card__remove evx-caption" on:click|stopPropagation={() => toggleRemove(listing.id)}>
+                    {removedSaved.has(listing.id) ? 'Undo' : 'Remove'}
                   </button>
                 </div>
               {/each}

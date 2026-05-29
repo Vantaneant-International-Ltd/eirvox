@@ -3,16 +3,41 @@
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
-  import { getListingBySlug, formatPrice } from '../data/listings';
+  import { formatPrice, getSiteSettings, type SiteSettings } from '../lib/api';
   import { currentUser } from '../data/user';
   import { applySeo, seo } from '../lib/seo';
 
   export let issueSlug: string;
 
-  onMount(() => applySeo(seo.reserveDrive(issueSlug)));
+  // Synthetic "listing" for the DRIVE issue, built from site_settings.drive.
+  // This keeps the existing template field accesses (.title, .price, etc.) working.
+  type DriveListing = {
+    title: string;
+    price: number;
+    slug: string;
+    driveIssue: string;
+    stockTotal: number;
+    stock: number;
+  };
 
-  // Map issue slug → DRIVE listing data
-  $: listing = getListingBySlug('amg-gt-carbon-steering-wheel');
+  let listing: DriveListing | null = null;
+  let settings: SiteSettings | null = null;
+
+  onMount(async () => {
+    applySeo(seo.reserveDrive(issueSlug));
+    settings = await getSiteSettings();
+    if (settings) {
+      const d = settings.drive;
+      listing = {
+        title: d.issue_title,
+        price: d.price_eur,
+        slug: issueSlug,
+        driveIssue: `DRV-${String(d.issue_number).padStart(3, '0')}`,
+        stockTotal: d.total_allocation,
+        stock: d.remaining,
+      };
+    }
+  });
 
   let step = 1;
   const TOTAL_STEPS = 4;

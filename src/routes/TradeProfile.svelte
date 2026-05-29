@@ -1,26 +1,43 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo } from '../lib/seo';
   import {
-    getTradesPersonBySlug,
-    getTradeCategoryMeta,
-  } from '../data/tradespeople';
+    getTradespersonBySlug,
+    getTradeCategories,
+    type Tradesperson,
+    type TradeCategory,
+  } from '../lib/api';
 
   export let categorySlug: string;
   export let slug: string;
 
-  $: t = getTradesPersonBySlug(categorySlug, slug);
-  $: cat = getTradeCategoryMeta(categorySlug);
+  let t: Tradesperson | null = null;
+  let cat: TradeCategory | null = null;
+  let loading = true;
 
-  $: if (typeof document !== 'undefined' && t && cat) {
-    applySeo({
-      title: `${t.name} · ${cat.name}`,
-      description: `${t.tagline}. ${t.yearsExperience}+ years experience. ${t.rating}★ from ${t.reviewCount} reviews. ÉIRVOX TRADE verified.`,
-      path: `/trade/${categorySlug}/${slug}`,
-    });
+  async function load() {
+    loading = true;
+    const [person, cats] = await Promise.all([
+      getTradespersonBySlug(slug),
+      getTradeCategories(),
+    ]);
+    t = person;
+    cat = cats.find(c => c.slug === categorySlug) ?? null;
+    if (t && cat) {
+      applySeo({
+        title: `${t.name} · ${cat.name}`,
+        description: `${t.tagline ?? ''} · ${t.years_experience ?? '—'}+ years experience · ÉIRVOX TRADE verified.`,
+        path: `/trade/${categorySlug}/${slug}`,
+      });
+    }
+    loading = false;
   }
+
+  $: if (categorySlug && slug) void load();
+  onMount(load);
 
   // Quote form state
   let qName = '';
@@ -44,7 +61,9 @@
 <main id="main-content" class="tp-page">
   <div class="page-container">
 
-    {#if !t || !cat}
+    {#if loading}
+      <div class="tp-404"><span class="evx-label" style="color: var(--evx-fox-orange);">LOADING…</span></div>
+    {:else if !t || !cat}
       <div class="tp-404">
         <span class="evx-label">PROFILE NOT FOUND</span>
         <h1 class="tp-404__h">No matching tradesperson.</h1>
@@ -72,10 +91,12 @@
             {#if t.tier === 'pro'}<span class="evx-caption tp-header__pro">PRO</span>{/if}
             {#if t.verified}<span class="evx-caption tp-header__verified">VERIFIED</span>{/if}
           </div>
-          <p class="tp-header__tagline">{t.tagline}</p>
+          {#if t.tagline}<p class="tp-header__tagline">{t.tagline}</p>{/if}
           <div class="tp-header__loc">
-            <span class="evx-caption">{t.town}, {t.county}</span>
-            {#if t.availableNow}
+            {#if t.town || t.county}
+              <span class="evx-caption">{[t.town, t.county].filter(Boolean).join(', ')}</span>
+            {/if}
+            {#if t.available_now}
               <span class="evx-caption tp-header__avail">● Available now</span>
             {/if}
           </div>
@@ -89,22 +110,28 @@
 
       <!-- Stats row -->
       <div class="tp-stats">
+        {#if t.years_experience}
+          <div class="tp-stat">
+            <span class="tp-stat__val">{t.years_experience}+</span>
+            <span class="evx-caption tp-stat__label">YEARS</span>
+          </div>
+        {/if}
         <div class="tp-stat">
-          <span class="tp-stat__val">{t.yearsExperience}+</span>
-          <span class="evx-caption tp-stat__label">YEARS</span>
-        </div>
-        <div class="tp-stat">
-          <span class="tp-stat__val">{t.completedJobs.toLocaleString('en-IE')}</span>
+          <span class="tp-stat__val">{t.completed_jobs.toLocaleString('en-IE')}</span>
           <span class="evx-caption tp-stat__label">COMPLETED JOBS</span>
         </div>
-        <div class="tp-stat">
-          <span class="tp-stat__val">★ {t.rating.toFixed(2)}</span>
-          <span class="evx-caption tp-stat__label">{t.reviewCount} REVIEWS</span>
-        </div>
-        <div class="tp-stat">
-          <span class="tp-stat__val">{t.responseTime}</span>
-          <span class="evx-caption tp-stat__label">RESPONSE TIME</span>
-        </div>
+        {#if typeof t.rating === 'number' && t.rating > 0}
+          <div class="tp-stat">
+            <span class="tp-stat__val">★ {t.rating.toFixed(2)}</span>
+            <span class="evx-caption tp-stat__label">{t.review_count} REVIEWS</span>
+          </div>
+        {/if}
+        {#if t.response_time}
+          <div class="tp-stat">
+            <span class="tp-stat__val">{t.response_time}</span>
+            <span class="evx-caption tp-stat__label">RESPONSE TIME</span>
+          </div>
+        {/if}
       </div>
 
       <!-- Main grid -->
@@ -112,65 +139,35 @@
         <div class="tp-main">
 
           <!-- Bio -->
-          <section class="tp-section">
-            <h2 class="tp-h">About.</h2>
-            <p class="tp-bio">{t.bio}</p>
-          </section>
+          {#if t.bio}
+            <section class="tp-section">
+              <h2 class="tp-h">About.</h2>
+              <p class="tp-bio">{t.bio}</p>
+            </section>
+          {/if}
 
           <!-- Qualifications -->
-          <section class="tp-section">
-            <h2 class="tp-h">Qualifications &amp; certifications.</h2>
-            <ul class="tp-quals">
-              {#each t.qualifications as q}
-                <li class="tp-qual">
-                  <span class="tp-qual__check" aria-hidden="true">✓</span>
-                  {q}
-                </li>
-              {/each}
-            </ul>
-          </section>
+          {#if t.qualifications.length > 0}
+            <section class="tp-section">
+              <h2 class="tp-h">Qualifications &amp; certifications.</h2>
+              <ul class="tp-quals">
+                {#each t.qualifications as q}
+                  <li class="tp-qual">
+                    <span class="tp-qual__check" aria-hidden="true">✓</span>
+                    {q}
+                  </li>
+                {/each}
+              </ul>
+            </section>
+          {/if}
 
           <!-- Coverage -->
-          <section class="tp-section">
-            <h2 class="tp-h">Coverage areas.</h2>
-            <div class="tp-coverage">
-              {#each t.coverageAreas as c}
-                <span class="tp-coverage__county">{c}</span>
-              {/each}
-            </div>
-          </section>
-
-          <!-- Work gallery -->
-          <section class="tp-section">
-            <h2 class="tp-h">Work gallery.</h2>
-            <p class="tp-section__sub evx-caption">
-              {t.photoCount} photos · {t.tier === 'pro' ? 'Pro tier' : 'Listed tier'}
-            </p>
-            <div class="tp-gallery">
-              {#each Array(t.photoCount) as _, i}
-                <div class="tp-photo">
-                  <span class="evx-caption tp-photo__num">PHOTO {String(i + 1).padStart(2, '0')}</span>
-                </div>
-              {/each}
-            </div>
-          </section>
-
-          <!-- Reviews -->
-          {#if t.reviews.length > 0}
+          {#if t.coverage_areas.length > 0}
             <section class="tp-section">
-              <h2 class="tp-h">Reviews.</h2>
-              <div class="tp-reviews">
-                {#each t.reviews as r}
-                  <div class="tp-review">
-                    <div class="tp-review__head">
-                      <div class="tp-review__id">
-                        <strong>{r.reviewer}</strong>
-                        <span class="evx-caption">{r.date}</span>
-                      </div>
-                      <span class="tp-review__rating">{'★'.repeat(r.rating)}</span>
-                    </div>
-                    <p class="tp-review__text">{r.text}</p>
-                  </div>
+              <h2 class="tp-h">Coverage areas.</h2>
+              <div class="tp-coverage">
+                {#each t.coverage_areas as c}
+                  <span class="tp-coverage__county">{c}</span>
                 {/each}
               </div>
             </section>
@@ -188,7 +185,7 @@
               {#if qSubmitted}
                 <div class="tp-contact__ok">
                   <span class="evx-label">SENT</span>
-                  <p>{t.name} will reply within {t.responseTime.toLowerCase()}.</p>
+                  <p>{t.name} will reply{t.response_time ? ` within ${t.response_time.toLowerCase()}` : ' shortly'}.</p>
                 </div>
               {:else}
                 <form class="tp-contact__form" on:submit={submitQuote}>
@@ -235,26 +232,34 @@
                 Listed tradespeople accept calls directly. Reveal the number to see the full phone.
               </p>
 
-              <div class="tp-phone">
-                <span class="evx-caption tp-phone__label">PHONE</span>
-                <span class="tp-phone__val">
-                  {phoneRevealed ? t.phone.replace(/•••• /g, '532 ').replace(/•/g, '') : t.phone}
-                </span>
-              </div>
+              {#if t.phone}
+                <div class="tp-phone">
+                  <span class="evx-caption tp-phone__label">PHONE</span>
+                  <span class="tp-phone__val">
+                    {phoneRevealed ? t.phone : t.phone.replace(/.(?=.{4})/g, '•')}
+                  </span>
+                </div>
 
-              {#if !phoneRevealed}
-                <button class="evx-btn evx-btn--primary tp-contact__btn" on:click={() => phoneRevealed = true}>
-                  Reveal full number
-                </button>
+                {#if !phoneRevealed}
+                  <button class="evx-btn evx-btn--primary tp-contact__btn" on:click={() => phoneRevealed = true}>
+                    Reveal full number
+                  </button>
+                {:else}
+                  <a href={`tel:${t.phone}`} class="evx-btn evx-btn--primary tp-contact__btn" style="text-decoration:none;">
+                    Call {t.name.split(' ')[0]}
+                  </a>
+                {/if}
               {:else}
-                <a href="tel:+353851234567" class="evx-btn evx-btn--primary tp-contact__btn" style="text-decoration:none;">
-                  Call {t.name.split(' ')[0]}
-                </a>
+                <p class="tp-contact__fine evx-caption">
+                  No phone number listed.
+                </p>
               {/if}
 
-              <p class="tp-contact__fine evx-caption">
-                {t.name} usually replies {t.responseTime.toLowerCase()}.
-              </p>
+              {#if t.response_time}
+                <p class="tp-contact__fine evx-caption">
+                  {t.name} usually replies {t.response_time.toLowerCase()}.
+                </p>
+              {/if}
             </div>
           {/if}
 

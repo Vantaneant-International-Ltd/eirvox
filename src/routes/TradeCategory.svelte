@@ -1,39 +1,57 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo } from '../lib/seo';
   import {
-    getTradesByCategory,
-    getTradeCategoryMeta,
-    getAllCounties,
-    type TradeCategorySlug,
-  } from '../data/tradespeople';
+    getTradeCategories,
+    getTradespeople,
+    type Tradesperson,
+    type TradeCategory,
+  } from '../lib/api';
 
   export let categorySlug: string;
 
-  $: meta = getTradeCategoryMeta(categorySlug);
-  $: all = getTradesByCategory(categorySlug as TradeCategorySlug);
-  $: counties = getAllCounties();
-
-  $: if (typeof document !== 'undefined' && meta) {
-    applySeo({
-      title: `${meta.name} · TRADE`,
-      description: `${meta.description} · ${all.length} verified ${meta.name.toLowerCase()} on ÉIRVOX TRADE.`,
-      path: `/trade/${categorySlug}`,
-    });
-  }
+  let meta: TradeCategory | null = null;
+  let all: Tradesperson[] = [];
+  let loading = true;
+  let notFound = false;
 
   let selectedCounty = '';
-  let sortBy: 'rating' | 'experience' | 'recent' = 'rating';
+  let sortBy: 'rating' | 'jobs' | 'newest' = 'rating';
 
-  $: filtered = all
-    .filter(t => !selectedCounty || t.coverageAreas.includes(selectedCounty))
-    .sort((a, b) => {
-      if (sortBy === 'rating') return b.rating - a.rating || b.reviewCount - a.reviewCount;
-      if (sortBy === 'experience') return b.yearsExperience - a.yearsExperience;
-      return b.id.localeCompare(a.id);
+  async function load() {
+    loading = true;
+    notFound = false;
+    const cats = await getTradeCategories();
+    meta = cats.find(c => c.slug === categorySlug) ?? null;
+    if (!meta) {
+      notFound = true; loading = false; return;
+    }
+    all = await getTradespeople({
+      category: categorySlug,
+      county: selectedCounty || undefined,
+      sort: sortBy === 'jobs' ? 'jobs' : sortBy === 'newest' ? 'newest' : 'rating',
     });
+    applySeo({
+      title: `${meta.name} · TRADE`,
+      description: `${meta.description ?? ''} · ${all.length} verified ${meta.name.toLowerCase()} on ÉIRVOX TRADE.`,
+      path: `/trade/${categorySlug}`,
+    });
+    loading = false;
+  }
+
+  // Distinct counties from the result set
+  $: counties = Array.from(new Set(all.map(t => t.county).filter((c): c is string => !!c))).sort();
+
+  onMount(load);
+  $: if (categorySlug) { void load(); }
+  // Re-fetch on filter changes
+  let first = true;
+  $: { selectedCounty; sortBy; if (first) first = false; else void load(); }
+
+  $: filtered = all; // already filtered server-side
 </script>
 
 <Nav />
@@ -41,7 +59,9 @@
 <main id="main-content" class="tc-page">
   <div class="page-container">
 
-    {#if !meta}
+    {#if loading && !meta}
+      <div class="tc-404"><span class="evx-label" style="color: var(--evx-fox-orange);">LOADING…</span></div>
+    {:else if notFound || !meta}
       <div class="tc-404">
         <span class="evx-label tc-404__label">CATEGORY NOT FOUND</span>
         <h1 class="tc-404__h">No trade category matches that link.</h1>
@@ -63,9 +83,9 @@
       <!-- Header -->
       <header class="tc-header">
         <div>
-          <span class="evx-caption tc-header__pre">CATEGORY · {all.length} VERIFIED</span>
+          <span class="evx-caption tc-header__pre">CATEGORY · {filtered.length} VERIFIED</span>
           <h1 class="tc-header__title">{meta.name}.</h1>
-          <p class="tc-header__desc">{meta.description}</p>
+          {#if meta.description}<p class="tc-header__desc">{meta.description}</p>{/if}
         </div>
         <div class="tc-header__actions">
           <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/trade')}>
@@ -92,23 +112,44 @@
           <label class="evx-caption tc-filter__label" for="srt">SORT</label>
           <select id="srt" class="tc-filter__select" bind:value={sortBy}>
             <option value="rating">Rating</option>
-            <option value="experience">Experience</option>
-            <option value="recent">Recently joined</option>
+            <option value="jobs">Jobs completed</option>
+            <option value="newest">Recently joined</option>
           </select>
         </div>
-        <span class="evx-caption tc-filter__count">{filtered.length} of {all.length}</span>
+        <span class="evx-caption tc-filter__count">{filtered.length} verified</span>
       </div>
 
       <!-- Cards -->
-      {#if filtered.length === 0}
+      {#if loading}
+        <div class="tc-grid">
+          {#each Array(4) as _, i (i)}
+            <div class="tc-card" style="opacity: 0.5; pointer-events: none;">
+              <div class="tc-card__top">
+                <div class="tc-card__avatar">·</div>
+                <div class="tc-card__id">
+                  <h3 class="tc-card__name" style="background: var(--evx-rule-light); height: 16px; width: 50%;"></h3>
+                </div>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {:else if filtered.length === 0}
         <div class="tc-empty">
-          <span class="evx-label">NO MATCHES</span>
-          <p>No tradespeople match those filters. Try widening the county filter.</p>
+          <span class="evx-label" style="color: var(--evx-fox-orange);">COMING SOON</span>
+          <h3 style="font-family: var(--evx-font-display); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin: var(--evx-space-sm) 0;">
+            No verified {meta.name.toLowerCase()} yet.
+          </h3>
+          <p>Applications are open — first approvals will appear here.</p>
+          <div style="margin-top: var(--evx-space-md);">
+            <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/trade/apply')}>
+              List your trade →
+            </button>
+          </div>
         </div>
       {:else}
         <div class="tc-grid">
-          {#each filtered as t}
-            <button class="tc-card" on:click={() => navigate(`/trade/${categorySlug}/${t.slug}`)}>
+          {#each filtered as t (t.id)}
+            <button class="tc-card" on:click={() => navigate(`/trade/${categorySlug}/${t.slug ?? t.id}`)}>
               <div class="tc-card__top">
                 <div class="tc-card__avatar">{t.name.charAt(0)}</div>
                 <div class="tc-card__id">
@@ -118,35 +159,43 @@
                       <span class="evx-caption tc-card__pro">PRO</span>
                     {/if}
                   </div>
-                  <span class="evx-caption tc-card__loc">{t.town}, {t.county}</span>
-                  {#if t.availableNow}
+                  {#if t.town || t.county}
+                    <span class="evx-caption tc-card__loc">{[t.town, t.county].filter(Boolean).join(', ')}</span>
+                  {/if}
+                  {#if t.available_now}
                     <span class="evx-caption tc-card__avail">● Available now</span>
                   {/if}
                 </div>
               </div>
 
-              <p class="tc-card__tagline">{t.tagline}</p>
+              {#if t.tagline}<p class="tc-card__tagline">{t.tagline}</p>{/if}
 
-              <div class="tc-card__quals">
-                {#each t.qualifications.slice(0, 3) as q}
-                  <span class="evx-caption tc-card__qual">{q}</span>
-                {/each}
-                {#if t.qualifications.length > 3}
-                  <span class="evx-caption tc-card__qual-more">+{t.qualifications.length - 3} more</span>
-                {/if}
-              </div>
+              {#if t.qualifications.length > 0}
+                <div class="tc-card__quals">
+                  {#each t.qualifications.slice(0, 3) as q}
+                    <span class="evx-caption tc-card__qual">{q}</span>
+                  {/each}
+                  {#if t.qualifications.length > 3}
+                    <span class="evx-caption tc-card__qual-more">+{t.qualifications.length - 3} more</span>
+                  {/if}
+                </div>
+              {/if}
 
               <div class="tc-card__stats">
+                {#if typeof t.rating === 'number' && t.rating > 0}
+                  <div class="tc-card__stat">
+                    <span class="tc-card__stat-val">★ {t.rating.toFixed(2)}</span>
+                    <span class="evx-caption tc-card__stat-label">{t.review_count} reviews</span>
+                  </div>
+                {/if}
+                {#if t.years_experience}
+                  <div class="tc-card__stat">
+                    <span class="tc-card__stat-val">{t.years_experience}y</span>
+                    <span class="evx-caption tc-card__stat-label">experience</span>
+                  </div>
+                {/if}
                 <div class="tc-card__stat">
-                  <span class="tc-card__stat-val">★ {t.rating.toFixed(2)}</span>
-                  <span class="evx-caption tc-card__stat-label">{t.reviewCount} reviews</span>
-                </div>
-                <div class="tc-card__stat">
-                  <span class="tc-card__stat-val">{t.yearsExperience}y</span>
-                  <span class="evx-caption tc-card__stat-label">experience</span>
-                </div>
-                <div class="tc-card__stat">
-                  <span class="tc-card__stat-val">{t.completedJobs}</span>
+                  <span class="tc-card__stat-val">{t.completed_jobs}</span>
                   <span class="evx-caption tc-card__stat-label">jobs done</span>
                 </div>
               </div>

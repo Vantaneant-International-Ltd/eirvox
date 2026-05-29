@@ -4,13 +4,18 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo } from '../lib/seo';
-  import { tradeCategories } from '../data/tradespeople';
+  import { getTradeCategories, type TradeCategory } from '../lib/api';
 
-  onMount(() => applySeo({
-    title: 'List your trade · TRADE',
-    description: 'Apply to list on ÉIRVOX TRADE. Five steps, three minutes. ID + credentials verified. Flat monthly fee.',
-    path: '/trade/apply',
-  }));
+  let tradeCategories: TradeCategory[] = [];
+
+  onMount(async () => {
+    applySeo({
+      title: 'List your trade · TRADE',
+      description: 'Apply to list on ÉIRVOX TRADE. Five steps, three minutes. ID + credentials verified. Flat monthly fee.',
+      path: '/trade/apply',
+    });
+    tradeCategories = await getTradeCategories();
+  });
 
   let step = 1;
   const TOTAL_STEPS = 5;

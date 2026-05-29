@@ -1,10 +1,12 @@
 <script lang="ts">
-  import type { SellerTier } from '../data/listings';
+  export type DisplayTier = 'HOUSE' | 'ATELIER' | 'VERIFIED';
 
-  export let tier: SellerTier;
+  export let tier: DisplayTier;
   export let name: string;
-  export let rating: number = 0;
+  export let rating: number | null = 0;
   export let compact: boolean = false;
+
+  $: r = typeof rating === 'number' ? rating : 0;
 </script>
 
 <span class="pill pill--{tier.toLowerCase()}" class:pill--compact={compact}>
@@ -15,9 +17,9 @@
     {#if !compact}
       <span class="pill__sep">·</span>
       <span class="pill__name">{name}</span>
-      {#if rating > 0}
+      {#if r > 0}
         <span class="pill__sep">·</span>
-        <span class="pill__rating">{rating.toFixed(2)}</span>
+        <span class="pill__rating">{r.toFixed(2)}</span>
       {/if}
     {/if}
   {:else}
@@ -25,9 +27,9 @@
     {#if !compact}
       <span class="pill__sep">·</span>
       <span class="pill__name">{name}</span>
-      {#if rating > 0}
+      {#if r > 0}
         <span class="pill__sep">·</span>
-        <span class="pill__rating">{rating.toFixed(2)}</span>
+        <span class="pill__rating">{r.toFixed(2)}</span>
       {/if}
     {/if}
   {/if}

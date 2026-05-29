@@ -13,7 +13,7 @@
     currentUser,
     type Conversation,
   } from '../data/user';
-  import { formatPrice } from '../data/listings';
+  import { formatPrice } from '../lib/api';
 
   onMount(() => applySeo(seo.messages()));
 
