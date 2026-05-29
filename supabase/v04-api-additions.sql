@@ -16,9 +16,16 @@
 
 -- =============================================================
 -- §1  saved_items — buyer bookmarks
+-- -------------------------------------------------------------
+-- Drop-and-recreate so prior partial runs that left this table
+-- with a different column name (e.g. profile_id) don't break
+-- the policies below. No data loss here — bookmarks are
+-- ephemeral and the buyer can re-add them.
 -- =============================================================
 
-CREATE TABLE IF NOT EXISTS public.saved_items (
+DROP TABLE IF EXISTS public.saved_items CASCADE;
+
+CREATE TABLE public.saved_items (
   user_id     uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   listing_id  uuid NOT NULL REFERENCES public.listings(id) ON DELETE CASCADE,
   saved_at    timestamptz NOT NULL DEFAULT now(),
@@ -26,9 +33,6 @@ CREATE TABLE IF NOT EXISTS public.saved_items (
 );
 
 ALTER TABLE public.saved_items ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "saved_items_own"      ON public.saved_items;
-DROP POLICY IF EXISTS "saved_items_admin"    ON public.saved_items;
 
 CREATE POLICY "saved_items_own"
   ON public.saved_items FOR ALL TO authenticated
