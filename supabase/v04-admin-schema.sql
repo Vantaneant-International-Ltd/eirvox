@@ -153,6 +153,34 @@ CREATE TABLE IF NOT EXISTS public.tradespeople (
     CHECK (tier IN ('listed', 'pro'))
 );
 
+-- Backfill columns if the table was created by an earlier script
+-- with a different shape (same defensive pattern as sellers/listings).
+ALTER TABLE public.tradespeople
+  ADD COLUMN IF NOT EXISTS profile_id        uuid REFERENCES public.profiles(id) ON DELETE CASCADE,
+  ADD COLUMN IF NOT EXISTS slug              text,
+  ADD COLUMN IF NOT EXISTS trade             text NOT NULL DEFAULT '',
+  ADD COLUMN IF NOT EXISTS tagline           text,
+  ADD COLUMN IF NOT EXISTS bio               text,
+  ADD COLUMN IF NOT EXISTS county            text,
+  ADD COLUMN IF NOT EXISTS town              text,
+  ADD COLUMN IF NOT EXISTS coverage_areas    text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS years_experience  integer,
+  ADD COLUMN IF NOT EXISTS qualifications    text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS rating            numeric(3,2),
+  ADD COLUMN IF NOT EXISTS review_count      integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS completed_jobs    integer NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS phone             text,
+  ADD COLUMN IF NOT EXISTS email             text,
+  ADD COLUMN IF NOT EXISTS response_time     text,
+  ADD COLUMN IF NOT EXISTS available_now     boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS tier              text NOT NULL DEFAULT 'listed',
+  ADD COLUMN IF NOT EXISTS status            text NOT NULL DEFAULT 'pending',
+  ADD COLUMN IF NOT EXISTS verified          boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS applied_at        timestamptz NOT NULL DEFAULT now(),
+  ADD COLUMN IF NOT EXISTS approved_at       timestamptz,
+  ADD COLUMN IF NOT EXISTS created_at        timestamptz NOT NULL DEFAULT now(),
+  ADD COLUMN IF NOT EXISTS updated_at        timestamptz NOT NULL DEFAULT now();
+
 ALTER TABLE public.tradespeople ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "tradespeople_read_approved" ON public.tradespeople;
