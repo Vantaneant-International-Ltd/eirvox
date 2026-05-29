@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
   import { initAuth } from './lib/auth';
+  import { COMING_SOON, isDevBypassed } from './lib/config';
+  import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import Home from './routes/Home.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
@@ -43,8 +45,14 @@
   import CookieBanner from './lib/CookieBanner.svelte';
   import AuthGuard from './components/AuthGuard.svelte';
 
+  // Coming soon gate. `bypassed` becomes true if URL contains #dev (or sessionStorage holds the flag).
+  // When COMING_SOON is true AND not bypassed, render only ComingSoonHero — no router, no nav, no footer.
+  let bypassed = false;
+  $: gateActive = COMING_SOON && !bypassed;
+
   onMount(() => {
-    initAuth();
+    bypassed = isDevBypassed();
+    if (!COMING_SOON || bypassed) initAuth();
   });
 
   const CATEGORIES = [
@@ -75,6 +83,12 @@
   const TRADE_RESERVED_PATHS = ['apply'];
 </script>
 
+{#if gateActive}
+  <ComingSoonHero />
+{:else}
+{#if bypassed}
+  <div class="dev-banner">DEV MODE — Coming soon is active for visitors</div>
+{/if}
 {#if path === '/'}
   <Home />
 {:else if categoryMatch}
@@ -208,3 +222,23 @@
 {/if}
 
 <CookieBanner />
+{/if}
+
+<style>
+  .dev-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #1A1A1A;
+    color: #E8742C;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-align: center;
+    padding: 6px 12px;
+    border-bottom: 1px solid rgba(232, 116, 44, 0.3);
+    pointer-events: none;
+  }
+</style>
