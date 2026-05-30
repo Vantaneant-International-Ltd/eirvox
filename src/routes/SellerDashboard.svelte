@@ -16,30 +16,24 @@
   import {
     getSellerListings,
     getSellerStats,
-    getSellerReservations,
     setListingStatus,
     deleteListing,
     listingStatusLabel,
-    reservationStatusLabel,
-    updateReservationStatus,
     type ListingWithExtras,
     type ListingStatus,
-    type ReservationWithListing,
-    type ReservationStatus,
     type SellerStats,
   } from '../lib/listings';
 
   onMount(() => applySeo(seo.sellDashboard()));
 
   // ── Tabs ───────────────────────────────────────────────────
-  type Tab = 'overview' | 'listings' | 'reservations' | 'profile';
+  type Tab = 'overview' | 'listings' | 'profile';
   let tab: Tab = 'overview';
 
   // ── State ──────────────────────────────────────────────────
   let seller: Seller | null = null;
-  let stats: SellerStats = { activeListings: 0, totalListings: 0, totalViews: 0, totalSales: 0 };
+  let stats: SellerStats = { activeListings: 0, totalListings: 0, totalViews: 0 };
   let listings: ListingWithExtras[] = [];
-  let reservations: ReservationWithListing[] = [];
   let loading = true;
   type LoadStatus = 'ok' | 'no-seller' | 'db-error' | 'timeout';
   let loadStatus: LoadStatus = 'ok';
@@ -118,16 +112,14 @@
       return;
     }
 
-    // 2. Seller exists — fetch stats + listings + reservations in parallel,
-    //    each with its own timeout so one stuck query doesn't block the page.
-    const [statsR, listingsR, resR] = await Promise.all([
+    // 2. Seller exists — fetch stats + listings in parallel, each with
+    //    its own timeout so one stuck query doesn't block the page.
+    const [statsR, listingsR] = await Promise.all([
       withTimeout(Promise.resolve(getSellerStats(seller.id)), 10_000, 'stats'),
       withTimeout(Promise.resolve(getSellerListings(seller.id)), 10_000, 'listings'),
-      withTimeout(Promise.resolve(getSellerReservations(seller.id)), 10_000, 'reservations'),
     ]);
-    if (statsR.ok)     stats        = statsR.value;
-    if (listingsR.ok)  listings     = listingsR.value;
-    if (resR.ok)       reservations = resR.value;
+    if (statsR.ok)     stats     = statsR.value;
+    if (listingsR.ok)  listings  = listingsR.value;
 
     // Seed profile editor
     editTradingName = seller.trading_name ?? '';
@@ -166,12 +158,6 @@
     alert('Duplicate goes to a fresh /sell/create — coming next phase.');
   }
 
-  // ── Reservation actions ────────────────────────────────────
-  async function setResStatus(id: string, status: ReservationStatus) {
-    const r = await updateReservationStatus(id, status);
-    if (r.ok) load();
-  }
-
   // ── Profile save ──────────────────────────────────────────
   async function saveProfile(e: Event) {
     e.preventDefault();
@@ -206,9 +192,6 @@
   }
 
   function statusBadgeClass(s: ListingStatus): string {
-    return `status status--${s}`;
-  }
-  function resBadgeClass(s: ReservationStatus): string {
     return `status status--${s}`;
   }
 
@@ -271,7 +254,6 @@
       {#each [
         { id: 'overview',     label: 'Overview'   },
         { id: 'listings',     label: 'My listings', count: stats.totalListings },
-        { id: 'reservations', label: 'Reservations', count: reservations.length },
         { id: 'profile',      label: 'Profile'    },
       ] as t}
         <button
@@ -371,11 +353,6 @@
             <span class="stat__val">{stats.totalViews.toLocaleString('en-IE')}</span>
             <span class="evx-caption stat__sub">Across all listings</span>
           </div>
-          <div class="stat stat--accent">
-            <span class="evx-label stat__label">TOTAL SALES</span>
-            <span class="stat__val">{stats.totalSales}</span>
-            <span class="evx-caption stat__sub">Completed reservations</span>
-          </div>
           <div class="stat">
             <span class="evx-label stat__label">SELLER RATING</span>
             <span class="stat__val">—</span>
@@ -393,7 +370,7 @@
           <button class="action-card" on:click={() => navigate('/messages')}>
             <span class="evx-label action-card__label">RESPOND</span>
             <strong class="action-card__title">View messages</strong>
-            <span class="evx-caption action-card__desc">Buyer enquiries and reservations.</span>
+            <span class="evx-caption action-card__desc">Buyer enquiries.</span>
             <span class="action-card__arrow">→</span>
           </button>
           <button class="action-card" on:click={() => tab = 'profile'}>
@@ -465,79 +442,6 @@
                   {/if}
                   <button class="lst-act lst-act--danger" title="Remove" on:click={() => removeListing(l.id)}>Remove</button>
                 </span>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </section>
-
-    <!-- ════ RESERVATIONS ════ -->
-    {:else if tab === 'reservations'}
-      <section class="dash-section">
-        <div class="section-head">
-          <div>
-            <span class="evx-label">RESERVATIONS</span>
-            <h2 class="section-head__h">{reservations.length} on the books</h2>
-          </div>
-        </div>
-
-        {#if reservations.length === 0}
-          <div class="empty">
-            <span class="evx-label">NONE YET</span>
-            <h3 class="empty__h">No reservations.</h3>
-            <p>When a buyer puts a €49 deposit on one of your listings, it shows up here.</p>
-          </div>
-        {:else}
-          <div class="res-list">
-            {#each reservations as r (r.id)}
-              <div class="res-card">
-                <div class="res-card__top">
-                  <div class="res-card__info">
-                    <strong class="res-card__title">{r.listing?.title ?? 'Listing'}</strong>
-                    <span class="evx-caption">
-                      from {r.buyer?.full_name ?? r.buyer?.email ?? 'buyer'} ·
-                      reserved {new Date(r.reserved_at).toLocaleDateString('en-IE')}
-                    </span>
-                  </div>
-                  <span class={resBadgeClass(r.status)}>
-                    <span class="status__dot"></span>
-                    {reservationStatusLabel[r.status]}
-                  </span>
-                </div>
-
-                <div class="res-card__meta">
-                  <span><strong>{formatEuros(r.deposit_amount)}</strong> deposit</span>
-                  <span><strong>{formatEuros(r.balance_amount)}</strong> balance</span>
-                  {#if r.listing}<span>{formatEuros(r.listing.price)} listing</span>{/if}
-                </div>
-
-                {#if r.notes}<p class="res-card__notes">"{r.notes}"</p>{/if}
-
-                <div class="res-card__actions">
-                  {#if r.status === 'pending_deposit' || r.status === 'reserved'}
-                    <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => setResStatus(r.id, 'confirmed')}>
-                      Confirm reservation
-                    </button>
-                  {/if}
-                  {#if r.status === 'confirmed'}
-                    <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => setResStatus(r.id, 'shipped')}>
-                      Mark as shipped
-                    </button>
-                  {/if}
-                  {#if r.status === 'shipped'}
-                    <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => setResStatus(r.id, 'completed')}>
-                      Mark as completed
-                    </button>
-                  {/if}
-                  <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/messages')}>
-                    Message buyer
-                  </button>
-                  {#if r.status !== 'completed' && r.status !== 'cancelled'}
-                    <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => setResStatus(r.id, 'cancelled')}>
-                      Cancel
-                    </button>
-                  {/if}
-                </div>
               </div>
             {/each}
           </div>

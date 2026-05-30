@@ -4,14 +4,19 @@ Ireland's premium marketplace for enthusiast objects.
 
 ## Stack
 
-Svelte 5 + Vite · Hash-based SPA router · GitHub Pages (`docs/`) · No backend
+Svelte 5 + Vite · Hash-based SPA router · Supabase (Postgres + Auth + Storage) · Vercel (SPA static + Edge serverless `/api/*`)
+
+The site is currently behind `COMING_SOON = true` in `src/lib/config.ts` with a `#dev` bypass. Not publicly exposed.
 
 ## Run
 
 ```
 npm install
-npm run dev
+npm run dev          # Vite SPA only — /api/* calls 404
+npm run dev:api      # Vercel CLI: SPA + /api/* on one port (needs `vercel login` once)
 ```
+
+You need a `.env` file (copy from `.env.example`). For full server-route testing add `SUPABASE_SERVICE_ROLE_KEY` (server-only, no `VITE_` prefix). `npm run dev` is enough for browsing; `npm run dev:api` is needed to exercise enquiries / waitlist / seller-application submissions.
 
 ## Build
 
@@ -19,111 +24,83 @@ npm run dev
 npm run build
 ```
 
-Output goes to `docs/`. Push and GitHub Pages serves it.
+Vite outputs to `docs/`. Vercel deploy is configured via `vercel.json` to use `docs/` as its output directory.
+
+## Project layout
+
+```
+eirvox/
+├── api/                          Vercel Edge routes (service-role Supabase client)
+│   ├── _lib/supabase-admin.ts    Server-only client; NEVER imported from src/
+│   ├── health.ts                 GET /api/health
+│   ├── waitlist.ts               POST /api/waitlist
+│   ├── seller-applications.ts    POST /api/seller-applications
+│   └── enquiries.ts              POST /api/enquiries
+├── src/
+│   ├── App.svelte                Hash-router switch + coming-soon gate
+│   ├── main.ts
+│   ├── app.css                   Design tokens + base + focus + skip-link
+│   ├── lib/                      Stores, helpers, shared components
+│   ├── components/               AuthGuard, AdminLayout, LoadingCard
+│   ├── routes/                   One file per route
+│   └── data/                     Mock fixtures still consumed by Messages / Account
+├── supabase/                     Committed SQL migrations
+├── audit/                        Live-DB schema snapshots (drift-detection aid)
+├── notes/                        Review trackers + prompts
+├── docs/                         Build output
+├── HANDOFF.md                    Authoritative context for any new contributor
+├── vercel.json
+└── vite.config.ts
+```
+
+See [HANDOFF.md](HANDOFF.md) for the locked architecture decisions, security status of the live DB, and the current open-issue list.
 
 ## Routes
 
 ### Marketplace
 | Path | Page |
 |---|---|
-| `/` | Home — hero, categories, featured, recent, DRIVE band, TRADE band, sell CTA |
-| `/automotive` | Automotive category |
-| `/watches` | Watches category |
-| `/fashion` | Fashion category |
-| `/tech` | Tech category |
-| `/home-design` | Home & Design |
-| `/audio-vinyl` | Audio & Vinyl |
-| `/art` | Art |
-| `/listing/:slug` | Listing detail |
+| `/` | Home |
+| `/{automotive\|watches\|fashion\|tech\|home-design\|audio-vinyl\|art}` | Category pages |
+| `/listing/:slug` | Listing detail (with Express Interest form) |
+| `/search?q=` | Listing + tradesperson search |
 
 ### DRIVE (editorial imprint)
 | Path | Page |
 |---|---|
-| `/drive` | DRIVE — index of issues |
-| `/drive/:slug` | Individual issue (003 Mercedes-AMG GT live) |
-| `/reserve/drive/:slug` | DRIVE allocation checkout, 4 steps |
-
-### Reserve / Checkout
-| Path | Page |
-|---|---|
-| `/reserve` | Explainer: how reservations work |
-| `/reserve/:slug` | Marketplace item reservation checkout, 4 steps |
+| `/drive` | Index of issues |
+| `/drive/:slug` | Individual issue (with Express Interest form) |
 
 ### Seller
 | Path | Page |
 |---|---|
 | `/sell` | Tier comparison + cohort schedule |
-| `/sell/apply` | Application, 5 steps |
-| `/sell/create` | New listing flow, 6 steps |
-| `/sell/dashboard` | Mock dashboard preview |
+| `/sell/apply` | Anonymous application, 5 steps (POSTs to `/api/seller-applications`) |
+| `/sell/create` · `/sell/edit/:id` | Listing CRUD (auth required) |
+| `/sell/dashboard` | Seller dashboard |
 
-### TRADE (verified tradespeople directory)
+### TRADE
 | Path | Page |
 |---|---|
-| `/trade` | TRADE landing |
-| `/trade/apply` | Trade application, 5 steps |
-| `/trade/:category` | Category page (electricians, plumbers, etc.) |
-| `/trade/:category/:slug` | Tradesperson profile |
+| `/trade` | Landing |
+| `/trade/apply` | Application |
+| `/trade/:category` · `/trade/:category/:slug` | Category + profile |
 
 ### Account
 | Path | Page |
 |---|---|
-| `/account` | Overview |
-| `/account/orders` | Reservations with expandable timeline |
-| `/account/saved` | Saved listings |
-| `/account/settings` | Profile, notifications, account actions |
-| `/messages` | Conversations |
-| `/login` | Magic-link sign-in |
+| `/account` · `/account/{orders,saved,settings}` | Auth required |
+| `/messages` | Conversations (mock-backed, see HANDOFF) |
+| `/login` | Magic-link sign-in (PKCE) |
+
+### Admin (`requireRole="admin"`)
+| Path | Page |
+|---|---|
+| `/admin` | Dashboard |
+| `/admin/{listings,sellers,reservations,trade,users,waitlist,enquiries,categories,settings}` | Per-surface admin |
 
 ### Trust & legal
-| Path | Page |
-|---|---|
-| `/trust` | Deposits, authentication, buyer protection, disputes |
-| `/about` | Positioning, principles, contact |
-| `/terms` | Terms & Conditions (19 sections) |
-| `/privacy` | Privacy Policy (13 sections) |
-| `/cookies` | Cookie Policy |
-| `/acceptable-use` | Acceptable Use Policy |
-| `/returns` | Returns & Refunds |
-
-### Utility
-| Path | Page |
-|---|---|
-| `/sitemap` | Full site index |
-| Any unmatched route | 404 with attempted-path + category quicklinks |
-
-## Structure
-
-```
-eirvox/
-├── public/
-│   ├── brand/
-│   │   ├── wordmark.svg       (replace with wordmark.png)
-│   │   └── symbol.svg          (replace with symbol.png)
-│   ├── favicon.svg
-│   └── og-image.svg
-├── src/
-│   ├── App.svelte              (router switch)
-│   ├── main.ts
-│   ├── app.css                 (design tokens + base + focus + skip-link)
-│   ├── lib/
-│   │   ├── router.ts           (hash router + matchRoute + focus management)
-│   │   ├── seo.ts              (per-route head meta)
-│   │   ├── Nav.svelte
-│   │   ├── Footer.svelte
-│   │   ├── CookieBanner.svelte
-│   │   ├── ListingCard.svelte
-│   │   ├── SellerPill.svelte
-│   │   └── LegalLayout.svelte
-│   ├── data/
-│   │   ├── listings.ts         (31 listings · 17 sellers · 7 categories)
-│   │   ├── user.ts             (mock user · orders · saved · messages · activity)
-│   │   └── tradespeople.ts     (22 tradespeople · 15 trade categories)
-│   └── routes/                 (one file per route)
-├── docs/                       (build output → GitHub Pages)
-├── index.html
-└── vite.config.ts
-```
+`/trust` · `/about` · `/terms` · `/privacy` · `/cookies` · `/acceptable-use` · `/returns` · `/sitemap`
 
 ## Design tokens
 
@@ -143,25 +120,22 @@ eirvox/
 
 ## Platform
 
-- **Marketplace.** Curated objects across 7 categories — automotive, watches, fashion, tech, home & design, audio & vinyl, art. Verified sellers admitted by cohort application.
-- **DRIVE.** Limited-run OEM+ pieces. One specification per issue, no variants, no restocks. Issue 003 (AMG GT carbon steering wheel) currently open.
-- **TRADE.** Verified directory of independent tradespeople across Ireland. 15 categories. ID + credential verified. Flat monthly fee (€9 Listed / €29 Pro). No per-lead charges, no commission.
+- **Marketplace.** Curated objects across 7 categories. Sellers admitted by cohort application. V1 is admin-curated (admin creates listings); seller self-serve comes later.
+- **DRIVE.** Limited-run OEM+ pieces. One specification per issue.
+- **TRADE.** Verified directory of independent tradespeople across Ireland.
 
-## Key decisions
+## Key decisions (locked — see HANDOFF.md)
 
-- **Escrow is not live.** €49 refundable reservation deposit via Revolut/manual flow. All escrow language is future-facing ("coming soon" in H2 2026).
-- **No Stripe Connect as live.** Card and Apple Pay tagged as upcoming everywhere.
-- **Sellers by cohort.** No open signup. Cohort 03 reviews close 14 June 2026; approved sellers go live 01 July.
-- **Tradespeople by application.** ID + credentials + 15-minute video call before going live.
-- **No behavioural advertising.** Cookie banner offers Essential / All. We don't sell data.
-- **Hash router.** GitHub Pages-friendly. No SPA backend required for now.
+- **Public writes** (waitlist, seller applications, enquiries) go through `/api/*` Vercel serverless routes using the service-role key. No browser-to-Supabase anon inserts.
+- **Reservations are out of v1.** Replaced by "Express Interest" wired into `enquiries`. The `reservations` table is retained for admin history.
+- **Seller applications** write to a dedicated `seller_applications` table; `sellers` only gets rows on approval (via `approve_seller_application()` SECURITY DEFINER helper).
+- **Auth.** Supabase magic link with PKCE flow. Login is primarily an admin door today.
+- **Storage.** Public-read buckets with LIST disabled. Image canonical column is `storage_path`; URL derived at read time.
+- **Audit log.** Append-only `audit_log` table with triggers on `listings` and `sellers`. Admin-read only; writes only via the SECURITY DEFINER `log_audit_event()` helper invoked by triggers.
 
 ## Brand
 
-Wordmark and symbol live at `public/brand/`. They're SVG placeholders matching the design system. To use the supplied PNG artwork:
-
-1. Save the two uploaded files as `public/brand/wordmark.png` and `public/brand/symbol.png`.
-2. Update references in `Nav.svelte`, `Footer.svelte`, and `About.svelte` from `wordmark.svg` to `wordmark.png`.
+Wordmark and symbol live at `public/brand/`.
 
 ## Entity
 

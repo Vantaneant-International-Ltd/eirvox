@@ -6,6 +6,7 @@
   let menuOpen = false;
   let userMenuOpen = false;
   let userMenuEl: HTMLDivElement;
+  let navSearch = '';
 
   $: unreadCount = getUnreadCount();
 
@@ -80,7 +81,10 @@
 
     <!-- Search -->
     <div class="nav__centre">
-      <div class="nav__search-wrap">
+      <form class="nav__search-wrap" on:submit|preventDefault={() => {
+        const q = navSearch.trim();
+        if (q) handleNav(`/search?q=${encodeURIComponent(q)}`);
+      }}>
         <svg class="nav__search-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
           <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>
           <line x1="8.5" y1="8.5" x2="11" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
@@ -90,8 +94,9 @@
           class="nav__search evx-caption"
           placeholder="Search listings — make, model, category…"
           aria-label="Search listings"
+          bind:value={navSearch}
         />
-      </div>
+      </form>
     </div>
 
     <!-- Nav links + actions -->

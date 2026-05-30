@@ -37,9 +37,22 @@ Reconciliation tasks (do before other feature work):
 
 ## Known frontend bugs
 
-- `src/lib/supabase.ts` sets `detectSessionInUrl: true` but NOT `flowType: 'pkce'`. With magic-link auth and hash routing, tokens return in the URL hash and collide with the router. Add `flowType: 'pkce'`.
-- Anon URL and key are hardcoded in `src/lib/supabase.ts`. The anon key is public by design, so this is not a leak, but move to `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. The server-only `SUPABASE_SERVICE_ROLE_KEY` must NEVER carry a `VITE_` prefix (Vite inlines `VITE_` vars into the client bundle).
-- `UserRole` in `src/lib/supabase.ts` omits `tradesperson`, which the DB enum has.
+All three previously-listed bugs in this section are fixed:
+
+- ~~`flowType: 'pkce'` missing on the Supabase client~~ — fixed in commit `925c77c` (`src/lib/supabase.ts:47`).
+- ~~Hardcoded anon URL/key in `src/lib/supabase.ts`~~ — fixed in commit `8ed8e29`. Both now load from `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. See `.env.example`. The server-only `SUPABASE_SERVICE_ROLE_KEY` lives in `.env` (no `VITE_` prefix) and is consumed only by `api/_lib/supabase-admin.ts` — never imported from `src/`.
+- ~~`UserRole` omits `tradesperson`~~ — fixed in commit `925c77c`.
+
+Open issues (from audit, severity-tagged):
+
+- **MED · blocker before public ship.** No rate limiting on `api/seller-applications.ts` or `api/enquiries.ts`. Add Upstash KV per-IP throttle (or Cloudflare Turnstile) before `COMING_SOON = false`.
+- **MED.** PKCE auth `?code=…` lands at `/#/login` and outbound link clicks on that page leak the code in `Referer`. Mitigate with `exchangeCodeForSession` + `history.replaceState` to scrub the URL on Login mount, or a `<meta name="referrer">` header in `index.html`.
+- **LOW.** Unsalted SHA-256 IP hash in `api/seller-applications.ts` and `api/enquiries.ts`. IPv4 space is trivially reversible. Add an `IP_HASH_PEPPER` env var.
+- **LOW.** `{@html item}` in `src/routes/Trust.svelte:154` is safe today (hardcoded literal array) but is XSS-prone if data ever becomes dynamic.
+
+Architecture follow-ups (not bugs but tracked):
+
+- Many browser-side direct Supabase writes still exist in `src/lib/api.ts`, `src/lib/listings.ts`, `src/lib/sellers.ts`, and most of `src/lib/admin.ts`. The locked rule is "no browser-to-Supabase writes for public-facing or admin paths"; v1 grandfathers the admin ones since `is_admin()` RLS + the `protect_profile_privileged_columns` trigger defend them at the DB layer. Move to `/api/*` whenever each surface gets touched.
 
 ## Locked architecture decisions
 

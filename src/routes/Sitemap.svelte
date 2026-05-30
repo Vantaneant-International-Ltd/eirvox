@@ -47,7 +47,6 @@
   ];
 
   const transactional = [
-    { path: '/reserve',                                label: 'How reservations work',     desc: 'The explainer page — €49 deposit walkthrough.' },
     { path: '/search',                                 label: 'Search',                    desc: 'Search listings + tradespeople.' },
   ];
 

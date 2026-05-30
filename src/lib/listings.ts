@@ -353,76 +353,7 @@ export const specTemplates: Record<string, string[]> = {
   art:          ['Artist', 'Medium', 'Dimensions', 'Year', 'Edition'],
 };
 
-// ── Reservations (seller side) ──────────────────────────────
-
-export type ReservationStatus =
-  | 'pending_deposit'
-  | 'reserved'
-  | 'confirmed'
-  | 'shipped'
-  | 'completed'
-  | 'cancelled';
-
-export interface Reservation {
-  id: string;
-  listing_id: string;
-  seller_id: string;
-  buyer_id: string;
-  deposit_amount: number;
-  balance_amount: number;
-  status: ReservationStatus;
-  notes: string | null;
-  reserved_at: string;
-  updated_at: string;
-}
-
-export interface ReservationWithListing extends Reservation {
-  listing: Pick<Listing, 'id' | 'title' | 'price' | 'city'> | null;
-  buyer: { id: string; full_name: string | null; email: string | null } | null;
-}
-
-export async function getSellerReservations(
-  sellerId: string
-): Promise<ReservationWithListing[]> {
-  const { data, error } = await supabase
-    .from('reservations')
-    .select(`
-      *,
-      listing:listings ( id, title, price, city ),
-      buyer:profiles!reservations_buyer_id_fkey ( id, full_name, email )
-    `)
-    .eq('seller_id', sellerId)
-    .order('reserved_at', { ascending: false });
-
-  if (error) {
-    console.warn('[listings] getSellerReservations error:', error.message);
-    return [];
-  }
-  return (data ?? []) as ReservationWithListing[];
-}
-
-export async function updateReservationStatus(
-  id: string,
-  status: ReservationStatus
-): Promise<Result<Reservation>> {
-  const { data, error } = await supabase
-    .from('reservations')
-    .update({ status })
-    .eq('id', id)
-    .select('*')
-    .single();
-  if (error) return { ok: false, error: friendlyError(error.message) };
-  return { ok: true, data: data as Reservation };
-}
-
-export const reservationStatusLabel: Record<ReservationStatus, string> = {
-  pending_deposit: 'Awaiting deposit',
-  reserved:        'Reserved',
-  confirmed:       'Confirmed',
-  shipped:         'Shipped',
-  completed:       'Completed',
-  cancelled:       'Cancelled',
-};
+// ── Labels ──────────────────────────────────────────────────
 
 export const listingStatusLabel: Record<ListingStatus, string> = {
   draft:          'Draft',
@@ -433,38 +364,27 @@ export const listingStatusLabel: Record<ListingStatus, string> = {
   removed:        'Removed',
 };
 
-// ── Stats for the dashboard ─────────────────────────────────
+// ── Stats for the seller dashboard ──────────────────────────
 
 export interface SellerStats {
   activeListings: number;
   totalListings: number;
   totalViews: number;
-  totalSales: number;
 }
 
 export async function getSellerStats(sellerId: string): Promise<SellerStats> {
-  // 1. Listings counts + views sum
   const { data: listings, error: lErr } = await supabase
     .from('listings')
     .select('status, views_count')
     .eq('seller_id', sellerId);
 
-  // 2. Total sales (completed reservations)
-  const { data: reservations, error: rErr } = await supabase
-    .from('reservations')
-    .select('status')
-    .eq('seller_id', sellerId)
-    .eq('status', 'completed');
-
   if (lErr) console.warn('[listings] stats listings error:', lErr.message);
-  if (rErr) console.warn('[listings] stats reservations error:', rErr.message);
 
   const list = listings ?? [];
   return {
     activeListings: list.filter(l => l.status === 'active').length,
     totalListings:  list.filter(l => l.status !== 'removed').length,
     totalViews:     list.reduce((sum, l) => sum + (l.views_count ?? 0), 0),
-    totalSales:     (reservations ?? []).length,
   };
 }
 

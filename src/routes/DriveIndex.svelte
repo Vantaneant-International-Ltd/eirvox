@@ -166,9 +166,6 @@
               <span>Item shipped tracked and insured. Serialised for you.</span>
             </li>
           </ol>
-          <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/reserve')}>
-            Full reservation guide →
-          </button>
         </div>
       </div>
     </section>
