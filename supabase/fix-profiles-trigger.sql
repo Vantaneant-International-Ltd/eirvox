@@ -111,7 +111,13 @@ CREATE POLICY "Profiles: read own"
   TO authenticated
   USING (auth.uid() = id);
 
--- A signed-in user can update their own profile (but NOT change `role`).
+-- A signed-in user can update their own profile row.
+--
+-- WARNING: this policy only restricts WHICH ROW the caller can update.
+-- It does NOT block them from changing privileged columns like `role`
+-- or `suspended`. Column-level protection lives in the
+-- protect_profile_privileged_columns BEFORE UPDATE trigger defined in
+-- supabase/security-hardening.sql. Both must be applied together.
 CREATE POLICY "Profiles: update own"
   ON public.profiles
   FOR UPDATE
