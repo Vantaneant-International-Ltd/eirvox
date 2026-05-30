@@ -5,8 +5,21 @@
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import { signIn, signUp, resetPassword, auth, isAdmin, isSeller } from '../lib/auth';
+  import { supabase } from '../lib/supabase';
 
-  onMount(() => applySeo(seo.login()));
+  onMount(async () => {
+    applySeo(seo.login());
+
+    // PKCE foot-gun: magic-link redirects land here with `?code=…` in
+    // the URL. If we don't scrub it before any outbound link click, the
+    // code leaks via the Referer header. detectSessionInUrl handles the
+    // exchange; we strip the query string immediately after.
+    if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
+      try { await supabase.auth.exchangeCodeForSession(window.location.href); } catch { /* already exchanged */ }
+      const cleanPath = window.location.pathname + window.location.hash;
+      history.replaceState(null, '', cleanPath);
+    }
+  });
 
   type Mode = 'login' | 'signup' | 'reset';
   let mode: Mode = 'login';

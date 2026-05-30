@@ -7,6 +7,11 @@
     <meta name="theme-color" content="#F5F2ED" />
     <meta name="robots" content="index, follow" />
     <meta name="format-detection" content="telephone=no" />
+    <!-- strict-origin-when-cross-origin keeps Referer to same-origin
+         on same-origin nav, sends only origin on cross-origin nav,
+         and sends nothing on HTTPS→HTTP downgrades. Stops outbound
+         link clicks from leaking PKCE ?code= via Referer. -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <!-- Open Graph / Twitter defaults (overridden per route by seo.ts) -->
     <meta property="og:title" content="ÉIRVOX · Ireland's Premium Marketplace" />
