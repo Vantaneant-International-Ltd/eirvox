@@ -105,7 +105,28 @@
 
     seller = (data as Seller | null) ?? null;
 
-    // No seller row yet — this is a normal state for buyers who haven't applied.
+    // v1: admins are the de-facto seller. Auto-create a house seller row
+    // on first dashboard load so admins land on a working dashboard
+    // (same flow as SellerCreate). See HANDOFF "v1 is admin-curated".
+    const profile = $auth.profile;
+    if (!seller && profile?.role === 'admin') {
+      const fullName = (profile.full_name ?? user.email ?? 'ÉIRVOX House').toString();
+      const { data: created, error: insErr } = await supabase
+        .from('sellers')
+        .insert({
+          profile_id: user.id,
+          trading_name: fullName,
+          email: user.email ?? null,
+          tier: 'house',
+          status: 'approved',
+          approved_at: new Date().toISOString(),
+        })
+        .select('*')
+        .single();
+      if (!insErr && created) seller = created as Seller;
+    }
+
+    // No seller row yet — normal for buyers who haven't applied.
     if (!seller) {
       loading = false;
       loadStatus = 'no-seller';

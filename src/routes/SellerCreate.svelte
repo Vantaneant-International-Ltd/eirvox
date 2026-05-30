@@ -79,6 +79,41 @@
     }
 
     seller = (sellerR.value.data as Seller | null) ?? null;
+
+    // v1 model (HANDOFF locked decision): "v1 is admin-curated — admin
+    // creates listings and uploads images; seller self-serve comes later."
+    // If an admin loads this page without an attached sellers row,
+    // auto-create a house seller for them so they can list directly.
+    // The sellers_admin_all RLS policy permits the insert.
+    if (!seller && a.profile?.role === 'admin') {
+      const fullName = (a.profile.full_name ?? a.user.email ?? 'ÉIRVOX House').toString();
+      const houseR = await withTimeout(
+        supabase
+          .from('sellers')
+          .insert({
+            profile_id: a.user.id,
+            trading_name: fullName,
+            email: a.user.email ?? null,
+            tier: 'house',
+            status: 'approved',
+            approved_at: new Date().toISOString(),
+          })
+          .select('*')
+          .single(),
+        10_000,
+        'house-seller-create'
+      );
+      if (!houseR.ok || (houseR.ok && houseR.value.error)) {
+        bootStatus = 'db-error';
+        bootError = houseR.ok
+          ? (houseR.value.error?.message ?? 'Could not create the house seller row.')
+          : 'Could not create the house seller row in 10s.';
+        booting = false;
+        return;
+      }
+      seller = houseR.value.data as Seller;
+    }
+
     if (!seller) {
       bootStatus = 'no-seller';
       booting = false;
