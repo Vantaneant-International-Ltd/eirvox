@@ -142,6 +142,9 @@ export async function applyAsSeller(input: SellerApplyInput): Promise<Result<Sel
   if (res.status === 400) {
     return { ok: false, error: payload?.error ?? 'Please check the form and try again.' };
   }
+  if (res.status === 429) {
+    return { ok: false, error: 'Too many submissions. Wait a moment and try again.' };
+  }
   return { ok: false, error: payload?.error ?? 'Could not submit your application. Try again.' };
 }
 

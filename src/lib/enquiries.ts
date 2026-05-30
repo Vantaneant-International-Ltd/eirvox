@@ -92,6 +92,9 @@ export async function submitEnquiry(input: SubmitEnquiryInput): Promise<SubmitOu
   if (res.status === 400) {
     return { ok: false, reason: 'invalid', message: payload?.error ?? 'Please check the form and try again.' };
   }
+  if (res.status === 429) {
+    return { ok: false, reason: 'error', message: 'Too many submissions. Wait a moment and try again.' };
+  }
   return { ok: false, reason: 'error', message: payload?.error ?? 'Could not send your enquiry. Try again.' };
 }
 

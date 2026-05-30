@@ -55,9 +55,11 @@ export async function submitWaitlist(
     return { ok: false, reason: 'duplicate', message: "You're already on the list." };
   }
   if (res.status === 400) {
-    // Try to surface the server's message; fall back to generic.
     const body = await res.json().catch(() => null) as { error?: string } | null;
     return { ok: false, reason: 'invalid', message: body?.error ?? 'Please enter a valid email.' };
+  }
+  if (res.status === 429) {
+    return { ok: false, reason: 'error', message: 'Too many submissions. Wait a moment and try again.' };
   }
   return { ok: false, reason: 'error', message: 'Something went wrong. Try again.' };
 }

@@ -17,6 +17,7 @@ import {
   hashIpForTriage,
   clientIp,
 } from './_lib/supabase-admin';
+import { rateLimit, rateLimitResponse } from './_lib/ratelimit';
 
 export const config = { runtime: 'edge' };
 
@@ -53,6 +54,9 @@ export default async function handler(req: Request): Promise<Response> {
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405, headers: { allow: 'POST' } });
   }
+
+  const rl = await rateLimit(req, 'enquiries');
+  if (!rl.allowed) return rateLimitResponse(rl);
 
   const body = await readJson<Body>(req);
   if (!body) return bad('Missing or invalid JSON body.');
