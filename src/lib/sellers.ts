@@ -87,45 +87,62 @@ export async function getMySeller(): Promise<Seller | null> {
 
 // ── Apply ────────────────────────────────────────────────────
 
-/** Insert a seller application. If a row already exists for this
- *  profile, returns its current status instead of duplicating. */
-export async function applyAsSeller(input: SellerApplyInput): Promise<Result<Seller>> {
+export interface SellerApplicationStub {
+  id: string;
+}
+
+/** Submit a seller application via the serverless route.
+ *  Anonymous-friendly: works whether or not the visitor is signed in.
+ *  Writes to seller_applications (not sellers — sellers only gets
+ *  rows on admin approval via approve_seller_application()).
+ *
+ *  Local dev: `npm run dev:api` (vercel dev) to exercise the API.
+ *  Plain `npm run dev` (vite only) will 404 the call. */
+export async function applyAsSeller(input: SellerApplyInput): Promise<Result<SellerApplicationStub>> {
+  // Attach profile_id when signed in so admins can link the application
+  // back to a user account; anonymous applications send null.
   const user = getCurrentUser();
-  if (!user) return { ok: false, error: 'You need to be signed in to apply.' };
 
-  // If they already have one, return it.
-  const existing = await getMySeller();
-  if (existing) return { ok: true, data: existing };
-
-  const payload = {
-    profile_id: user.id,
-    trading_name: input.trading_name.trim(),
-    handle: input.handle?.trim() || null,
-    email: input.email.trim(),
-    phone: input.phone.trim(),
-    city: input.city.trim(),
-    trading_since: input.trading_since?.trim() || null,
-    primary_category: input.primary_category,
-    what_they_sell: input.what_they_sell.trim(),
-    inventory_count: input.inventory_count,
-    price_low: input.price_low ?? null,
-    price_high: input.price_high ?? null,
-    sourcing_method: input.sourcing_method.trim(),
-    tier: input.tier,
-    status: 'pending' as SellerStatus,
-  };
-
-  const { data, error } = await supabase
-    .from('sellers')
-    .insert(payload)
-    .select('*')
-    .single();
-
-  if (error) {
-    console.warn('[sellers] applyAsSeller error:', error.message);
-    return { ok: false, error: friendlyError(error.message) };
+  let res: Response;
+  try {
+    res = await fetch('/api/seller-applications', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        profile_id: user?.id ?? null,
+        trading_name: input.trading_name,
+        handle: input.handle,
+        email: input.email,
+        phone: input.phone,
+        city: input.city,
+        trading_since: input.trading_since,
+        primary_category: input.primary_category,
+        what_they_sell: input.what_they_sell,
+        inventory_count: input.inventory_count,
+        price_low: input.price_low,
+        price_high: input.price_high,
+        sourcing_method: input.sourcing_method,
+        tier: input.tier,
+      }),
+    });
+  } catch {
+    return { ok: false, error: 'Could not reach the server. Try again in a moment.' };
   }
-  return { ok: true, data: data as Seller };
+
+  const payload = await res.json().catch(() => null) as
+    | { ok?: boolean; id?: string; error?: string }
+    | null;
+
+  if (res.ok && payload?.id) {
+    return { ok: true, data: { id: payload.id } };
+  }
+  if (res.status === 409) {
+    return { ok: false, error: payload?.error ?? 'You already have a pending application.' };
+  }
+  if (res.status === 400) {
+    return { ok: false, error: payload?.error ?? 'Please check the form and try again.' };
+  }
+  return { ok: false, error: payload?.error ?? 'Could not submit your application. Try again.' };
 }
 
 // ── Update profile ──────────────────────────────────────────
