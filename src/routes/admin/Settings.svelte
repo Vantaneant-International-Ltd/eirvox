@@ -63,6 +63,21 @@
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ amount_eur: 1, description: 'ÉIRVOX live integration test' }),
       });
+
+      // If /api/* isn't being served (plain `npm run dev` instead of
+      // `npm run dev:api`), Vite returns a 404 with HTML, not JSON.
+      // Detect that before .json() throws an unhelpful parse error.
+      const ct = res.headers.get('content-type') ?? '';
+      if (!ct.includes('application/json')) {
+        if (res.status === 404) {
+          payTestError = 'The /api/* routes are not running. Stop `npm run dev` and run `npm run dev:api` (Vercel CLI) instead so Edge routes work.';
+        } else {
+          payTestError = `Server returned non-JSON (${res.status}). The API route may have crashed before responding.`;
+        }
+        payTestRunning = false;
+        return;
+      }
+
       const body = await res.json();
       if (!res.ok || !body.checkout_url) {
         payTestError = body.error ?? 'Could not create the test order.';

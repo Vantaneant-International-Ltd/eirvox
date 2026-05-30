@@ -34,12 +34,19 @@
 
     try {
       const res = await fetch(`/api/payments/order-status?id=${encodeURIComponent(orderId)}`);
-      const body = await res.json();
-      if (!res.ok || !body.ok) {
-        error = body.error ?? 'Could not read order status.';
+      const ct = res.headers.get('content-type') ?? '';
+      if (!ct.includes('application/json')) {
+        error = res.status === 404
+          ? 'The /api/* routes are not running. Use `npm run dev:api` (Vercel CLI) so Edge routes are served.'
+          : `Server returned non-JSON (${res.status}).`;
       } else {
-        state = body.state;
-        amount = body.amount_eur;
+        const body = await res.json();
+        if (!res.ok || !body.ok) {
+          error = body.error ?? 'Could not read order status.';
+        } else {
+          state = body.state;
+          amount = body.amount_eur;
+        }
       }
     } catch {
       error = 'Network error fetching order status.';
