@@ -81,26 +81,16 @@
     <footer class="cs__footer cs__fade cs__fade--footer">
       <span class="cs__entity">ÉIRVOX Systems Ltd · Dublin, Ireland</span>
       <div class="cs__social">
-        <a href="https://instagram.com/eirvox.ie" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on Instagram">
+        <a href="https://www.instagram.com/eirvox_" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on Instagram">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
             <rect x="3" y="3" width="18" height="18" rx="4.5"/>
             <circle cx="12" cy="12" r="4.2"/>
             <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/>
           </svg>
         </a>
-        <a href="https://linkedin.com/company/eirvox" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on LinkedIn">
+        <a href="https://www.linkedin.com/company/%C3%A9irvox/" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on LinkedIn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M19.5 3h-15A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3zM8.3 18H5.7V9.7h2.6V18zM7 8.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM18.3 18h-2.6v-4.2c0-1-.4-1.7-1.3-1.7-.7 0-1.1.5-1.3 1-.1.2-.1.4-.1.7V18h-2.6V9.7H13v1.1c.4-.6 1-1.3 2.2-1.3 1.6 0 3 1 3 3.3V18z"/>
-          </svg>
-        </a>
-        <a href="https://x.com/eirvox" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on X">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M18.2 3H21l-7 8 8.2 10h-6.8l-5.3-6.5L4.9 21H2l7.5-8.5L1.8 3h6.9l4.8 6L18.2 3z"/>
-          </svg>
-        </a>
-        <a href="https://tiktok.com/@eirvox" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on TikTok">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M16 3v1.6a4.4 4.4 0 003.6 4.3v2.8a7.2 7.2 0 01-3.6-1V15.5a5.5 5.5 0 11-5.5-5.5c.3 0 .5 0 .8.05v2.85a2.7 2.7 0 102.7 2.7V3H16z"/>
           </svg>
         </a>
       </div>
