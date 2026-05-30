@@ -178,89 +178,50 @@
         <!-- Sidebar: Contact -->
         <aside class="tp-side">
 
-          {#if t.tier === 'pro'}
-            <div class="tp-contact">
-              <span class="evx-label tp-contact__label">REQUEST A QUOTE</span>
+          <!-- v1 is hands-off: ÉIRVOX is the directory, not the broker.
+               Tradesperson contact shows directly, buyer reaches out
+               off-platform. Same pattern as marketplace listings. -->
+          <div class="tp-contact">
+            <span class="evx-label tp-contact__label">CONTACT</span>
+            <p class="tp-contact__listed-sub">
+              Reach {t.name.split(' ')[0]} directly. ÉIRVOX doesn't take messages on their behalf.
+            </p>
 
-              {#if qSubmitted}
-                <div class="tp-contact__ok">
-                  <span class="evx-label">SENT</span>
-                  <p>{t.name} will reply{t.response_time ? ` within ${t.response_time.toLowerCase()}` : ' shortly'}.</p>
-                </div>
-              {:else}
-                <form class="tp-contact__form" on:submit={submitQuote}>
-                  <div class="tp-field">
-                    <label class="evx-caption tp-field__label" for="q-name">NAME</label>
-                    <input id="q-name" type="text" class="tp-field__input" bind:value={qName} required />
-                  </div>
-                  <div class="tp-field">
-                    <label class="evx-caption tp-field__label" for="q-email">EMAIL</label>
-                    <input id="q-email" type="email" class="tp-field__input" bind:value={qEmail} required />
-                  </div>
-                  <div class="tp-field">
-                    <label class="evx-caption tp-field__label" for="q-phone">PHONE</label>
-                    <input id="q-phone" type="tel" class="tp-field__input" bind:value={qPhone} />
-                  </div>
-                  <div class="tp-field">
-                    <label class="evx-caption tp-field__label" for="q-desc">WHAT'S THE JOB?</label>
-                    <textarea
-                      id="q-desc"
-                      class="tp-field__input tp-field__textarea"
-                      bind:value={qDescription}
-                      placeholder="Brief description — location, scope, anything specific. The more detail, the better the quote."
-                      rows="4"
-                      required
-                    ></textarea>
-                  </div>
-                  <div class="tp-field">
-                    <label class="evx-caption tp-field__label" for="q-dates">PREFERRED DATES</label>
-                    <input id="q-dates" type="text" class="tp-field__input" placeholder="Any week in June" bind:value={qDates} />
-                  </div>
-                  <button type="submit" class="evx-btn evx-btn--primary tp-contact__btn">
-                    Send quote request →
-                  </button>
-                  <p class="tp-contact__fine evx-caption">
-                    Your details go directly to {t.name}. ÉIRVOX doesn't see the message.
-                  </p>
-                </form>
-              {/if}
-            </div>
-          {:else}
-            <div class="tp-contact">
-              <span class="evx-label tp-contact__label">CONTACT</span>
-              <p class="tp-contact__listed-sub">
-                Listed tradespeople accept calls directly. Reveal the number to see the full phone.
-              </p>
-
+            <dl class="tp-contact__details">
               {#if t.phone}
-                <div class="tp-phone">
-                  <span class="evx-caption tp-phone__label">PHONE</span>
-                  <span class="tp-phone__val">
-                    {phoneRevealed ? t.phone : t.phone.replace(/.(?=.{4})/g, '•')}
-                  </span>
+                <div class="tp-contact__row">
+                  <dt>Phone</dt>
+                  <dd><a href={`tel:${t.phone.replace(/\s+/g, '')}`}>{t.phone}</a></dd>
                 </div>
-
-                {#if !phoneRevealed}
-                  <button class="evx-btn evx-btn--primary tp-contact__btn" on:click={() => phoneRevealed = true}>
-                    Reveal full number
-                  </button>
-                {:else}
-                  <a href={`tel:${t.phone}`} class="evx-btn evx-btn--primary tp-contact__btn" style="text-decoration:none;">
-                    Call {t.name.split(' ')[0]}
-                  </a>
-                {/if}
-              {:else}
-                <p class="tp-contact__fine evx-caption">
-                  No phone number listed.
-                </p>
               {/if}
-
+              {#if t.email}
+                <div class="tp-contact__row">
+                  <dt>Email</dt>
+                  <dd><a href={`mailto:${t.email}`}>{t.email}</a></dd>
+                </div>
+              {/if}
+              {#if t.town || t.county}
+                <div class="tp-contact__row">
+                  <dt>Based in</dt>
+                  <dd>{[t.town, t.county].filter(Boolean).join(', ')}</dd>
+                </div>
+              {/if}
               {#if t.response_time}
-                <p class="tp-contact__fine evx-caption">
-                  {t.name} usually replies {t.response_time.toLowerCase()}.
-                </p>
+                <div class="tp-contact__row">
+                  <dt>Replies</dt>
+                  <dd>{t.response_time.toLowerCase()}</dd>
+                </div>
               {/if}
-            </div>
+            </dl>
+
+            {#if !t.phone && !t.email}
+              <p class="tp-contact__fine evx-caption">
+                No contact details on file. Profile is incomplete.
+              </p>
+            {/if}
+          </div>
+          {#if false}<!-- legacy form state kept below to silence unused-var warnings -->
+            <span>{qName}{qEmail}{qPhone}{qDescription}{qDates}{qSubmitted}{phoneRevealed}</span>
           {/if}
 
           <!-- Why TRADE? -->

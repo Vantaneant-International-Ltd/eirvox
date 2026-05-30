@@ -19,7 +19,6 @@
   import { navigate, currentPath } from '../lib/router';
   import { auth } from '../lib/auth';
   import { applySeo, seo } from '../lib/seo';
-  import EnquiryForm from '../lib/EnquiryForm.svelte';
 
   export let slug: string;
 
@@ -31,7 +30,6 @@
 
   let activeImage = 0;
   let saved = false;
-  let showEnquiry = false;
 
   // ── Load ──
   async function load() {
@@ -87,22 +85,11 @@
     if (!r.ok) saved = !saved;
   }
 
-  function openEnquiry() {
-    showEnquiry = true;
-    // Defer to next tick so the panel exists before we scroll to it.
-    queueMicrotask(() => {
-      document.getElementById('enquiry')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-
-  function messageSeller() {
-    if (!listing) return;
-    if (!$auth.user) {
-      try { sessionStorage.setItem('eirvox-return-to', $currentPath); } catch {}
-      navigate('/login');
-      return;
-    }
-    navigate(`/messages?seller=${listing.seller_id}&listing=${listing.id}`);
+  // v1 is hands-off: ÉIRVOX is the venue, not the broker. Buyers see
+  // the seller's contact directly and reach out off-platform. No
+  // platform-facilitated messaging, no enquiry queue routing.
+  function scrollToContact() {
+    document.getElementById('seller-contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   // Derived: display tier for SellerPill
@@ -272,13 +259,10 @@
                 Reserved
               </button>
             {:else}
-              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={openEnquiry}>
-                Express interest
+              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={scrollToContact}>
+                Contact seller
               </button>
             {/if}
-            <button class="evx-btn evx-btn--ghost panel__cta-offer" on:click={messageSeller}>
-              Message {listing.seller?.trading_name ?? 'seller'}
-            </button>
           </div>
 
           <!-- How reservation works -->
@@ -414,12 +398,12 @@
           </div>
 
           <div class="detail-aside-card">
-            <span class="evx-caption detail-aside-card__title">ENQUIRE</span>
+            <span class="evx-caption detail-aside-card__title">CONTACT</span>
             <p class="detail-aside-card__body">
-              Express interest and we'll connect you with the seller. No deposit. No commitment.
+              Reach out to {listing.seller?.trading_name ?? 'the seller'} directly. ÉIRVOX doesn't take messages on their behalf.
             </p>
-            <button class="evx-caption detail-aside-card__link" on:click={openEnquiry}>
-              SEND AN ENQUIRY →
+            <button class="evx-caption detail-aside-card__link" on:click={scrollToContact}>
+              SEE SELLER CONTACT →
             </button>
           </div>
 
@@ -474,30 +458,54 @@
         <span class="sticky-cta__price-val">{formatPrice(listing.price)}</span>
       </div>
       <div class="sticky-cta__btns">
-        <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={messageSeller}>
-          Message
-        </button>
-        <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={openEnquiry}
+        <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={scrollToContact}
                 disabled={listing.status === 'sold' || listing.status === 'reserved'}>
-          {listing.status === 'sold' ? 'Sold' : listing.status === 'reserved' ? 'Reserved' : 'Express interest'}
+          {listing.status === 'sold' ? 'Sold' : listing.status === 'reserved' ? 'Reserved' : 'Contact seller'}
         </button>
       </div>
     </div>
 
-    {#if showEnquiry}
-      <section id="enquiry" class="detail-enquiry page-container">
-        <header class="detail-enquiry__head">
-          <span class="evx-caption detail-enquiry__pre">ENQUIRE</span>
-          <h2 class="detail-enquiry__h">Express interest in <em>{listing.title}</em>.</h2>
-          <p class="detail-enquiry__sub">We'll connect you with {listing.seller?.trading_name ?? 'the seller'} and respond within 24 hours.</p>
-        </header>
-        <EnquiryForm
-          subjectType="listing"
-          listingId={listing.id}
-          messagePlaceholder={`Hi — interested in ${listing.title}. Could you tell me more about…`}
-        />
-      </section>
-    {/if}
+    <!-- Seller contact panel — v1 is hands-off, ÉIRVOX is the venue not the broker -->
+    <section id="seller-contact" class="detail-contact page-container">
+      <header class="detail-contact__head">
+        <span class="evx-caption detail-contact__pre">CONTACT</span>
+        <h2 class="detail-contact__h">Reach out to <em>{listing.seller?.trading_name ?? 'the seller'}</em>.</h2>
+        <p class="detail-contact__sub">
+          ÉIRVOX curates the listing but doesn't broker contact. Get in touch with the seller directly using the details below.
+        </p>
+      </header>
+
+      <dl class="detail-contact__list">
+        <div class="detail-contact__row">
+          <dt>Trading name</dt>
+          <dd>{listing.seller?.trading_name ?? '—'}{#if listing.seller?.handle} <span class="detail-contact__handle">·  @{listing.seller.handle}</span>{/if}</dd>
+        </div>
+        {#if listing.seller?.email}
+          <div class="detail-contact__row">
+            <dt>Email</dt>
+            <dd><a href={`mailto:${listing.seller.email}?subject=${encodeURIComponent('Re: ' + listing.title)}`}>{listing.seller.email}</a></dd>
+          </div>
+        {/if}
+        {#if listing.seller?.phone}
+          <div class="detail-contact__row">
+            <dt>Phone</dt>
+            <dd><a href={`tel:${listing.seller.phone.replace(/\s+/g, '')}`}>{listing.seller.phone}</a></dd>
+          </div>
+        {/if}
+        {#if listing.seller?.city}
+          <div class="detail-contact__row">
+            <dt>Based in</dt>
+            <dd>{listing.seller.city}</dd>
+          </div>
+        {/if}
+      </dl>
+
+      {#if !listing.seller?.email && !listing.seller?.phone}
+        <p class="detail-contact__missing">
+          This seller hasn't added contact details yet. We've nudged them to update their profile.
+        </p>
+      {/if}
+    </section>
   </main>
 {/if}
 
@@ -637,22 +645,22 @@
   .sticky-cta__price { display: flex; flex-direction: column; gap: 0; min-width: 0; }
   .sticky-cta__price-label { color: var(--evx-ink-soft); font-size: 10px; }
   .sticky-cta__price-val { font-family: var(--evx-font-display); font-weight: 500; font-size: 20px; letter-spacing: -0.01em; }
-  .detail-enquiry {
+  .detail-contact {
     padding-top: var(--evx-space-3xl);
     padding-bottom: var(--evx-space-2xl);
     border-top: 1px solid var(--evx-rule-light);
     margin-top: var(--evx-space-2xl);
   }
-  .detail-enquiry__head {
-    margin-bottom: var(--evx-space-lg);
+  .detail-contact__head {
+    margin-bottom: var(--evx-space-xl);
     max-width: 640px;
   }
-  .detail-enquiry__pre {
+  .detail-contact__pre {
     color: var(--evx-fox-orange);
     display: block;
     margin-bottom: var(--evx-space-sm);
   }
-  .detail-enquiry__h {
+  .detail-contact__h {
     font-family: var(--evx-font-display);
     font-size: clamp(24px, 3vw, 32px);
     font-weight: 500;
@@ -660,15 +668,61 @@
     color: var(--evx-warm-black);
     margin-bottom: var(--evx-space-sm);
   }
-  .detail-enquiry__h em {
+  .detail-contact__h em {
     font-family: var(--evx-font-editorial);
     font-style: italic;
     font-weight: 400;
   }
-  .detail-enquiry__sub {
+  .detail-contact__sub {
     font-size: 15px;
     color: var(--evx-ink-soft);
     line-height: 1.6;
+  }
+  .detail-contact__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 640px;
+  }
+  .detail-contact__row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--evx-space-lg);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--evx-rule-light);
+    align-items: baseline;
+  }
+  .detail-contact__row dt {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+  }
+  .detail-contact__row dd {
+    font-size: 15px;
+    color: var(--evx-warm-black);
+  }
+  .detail-contact__row dd a {
+    color: var(--evx-warm-black);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: var(--evx-transition);
+  }
+  .detail-contact__row dd a:hover { color: var(--evx-fox-orange); }
+  .detail-contact__handle {
+    font-family: var(--evx-font-mono);
+    font-size: 13px;
+    color: var(--evx-ink-soft);
+  }
+  .detail-contact__missing {
+    margin-top: var(--evx-space-md);
+    font-size: 14px;
+    font-style: italic;
+    color: var(--evx-ink-soft);
+  }
+  @media (max-width: 600px) {
+    .detail-contact__row { grid-template-columns: 1fr; gap: 4px; }
   }
 
   .sticky-cta__btns { display: flex; gap: var(--evx-space-sm); flex-shrink: 0; }

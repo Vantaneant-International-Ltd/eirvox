@@ -42,7 +42,6 @@
     { path: '/account/orders',    label: 'Reservations',      desc: 'Expandable timeline + per-status actions.' },
     { path: '/account/saved',     label: 'Saved items',       desc: 'Listings you\'ve kept for later.' },
     { path: '/account/settings',  label: 'Settings',          desc: 'Profile · notifications · account actions.' },
-    { path: '/messages',          label: 'Messages',          desc: 'Conversations with sellers.' },
     { path: '/login',             label: 'Sign in',           desc: 'Email + password sign-in.' },
   ];
 

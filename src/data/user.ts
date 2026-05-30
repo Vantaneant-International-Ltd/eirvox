@@ -329,7 +329,7 @@ export const activity: ActivityItem[] = [
     title: 'Moss & Co. replied',
     detail: 'New message about Tudor Black Bay 58',
     timestamp: '2 hours ago',
-    link: '/messages',
+    link: '/account',
   },
   {
     id: 'a-002',
@@ -345,7 +345,7 @@ export const activity: ActivityItem[] = [
     title: 'Offer accepted on Tudor Black Bay 58',
     detail: 'Moss & Co. accepted €3,400 · ready to reserve',
     timestamp: '5 days ago',
-    link: '/messages',
+    link: '/account',
   },
   {
     id: 'a-004',

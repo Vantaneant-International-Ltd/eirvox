@@ -1,14 +1,11 @@
 <script lang="ts">
   import { currentPath, navigate, isActive } from './router';
-  import { getUnreadCount } from '../data/user';
   import { auth, signOut } from './auth';
 
   let menuOpen = false;
   let userMenuOpen = false;
   let userMenuEl: HTMLDivElement;
   let navSearch = '';
-
-  $: unreadCount = getUnreadCount();
 
   // Derived auth state
   $: profile = $auth.profile;
@@ -133,19 +130,6 @@
       </button>
 
       {#if signedIn}
-        <button
-          class="nav__messages"
-          on:click={() => handleNav('/messages')}
-          aria-label="Messages{unreadCount > 0 ? ` (${unreadCount} unread)` : ''}"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-            <path d="M2 3h12v8H6l-3 3v-3H2V3z" stroke-linejoin="round"/>
-          </svg>
-          {#if unreadCount > 0}
-            <span class="nav__messages-badge">{unreadCount}</span>
-          {/if}
-        </button>
-
         <div class="nav__user" bind:this={userMenuEl}>
           <button
             class="nav__avatar"
@@ -167,10 +151,6 @@
                 <span class="nav__user-email">{user?.email ?? ''}</span>
               </div>
               <button class="nav__user-item" on:click={() => handleNav('/account')} role="menuitem">Account</button>
-              <button class="nav__user-item" on:click={() => handleNav('/messages')} role="menuitem">
-                Messages
-                {#if unreadCount > 0}<span class="nav__user-badge">{unreadCount}</span>{/if}
-              </button>
               {#if showSellerLink}
                 <button class="nav__user-item" on:click={() => handleNav('/sell/dashboard')} role="menuitem">My listings</button>
               {/if}
@@ -246,12 +226,6 @@
             <span class="nav__drawer-email">{user?.email ?? ''}</span>
           </li>
           <li><button class="nav__drawer-link" on:click={() => handleNav('/account')}>Account</button></li>
-          <li>
-            <button class="nav__drawer-link" on:click={() => handleNav('/messages')}>
-              Messages
-              {#if unreadCount > 0}<span class="nav__drawer-badge">{unreadCount}</span>{/if}
-            </button>
-          </li>
           {#if showSellerLink}
             <li><button class="nav__drawer-link" on:click={() => handleNav('/sell/dashboard')}>My listings</button></li>
           {/if}

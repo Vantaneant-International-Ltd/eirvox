@@ -32,6 +32,10 @@ export interface Seller {
   city: string | null;
   bio: string | null;
   logo_url: string | null;
+  // Surface-able contact (v1 is hands-off: listing pages show these
+  // directly so buyers contact the seller without a platform middleman)
+  email: string | null;
+  phone: string | null;
   // Derived (not in DB yet, fall back to safe defaults)
   rating?: number;
   sales_count?: number;
@@ -214,7 +218,7 @@ export interface ListingsOptions {
 
 const LISTING_SELECT = `
   *,
-  seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio ),
+  seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone ),
   images:listing_images ( id, public_url, sort_order )
 `;
 
@@ -255,7 +259,7 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
     .from('listings')
     .select(`
       *,
-      seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio ),
+      seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone ),
       images:listing_images ( id, listing_id, storage_path, public_url, sort_order ),
       specs:listing_specs ( id, listing_id, label, value, sort_order )
     `)
@@ -267,7 +271,7 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
       .from('listings')
       .select(`
         *,
-        seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio ),
+        seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone ),
         images:listing_images ( id, listing_id, storage_path, public_url, sort_order ),
         specs:listing_specs ( id, listing_id, label, value, sort_order )
       `)

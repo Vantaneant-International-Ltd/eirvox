@@ -162,12 +162,6 @@ export const seo = {
     };
   },
 
-  messages: (): SeoData => ({
-    title: 'Messages',
-    description: 'Conversations with sellers on ÉIRVOX.',
-    path: '/messages',
-  }),
-
   sitemap: (): SeoData => ({
     title: 'Sitemap',
     description: 'Every page on ÉIRVOX — quick navigation for buyers, sellers, and crawlers.',

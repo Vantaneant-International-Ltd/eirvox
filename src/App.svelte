@@ -19,7 +19,6 @@
   import About from './routes/About.svelte';
   import Login from './routes/Login.svelte';
   import Account from './routes/Account.svelte';
-  import Messages from './routes/Messages.svelte';
   import AdminDashboard from './routes/admin/Dashboard.svelte';
   import AdminListings from './routes/admin/Listings.svelte';
   import AdminSellers from './routes/admin/Sellers.svelte';
@@ -151,11 +150,7 @@
 {:else if path === '/login'}
   <Login />
 
-<!-- ════ Account + Messages (auth required) ════ -->
-{:else if path === '/messages'}
-  <AuthGuard requireAuth={true}>
-    <Messages />
-  </AuthGuard>
+<!-- ════ Account (auth required) ════ -->
 {:else if path === '/account'}
   <AuthGuard requireAuth={true}>
     <Account tab="overview" />

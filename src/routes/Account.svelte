@@ -14,7 +14,6 @@
     getActiveReservations,
     getOrderListing,
     getOrderSeller,
-    getUnreadCount,
     statusLabel,
     type OrderStatus,
   } from '../data/user';
@@ -26,7 +25,6 @@
   $: if (typeof document !== 'undefined' && tab) applySeo(seo.account(tab));
 
   $: activeReservations = getActiveReservations();
-  $: unreadCount = getUnreadCount();
 
   // Live saved listings from Supabase. We keep `savedItems` mock for legacy slugs
   // but only render the live ones — when the user has none yet, show empty state.
@@ -88,23 +86,22 @@
     if (status === 'completed') return 4;
     return 0;
   }
-  // Actions per status
+  // Actions per status. v1 is hands-off — contact happens directly
+  // with sellers off-platform, so 'message seller' actions are gone.
+  // The remaining flows (pay, confirm, track) are placeholders until
+  // the H2 Stripe-Connect escrow ships.
   function statusActions(status: OrderStatus): { label: string; href: string; primary?: boolean }[] {
     switch (status) {
       case 'reserved':  return [
-        { label: 'Pay deposit', href: '/messages', primary: true },
-        { label: 'Message seller', href: '/messages' },
+        { label: 'View listing', href: '/account/orders' },
       ];
       case 'confirmed': return [
-        { label: 'Pay balance', href: '/messages', primary: true },
-        { label: 'Message seller', href: '/messages' },
+        { label: 'View listing', href: '/account/orders' },
       ];
       case 'shipped':   return [
-        { label: 'Confirm receipt', href: '/messages', primary: true },
-        { label: 'Track shipment', href: '/messages' },
+        { label: 'View listing', href: '/account/orders' },
       ];
       case 'completed': return [
-        { label: 'Leave review', href: '/messages', primary: true },
         { label: 'View listing', href: '/automotive' },
       ];
       case 'cancelled': return [
@@ -153,14 +150,6 @@
         {/if}
       </div>
 
-      <div class="acct-header__actions">
-        <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/messages')}>
-          Messages
-          {#if unreadCount > 0}
-            <span class="acct-header__badge">{unreadCount}</span>
-          {/if}
-        </button>
-      </div>
     </header>
 
     <div class="acct-body">
@@ -223,11 +212,6 @@
               <span class="acct-stat__val">{savedItems.length}</span>
               <span class="evx-caption acct-stat__sub">Across {new Set(savedListings.map(l => l.category_slug)).size} categories</span>
             </button>
-            <button class="acct-stat acct-stat--accent" on:click={() => navigate('/messages')}>
-              <span class="evx-label acct-stat__label acct-stat__label--accent">UNREAD MESSAGES</span>
-              <span class="acct-stat__val">{unreadCount}</span>
-              <span class="evx-caption acct-stat__sub">Across {conversations.filter(c => c.unread > 0).length} conversations</span>
-            </button>
           </div>
 
           <!-- Activity feed -->
@@ -258,11 +242,6 @@
               <button class="shortcut" on:click={() => navigate('/automotive')}>
                 <strong class="shortcut__title">Browse marketplace</strong>
                 <span class="shortcut__detail evx-caption">31 listings across 7 categories</span>
-                <span class="shortcut__arrow">→</span>
-              </button>
-              <button class="shortcut" on:click={() => navigate('/messages')}>
-                <strong class="shortcut__title">View messages</strong>
-                <span class="shortcut__detail evx-caption">{unreadCount} unread · {conversations.length} threads</span>
                 <span class="shortcut__arrow">→</span>
               </button>
               <button class="shortcut" on:click={() => navigate('/account/saved')}>

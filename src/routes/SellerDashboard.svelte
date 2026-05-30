@@ -267,9 +267,6 @@
             + Create listing
           </button>
         {/if}
-        <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={() => navigate('/messages')}>
-          Messages
-        </button>
       </div>
     </header>
 
@@ -389,12 +386,6 @@
             <span class="evx-label action-card__label">CREATE</span>
             <strong class="action-card__title">New listing</strong>
             <span class="evx-caption action-card__desc">Draft → submit for review → live within 24h.</span>
-            <span class="action-card__arrow">→</span>
-          </button>
-          <button class="action-card" on:click={() => navigate('/messages')}>
-            <span class="evx-label action-card__label">RESPOND</span>
-            <strong class="action-card__title">View messages</strong>
-            <span class="evx-caption action-card__desc">Buyer enquiries.</span>
             <span class="action-card__arrow">→</span>
           </button>
           <button class="action-card" on:click={() => tab = 'profile'}>
