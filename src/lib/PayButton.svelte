@@ -117,9 +117,10 @@
     <!-- Native Revolut Pay button (rendered by embed.js into this target) -->
     <div class="paybtn__rev" bind:this={payTarget}></div>
 
-    <button class="paybtn__other" type="button" on:click={openOtherMethods} disabled={popupOpen || !instance}>
-      {popupOpen ? 'Opening…' : `Pay ${amountFmt} another way (Apple Pay · Google Pay · Card · Bank)`}
+    <button class="paybtn__card" type="button" on:click={openOtherMethods} disabled={popupOpen || !instance}>
+      {popupOpen ? 'Opening…' : 'Pay with a card'}
     </button>
+    <span class="paybtn__also">Apple Pay · Google Pay · Pay by bank also available</span>
   {/if}
 </div>
 
@@ -136,21 +137,34 @@
      the wrapper sensible width and let Revolut handle the visuals. */
   .paybtn__rev { width: 100%; min-height: 48px; }
 
-  .paybtn__other {
+  /* Prominent Fox-Orange "Pay with a card" — visual sibling to the
+     native Revolut Pay button above. Matches the rest of the site's
+     primary CTAs. Opens Revolut's popup with all methods available. */
+  .paybtn__card {
+    font-family: var(--evx-font-display);
+    font-size: 15px;
+    font-weight: 500;
+    color: #FFFFFF;
+    background: var(--evx-fox-orange);
+    border: none;
+    border-radius: 6px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: opacity 200ms ease;
+    text-align: center;
+    min-height: 48px;
+  }
+  .paybtn__card:hover:not(:disabled) { opacity: 0.9; }
+  .paybtn__card:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .paybtn__also {
     font-family: var(--evx-font-mono);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.06em;
     color: var(--evx-ink-soft);
-    background: transparent;
-    border: 1px solid var(--evx-rule-light);
-    border-radius: 2px;
-    padding: 10px 14px;
-    cursor: pointer;
-    transition: var(--evx-transition);
     text-align: center;
+    padding: 2px 0;
   }
-  .paybtn__other:hover:not(:disabled) { color: var(--evx-warm-black); border-color: var(--evx-warm-black); }
-  .paybtn__other:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .paybtn__loading {
     font-family: var(--evx-font-mono);

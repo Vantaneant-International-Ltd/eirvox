@@ -1,5 +1,6 @@
 <script lang="ts">
   import { navigate } from './router';
+  import PaymentIcons from './PaymentIcons.svelte';
 
   let email = '';
   let subscribed = false;
@@ -129,21 +130,7 @@
   <!-- Payment methods row -->
   <div class="footer__pay-row page-container">
     <span class="evx-caption footer__legal-label">PAYMENTS</span>
-    <div class="footer__pay-methods" aria-label="Accepted payment methods">
-      <span class="footer__pay-method">Revolut&nbsp;Pay</span>
-      <span class="footer__pay-sep">·</span>
-      <span class="footer__pay-method">Apple&nbsp;Pay</span>
-      <span class="footer__pay-sep">·</span>
-      <span class="footer__pay-method">Google&nbsp;Pay</span>
-      <span class="footer__pay-sep">·</span>
-      <span class="footer__pay-method">Visa</span>
-      <span class="footer__pay-sep">·</span>
-      <span class="footer__pay-method">Mastercard</span>
-      <span class="footer__pay-sep">·</span>
-      <span class="footer__pay-method">Amex</span>
-      <span class="footer__pay-sep">·</span>
-      <span class="footer__pay-method">Pay&nbsp;by&nbsp;bank</span>
-    </div>
+    <PaymentIcons />
   </div>
 
   <!-- Legal links row -->
