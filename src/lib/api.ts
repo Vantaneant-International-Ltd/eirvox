@@ -492,35 +492,6 @@ export async function unsaveListing(listingId: string): Promise<{ ok: boolean; e
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
-// ── Reservations (buyer flow) ────────────────────────────────
-
-export interface CreateReservationInput {
-  listing_id: string;
-  seller_id: string;
-  deposit_amount: number;
-  notes?: string;
-}
-
-export async function createReservation(input: CreateReservationInput): Promise<{ ok: boolean; data?: { id: string; reference: string }; error?: string }> {
-  const u = getCurrentUser();
-  if (!u) return { ok: false, error: 'You need to be signed in to reserve.' };
-
-  const { data, error } = await supabase
-    .from('reservations')
-    .insert({
-      listing_id: input.listing_id,
-      seller_id:  input.seller_id,
-      buyer_id:   u.id,
-      deposit_amount: input.deposit_amount,
-      notes: input.notes ?? null,
-      status: 'pending_deposit',
-    })
-    .select('id, reference')
-    .single();
-
-  if (error) return { ok: false, error: error.message };
-
-  // Generate a fallback reference if the DB trigger didn't fill one
-  const ref = data.reference ?? ('EVX-' + (data.id as string).replace(/-/g, '').slice(0, 8).toUpperCase());
-  return { ok: true, data: { id: data.id, reference: ref } };
-}
+// Reservations are out of v1. Replaced by Express Interest /api/enquiries.
+// The reservations TABLE is intentionally retained for the admin view of
+// historical records.

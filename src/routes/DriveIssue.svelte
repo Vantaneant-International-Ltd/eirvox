@@ -4,6 +4,7 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import EnquiryForm from '../lib/EnquiryForm.svelte';
 
   export let issueSlug: string;
 
@@ -11,16 +12,8 @@
 
   $: isIssue003 = issueSlug === '003-mercedes-amg-gt' || !issueSlug;
 
-  let formName = '';
-  let formEmail = '';
-  let formCar = '';
-  let formNote = '';
-  let formSubmitted = false;
-
-  function submitEnquiry() {
-    if (formName && formEmail && formCar) {
-      formSubmitted = true;
-    }
+  function scrollToEnquiry() {
+    document.getElementById('enquiry')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 </script>
 
@@ -55,18 +48,12 @@
       </div>
 
       <p class="di-hero__deposit evx-caption">
-        €49 deposit (refundable) · balance €4,201 due before dispatch
+        Express interest below · we confirm allocation by email
       </p>
 
       <div class="di-hero__ctas">
-        <button class="evx-btn evx-btn--primary" on:click={() => navigate('/reserve/drive/003-mercedes-amg-gt')}>
-          Reserve allocation · €49 deposit
-        </button>
-        <a href="#reserve" class="evx-btn evx-btn--ghost">
-          Open enquiry form
-        </a>
-        <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/reserve')}>
-          How DRIVE reservations work →
+        <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
+          Express interest
         </button>
       </div>
     </div>
@@ -157,98 +144,31 @@
       </div>
     </section>
 
-    <!-- Reservation form -->
-    <section class="di-reserve" id="reserve">
+    <!-- Enquiry form -->
+    <section class="di-reserve" id="enquiry">
       <div class="di-reserve__inner">
         <div class="di-reserve__left">
-          <span class="evx-caption di-reserve__pre">TO RESERVE</span>
-          <h2 class="di-reserve__heading">Eight will be made.<br/>One will be yours.</h2>
+          <span class="evx-caption di-reserve__pre">TO EXPRESS INTEREST</span>
+          <h2 class="di-reserve__heading">Eight will be made.<br/>One could be yours.</h2>
 
           <div class="di-reserve__how">
             <p class="di-reserve__how-body">
-              Reservations are accepted on a first-deposit basis.
-              A €49 deposit holds your allocation. We confirm by email within 48 hours
-              and invoice the balance before dispatch.
+              Tell us about your car. We'll confirm whether your spec is within the
+              allocation, share fitment and timing detail, and walk you through next steps.
+              No deposit at this stage.
             </p>
             <p class="di-reserve__how-body">
-              If we can't pass QC on your piece, your deposit is refunded in full.
-              Otherwise the deposit is non-refundable — that's how a limited run pays for itself.
+              We respond within 48 hours.
             </p>
           </div>
         </div>
 
         <div class="di-reserve__form-wrap">
-          {#if formSubmitted}
-            <div class="di-reserve__success">
-              <span class="evx-label">RESERVATION RECEIVED</span>
-              <p class="di-reserve__success-body">
-                We'll confirm your allocation by email within 48 hours. Thank you.
-              </p>
-            </div>
-          {:else}
-            <form class="di-reserve__form" on:submit|preventDefault={submitEnquiry}>
-              <span class="evx-caption di-reserve__form-title">ENQUIRY · ISSUE 003</span>
-
-              <div class="di-form-row">
-                <div class="di-form-group">
-                  <label class="evx-caption di-form-label" for="res-name">NAME</label>
-                  <input
-                    id="res-name"
-                    type="text"
-                    class="di-form-input"
-                    placeholder="Your name"
-                    bind:value={formName}
-                    required
-                  />
-                </div>
-                <div class="di-form-group">
-                  <label class="evx-caption di-form-label" for="res-email">EMAIL</label>
-                  <input
-                    id="res-email"
-                    type="email"
-                    class="di-form-input"
-                    placeholder="name@studio.com"
-                    bind:value={formEmail}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div class="di-form-group">
-                <label class="evx-caption di-form-label" for="res-car">CAR · YEAR · TRIM</label>
-                <input
-                  id="res-car"
-                  type="text"
-                  class="di-form-input"
-                  placeholder="2024 AMG GT 63 · Premium Plus"
-                  bind:value={formCar}
-                  required
-                />
-              </div>
-
-              <div class="di-form-group">
-                <label class="evx-caption di-form-label" for="res-note">NOTE (OPTIONAL)</label>
-                <textarea
-                  id="res-note"
-                  class="di-form-input di-form-textarea"
-                  placeholder="Anything we should know — fitment, finish, timing."
-                  bind:value={formNote}
-                  rows="3"
-                ></textarea>
-              </div>
-
-              <button type="submit" class="evx-btn evx-btn--primary di-form-submit">
-                Send enquiry
-              </button>
-
-              <p class="evx-caption di-form-fine">
-                Or skip the form and go straight to the full reservation flow:
-                <button type="button" class="di-form-fine-link" on:click={() => navigate('/reserve/drive/003-mercedes-amg-gt')}>
-                  Reserve allocation · €49 →
-                </button>
-              </p>
-            </form>
-          {/if}
+          <EnquiryForm
+            subjectType="drive_issue"
+            driveIssueSlug={issueSlug || '003-mercedes-amg-gt'}
+            messagePlaceholder="Your car (year, trim), and anything we should know about fitment, finish, or timing."
+          />
         </div>
       </div>
     </section>

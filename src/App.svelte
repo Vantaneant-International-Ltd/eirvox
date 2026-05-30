@@ -14,9 +14,6 @@
   import SellerCreate from './routes/SellerCreate.svelte';
   import SellerEdit from './routes/SellerEdit.svelte';
   import SellerDashboard from './routes/SellerDashboard.svelte';
-  import Reserve from './routes/Reserve.svelte';
-  import ReserveCheckout from './routes/ReserveCheckout.svelte';
-  import ReserveDrive from './routes/ReserveDrive.svelte';
   import Trust from './routes/Trust.svelte';
   import About from './routes/About.svelte';
   import Login from './routes/Login.svelte';
@@ -74,8 +71,6 @@
 
   $: listingParams = matchRoute('/listing/:slug', path);
   $: driveParams = matchRoute('/drive/:slug', path);
-  $: reserveDriveParams = matchRoute('/reserve/drive/:slug', path);
-  $: reserveParams = matchRoute('/reserve/:slug', path);
   $: tradeProfileParams = matchRoute('/trade/:categorySlug/:slug', path);
   $: tradeCategoryParams = matchRoute('/trade/:categorySlug', path);
   $: sellEditParams = matchRoute('/sell/edit/:listingId', path);
@@ -119,18 +114,6 @@
   </AuthGuard>
 {:else if path === '/sell'}
   <Sell />
-
-<!-- ════ Reserve routes ════ -->
-{:else if reserveDriveParams}
-  <AuthGuard requireAuth={true}>
-    <ReserveDrive issueSlug={reserveDriveParams.slug} />
-  </AuthGuard>
-{:else if path === '/reserve'}
-  <Reserve />
-{:else if reserveParams}
-  <AuthGuard requireAuth={true}>
-    <ReserveCheckout listingSlug={reserveParams.slug} />
-  </AuthGuard>
 
 <!-- ════ TRADE routes ════ -->
 {:else if path === '/trade'}

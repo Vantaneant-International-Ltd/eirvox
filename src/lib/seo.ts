@@ -83,8 +83,8 @@ export const seo = {
   listing: (title: string, subtitle: string | undefined, price: string, location: string, slug: string): SeoData => ({
     title,
     description: subtitle
-      ? `${subtitle}. ${price}. ${location}. Reserve for €49 on ÉIRVOX — Ireland's premium marketplace.`
-      : `${price}. ${location}. Reserve for €49 on ÉIRVOX — Ireland's premium marketplace.`,
+      ? `${subtitle}. ${price}. ${location}. Express interest on ÉIRVOX — Ireland's premium marketplace.`
+      : `${price}. ${location}. Express interest on ÉIRVOX — Ireland's premium marketplace.`,
     path: `/listing/${slug}`,
   }),
 
@@ -98,7 +98,7 @@ export const seo = {
   driveIssue: (slug: string): SeoData => ({
     title: 'DRIVE 003 · Mercedes-AMG GT Carbon Steering Wheel',
     description:
-      'DRIVE Issue 003. Forged carbon shell, Alcantara wrap, champagne stitch. Eight pieces. €4,250. Reserve allocation with €49 deposit.',
+      'DRIVE Issue 003. Forged carbon shell, Alcantara wrap, champagne stitch. Eight pieces. €4,250. Express interest to confirm your allocation.',
     path: `/drive/${slug}`,
   }),
 
@@ -126,25 +126,6 @@ export const seo = {
     title: 'Seller dashboard preview',
     description: 'Preview of the ÉIRVOX seller dashboard. Going live with Cohort 03 on 01 July 2026.',
     path: '/sell/dashboard',
-  }),
-
-  reserve: (): SeoData => ({
-    title: 'How reservations work',
-    description:
-      'How reservations work on ÉIRVOX. €49 refundable deposit holds your item. Full buyer protection on every transaction.',
-    path: '/reserve',
-  }),
-
-  reserveCheckout: (title: string, slug: string): SeoData => ({
-    title: `Reserve · ${title}`,
-    description: `Reserve ${title} on ÉIRVOX with a €49 refundable deposit. Fully refundable until the item ships.`,
-    path: `/reserve/${slug}`,
-  }),
-
-  reserveDrive: (slug: string): SeoData => ({
-    title: 'Reserve DRIVE allocation',
-    description: 'Reserve your allocation in DRIVE Issue 003 — Mercedes-AMG GT carbon steering wheel. €49 deposit.',
-    path: `/reserve/drive/${slug}`,
   }),
 
   trust: (): SeoData => ({
