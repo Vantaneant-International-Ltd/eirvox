@@ -51,6 +51,12 @@
       If you don't accept, stop using the platform.
     </p>
     <p>You confirm you are at least 18 years old and legally able to enter binding agreements.</p>
+    <p>
+      <strong>ÉIRVOX is a venue, not a broker.</strong> For marketplace listings, ÉIRVOX publishes the listing
+      and connects you with the seller. Payments flow directly from buyer to seller's payment account; ÉIRVOX
+      does not hold funds, mediate communication, or process refunds for marketplace transactions.
+      DRIVE editions are the exception — there, ÉIRVOX is the seller.
+    </p>
   </section>
 
   <section class="legal-section">
@@ -61,8 +67,8 @@
       <li><strong>Seller</strong> — an approved person or business listing items for sale.</li>
       <li><strong>Buyer</strong> — anyone reserving or purchasing items.</li>
       <li><strong>Listing</strong> — a published item offered for sale.</li>
-      <li><strong>Reservation</strong> — an expression of intent to purchase, secured by a deposit.</li>
-      <li><strong>Deposit</strong> — €49 paid to hold an item; refundable until the item ships.</li>
+      <li><strong>Reservation</strong> — an expression of intent to purchase, secured by a deposit paid via Revolut.</li>
+      <li><strong>Deposit</strong> — amount (default €49 for marketplace items) paid to the seller's Revolut account to hold an item. Refund terms set by the seller and Irish consumer law.</li>
       <li><strong>DRIVE</strong> — limited-run, made-to-order editions published by ÉIRVOX.</li>
       <li><strong>TRADE</strong> — verified directory of independent tradespeople.</li>
       <li><strong>Authentication</strong> — physical inspection of high-value items at the ÉIRVOX Dublin centre.</li>
@@ -103,10 +109,11 @@
     <ul>
       <li>Application and verification (ID + phone + cohort review) are required before listing.</li>
       <li>Descriptions must be accurate. Material defects must be disclosed in plain language.</li>
-      <li>Respond to reservation enquiries within 48 hours.</li>
+      <li>Publish accurate contact details (email, phone) on the seller profile so buyers can reach you directly. ÉIRVOX does not relay messages.</li>
+      <li>Respond to buyers in a timely manner. We recommend within 48 hours.</li>
       <li>Ship within agreed timeframes. Document shipping with tracking.</li>
       <li>Comply with all applicable laws — Irish consumer law, distance selling, returns where required.</li>
-      <li>Honour ÉIRVOX dispute decisions where contractually applicable.</li>
+      <li>Handle refunds directly through your own Revolut Business (or equivalent) account. ÉIRVOX does not hold buyer funds or process refunds on your behalf.</li>
     </ul>
   </section>
 
@@ -125,17 +132,29 @@
     <span class="legal-section__num">07 · DEPOSITS</span>
     <h2 id="s-deposits" class="legal-section__h">Reservation deposits.</h2>
     <p>
-      A reservation deposit is <strong>€49</strong> and is taken via a Revolut payment link or other manual
-      method specified at checkout. The deposit is <strong>fully refundable</strong> if you do not proceed
-      with the purchase, until the item ships.
+      Where a listing offers a reservation deposit, payment is taken at checkout via
+      <strong>Revolut Merchant API</strong> (Revolut Pay, Apple Pay, Google Pay, card, or instant bank transfer).
+      The amount is set by the seller and shown on the listing before you pay; the default is
+      <strong>€49</strong> for marketplace items.
     </p>
     <p>
-      The deposit is not a partial payment of the item price. If you proceed with the purchase,
-      the €49 is credited against the final balance.
+      <strong>Funds go directly to the seller.</strong> ÉIRVOX is a venue: we publish the listing and
+      take you to Revolut's hosted checkout, but we never hold buyer money for marketplace transactions.
+      The Merchant of Record on your card statement is the seller's Revolut Business entity, not ÉIRVOX Systems Ltd.
     </p>
     <p>
-      ÉIRVOX reserves the right to forfeit the deposit and restrict your account if you place reservations
-      without intent to proceed, or repeatedly fail to communicate with sellers after reserving.
+      <strong>Refunds are handled by the seller</strong> via their Revolut Business dashboard. Sellers are
+      required by Irish consumer law (and our Acceptable Use Policy) to honour their stated refund window.
+      Disputes about refunds should be raised with the seller first; if unresolved, you can request a
+      chargeback through your card issuer or Revolut. ÉIRVOX cannot process refunds on a seller's behalf.
+    </p>
+    <p>
+      The deposit is not a partial payment of the item price unless the seller's listing explicitly says so.
+      Check the listing terms before paying.
+    </p>
+    <p>
+      DRIVE editions (section 08) are different — ÉIRVOX is the seller, so DRIVE deposit rules and refunds
+      are administered by us.
     </p>
   </section>
 

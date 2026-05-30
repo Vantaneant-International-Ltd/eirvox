@@ -63,6 +63,13 @@ export const siteFlags = writable<SiteFlags>(readCache());
  *  real site to someone who shouldn't see it. */
 export const flagsLoading = writable<boolean>(true);
 
+/** True when the visitor is hitting a legal page (Privacy / Terms / etc.)
+ *  while a gate (coming_soon or maintenance) would otherwise be active.
+ *  LegalLayout reads this to render stripped chrome instead of the full
+ *  Nav + Footer, so coming-soon visitors don't see the whole site
+ *  through the policy links. App.svelte sets it. */
+export const gatedLegalMode = writable<boolean>(false);
+
 let loadStarted = false;
 
 /** Fetch the live flags from Supabase and update the store + cache.

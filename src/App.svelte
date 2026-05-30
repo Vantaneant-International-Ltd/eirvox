@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
   import { initAuth } from './lib/auth';
-  import { isDevBypassed, isMaintenancePreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate } from './lib/flags';
+  import { isDevBypassed, isMaintenancePreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate, gatedLegalMode } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
   import PaymentReturn from './routes/PaymentReturn.svelte';
@@ -59,6 +59,10 @@
   $: rawGate = resolveGate($siteFlags, bypassed, $flagsLoading, maintenancePreview);
   // Legal-route whitelist falls through to the route block even when a gate is on.
   $: gate = ALWAYS_OPEN_PATHS.includes(path) ? 'live' : rawGate;
+  // Tell LegalLayout to drop Nav + Footer when the visitor only got here
+  // because of the whitelist (i.e. would otherwise see a gate). Stops the
+  // policy pages from leaking the full site structure to coming-soon visitors.
+  $: gatedLegalMode.set(ALWAYS_OPEN_PATHS.includes(path) && rawGate !== 'live');
 
   onMount(() => {
     maintenancePreview = isMaintenancePreviewed();

@@ -2,6 +2,7 @@
   import Nav from './Nav.svelte';
   import Footer from './Footer.svelte';
   import { navigate } from './router';
+  import { gatedLegalMode } from './flags';
 
   export let title: string;
   export let lastUpdated: string = '1 June 2026';
@@ -9,9 +10,20 @@
   export let intro: string = '';
 </script>
 
-<Nav />
+{#if !$gatedLegalMode}
+  <Nav />
+{:else}
+  <!-- Visitor arrived via the coming-soon / maintenance gate. Render
+       a slim dark top strip instead of the full Nav so the policy
+       view doesn't leak the rest of the site's structure. -->
+  <header class="legal-gated-top">
+    <a class="legal-gated-top__back" href="#/" aria-label="Back to ÉIRVOX">← Back</a>
+    <img src="/brand/wordmark.png" alt="ÉIRVOX" class="legal-gated-top__wordmark" />
+    <span class="legal-gated-top__spacer"></span>
+  </header>
+{/if}
 
-<main id="main-content" class="legal-page">
+<main id="main-content" class="legal-page" class:legal-page--gated={$gatedLegalMode}>
   <div class="page-container">
 
     <header class="legal-header">
@@ -82,10 +94,100 @@
   </div>
 </main>
 
-<Footer />
+{#if !$gatedLegalMode}
+  <Footer />
+{:else}
+  <footer class="legal-gated-bot">
+    <div class="legal-gated-bot__inner">
+      <span class="legal-gated-bot__entity">ÉIRVOX Systems Ltd · Dublin, Ireland</span>
+      <div class="legal-gated-bot__links">
+        <a href="#/privacy">Privacy</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/terms">Terms</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/cookies">Cookies</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/acceptable-use">Acceptable Use</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/returns">Returns</a>
+      </div>
+    </div>
+  </footer>
+{/if}
 
 <style>
   .legal-page { flex: 1; padding-bottom: var(--evx-space-3xl); }
+
+  /* ── Gated chrome (when visitor came via coming-soon / maintenance) ── */
+  .legal-gated-top {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    background: #1A1A1A;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(245, 242, 237, 0.08);
+  }
+  .legal-gated-top__back {
+    justify-self: start;
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: #8C8C8C;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .legal-gated-top__back:hover { color: #E8742C; }
+  .legal-gated-top__wordmark {
+    justify-self: center;
+    height: 20px;
+    width: auto;
+    filter: invert(1) brightness(1.05);
+  }
+  .legal-gated-top__spacer { width: 1px; }
+
+  .legal-page--gated {
+    background: var(--evx-paper);
+    padding-top: var(--evx-space-xl);
+  }
+  .legal-page--gated .legal-toc { display: none; }
+  .legal-page--gated .legal-body { grid-template-columns: 1fr; }
+
+  .legal-gated-bot {
+    background: #1A1A1A;
+    color: #F5F2ED;
+    padding: 28px 24px;
+  }
+  .legal-gated-bot__inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+    text-align: center;
+  }
+  .legal-gated-bot__entity {
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: #5C5C5C;
+  }
+  .legal-gated-bot__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: #5C5C5C;
+  }
+  .legal-gated-bot__links a {
+    color: #F5F2ED;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .legal-gated-bot__links a:hover { color: #E8742C; }
 
   /* Header */
   .legal-header {
