@@ -132,9 +132,17 @@ REVOKE EXECUTE ON FUNCTION public.log_audit_event(public.audit_action, text, tex
 -- Each table picks the columns it cares about. Keep these narrow —
 -- the log is for "what changed about this entity", not a full row dump.
 
+-- SECURITY DEFINER so the trigger runs as the function owner
+-- (postgres) and can call log_audit_event. The audit writer is
+-- locked down to service_role only (no anon/authenticated EXECUTE),
+-- so without DEFINER here every client INSERT/UPDATE/DELETE on
+-- listings would fail with `permission denied for function
+-- log_audit_event`. auth.uid() is read from the JWT claim GUC and
+-- stays correct inside DEFINER so actor_id capture still works.
 CREATE OR REPLACE FUNCTION public.audit_listings_change()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
@@ -193,9 +201,11 @@ BEGIN
 END;
 $$;
 
+-- Same SECURITY DEFINER rationale as audit_listings_change above.
 CREATE OR REPLACE FUNCTION public.audit_sellers_change()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
