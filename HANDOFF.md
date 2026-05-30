@@ -7,9 +7,12 @@ Context for anyone (human or AI) picking up this project. Read before changing c
 Curated Irish marketplace for premium goods. Svelte 5 + Vite SPA, hash routing, Supabase backend, deploying to Vercel.
 
 - Supabase project ref: `arokrumaxjiidsqfpiii`
-- Branch: `renato`
+- Active branch: `main`. All new work goes here.
+- Dormant branches (`archive/` prefix, kept for history, do not push):
+  - `archive/renato-2026-05-30` — the long-lived working branch that was merged into main on 2026-05-30
+  - `archive/legacy` — pre-rewrite history (was `archived`)
 - Contributors: Renato, Kevin
-- The site is gated behind `COMING_SOON = true` in `src/lib/config.ts`, with a `#dev` bypass. It is not publicly exposed yet.
+- The site is gated behind two flags in `public.site_settings.flags` (`coming_soon`, `maintenance`), toggleable live from `/admin/settings`. `#dev` URL bypasses both for the current session. It is not publicly exposed yet.
 
 ## Source of truth warning (read this first)
 
