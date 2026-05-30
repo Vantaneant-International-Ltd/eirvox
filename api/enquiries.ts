@@ -14,6 +14,8 @@ import {
   bad,
   oops,
   isValidEmail,
+  hashIpForTriage,
+  clientIp,
 } from './_lib/supabase-admin';
 
 export const config = { runtime: 'edge' };
@@ -96,11 +98,10 @@ export default async function handler(req: Request): Promise<Response> {
   const profileIdRaw = s(body.profile_id, 64);
   const profile_id = profileIdRaw && UUID_RE.test(profileIdRaw) ? profileIdRaw : null;
 
-  // Spam triage.
+  // Spam triage. ip_hash is salted with IP_HASH_PEPPER from env
+  // (see api/_lib/supabase-admin.ts).
   const user_agent = (req.headers.get('user-agent') ?? '').slice(0, 500);
-  const fwd = req.headers.get('x-forwarded-for') ?? '';
-  const ip = fwd.split(',')[0]?.trim() ?? '';
-  const ip_hash = ip ? await sha256Hex(ip) : null;
+  const ip_hash = await hashIpForTriage(clientIp(req));
 
   const { data, error } = await supabaseAdmin
     .from('enquiries')
@@ -128,10 +129,3 @@ export default async function handler(req: Request): Promise<Response> {
   return ok({ ok: true, id: data.id });
 }
 
-async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(digest))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}

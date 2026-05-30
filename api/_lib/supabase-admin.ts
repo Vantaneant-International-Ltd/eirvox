@@ -65,3 +65,37 @@ export async function readJson<T = unknown>(req: Request): Promise<T | null> {
     return null;
   }
 }
+
+// ── IP fingerprinting for spam triage ─────────────────────
+//
+// We never store raw IPs. The hash + server-side pepper produces a
+// stable per-submitter token without being reversible via a public
+// rainbow table (IPv4 space is only ~4B addresses; an unsalted SHA-256
+// of an IP is effectively plaintext to anyone with a precomputed table).
+//
+// IP_HASH_PEPPER is a server-only secret (no VITE_ prefix). If unset
+// the helper returns null rather than storing a weak hash; admins
+// triaging spam will see `ip_hash IS NULL` and know the env var is
+// missing in this environment.
+
+export async function hashIpForTriage(ip: string | null): Promise<string | null> {
+  if (!ip) return null;
+  const pepper = process.env.IP_HASH_PEPPER;
+  if (!pepper) {
+    console.warn('[supabase-admin] IP_HASH_PEPPER not set; skipping ip_hash');
+    return null;
+  }
+  const data = new TextEncoder().encode(`${pepper}:${ip}`);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/** Pull the first IP from x-forwarded-for, trimming whitespace.
+ *  Returns null if the header is absent or empty. */
+export function clientIp(req: Request): string | null {
+  const fwd = req.headers.get('x-forwarded-for') ?? '';
+  const ip = fwd.split(',')[0]?.trim() ?? '';
+  return ip || null;
+}

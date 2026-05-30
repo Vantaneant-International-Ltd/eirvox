@@ -19,6 +19,8 @@ import {
   conflict,
   oops,
   isValidEmail,
+  hashIpForTriage,
+  clientIp,
 } from './_lib/supabase-admin';
 
 export const config = { runtime: 'edge' };
@@ -122,15 +124,12 @@ export default async function handler(req: Request): Promise<Response> {
     return conflict('You already have a pending application with this email.');
   }
 
-  // Spam-triage metadata.
+  // Spam-triage metadata. ip_hash is salted with IP_HASH_PEPPER from
+  // env (see api/_lib/supabase-admin.ts). If the pepper is unset the
+  // helper returns null rather than storing a weak unsalted hash.
   const ua = req.headers.get('user-agent') ?? '';
   const user_agent = ua.slice(0, 500);
-
-  // We don't store raw IPs. The hash gives us "same submitter" grouping
-  // without holding an identifier. SHA-256 via Web Crypto (Edge runtime).
-  const fwd = req.headers.get('x-forwarded-for') ?? '';
-  const ip = fwd.split(',')[0]?.trim() ?? '';
-  const ip_hash = ip ? await sha256Hex(ip) : null;
+  const ip_hash = await hashIpForTriage(clientIp(req));
 
   const { data, error } = await supabaseAdmin
     .from('seller_applications')
@@ -163,10 +162,3 @@ export default async function handler(req: Request): Promise<Response> {
   return ok({ ok: true, id: data.id });
 }
 
-async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(digest))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
