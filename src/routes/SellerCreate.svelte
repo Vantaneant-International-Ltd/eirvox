@@ -238,10 +238,19 @@
   let saveError = '';
   let uploadProgress = { current: 0, total: 0 };
 
-  async function persist(finalStatus: 'draft' | 'pending_review') {
+  async function persist(intent: 'draft' | 'submit') {
     if (!seller || saving) return;
     saveError = '';
     saving = true;
+
+    // v1 model: admins self-curate, so "Submit" publishes directly
+    // (status='active'). Regular sellers (later phase) still queue for
+    // review. The button label flips to 'Publish' when admin — see UI.
+    const isAdmin = $auth.profile?.role === 'admin';
+    const finalStatus: 'draft' | 'pending_review' | 'active' =
+      intent === 'draft'
+        ? 'draft'
+        : (isAdmin ? 'active' : 'pending_review');
 
     // 1. Create listing row
     const create = await createListing({
@@ -685,7 +694,11 @@
             <h2 class="form-h2">Review &amp; submit.</h2>
             <p class="form-sub">
               Final check. "Save as draft" stores it on your dashboard.
-              "Submit for review" puts it in front of the ÉIRVOX team — usually live within 24 hours.
+              {#if $auth.profile?.role === 'admin'}
+                "Publish" makes it live immediately.
+              {:else}
+                "Submit for review" puts it in front of the ÉIRVOX team — usually live within 24 hours.
+              {/if}
             </p>
           </div>
 
@@ -770,8 +783,8 @@
               <button class="evx-btn evx-btn--ghost" on:click={() => persist('draft')} disabled={saving}>
                 {saving ? 'Saving…' : 'Save as draft'}
               </button>
-              <button class="evx-btn evx-btn--primary" on:click={() => persist('pending_review')} disabled={saving || pending.length === 0}>
-                {saving ? 'Submitting…' : 'Submit for review →'}
+              <button class="evx-btn evx-btn--primary" on:click={() => persist('submit')} disabled={saving || pending.length === 0}>
+                {saving ? ($auth.profile?.role === 'admin' ? 'Publishing…' : 'Submitting…') : ($auth.profile?.role === 'admin' ? 'Publish →' : 'Submit for review →')}
               </button>
             </div>
           </div>

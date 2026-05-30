@@ -134,9 +134,30 @@
   });
 
   // ── Save details ────────────────────────────────────────
-  async function save(status?: ListingStatus) {
+
+  function scrollToBanner() {
+    // Run after the DOM updates so the banner element exists.
+    queueMicrotask(() => {
+      document.querySelector('.form-ok, .form-err')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  /** intent === 'submit' means "make this listing public". For admin
+   *  that's status='active' immediately; for sellers (later phase)
+   *  it's status='pending_review'. intent === undefined just saves the
+   *  current draft state without flipping status. */
+  async function save(intent?: 'submit' | ListingStatus) {
     if (!listing || saving) return;
     saving = true; saveMsg = ''; saveErr = '';
+
+    const isAdmin = $auth.profile?.role === 'admin';
+    let nextStatus: ListingStatus | undefined;
+    if (intent === 'submit') {
+      nextStatus = isAdmin ? 'active' : 'pending_review';
+    } else if (intent) {
+      // Caller passed an explicit status (e.g. 'sold' from markSold).
+      nextStatus = intent as ListingStatus;
+    }
 
     const patch = {
       category_id: categoryId || null,
@@ -151,11 +172,11 @@
       shipping_available: shipsNationwide,
       collection_available: collectionAvailable,
       shipping_cost: shippingCost !== '' ? Number(shippingCost) : null,
-      ...(status ? { status } : {}),
+      ...(nextStatus ? { status: nextStatus } : {}),
     };
 
     const upd = await updateListing(listing.id, patch);
-    if (!upd.ok) { saving = false; saveErr = upd.error ?? 'Could not save.'; return; }
+    if (!upd.ok) { saving = false; saveErr = upd.error ?? 'Could not save.'; scrollToBanner(); return; }
 
     const specRes = await setListingSpecs(listing.id, specs);
     if (!specRes.ok) console.warn('[edit] specs', specRes.error);
@@ -165,7 +186,11 @@
     }
 
     saving = false;
-    saveMsg = status === 'pending_review' ? 'Submitted for review.' : 'Changes saved.';
+    if (nextStatus === 'active') saveMsg = 'Published.';
+    else if (nextStatus === 'pending_review') saveMsg = 'Submitted for review.';
+    else if (nextStatus === 'sold') saveMsg = 'Marked as sold.';
+    else saveMsg = 'Changes saved.';
+    scrollToBanner();
 
     listing = await getListingFull(listing.id);
     if (listing) existingImages = [...listing.images];
@@ -408,8 +433,10 @@
             <button class="evx-btn evx-btn--ghost" on:click={() => save('draft')} disabled={saving}>
               Save as draft
             </button>
-            <button class="evx-btn evx-btn--primary" on:click={() => save('pending_review')} disabled={saving}>
-              {saving ? 'Saving…' : 'Submit for review →'}
+            <button class="evx-btn evx-btn--primary" on:click={() => save('submit')} disabled={saving}>
+              {saving
+                ? ($auth.profile?.role === 'admin' ? 'Publishing…' : 'Saving…')
+                : ($auth.profile?.role === 'admin' ? 'Publish →' : 'Submit for review →')}
             </button>
           {:else}
             <button class="evx-btn evx-btn--primary" on:click={() => save()} disabled={saving}>
