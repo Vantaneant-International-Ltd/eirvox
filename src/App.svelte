@@ -2,8 +2,9 @@
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
   import { initAuth } from './lib/auth';
-  import { COMING_SOON, isDevBypassed } from './lib/config';
+  import { isDevBypassed, siteFlags, flagsLoading, loadSiteFlags, resolveGate } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
+  import MaintenanceHero from './routes/MaintenanceHero.svelte';
   import Home from './routes/Home.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
@@ -44,14 +45,20 @@
   import CookieBanner from './lib/CookieBanner.svelte';
   import AuthGuard from './components/AuthGuard.svelte';
 
-  // Coming soon gate. `bypassed` becomes true if URL contains #dev (or sessionStorage holds the flag).
-  // When COMING_SOON is true AND not bypassed, render only ComingSoonHero — no router, no nav, no footer.
+  // Visibility gates. Two flags live in public.site_settings.flags:
+  //   maintenance: temporary outage page (precedence over coming_soon)
+  //   coming_soon: pre-launch landing
+  // Admin can flip either from /admin/settings without a redeploy.
+  // #dev hash bypasses both (sessionStorage-scoped).
   let bypassed = false;
-  $: gateActive = COMING_SOON && !bypassed;
+  $: gate = resolveGate($siteFlags, bypassed, $flagsLoading);
 
   onMount(() => {
     bypassed = isDevBypassed();
-    if (!COMING_SOON || bypassed) initAuth();
+    void loadSiteFlags();
+    // Init auth eagerly; the gates only hide the UI shell, auth itself
+    // is harmless to load (admin needs it to reach /admin in dev bypass).
+    initAuth();
   });
 
   const CATEGORIES = [
@@ -81,11 +88,15 @@
   const TRADE_RESERVED_PATHS = ['apply'];
 </script>
 
-{#if gateActive}
+{#if gate === 'maintenance'}
+  <MaintenanceHero />
+{:else if gate === 'coming_soon' || gate === 'loading'}
   <ComingSoonHero />
 {:else}
-{#if bypassed}
-  <div class="dev-banner">DEV MODE — Coming soon is active for visitors</div>
+{#if bypassed && ($siteFlags.maintenance || $siteFlags.coming_soon)}
+  <div class="dev-banner">
+    DEV MODE — {$siteFlags.maintenance ? 'Maintenance' : 'Coming soon'} is active for visitors
+  </div>
 {/if}
 {#if path === '/'}
   <Home />

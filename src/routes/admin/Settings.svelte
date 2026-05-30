@@ -7,18 +7,24 @@
     updateSiteSetting,
     type SiteSettingsBundle,
   } from '../../lib/admin';
+  import { siteFlags, updateSiteFlags, type SiteFlags } from '../../lib/flags';
   import { applySeo } from '../../lib/seo';
 
   let loading = true;
   let settings: SiteSettingsBundle | null = null;
-  let saving: 'cohort' | 'drive' | 'fees' | 'deposit' | null = null;
+  let saving: 'cohort' | 'drive' | 'fees' | 'deposit' | 'flags' | null = null;
   let savedKey: string | null = null;
   let actionError = '';
+
+  // Local copy of the flags store so the form can edit before save.
+  let flagsDraft: SiteFlags = $siteFlags;
+  const unsubFlags = siteFlags.subscribe(v => { flagsDraft = { ...v }; });
 
   onMount(async () => {
     applySeo({ title: 'Admin · Settings', description: 'Site-wide configuration.', path: '/admin/settings' });
     settings = await getSiteSettings();
     loading = false;
+    return () => unsubFlags();
   });
 
   async function save(key: 'cohort' | 'drive' | 'fees' | 'deposit') {
@@ -30,6 +36,16 @@
     if (!r.ok) { actionError = r.error ?? 'Save failed.'; return; }
     savedKey = key;
     setTimeout(() => { if (savedKey === key) savedKey = null; }, 1800);
+  }
+
+  async function saveFlags() {
+    actionError = '';
+    saving = 'flags';
+    const r = await updateSiteFlags(flagsDraft);
+    saving = null;
+    if (!r.ok) { actionError = r.error ?? 'Save failed.'; return; }
+    savedKey = 'flags';
+    setTimeout(() => { if (savedKey === 'flags') savedKey = null; }, 1800);
   }
 </script>
 
@@ -44,6 +60,63 @@
         <p class="adm-state__sub">{actionError}</p>
       </div>
     {/if}
+
+    <!-- ─────────── Visibility flags ─────────── -->
+    <section class="adm-section">
+      <h2 class="adm-section__h">Visibility</h2>
+      <div style="background: var(--evx-paper); border: 1px solid var(--evx-rule-light); padding: 24px;">
+
+        <!-- Coming soon toggle -->
+        <div class="adm-field" style="display: flex; align-items: flex-start; gap: 16px; padding: 12px 0;">
+          <input type="checkbox" id="flag-coming-soon" bind:checked={flagsDraft.coming_soon}
+                 style="margin-top: 4px; transform: scale(1.2); accent-color: var(--evx-fox-orange);" />
+          <label for="flag-coming-soon" style="cursor: pointer;">
+            <strong style="display: block; font-size: 14px;">Coming soon mode</strong>
+            <span class="adm-field__hint" style="display: block; margin-top: 4px;">
+              Visitors see the coming-soon landing page with the email-capture form.
+              Use this pre-launch; flip off when you go live.
+            </span>
+          </label>
+        </div>
+
+        <!-- Maintenance toggle -->
+        <div class="adm-field" style="display: flex; align-items: flex-start; gap: 16px; padding: 12px 0; border-top: 1px solid var(--evx-rule-light); margin-top: 8px;">
+          <input type="checkbox" id="flag-maintenance" bind:checked={flagsDraft.maintenance}
+                 style="margin-top: 4px; transform: scale(1.2); accent-color: var(--evx-fox-orange);" />
+          <label for="flag-maintenance" style="cursor: pointer;">
+            <strong style="display: block; font-size: 14px;">Maintenance mode</strong>
+            <span class="adm-field__hint" style="display: block; margin-top: 4px;">
+              Visitors see a maintenance page with your support email.
+              Takes precedence over coming soon when both are on. Use for short outages.
+            </span>
+          </label>
+        </div>
+
+        <div class="adm-field">
+          <span class="adm-field__label">Maintenance message</span>
+          <textarea class="adm-field__input" rows="2" bind:value={flagsDraft.maintenance_message}
+                    placeholder="e.g. We're rolling out an update. Back in 30 minutes."></textarea>
+          <span class="adm-field__hint">Shown on the maintenance page. Plain text.</span>
+        </div>
+
+        <div class="adm-field">
+          <span class="adm-field__label">Support email</span>
+          <input type="email" class="adm-field__input" bind:value={flagsDraft.support_email}
+                 placeholder="support@eirvox.ie" />
+          <span class="adm-field__hint">Shown on the maintenance page. Becomes a mailto: link.</span>
+        </div>
+
+        <div class="adm-actions">
+          <button class="adm-btn adm-btn--primary" on:click={saveFlags} disabled={saving === 'flags'}>
+            {saving === 'flags' ? 'Saving…' : savedKey === 'flags' ? 'Saved ✓' : 'Save visibility'}
+          </button>
+        </div>
+
+        <p class="adm-field__hint" style="margin-top: 12px;">
+          Tip: append <code>#dev</code> to any URL to bypass both gates (session-scoped). Useful for admin work while a gate is on for the public.
+        </p>
+      </div>
+    </section>
 
     <!-- ─────────── Cohort ─────────── -->
     <section class="adm-section">
