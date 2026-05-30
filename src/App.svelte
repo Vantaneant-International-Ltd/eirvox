@@ -31,6 +31,7 @@
   import AdminCategories from './routes/admin/Categories.svelte';
   import AdminSettings from './routes/admin/Settings.svelte';
   import AdminWaitlist from './routes/admin/Waitlist.svelte';
+  import AdminEnquiries from './routes/admin/Enquiries.svelte';
   import Search from './routes/Search.svelte';
   import Sitemap from './routes/Sitemap.svelte';
   import NotFound from './routes/NotFound.svelte';
@@ -206,6 +207,10 @@
 {:else if path === '/admin/waitlist'}
   <AuthGuard requireRole="admin">
     <AdminWaitlist />
+  </AuthGuard>
+{:else if path === '/admin/enquiries'}
+  <AuthGuard requireRole="admin">
+    <AdminEnquiries />
   </AuthGuard>
 
 {:else if path === '/search'}

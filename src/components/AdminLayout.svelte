@@ -4,6 +4,7 @@
   import { auth, signOut } from '../lib/auth';
   import { getAdminStats, type AdminStats } from '../lib/admin';
   import { getWaitlistCount } from '../lib/waitlist';
+  import { getNewEnquiryCount } from '../lib/enquiries';
 
   export let title: string = 'Admin';
 
@@ -11,11 +12,13 @@
   // navigation update the sidebar counts.
   let stats: AdminStats | null = null;
   let waitlistCount = 0;
+  let newEnquiryCount = 0;
 
   async function refreshStats() {
-    [stats, waitlistCount] = await Promise.all([
+    [stats, waitlistCount, newEnquiryCount] = await Promise.all([
       getAdminStats(),
       getWaitlistCount(),
+      getNewEnquiryCount(),
     ]);
   }
 
@@ -26,11 +29,12 @@
   $: user = $auth.user;
 
   // Sidebar nav items. `badgeSource` resolves to a number at render time.
-  type BadgeSource = keyof AdminStats | 'waitlist';
+  type BadgeSource = keyof AdminStats | 'waitlist' | 'new_enquiries';
   const NAV: Array<{ path: string; label: string; badgeSource?: BadgeSource }> = [
     { path: '/admin',               label: 'Dashboard' },
     { path: '/admin/listings',      label: 'Listings',      badgeSource: 'pending_listings' },
     { path: '/admin/sellers',       label: 'Sellers',       badgeSource: 'pending_sellers' },
+    { path: '/admin/enquiries',     label: 'Enquiries',     badgeSource: 'new_enquiries' },
     { path: '/admin/reservations',  label: 'Reservations' },
     { path: '/admin/trade',         label: 'TRADE',         badgeSource: 'pending_trade' },
     { path: '/admin/users',         label: 'Users' },
@@ -42,6 +46,7 @@
   function badgeValue(source: BadgeSource | undefined): number {
     if (!source) return 0;
     if (source === 'waitlist') return waitlistCount;
+    if (source === 'new_enquiries') return newEnquiryCount;
     return stats?.[source] ?? 0;
   }
 
