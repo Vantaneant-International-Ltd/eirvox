@@ -319,15 +319,29 @@
             <p class="adm-state__sub">{detailError}</p>
           </div>
         {:else if detail}
-          <!-- Images strip -->
-          {#if detail.images.length > 0}
-            <div style="display: flex; gap: 4px; overflow-x: auto; margin-bottom: 20px;">
-              {#each detail.images as img}
-                <img src={img.public_url ?? ''} alt=""
-                     style="height: 96px; width: 96px; object-fit: cover; border-radius: 2px; flex-shrink: 0;" />
-              {/each}
-            </div>
-          {/if}
+          <!-- Images strip + edit link (image upload/remove lives on /sell/edit/[id]) -->
+          <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            {#if detail.images.length > 0}
+              <div style="display: flex; gap: 4px; overflow-x: auto; flex: 1;">
+                {#each detail.images as img}
+                  <img src={img.public_url ?? ''} alt=""
+                       style="height: 96px; width: 96px; object-fit: cover; border-radius: 2px; flex-shrink: 0;" />
+                {/each}
+              </div>
+            {:else}
+              <span class="adm-muted">No images uploaded.</span>
+            {/if}
+            <a href={`#/sell/edit/${detail.listing.id}`} target="_blank" rel="noopener"
+               style="font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.06em;
+                      text-decoration: none; color: var(--evx-warm-black);
+                      border: 1px solid var(--evx-rule-light); padding: 8px 12px; border-radius: 2px;
+                      flex-shrink: 0; white-space: nowrap;">
+              Edit listing →
+            </a>
+          </div>
+          <p class="adm-muted" style="font-size: 11px; margin: -12px 0 20px;">
+            Add or remove photos, reorder specs, and edit any field on the dedicated edit page.
+          </p>
 
           <div class="adm-field">
             <span class="adm-field__label">Title</span>
