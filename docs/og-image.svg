@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      .paper { fill: #F5F2ED; }
+      .ink { fill: #1A1A1A; }
+      .soft { fill: #8A8680; }
+      .accent { fill: #E8742C; }
+      .mark-stroke { fill: none; stroke: #E8742C; stroke-width: 4; }
+      .display { font-family: 'Inter Tight', system-ui, sans-serif; font-weight: 500; }
+      .editorial { font-family: 'Newsreader', Georgia, serif; font-style: italic; }
+      .mono { font-family: 'JetBrains Mono', 'Courier New', monospace; letter-spacing: 0.12em; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" class="paper"/>
+
+  <!-- Top monoline -->
+  <text x="96" y="80" class="mono soft" font-size="14">ÉIRVOX · DUBLIN · MMXXVI</text>
+  <text x="1104" y="80" class="mono soft" font-size="14" text-anchor="end">RESERVATION DEPOSITS · €49</text>
+
+  <!-- Top rule -->
+  <line x1="96" y1="100" x2="1104" y2="100" stroke="#1A1A1A" stroke-opacity="0.12" stroke-width="1"/>
+
+  <!-- Wordmark dot -->
+  <circle cx="148" cy="220" r="36" class="mark-stroke"/>
+  <circle cx="148" cy="220" r="18" class="accent"/>
+
+  <!-- Main headline -->
+  <text x="96" y="380" class="display ink" font-size="100" letter-spacing="-2.5">
+    Ireland's premium
+  </text>
+  <text x="96" y="488" class="display ink" font-size="100" letter-spacing="-2.5">
+    marketplace,<tspan class="editorial">  without</tspan>
+  </text>
+  <text x="96" y="596" class="editorial ink" font-size="100" letter-spacing="-2.5">
+    the noise.
+  </text>
+
+  <!-- Bottom monoline -->
+  <line x1="96" y1="535" x2="1104" y2="535" stroke="#1A1A1A" stroke-opacity="0.12" stroke-width="1" display="none"/>
+</svg>

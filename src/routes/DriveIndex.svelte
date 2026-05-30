@@ -1,0 +1,404 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import Nav from '../lib/Nav.svelte';
+  import Footer from '../lib/Footer.svelte';
+  import { navigate } from '../lib/router';
+  import { applySeo, seo } from '../lib/seo';
+
+  onMount(() => applySeo(seo.drive()));
+
+  const issues = [
+    {
+      num: '003',
+      slug: '003-mercedes-amg-gt',
+      title: 'Mercedes-AMG GT',
+      subtitle: 'V8 Biturbo · C192',
+      desc: 'Forged carbon steering wheel. Eight pieces, Alcantara wrap, champagne stitch.',
+      date: 'May MMXXVI',
+      status: 'open',
+      price: 4250,
+      remaining: 5,
+      total: 8,
+    },
+    {
+      num: '004',
+      slug: null,
+      title: 'Volkswagen Golf R',
+      subtitle: 'Mk8 · 2.0T',
+      desc: 'Issue 004 in preparation. Details to follow on reservation opening.',
+      date: 'Q3 MMXXVI',
+      status: 'upcoming',
+      price: null,
+      remaining: null,
+      total: null,
+    },
+    {
+      num: '002',
+      slug: null,
+      title: 'Porsche 911 GT3',
+      subtitle: '992 · 4.0 Naturally Aspirated',
+      desc: 'Forged carbon shift paddle set. Archived — sold out.',
+      date: 'Feb MMXXVI',
+      status: 'archived',
+      price: 1850,
+      remaining: 0,
+      total: 6,
+    },
+    {
+      num: '001',
+      slug: null,
+      title: 'BMW M3 Competition',
+      subtitle: 'G80 · S58 Biturbo',
+      desc: 'Alcantara handbrake grip and gear surrounds. Archived — sold out.',
+      date: 'Nov MMXXV',
+      status: 'archived',
+      price: 690,
+      remaining: 0,
+      total: 10,
+    },
+  ];
+</script>
+
+<Nav />
+
+<main id="main-content" class="drive-index">
+  <div class="page-container">
+
+    <header class="di-header">
+      <div class="di-header__top">
+        <span class="evx-caption di-header__pre">DRIVE ← PLATFORM ÉIRVOX</span>
+      </div>
+      <h1 class="di-header__title">DRIVE</h1>
+      <p class="di-header__desc">
+        Limited-run OEM+ pieces, one specification per issue.
+        Made in Dublin, serialised before they leave the house.
+        One issue open at a time — no variants, no reprints.
+      </p>
+    </header>
+
+    <div class="di-issues">
+      {#each issues as issue}
+        <div
+          class="di-issue di-issue--{issue.status}"
+          class:di-issue--clickable={issue.slug !== null}
+          role="link"
+          tabindex={issue.slug ? 0 : undefined}
+          on:click={() => issue.slug && navigate(`/drive/${issue.slug}`)}
+          on:keydown={(e) => e.key === 'Enter' && issue.slug && navigate(`/drive/${issue.slug}`)}
+        >
+          <div class="di-issue__image">
+            <span class="evx-caption di-issue__num">ISSUE {issue.num}</span>
+            <span class="evx-caption di-issue__img-text">{issue.title}</span>
+            {#if issue.status === 'open'}
+              <span class="di-issue__status-badge evx-caption">OPEN</span>
+            {:else if issue.status === 'upcoming'}
+              <span class="di-issue__status-badge di-issue__status-badge--upcoming evx-caption">UPCOMING</span>
+            {:else}
+              <span class="di-issue__status-badge di-issue__status-badge--archived evx-caption">ARCHIVED</span>
+            {/if}
+          </div>
+
+          <div class="di-issue__body">
+            <div class="di-issue__meta">
+              <span class="evx-label di-issue__issue-num">ISSUE {issue.num} · {issue.date}</span>
+            </div>
+            <h2 class="di-issue__title">{issue.title}</h2>
+            <p class="di-issue__subtitle">{issue.subtitle}</p>
+            <p class="di-issue__desc">{issue.desc}</p>
+
+            <div class="di-issue__footer">
+              {#if issue.status === 'open' && issue.price !== null}
+                <div class="di-issue__price-block">
+                  <span class="di-issue__price">€{issue.price.toLocaleString('en-IE')}</span>
+                  <span class="evx-caption di-issue__stock">
+                    <span class="di-issue__dot"></span>
+                    {issue.remaining} OF {issue.total} REMAINING
+                  </span>
+                </div>
+                <button
+                  class="evx-btn evx-btn--primary evx-btn--sm"
+                  on:click|stopPropagation={() => navigate(`/drive/${issue.slug}`)}
+                >
+                  Reserve · €49
+                </button>
+              {:else if issue.status === 'upcoming'}
+                <span class="evx-caption di-issue__upcoming-note">Announcement to follow</span>
+              {:else}
+                <span class="evx-caption di-issue__archived-note">Sold out · archived</span>
+              {/if}
+            </div>
+          </div>
+        </div>
+      {/each}
+    </div>
+
+    <!-- About DRIVE -->
+    <section class="di-about">
+      <div class="di-about__inner">
+        <div class="di-about__text">
+          <h2 class="di-about__heading">What is DRIVE?</h2>
+          <p class="di-about__para">
+            DRIVE is the editorial imprint of ÉIRVOX. Each issue is a single object, made to one specification,
+            in a limited run. No variants. No restocks. Once the issue closes, it closes.
+          </p>
+          <p class="di-about__para">
+            The first issues are automotive — carbon, Alcantara, precision-finished in Dublin.
+            Future issues will extend into watches, fashion, and objects as the platform grows.
+          </p>
+        </div>
+        <div class="di-about__reserve">
+          <h3 class="di-about__reserve-heading">How reservations work.</h3>
+          <ol class="di-about__steps">
+            <li class="di-about__step">
+              <span class="evx-label di-about__step-num">01</span>
+              <span>Pay a €49 refundable deposit. This holds your allocation.</span>
+            </li>
+            <li class="di-about__step">
+              <span class="evx-label di-about__step-num">02</span>
+              <span>We confirm by email within 48 hours and begin production.</span>
+            </li>
+            <li class="di-about__step">
+              <span class="evx-label di-about__step-num">03</span>
+              <span>Balance invoiced before dispatch. If QC fails, full refund.</span>
+            </li>
+            <li class="di-about__step">
+              <span class="evx-label di-about__step-num">04</span>
+              <span>Item shipped tracked and insured. Serialised for you.</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<Footer />
+
+<style>
+  .drive-index { flex: 1; padding-bottom: var(--evx-space-3xl); }
+
+  .di-header {
+    padding-top: var(--evx-space-2xl);
+    padding-bottom: var(--evx-space-2xl);
+    border-bottom: 1px solid var(--evx-rule-light);
+    margin-bottom: var(--evx-space-2xl);
+  }
+
+  .di-header__pre { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-md); }
+
+  .di-header__title {
+    font-family: var(--evx-font-display);
+    font-weight: 500;
+    font-size: 80px;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--evx-warm-black);
+    margin-bottom: var(--evx-space-lg);
+  }
+
+  .di-header__desc {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--evx-ink-soft);
+    max-width: 520px;
+  }
+
+  .di-issues {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--evx-space-xl);
+    margin-bottom: var(--evx-space-3xl);
+  }
+
+  .di-issue {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--evx-rule-light);
+    overflow: hidden;
+  }
+
+  .di-issue--clickable {
+    cursor: pointer;
+    transition: var(--evx-transition);
+  }
+
+  .di-issue--clickable:hover { opacity: 0.88; }
+
+  .di-issue__image {
+    aspect-ratio: 16 / 9;
+    background: var(--evx-graphite);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .di-issue--upcoming .di-issue__image { background: var(--evx-graphite-mid); }
+  .di-issue--archived .di-issue__image { background: var(--evx-graphite); opacity: 0.60; }
+
+  .di-issue__num {
+    position: absolute;
+    top: var(--evx-space-md);
+    left: var(--evx-space-md);
+    color: rgba(245, 242, 237, 0.40);
+  }
+
+  .di-issue__img-text {
+    color: rgba(245, 242, 237, 0.25);
+    text-align: center;
+  }
+
+  .di-issue__status-badge {
+    position: absolute;
+    top: var(--evx-space-md);
+    right: var(--evx-space-md);
+    background: var(--evx-fox-orange);
+    color: var(--evx-white);
+    padding: 3px 8px;
+  }
+
+  .di-issue__status-badge--upcoming {
+    background: var(--evx-graphite-mid);
+    border: 1px solid var(--evx-rule-dark);
+    color: var(--evx-ink-soft);
+  }
+
+  .di-issue__status-badge--archived {
+    background: transparent;
+    border: 1px solid var(--evx-rule-dark);
+    color: rgba(245, 242, 237, 0.40);
+  }
+
+  .di-issue__body {
+    padding: var(--evx-space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-sm);
+    flex: 1;
+  }
+
+  .di-issue__issue-num { color: var(--evx-ink-soft); }
+
+  .di-issue__title {
+    font-family: var(--evx-font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--evx-warm-black);
+  }
+
+  .di-issue__subtitle {
+    font-family: var(--evx-font-editorial);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--evx-ink-soft);
+  }
+
+  .di-issue__desc {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--evx-ink-soft);
+    flex: 1;
+  }
+
+  .di-issue__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--evx-space-md);
+    padding-top: var(--evx-space-md);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+
+  .di-issue__price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .di-issue__price {
+    font-family: var(--evx-font-display);
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .di-issue__stock {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--evx-fox-orange);
+  }
+
+  .di-issue__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--evx-fox-orange);
+  }
+
+  .di-issue__upcoming-note,
+  .di-issue__archived-note { color: var(--evx-ink-soft); }
+
+  /* About */
+  .di-about {
+    border-top: 1px solid var(--evx-rule-light);
+    padding-top: var(--evx-space-2xl);
+  }
+
+  .di-about__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--evx-space-3xl);
+  }
+
+  .di-about__heading {
+    font-family: var(--evx-font-display);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin-bottom: var(--evx-space-lg);
+  }
+
+  .di-about__para {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--evx-ink-soft);
+    margin-bottom: var(--evx-space-md);
+  }
+
+  .di-about__reserve-heading {
+    font-family: var(--evx-font-display);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--evx-space-xl);
+  }
+
+  .di-about__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-lg);
+    list-style: none;
+    margin-bottom: var(--evx-space-xl);
+  }
+
+  .di-about__step {
+    display: flex;
+    gap: var(--evx-space-lg);
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--evx-ink-soft);
+    padding-bottom: var(--evx-space-lg);
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+
+  .di-about__step-num { color: var(--evx-fox-orange); flex-shrink: 0; }
+
+  @media (max-width: 1023px) {
+    .di-issues { grid-template-columns: 1fr; }
+    .di-about__inner { grid-template-columns: 1fr; }
+  }
+</style>

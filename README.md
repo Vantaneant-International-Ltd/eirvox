@@ -1,47 +1,146 @@
-# Svelte + Vite
+# ÉIRVOX
 
-This template should help get you started developing with Svelte in Vite.
+Ireland's premium marketplace for enthusiast objects.
 
-## Recommended IDE Setup
+## Stack
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+Svelte 5 + Vite · Hash-based SPA router · Supabase (Postgres + Auth + Storage) · Vercel (SPA static + Edge serverless `/api/*`)
 
-## Need an official Svelte framework?
+The site is currently behind `COMING_SOON = true` in `src/lib/config.ts` with a `#dev` bypass. Not publicly exposed.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## Run
 
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `checkJs` in the JS template?**
-
-It is likely that most cases of changing variable types in runtime are likely to be accidental, rather than deliberate. This provides advanced typechecking out of the box. Should you like to take advantage of the dynamically-typed nature of JavaScript, it is trivial to change the configuration.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/sveltejs/svelte-hmr/tree/master/packages/svelte-hmr#preservation-of-local-state).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```js
-// store.js
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
 ```
+npm install
+npm run dev          # Vite SPA only — /api/* calls 404
+npm run dev:api      # Vercel CLI: SPA + /api/* on one port (needs `vercel login` once)
+```
+
+You need a `.env` file (copy from `.env.example`). For full server-route testing add `SUPABASE_SERVICE_ROLE_KEY` (server-only, no `VITE_` prefix). `npm run dev` is enough for browsing; `npm run dev:api` is needed to exercise enquiries / waitlist / seller-application submissions.
+
+## Build
+
+```
+npm run build
+```
+
+Vite outputs to `docs/`. Vercel deploy is configured via `vercel.json` to use `docs/` as its output directory.
+
+## Project layout
+
+```
+eirvox/
+├── api/                          Vercel Edge routes (service-role Supabase client)
+│   ├── _lib/supabase-admin.ts    Server-only client; NEVER imported from src/
+│   ├── health.ts                 GET /api/health
+│   ├── waitlist.ts               POST /api/waitlist
+│   ├── seller-applications.ts    POST /api/seller-applications
+│   └── enquiries.ts              POST /api/enquiries
+├── src/
+│   ├── App.svelte                Hash-router switch + coming-soon gate
+│   ├── main.ts
+│   ├── app.css                   Design tokens + base + focus + skip-link
+│   ├── lib/                      Stores, helpers, shared components
+│   ├── components/               AuthGuard, AdminLayout, LoadingCard
+│   ├── routes/                   One file per route
+│   └── data/                     Mock fixtures still consumed by Messages / Account
+├── supabase/                     Committed SQL migrations
+├── audit/                        Live-DB schema snapshots (drift-detection aid)
+├── notes/                        Review trackers + prompts
+├── docs/                         Build output
+├── HANDOFF.md                    Authoritative context for any new contributor
+├── vercel.json
+└── vite.config.ts
+```
+
+See [HANDOFF.md](HANDOFF.md) for the locked architecture decisions, security status of the live DB, and the current open-issue list.
+
+## Routes
+
+### Marketplace
+| Path | Page |
+|---|---|
+| `/` | Home |
+| `/{automotive\|watches\|fashion\|tech\|home-design\|audio-vinyl\|art}` | Category pages |
+| `/listing/:slug` | Listing detail (with Express Interest form) |
+| `/search?q=` | Listing + tradesperson search |
+
+### DRIVE (editorial imprint)
+| Path | Page |
+|---|---|
+| `/drive` | Index of issues |
+| `/drive/:slug` | Individual issue (with Express Interest form) |
+
+### Seller
+| Path | Page |
+|---|---|
+| `/sell` | Tier comparison + cohort schedule |
+| `/sell/apply` | Anonymous application, 5 steps (POSTs to `/api/seller-applications`) |
+| `/sell/create` · `/sell/edit/:id` | Listing CRUD (auth required) |
+| `/sell/dashboard` | Seller dashboard |
+
+### TRADE
+| Path | Page |
+|---|---|
+| `/trade` | Landing |
+| `/trade/apply` | Application |
+| `/trade/:category` · `/trade/:category/:slug` | Category + profile |
+
+### Account
+| Path | Page |
+|---|---|
+| `/account` · `/account/{orders,saved,settings}` | Auth required |
+| `/messages` | Conversations (mock-backed, see HANDOFF) |
+| `/login` | Magic-link sign-in (PKCE) |
+
+### Admin (`requireRole="admin"`)
+| Path | Page |
+|---|---|
+| `/admin` | Dashboard |
+| `/admin/{listings,sellers,reservations,trade,users,waitlist,enquiries,categories,settings}` | Per-surface admin |
+
+### Trust & legal
+`/trust` · `/about` · `/terms` · `/privacy` · `/cookies` · `/acceptable-use` · `/returns` · `/sitemap`
+
+## Design tokens
+
+| Token | Value |
+|---|---|
+| `--evx-paper` | `#F5F2ED` |
+| `--evx-ink` / `--evx-warm-black` | `#1A1A1A` |
+| `--evx-graphite` | `#2A2825` |
+| `--evx-ink-soft` (stone) | `#8A8680` |
+| `--evx-fox-orange` | `#E8742C` |
+| `--evx-champagne` | `#C9A961` |
+| Display | `Inter Tight` 400/500 |
+| Editorial | `Newsreader` italic |
+| Mono / labels | `JetBrains Mono` 400/500 |
+| Motion | 200ms opacity fade only |
+| Page margins | 96 / 48 / 20 px (desktop / tablet / mobile) |
+
+## Platform
+
+- **Marketplace.** Curated objects across 7 categories. Sellers admitted by cohort application. V1 is admin-curated (admin creates listings); seller self-serve comes later.
+- **DRIVE.** Limited-run OEM+ pieces. One specification per issue.
+- **TRADE.** Verified directory of independent tradespeople across Ireland.
+
+## Key decisions (locked — see HANDOFF.md)
+
+- **Public writes** (waitlist, seller applications, enquiries) go through `/api/*` Vercel serverless routes using the service-role key. No browser-to-Supabase anon inserts.
+- **Reservations are out of v1.** Replaced by "Express Interest" wired into `enquiries`. The `reservations` table is retained for admin history.
+- **Seller applications** write to a dedicated `seller_applications` table; `sellers` only gets rows on approval (via `approve_seller_application()` SECURITY DEFINER helper).
+- **Auth.** Supabase magic link with PKCE flow. Login is primarily an admin door today.
+- **Storage.** Public-read buckets with LIST disabled. Image canonical column is `storage_path`; URL derived at read time.
+- **Audit log.** Append-only `audit_log` table with triggers on `listings` and `sellers`. Admin-read only; writes only via the SECURITY DEFINER `log_audit_event()` helper invoked by triggers.
+
+## Brand
+
+Wordmark and symbol live at `public/brand/`.
+
+## Entity
+
+ÉIRVOX Systems Ltd · Trading as ÉIRVOX
+A Vantaneant International Ltd company
+Dublin, Ireland · CRO 712304 · VAT IE 3987654 N
+
+renato@eirvox.ie · eirvox.ie
