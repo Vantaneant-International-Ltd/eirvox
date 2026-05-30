@@ -45,7 +45,8 @@
   <div class="footer__body page-container">
     <!-- Brand -->
     <div class="footer__col footer__col--brand">
-      <button class="footer__wordmark" on:click={() => navigate('/')} aria-label="ÉIRVOX home">
+      <button class="footer__brand-mark" on:click={() => navigate('/')} aria-label="ÉIRVOX home">
+        <img src="/brand/symbol.png" alt="" class="footer__symbol-img" aria-hidden="true" />
         <img src="/brand/wordmark.png" alt="ÉIRVOX" class="footer__wordmark-img" />
       </button>
       <p class="footer__tagline">
@@ -152,17 +153,22 @@
     </div>
   </div>
 
-  <!-- Copyright + entity -->
+  <!-- Copyright + parent company -->
   <div class="footer__bar page-container">
     <div class="footer__bar-left">
       <span class="evx-caption footer__legal">
         © 2026 ÉIRVOX Systems Ltd. Trading as ÉIRVOX.
         A Vantaneant International Ltd company. All rights reserved.
       </span>
+      <span class="evx-caption footer__family">
+        Part of the VNTA family ·
+        <a href="https://vnta.xyz" target="_blank" rel="noopener noreferrer">vnta.xyz</a> ·
+        <a href="https://vendr.ie" target="_blank" rel="noopener noreferrer">vendr.ie</a>
+      </span>
     </div>
     <div class="footer__bar-right">
       <span class="evx-caption footer__legal">
-        DUBLIN, IRELAND · CRO 712304 · VAT IE 3987654 N
+        DUBLIN, IRELAND
       </span>
     </div>
   </div>
@@ -250,19 +256,28 @@
     gap: var(--evx-space-md);
   }
 
-  .footer__wordmark {
+  .footer__brand-mark {
     display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     margin-bottom: var(--evx-space-sm);
   }
+  .footer__symbol-img {
+    height: 28px;
+    width: 28px;
+    display: block;
+    /* PNG is dark-on-transparent; invert for the dark footer background. */
+    filter: invert(1) brightness(1.05);
+  }
   .footer__wordmark-img {
     height: 26px;
     width: auto;
     display: block;
-    /* PNG is dark-on-transparent; invert for the dark footer background. */
     filter: invert(1) brightness(1.05);
   }
 
@@ -369,6 +384,24 @@
   }
 
   .footer__legal { color: var(--evx-ink-soft); line-height: 1.6; }
+
+  .footer__bar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .footer__family {
+    color: var(--evx-ink-soft);
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+  .footer__family a {
+    color: var(--evx-paper);
+    text-decoration: none;
+    transition: var(--evx-transition);
+  }
+  .footer__family a:hover { color: var(--evx-fox-orange); }
 
   @media (max-width: 1199px) {
     .footer__body {
