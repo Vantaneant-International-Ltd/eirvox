@@ -44,6 +44,19 @@
       <div class="legal-content">
         <slot />
 
+        <div class="legal-corporate">
+          <span class="evx-label legal-corporate__label">CORPORATE STRUCTURE</span>
+          <p class="legal-corporate__body">
+            ÉIRVOX is operated by <strong>ÉIRVOX Systems Ltd</strong>, trading as ÉIRVOX.
+            ÉIRVOX Systems Ltd is a wholly owned subsidiary of
+            <strong>Vantaneant International Ltd</strong>
+            (<a href="https://vnta.xyz" class="legal-link" target="_blank" rel="noopener noreferrer">vnta.xyz</a>),
+            which also operates <strong>Vendr</strong>
+            (<a href="https://vendr.ie" class="legal-link" target="_blank" rel="noopener noreferrer">vendr.ie</a>).
+            References to "we" or "us" in this document mean ÉIRVOX Systems Ltd unless otherwise stated.
+          </p>
+        </div>
+
         <div class="legal-footer-note">
           <span class="evx-label legal-footer-note__label">QUESTIONS?</span>
           <p class="legal-footer-note__body">
@@ -216,6 +229,19 @@
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+
+  /* Corporate structure disclosure */
+  .legal-corporate {
+    padding: var(--evx-space-lg);
+    border: 1px solid var(--evx-rule-light);
+  }
+  .legal-corporate__label { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-sm); }
+  .legal-corporate__body {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--evx-ink-soft);
+  }
+  .legal-corporate__body strong { color: var(--evx-warm-black); font-weight: 500; }
 
   /* Footer note + cross-links */
   .legal-footer-note {
