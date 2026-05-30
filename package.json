@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "vercel dev",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -12,6 +13,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "svelte": "^5.55.3",
     "typescript": "^6.0.2",
+    "vercel": "^54.6.1",
     "vite": "^8.0.14"
   },
   "dependencies": {
