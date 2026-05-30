@@ -155,7 +155,16 @@
   let subtitle = '';
   let description = '';
   let condition = '';
-  const conditionOptions = ['OEM+ New', 'Like New', 'Used — Excellent', 'Used — Good', 'Refinished'];
+  // Value = the DB enum (public.listing_condition); label = what we render.
+  // Live enum has: new, like_new, excellent, good, fair, refinished.
+  // 'fair' is intentionally not surfaced — sellers shouldn't be listing fair items.
+  const conditionOptions: Array<{ value: string; label: string }> = [
+    { value: 'new',        label: 'OEM+ New' },
+    { value: 'like_new',   label: 'Like New' },
+    { value: 'excellent',  label: 'Used — Excellent' },
+    { value: 'good',       label: 'Used — Good' },
+    { value: 'refinished', label: 'Refinished' },
+  ];
 
   // Step 3 — Pricing
   let price: number | string = '';
@@ -475,7 +484,7 @@
               <label class="evx-caption field-label" for="d-cond">CONDITION</label>
               <select id="d-cond" class="field-input field-select" bind:value={condition} required>
                 <option value="">Select condition…</option>
-                {#each conditionOptions as opt}<option value={opt}>{opt}</option>{/each}
+                {#each conditionOptions as opt}<option value={opt.value}>{opt.label}</option>{/each}
               </select>
             </div>
             <div class="field">

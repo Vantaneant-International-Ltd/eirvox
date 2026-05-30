@@ -51,7 +51,14 @@
   let specs: Spec[] = [];
   let existingImages: ListingImage[] = [];
 
-  const conditionOptions = ['OEM+ New', 'Like New', 'Used — Excellent', 'Used — Good', 'Refinished'];
+  // Same shape as SellerCreate: value=DB enum, label=UI text.
+  const conditionOptions: Array<{ value: string; label: string }> = [
+    { value: 'new',        label: 'OEM+ New' },
+    { value: 'like_new',   label: 'Like New' },
+    { value: 'excellent',  label: 'Used — Excellent' },
+    { value: 'good',       label: 'Used — Good' },
+    { value: 'refinished', label: 'Refinished' },
+  ];
 
   let saving = false;
   let saveMsg = '';
@@ -296,7 +303,7 @@
               <label class="evx-caption field-label" for="e-cond">CONDITION</label>
               <select id="e-cond" class="field-input" bind:value={condition}>
                 <option value="">—</option>
-                {#each conditionOptions as opt}<option value={opt}>{opt}</option>{/each}
+                {#each conditionOptions as opt}<option value={opt.value}>{opt.label}</option>{/each}
               </select>
             </div>
           </div>
