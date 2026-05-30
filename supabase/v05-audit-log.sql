@@ -112,6 +112,18 @@ $$;
 REVOKE ALL ON FUNCTION public.log_audit_event(public.audit_action, text, text, jsonb) FROM PUBLIC;
 GRANT  ALL ON FUNCTION public.log_audit_event(public.audit_action, text, text, jsonb) TO service_role;
 
+-- Supabase default privileges auto-grant EXECUTE on new functions to
+-- anon/authenticated, which REVOKE FROM PUBLIC does not remove. Without
+-- the explicit REVOKE below, an anonymous caller could invoke this
+-- SECURITY DEFINER function and insert arbitrary rows into audit_log
+-- (the function bypasses RLS by design so the table can only be
+-- written via this entry point). Audit-log poisoning would let an
+-- attacker hide their actions behind fake actor_ids. Lock it down to
+-- service_role only — triggers run as table owner and don't need a
+-- grant.
+REVOKE EXECUTE ON FUNCTION public.log_audit_event(public.audit_action, text, text, jsonb) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.log_audit_event(public.audit_action, text, text, jsonb) FROM authenticated;
+
 
 -- =============================================================
 -- §6  Per-table trigger functions
@@ -242,6 +254,13 @@ $$;
 
 REVOKE ALL ON FUNCTION public.audit_listings_change() FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.audit_sellers_change()  FROM PUBLIC;
+-- Same pattern as log_audit_event: scrub the auto-granted role privileges
+-- so the trigger functions can only be invoked by the DB during DML on
+-- their target tables, never by a client.
+REVOKE EXECUTE ON FUNCTION public.audit_listings_change() FROM anon;
+REVOKE EXECUTE ON FUNCTION public.audit_listings_change() FROM authenticated;
+REVOKE EXECUTE ON FUNCTION public.audit_sellers_change()  FROM anon;
+REVOKE EXECUTE ON FUNCTION public.audit_sellers_change()  FROM authenticated;
 
 
 -- =============================================================

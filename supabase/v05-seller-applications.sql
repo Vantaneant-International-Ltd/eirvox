@@ -276,6 +276,15 @@ REVOKE ALL ON FUNCTION public.approve_seller_application(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.approve_seller_application(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.approve_seller_application(uuid) TO service_role;
 
+-- Supabase default privileges auto-grant EXECUTE on new functions to
+-- anon/authenticated. The REVOKE FROM PUBLIC above does not remove
+-- those role-specific grants (anon is a named role, not a member of
+-- PUBLIC in this context). Explicit REVOKE FROM anon is required so a
+-- fresh database rebuild matches the live posture: the only callers
+-- are signed-in admins (via is_admin() guard inside the function) and
+-- service-role contexts. See notes/pr5-review.md for context.
+REVOKE EXECUTE ON FUNCTION public.approve_seller_application(uuid) FROM anon;
+
 
 -- =============================================================
 -- Reload PostgREST schema cache

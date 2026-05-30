@@ -147,6 +147,14 @@ REVOKE ALL ON FUNCTION public.admin_stats() FROM PUBLIC;
 GRANT ALL ON FUNCTION public.admin_stats() TO authenticated;
 GRANT ALL ON FUNCTION public.admin_stats() TO service_role;
 
+-- Defensive: Supabase default privileges auto-grant EXECUTE to anon
+-- on new functions, which REVOKE FROM PUBLIC does not remove. The
+-- live database doesn't have this grant (admin_stats predates the
+-- audit), but a fresh database rebuilt from this file would unless
+-- the REVOKE is explicit. The is_admin() guard inside the function
+-- would still block real escalation, but we prefer defence in depth.
+REVOKE EXECUTE ON FUNCTION public.admin_stats() FROM anon;
+
 
 -- =============================================================
 -- §3  admin_activity_recent view — security_invoker
