@@ -9,6 +9,7 @@
   } from '../../lib/admin';
   import { siteFlags, updateSiteFlags, type SiteFlags } from '../../lib/flags';
   import { applySeo } from '../../lib/seo';
+  import PayButton from '../../lib/PayButton.svelte';
 
   let loading = true;
   let settings: SiteSettingsBundle | null = null;
@@ -48,49 +49,10 @@
     setTimeout(() => { if (savedKey === 'flags') savedKey = null; }, 1800);
   }
 
-  // Revolut live-mode test charge. Creates a real €1 order; you can
-  // refund yourself in the Revolut Business app afterwards.
-  let payTestRunning = false;
-  let payTestError = '';
-  async function runRevolutTest() {
-    if (payTestRunning) return;
-    if (!confirm('This creates a REAL €1 charge against your live Revolut Merchant API. You can refund yourself afterwards. Continue?')) return;
-    payTestError = '';
-    payTestRunning = true;
-    try {
-      const res = await fetch('/api/payments/create-test-order', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ amount_eur: 1, description: 'ÉIRVOX live integration test' }),
-      });
-
-      // If /api/* isn't being served (plain `npm run dev` instead of
-      // `npm run dev:api`), Vite returns a 404 with HTML, not JSON.
-      // Detect that before .json() throws an unhelpful parse error.
-      const ct = res.headers.get('content-type') ?? '';
-      if (!ct.includes('application/json')) {
-        if (res.status === 404) {
-          payTestError = 'The /api/* routes are not running. Stop `npm run dev` and run `npm run dev:api` (Vercel CLI) instead so Edge routes work.';
-        } else {
-          payTestError = `Server returned non-JSON (${res.status}). The API route may have crashed before responding.`;
-        }
-        payTestRunning = false;
-        return;
-      }
-
-      const body = await res.json();
-      if (!res.ok || !body.checkout_url) {
-        payTestError = body.error ?? 'Could not create the test order.';
-        payTestRunning = false;
-        return;
-      }
-      // Redirect the browser to Revolut hosted checkout
-      window.location.href = body.checkout_url;
-    } catch (e) {
-      payTestError = e instanceof Error ? e.message : 'Network error.';
-      payTestRunning = false;
-    }
-  }
+  // Revolut live-mode test charge — embedded PayButton renders a
+  // native Revolut Pay button + a fallback link that opens the
+  // popup with Apple Pay, Google Pay, card, and bank.
+  let payTestKey = 0; // bump to force a fresh PayButton instance after a charge
 </script>
 
 <AdminLayout title="Site Settings">
@@ -169,21 +131,28 @@
         <div class="adm-field">
           <strong style="display: block; font-size: 14px; margin-bottom: 6px;">Revolut Merchant API — live integration test</strong>
           <p class="adm-field__hint">
-            Creates a real €1 order against the configured live Revolut Merchant API key,
-            redirects you to Revolut's hosted checkout, and bounces back to
-            <code>/payment/return</code> with the order state. Refund yourself from the Revolut Business app afterwards.
+            The native Revolut Pay button below creates a real €1 order against your live
+            Revolut Merchant API. Use "another way" to test Apple Pay / Google Pay / Card / Bank.
+            Refund yourself from the Revolut Business app afterwards.
           </p>
         </div>
 
-        {#if payTestError}
-          <div class="adm-state adm-state--err" style="margin: 12px 0;">
-            <p class="adm-state__sub">{payTestError}</p>
-          </div>
-        {/if}
-
-        <div class="adm-actions">
-          <button class="adm-btn adm-btn--primary" on:click={runRevolutTest} disabled={payTestRunning}>
-            {payTestRunning ? 'Creating order…' : 'Run €1 test charge →'}
+        <div style="margin-top: 16px;">
+          {#key payTestKey}
+            <PayButton
+              amountEur={1}
+              description="ÉIRVOX live integration test"
+              metadata={{ purpose: 'admin-test' }}
+              on:success={() => { console.info('[admin] €1 test charge succeeded'); }}
+              on:error={(e) => { console.warn('[admin] €1 test charge error:', e.detail.message); }}
+            />
+          {/key}
+          <button
+            class="adm-btn adm-btn--ghost"
+            style="margin-top: 12px; font-family: var(--evx-font-mono); font-size: 11px;"
+            on:click={() => { payTestKey++; }}
+          >
+            Reset / create another test order
           </button>
         </div>
       </div>
