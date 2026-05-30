@@ -5,6 +5,7 @@
   import { isDevBypassed, isMaintenancePreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
+  import PaymentReturn from './routes/PaymentReturn.svelte';
   import Home from './routes/Home.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
@@ -212,6 +213,8 @@
 
 {:else if path === '/search'}
   <Search />
+{:else if path === '/payment/return'}
+  <PaymentReturn />
 {:else if path === '/sitemap'}
   <Sitemap />
 {:else if path === '/terms'}

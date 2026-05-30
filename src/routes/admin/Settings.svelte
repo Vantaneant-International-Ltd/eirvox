@@ -47,6 +47,35 @@
     savedKey = 'flags';
     setTimeout(() => { if (savedKey === 'flags') savedKey = null; }, 1800);
   }
+
+  // Revolut live-mode test charge. Creates a real €1 order; you can
+  // refund yourself in the Revolut Business app afterwards.
+  let payTestRunning = false;
+  let payTestError = '';
+  async function runRevolutTest() {
+    if (payTestRunning) return;
+    if (!confirm('This creates a REAL €1 charge against your live Revolut Merchant API. You can refund yourself afterwards. Continue?')) return;
+    payTestError = '';
+    payTestRunning = true;
+    try {
+      const res = await fetch('/api/payments/create-test-order', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ amount_eur: 1, description: 'ÉIRVOX live integration test' }),
+      });
+      const body = await res.json();
+      if (!res.ok || !body.checkout_url) {
+        payTestError = body.error ?? 'Could not create the test order.';
+        payTestRunning = false;
+        return;
+      }
+      // Redirect the browser to Revolut hosted checkout
+      window.location.href = body.checkout_url;
+    } catch (e) {
+      payTestError = e instanceof Error ? e.message : 'Network error.';
+      payTestRunning = false;
+    }
+  }
 </script>
 
 <AdminLayout title="Site Settings">
@@ -115,6 +144,33 @@
         <p class="adm-field__hint" style="margin-top: 12px;">
           Tip: append <code>#dev</code> to any URL to bypass both gates (session-scoped). Useful for admin work while a gate is on for the public.
         </p>
+      </div>
+    </section>
+
+    <!-- ─────────── Payments (Revolut) ─────────── -->
+    <section class="adm-section">
+      <h2 class="adm-section__h">Payments</h2>
+      <div style="background: var(--evx-paper); border: 1px solid var(--evx-rule-light); padding: 24px;">
+        <div class="adm-field">
+          <strong style="display: block; font-size: 14px; margin-bottom: 6px;">Revolut Merchant API — live integration test</strong>
+          <p class="adm-field__hint">
+            Creates a real €1 order against the configured live Revolut Merchant API key,
+            redirects you to Revolut's hosted checkout, and bounces back to
+            <code>/payment/return</code> with the order state. Refund yourself from the Revolut Business app afterwards.
+          </p>
+        </div>
+
+        {#if payTestError}
+          <div class="adm-state adm-state--err" style="margin: 12px 0;">
+            <p class="adm-state__sub">{payTestError}</p>
+          </div>
+        {/if}
+
+        <div class="adm-actions">
+          <button class="adm-btn adm-btn--primary" on:click={runRevolutTest} disabled={payTestRunning}>
+            {payTestRunning ? 'Creating order…' : 'Run €1 test charge →'}
+          </button>
+        </div>
       </div>
     </section>
 
