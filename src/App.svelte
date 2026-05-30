@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
   import { initAuth } from './lib/auth';
-  import { isDevBypassed, siteFlags, flagsLoading, loadSiteFlags, resolveGate } from './lib/flags';
+  import { isDevBypassed, isMaintenancePreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
   import Home from './routes/Home.svelte';
@@ -51,9 +51,11 @@
   // Admin can flip either from /admin/settings without a redeploy.
   // #dev hash bypasses both (sessionStorage-scoped).
   let bypassed = false;
-  $: gate = resolveGate($siteFlags, bypassed, $flagsLoading);
+  let maintenancePreview = false;
+  $: gate = resolveGate($siteFlags, bypassed, $flagsLoading, maintenancePreview);
 
   onMount(() => {
+    maintenancePreview = isMaintenancePreviewed();
     bypassed = isDevBypassed();
     void loadSiteFlags();
     // Init auth eagerly; the gates only hide the UI shell, auth itself
@@ -89,6 +91,11 @@
 </script>
 
 {#if gate === 'maintenance'}
+  {#if maintenancePreview}
+    <div class="dev-banner">
+      PREVIEW MODE — Maintenance gate is OFF for the public · visit <code>/#exit-preview</code> to leave
+    </div>
+  {/if}
   <MaintenanceHero />
 {:else if gate === 'coming_soon' || gate === 'loading'}
   <ComingSoonHero />
