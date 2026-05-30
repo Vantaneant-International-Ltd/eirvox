@@ -10,6 +10,12 @@
   let amount: number | null = null;
   let orderId = '';
 
+  // Receipt-send state
+  let receiptEmail = '';
+  let receiptSending = false;
+  let receiptSent = false;
+  let receiptError = '';
+
   onMount(async () => {
     // Revolut redirects back with ?order_id=... (or sometimes just ?id=...).
     // We read either. Hash routing means the query is on the path *after*
@@ -68,6 +74,36 @@
     state === 'CANCELLED' ? 'CANCELLED' :
     state === 'FAILED' ? 'FAILED' :
     'CHECKING…';
+
+  async function sendReceipt(e: Event) {
+    e.preventDefault();
+    if (receiptSending) return;
+    receiptError = '';
+    receiptSending = true;
+    try {
+      const res = await fetch('/api/payments/send-receipt', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId, to: receiptEmail.trim().toLowerCase() }),
+      });
+      const ct = res.headers.get('content-type') ?? '';
+      if (!ct.includes('application/json')) {
+        receiptError = res.status === 404
+          ? 'API not running. Use `npm run dev:api`.'
+          : `Server returned non-JSON (${res.status}).`;
+      } else {
+        const body = await res.json();
+        if (!res.ok || !body.ok) {
+          receiptError = body.error ?? 'Could not send receipt.';
+        } else {
+          receiptSent = true;
+        }
+      }
+    } catch {
+      receiptError = 'Network error sending receipt.';
+    }
+    receiptSending = false;
+  }
 </script>
 
 <Nav />
@@ -112,6 +148,33 @@
           <button class="evx-btn evx-btn--ghost" on:click={() => location.reload()}>Refresh status</button>
         {/if}
       </div>
+
+      {#if state === 'COMPLETED' || state === 'AUTHORISED'}
+        <div class="pr__receipt">
+          <span class="evx-label pr__receipt-label">EMAIL RECEIPT</span>
+          {#if receiptSent}
+            <p class="pr__receipt-ok">Receipt sent. Check your inbox (and spam, just in case).</p>
+          {:else}
+            <p class="pr__receipt-sub">Want a copy by email? We'll send a branded receipt with the reference.</p>
+            <form class="pr__receipt-form" on:submit={sendReceipt}>
+              <input
+                type="email"
+                class="pr__receipt-input"
+                placeholder="your@email"
+                required
+                bind:value={receiptEmail}
+                disabled={receiptSending}
+              />
+              <button class="evx-btn evx-btn--primary" type="submit" disabled={receiptSending}>
+                {receiptSending ? 'Sending…' : 'Send receipt'}
+              </button>
+            </form>
+            {#if receiptError}
+              <p class="pr__receipt-err">{receiptError}</p>
+            {/if}
+          {/if}
+        </div>
+      {/if}
     {/if}
   </div>
 </main>
@@ -159,4 +222,35 @@
   .pr__meta dd { font-size: 14px; color: var(--evx-warm-black); }
   .pr__mono { font-family: var(--evx-font-mono); font-size: 12px; word-break: break-all; }
   .pr__actions { display: flex; gap: var(--evx-space-md); flex-wrap: wrap; }
+
+  .pr__receipt {
+    margin-top: var(--evx-space-2xl);
+    padding-top: var(--evx-space-xl);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  .pr__receipt-label { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-sm); }
+  .pr__receipt-sub { font-size: 14px; color: var(--evx-ink-soft); margin-bottom: var(--evx-space-md); }
+  .pr__receipt-ok { font-size: 14px; color: var(--evx-warm-black); }
+  .pr__receipt-form { display: flex; gap: var(--evx-space-sm); align-items: stretch; max-width: 480px; }
+  .pr__receipt-input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--evx-rule-light);
+    border-radius: 2px;
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    color: var(--evx-warm-black);
+  }
+  .pr__receipt-input:focus { border-color: var(--evx-warm-black); }
+  .pr__receipt-err {
+    margin-top: var(--evx-space-sm);
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    color: #C9665A;
+  }
+  @media (max-width: 600px) {
+    .pr__receipt-form { flex-direction: column; }
+  }
 </style>
