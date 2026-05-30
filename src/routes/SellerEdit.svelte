@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
@@ -68,7 +69,9 @@
     });
 
     const waitForInit = () => new Promise<void>(resolve => {
-      const unsub = auth.subscribe(s => { if (s.initialised) { unsub(); resolve(); } });
+      if (get(auth).initialised) { resolve(); return; }
+      let unsub: (() => void) | null = null;
+      unsub = auth.subscribe(s => { if (s.initialised) { unsub?.(); resolve(); } });
     });
     await waitForInit();
 

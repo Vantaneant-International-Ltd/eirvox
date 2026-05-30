@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
@@ -32,9 +33,14 @@
   onMount(async () => {
     applySeo(seo.sellCreate());
 
+    // Short-circuit if already initialised. Otherwise subscribe with
+    // `let unsub` so the callback doesn't reference an uninitialised
+    // const when Svelte fires it synchronously on subscribe().
     const waitForInit = () => new Promise<void>(resolve => {
-      const unsub = auth.subscribe(s => {
-        if (s.initialised) { unsub(); resolve(); }
+      if (get(auth).initialised) { resolve(); return; }
+      let unsub: (() => void) | null = null;
+      unsub = auth.subscribe(s => {
+        if (s.initialised) { unsub?.(); resolve(); }
       });
     });
     await waitForInit();

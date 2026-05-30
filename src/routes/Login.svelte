@@ -66,15 +66,18 @@
       return;
     }
 
-    // Wait for the auth store to settle (onAuthStateChange + profile fetch)
+    // Wait for the auth store to settle (onAuthStateChange + profile fetch).
+    // `let unsub` so the callback can safely reference it when Svelte fires
+    // the subscription synchronously on subscribe().
     const settled = await new Promise<boolean>((resolve) => {
       const start = Date.now();
-      const unsub = auth.subscribe((s) => {
+      let unsub: (() => void) | null = null;
+      unsub = auth.subscribe((s) => {
         if (s.user && !s.loading) {
-          unsub();
+          unsub?.();
           resolve(true);
         } else if (Date.now() - start > 3000) {
-          unsub();
+          unsub?.();
           resolve(false);
         }
       });
