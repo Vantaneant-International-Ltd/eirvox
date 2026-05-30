@@ -42,8 +42,8 @@
 
 <main class="cs">
   <div class="cs__inner">
-    <h1 class="cs__wordmark cs__fade cs__fade--wordmark" aria-label="ÉIRVOX">
-      <span class="cs__wordmark-e">É</span><span class="cs__wordmark-rest">IRVOX</span>
+    <h1 class="cs__wordmark-h cs__fade cs__fade--wordmark" aria-label="ÉIRVOX">
+      <img src="/brand/wordmark.png" alt="ÉIRVOX" class="cs__wordmark-img" />
     </h1>
 
     <p class="cs__tagline cs__fade cs__fade--tagline">
@@ -129,29 +129,18 @@
     text-align: center;
   }
 
-  /* ── Wordmark — É italic Newsreader + IRVOX Inter Tight 600 ── */
-  .cs__wordmark {
-    color: #F5F2ED;
-    font-weight: 400;
-    line-height: 1;
-    letter-spacing: -0.015em;
+  /* ── Wordmark (PNG) ── */
+  .cs__wordmark-h {
     margin: 0 0 18px;
-    display: inline-flex;
-    align-items: baseline;
-    font-size: 56px;
+    line-height: 0;          /* prevents h1's default line-height baseline padding */
   }
 
-  .cs__wordmark-e {
-    font-family: 'Newsreader', Georgia, serif;
-    font-style: italic;
-    font-weight: 400;
-    margin-right: 1px;
-  }
-
-  .cs__wordmark-rest {
-    font-family: 'Inter Tight', system-ui, sans-serif;
-    font-weight: 600;
-    letter-spacing: 0.01em;
+  .cs__wordmark-img {
+    height: 72px;            /* glyph height ~52px after the centred-glyph crop */
+    width: auto;
+    display: block;
+    /* Dark-on-transparent PNG inverted for the ink background. */
+    filter: invert(1) brightness(1.05);
   }
 
   /* ── Tagline ── */
@@ -306,7 +295,8 @@
   /* ── Mobile ── */
   @media (max-width: 600px) {
     .cs { padding: 48px 20px; }
-    .cs__wordmark { font-size: 40px; margin-bottom: 14px; }
+    .cs__wordmark-h { margin-bottom: 14px; }
+    .cs__wordmark-img { height: 52px; }
     .cs__tagline { font-size: 14px; margin-bottom: 28px; max-width: 320px; }
     .cs__group { margin-bottom: 44px; }
     .cs__rule { margin-bottom: 20px; }

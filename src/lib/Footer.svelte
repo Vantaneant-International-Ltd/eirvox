@@ -46,7 +46,7 @@
     <!-- Brand -->
     <div class="footer__col footer__col--brand">
       <button class="footer__wordmark" on:click={() => navigate('/')} aria-label="ÉIRVOX home">
-        <img src="/brand/wordmark.svg" alt="ÉIRVOX" class="footer__wordmark-img" />
+        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="footer__wordmark-img" />
       </button>
       <p class="footer__tagline">
         Ireland's premium marketplace for enthusiast objects.
@@ -259,10 +259,11 @@
     margin-bottom: var(--evx-space-sm);
   }
   .footer__wordmark-img {
-    height: 22px;
+    height: 26px;
     width: auto;
-    color: var(--evx-paper);
-    filter: invert(1) brightness(1.1);
+    display: block;
+    /* PNG is dark-on-transparent; invert for the dark footer background. */
+    filter: invert(1) brightness(1.05);
   }
 
   .footer__tagline {

@@ -75,7 +75,7 @@
     <!-- Wordmark -->
     <div class="nav__left">
       <button class="nav__wordmark" on:click={() => handleNav('/')} aria-label="ÉIRVOX home">
-        <img src="/brand/wordmark.svg" alt="ÉIRVOX" class="nav__wordmark-img" />
+        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="nav__wordmark-img" />
       </button>
     </div>
 
@@ -296,9 +296,9 @@
   }
 
   .nav__wordmark-img {
-    height: 22px;
+    height: 26px;
     width: auto;
-    color: var(--evx-warm-black);
+    display: block;
   }
 
   .nav__centre {
