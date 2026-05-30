@@ -80,6 +80,13 @@
 
     <footer class="cs__footer cs__fade cs__fade--footer">
       <span class="cs__entity">ÉIRVOX Systems Ltd · Dublin, Ireland</span>
+      <div class="cs__legal">
+        <a href="#/privacy">Privacy</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/terms">Terms</a>
+        <span aria-hidden="true">·</span>
+        <a href="#/cookies">Cookies</a>
+      </div>
       <div class="cs__social">
         <a href="https://www.instagram.com/eirvox_" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on Instagram">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
@@ -265,6 +272,21 @@
     transition: color 200ms ease;
   }
   .cs__social a:hover { color: #E8742C; }
+
+  .cs__legal {
+    display: flex;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: #5C5C5C;
+  }
+  .cs__legal a {
+    color: #5C5C5C;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .cs__legal a:hover { color: #E8742C; }
 
   /* ── Sequential fade-in (film title card cadence) ── */
   .cs__fade {

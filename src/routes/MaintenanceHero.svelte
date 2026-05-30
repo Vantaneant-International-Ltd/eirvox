@@ -34,6 +34,14 @@
         </svg>
       </a>
     </div>
+
+    <div class="mt__legal mt__fade mt__fade--footer">
+      <a href="#/privacy">Privacy</a>
+      <span aria-hidden="true">·</span>
+      <a href="#/terms">Terms</a>
+      <span aria-hidden="true">·</span>
+      <a href="#/cookies">Cookies</a>
+    </div>
   </div>
 </main>
 
@@ -119,6 +127,22 @@
     transition: color 200ms ease;
   }
   .mt__social a:hover { color: #E8742C; }
+
+  .mt__legal {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: #5C5C5C;
+  }
+  .mt__legal a {
+    color: #5C5C5C;
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+  .mt__legal a:hover { color: #E8742C; }
 
   /* Sequential fade-in */
   .mt__fade {

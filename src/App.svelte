@@ -49,10 +49,16 @@
   //   maintenance: temporary outage page (precedence over coming_soon)
   //   coming_soon: pre-launch landing
   // Admin can flip either from /admin/settings without a redeploy.
+  // Legal pages are always reachable so privacy/cookie/terms links
+  // in either gate hero can resolve. Required for GDPR (privacy must
+  // be accessible to anyone, including pre-launch email-form visitors).
+  const ALWAYS_OPEN_PATHS = ['/privacy', '/terms', '/cookies', '/acceptable-use', '/returns'];
   // #dev hash bypasses both (sessionStorage-scoped).
   let bypassed = false;
   let maintenancePreview = false;
-  $: gate = resolveGate($siteFlags, bypassed, $flagsLoading, maintenancePreview);
+  $: rawGate = resolveGate($siteFlags, bypassed, $flagsLoading, maintenancePreview);
+  // Legal-route whitelist falls through to the route block even when a gate is on.
+  $: gate = ALWAYS_OPEN_PATHS.includes(path) ? 'live' : rawGate;
 
   onMount(() => {
     maintenancePreview = isMaintenancePreviewed();

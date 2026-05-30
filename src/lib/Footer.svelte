@@ -126,6 +126,26 @@
     </div>
   </div>
 
+  <!-- Payment methods row -->
+  <div class="footer__pay-row page-container">
+    <span class="evx-caption footer__legal-label">PAYMENTS</span>
+    <div class="footer__pay-methods" aria-label="Accepted payment methods">
+      <span class="footer__pay-method">Revolut&nbsp;Pay</span>
+      <span class="footer__pay-sep">·</span>
+      <span class="footer__pay-method">Apple&nbsp;Pay</span>
+      <span class="footer__pay-sep">·</span>
+      <span class="footer__pay-method">Google&nbsp;Pay</span>
+      <span class="footer__pay-sep">·</span>
+      <span class="footer__pay-method">Visa</span>
+      <span class="footer__pay-sep">·</span>
+      <span class="footer__pay-method">Mastercard</span>
+      <span class="footer__pay-sep">·</span>
+      <span class="footer__pay-method">Amex</span>
+      <span class="footer__pay-sep">·</span>
+      <span class="footer__pay-method">Pay&nbsp;by&nbsp;bank</span>
+    </div>
+  </div>
+
   <!-- Legal links row -->
   <div class="footer__legal-row page-container">
     <span class="evx-caption footer__legal-label">LEGAL</span>
@@ -317,7 +337,8 @@
   .footer__links a:hover { opacity: 0.60; }
 
   /* Legal links row */
-  .footer__legal-row {
+  .footer__legal-row,
+  .footer__pay-row {
     display: flex;
     align-items: center;
     gap: var(--evx-space-lg);
@@ -325,7 +346,21 @@
     padding-bottom: var(--evx-space-md);
     flex-wrap: wrap;
   }
+  .footer__pay-row { padding-bottom: 4px; }
   .footer__legal-label { color: var(--evx-ink-soft); flex-shrink: 0; }
+  .footer__pay-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--evx-space-sm);
+    align-items: center;
+  }
+  .footer__pay-method {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--evx-ink-soft);
+  }
+  .footer__pay-sep { color: var(--evx-rule-dark); }
   .footer__legal-links {
     display: flex;
     flex-wrap: wrap;
