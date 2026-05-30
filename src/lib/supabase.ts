@@ -12,7 +12,7 @@ const SUPABASE_ANON_KEY =
 
 // ── Database row types ──────────────────────────────────────
 
-export type UserRole = 'buyer' | 'seller' | 'admin';
+export type UserRole = 'buyer' | 'seller' | 'tradesperson' | 'admin';
 
 export interface Profile {
   id: string;
@@ -33,6 +33,11 @@ export const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    // Magic-link tokens return in the URL hash. Without PKCE, that hash
+    // collides with the hash-based router and the token can leak into
+    // server logs via Referer. PKCE replaces the implicit hash token
+    // with a one-time code exchanged for the session.
+    flowType: 'pkce',
     storageKey: 'eirvox-auth',
   },
 });
