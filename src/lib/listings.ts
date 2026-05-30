@@ -344,6 +344,7 @@ export async function setListingSpecs(
 // ── Spec templates (client-side) ────────────────────────────
 
 export const specTemplates: Record<string, string[]> = {
+  cars:         ['Year', 'Make', 'Model', 'Variant / Trim', 'Mileage (km)', 'Body', 'Transmission', 'Fuel', 'NCT Valid Until', 'Service History', 'Registration'],
   automotive:   ['Make', 'Model', 'Year', 'Part Type', 'OEM / Aftermarket', 'Compatibility'],
   watches:      ['Brand', 'Reference', 'Movement', 'Case Size', 'Dial', 'Year'],
   fashion:      ['Brand', 'Size', 'Material', 'Colour', 'Season'],

@@ -42,6 +42,7 @@
   }
 
   const categories = [
+    { label: 'Cars', path: '/cars' },
     { label: 'Automotive', path: '/automotive' },
     { label: 'Watches', path: '/watches' },
     { label: 'Fashion', path: '/fashion' },

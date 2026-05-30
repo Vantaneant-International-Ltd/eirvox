@@ -76,7 +76,7 @@ export const seo = {
 
   category: (slug: string, label: string, count: number): SeoData => ({
     title: label,
-    description: `${label} on ÉIRVOX — ${count} listings from verified Irish sellers. Reservation deposits on every item, full buyer protection.`,
+    description: `${label} on ÉIRVOX — ${count} listings from verified Irish sellers. Express interest, no commitment until you've spoken with the seller.`,
     path: `/${slug}`,
   }),
 
