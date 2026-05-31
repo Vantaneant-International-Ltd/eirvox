@@ -6,6 +6,7 @@
   import { applySeo, seo } from '../lib/seo';
   import EnquiryForm from '../lib/EnquiryForm.svelte';
   import PayButton from '../lib/PayButton.svelte';
+  import ReportListingDialog from '../lib/ReportListingDialog.svelte';
   import { getListingBySlug, formatPrice, type ListingWithExtras } from '../lib/api';
 
   export let issueSlug: string;
@@ -378,6 +379,11 @@
               driveIssueSlug={dbListing.slug ?? issueSlug}
               messagePlaceholder="Your car (year, trim), and anything we should know about fitment, finish, or timing."
             />
+            {#if dbListing.id}
+              <div class="di-report">
+                <ReportListingDialog listingId={dbListing.id} listingTitle={dbListing.title} />
+              </div>
+            {/if}
           </div>
         </div>
       </section>
@@ -868,6 +874,12 @@
     line-height: 1.75;
     color: var(--evx-ink-soft);
     margin-bottom: var(--evx-space-md);
+  }
+
+  .di-report {
+    margin-top: var(--evx-space-lg);
+    padding-top: var(--evx-space-md);
+    border-top: 1px solid var(--evx-rule-light);
   }
 
   .di-reserve__form {

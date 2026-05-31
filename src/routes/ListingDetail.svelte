@@ -17,6 +17,7 @@
     type ListingWithExtras,
   } from '../lib/api';
   import PayButton from '../lib/PayButton.svelte';
+  import ReportListingDialog from '../lib/ReportListingDialog.svelte';
   import { navigate, currentPath } from '../lib/router';
   import { auth } from '../lib/auth';
   import { applySeo, seo } from '../lib/seo';
@@ -600,6 +601,10 @@
           This seller hasn't added contact details yet. We've nudged them to update their profile.
         </p>
       {/if}
+
+      <div class="detail-contact__report">
+        <ReportListingDialog listingId={listing.id} listingTitle={listing.title} />
+      </div>
     </section>
   </main>
 {/if}
@@ -824,6 +829,11 @@
     font-size: 14px;
     font-style: italic;
     color: var(--evx-ink-soft);
+  }
+  .detail-contact__report {
+    margin-top: var(--evx-space-xl);
+    padding-top: var(--evx-space-md);
+    border-top: 1px solid var(--evx-rule-light);
   }
   @media (max-width: 600px) {
     .detail-contact__row { grid-template-columns: 1fr; gap: 4px; }
