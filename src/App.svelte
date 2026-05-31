@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
-  import { initAuth } from './lib/auth';
+  import { auth, initAuth } from './lib/auth';
   import { isDevBypassed, isMaintenancePreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate, gatedLegalMode } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
@@ -55,9 +55,14 @@
   // be accessible to anyone, including pre-launch email-form visitors).
   const ALWAYS_OPEN_PATHS = ['/privacy', '/terms', '/cookies', '/acceptable-use', '/returns', '/refund-policy'];
   // #dev hash bypasses both (sessionStorage-scoped).
+  // Authenticated admins ALSO bypass automatically -- otherwise the
+  // "Edit listing ->" target="_blank" link from admin/listings opens
+  // a fresh tab with empty sessionStorage and hits coming-soon. Auth
+  // state is enough to identify them; no magic URL needed.
   let bypassed = false;
   let maintenancePreview = false;
-  $: rawGate = resolveGate($siteFlags, bypassed, $flagsLoading, maintenancePreview);
+  $: isAdminBypass = $auth.profile?.role === 'admin';
+  $: rawGate = resolveGate($siteFlags, bypassed || isAdminBypass, $flagsLoading, maintenancePreview);
   // Legal-route whitelist falls through to the route block even when a gate is on.
   $: gate = ALWAYS_OPEN_PATHS.includes(path) ? 'live' : rawGate;
   // Tell LegalLayout to drop Nav + Footer when the visitor only got here
