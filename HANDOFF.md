@@ -30,6 +30,36 @@ Four hardening changes are applied to the live DB and were each verified against
 3. **`admin_activity_recent`** recreated `WITH (security_invoker = on)`, revoked from `anon`. (Was a SECURITY DEFINER view leaking all listings/sellers/reservations/tradespeople to anonymous users.)
 4. Indexes added on `listings(status, category_id, seller_id)`, `reservations(buyer_id, seller_id)`, `messages(conversation_id)`; redundant duplicate policies on `categories` and `site_settings` dropped; internal trigger functions revoked from `public`.
 
+## Migration rules — REVOKE first, GRANT minimum (recurring hole)
+
+Supabase auto-grants `SELECT, INSERT, UPDATE, DELETE` on every newly created table to BOTH `anon` and `authenticated`. It auto-grants `EXECUTE` on every newly created function to `PUBLIC`, `anon`, and `authenticated`. RLS policies filter rows but **do not remove the table-level grant.** A future ALTER, a misapplied policy, or a third-party tool reading `pg_class` will see the privilege and may act on it. RLS alone is not sufficient.
+
+This has now bitten the project four times: `admin_stats`, `approve_seller_application`, the audit log functions, and most recently `public.reports` (v08 shipped with anon-readable table grants on a table containing reporter emails; hardened live then codified back into `supabase/v08-reports.sql`).
+
+**Every new table migration must include:**
+
+```sql
+REVOKE ALL ON public.<table> FROM anon;
+REVOKE ALL ON public.<table> FROM authenticated;
+GRANT <minimum-set> ON public.<table> TO <roles-that-need-it>;
+```
+
+For tables whose writes go through `/api/*` with the service-role key (the standard pattern for public-facing inserts on this project), `authenticated` typically gets `SELECT, UPDATE` only (admin triage via RLS); `anon` gets nothing.
+
+**Every new SECURITY DEFINER function migration must include:**
+
+```sql
+REVOKE EXECUTE ON FUNCTION public.<fn>(<args>) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.<fn>(<args>) FROM anon;
+GRANT EXECUTE ON FUNCTION public.<fn>(<args>) TO <only-the-roles-that-call-it>;
+```
+
+A SECURITY DEFINER function bypasses RLS by design; an over-broad EXECUTE grant lets unauthenticated callers run privileged code. The `REVOKE FROM PUBLIC` alone is not enough because `anon` and `authenticated` are named roles, not PUBLIC.
+
+Both REVOKE and GRANT are idempotent — safe to include in every migration without checking prior state. The block goes at the end of the file, after RLS policies, before `NOTIFY pgrst`.
+
+Reviewers: if a migration creates a table or function without this block, reject it.
+
 ## Critical drift to fix first
 
 `supabase/fix-profiles-trigger.sql` recreates the profiles UPDATE policy with a comment claiming it blocks role changes. **It does not.** The real protection is the trigger in item 1 above, which is NOT in any committed SQL file.

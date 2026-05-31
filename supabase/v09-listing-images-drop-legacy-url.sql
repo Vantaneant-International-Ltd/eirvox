@@ -3,6 +3,50 @@
 --
 -- Removes the legacy `url` column from public.listing_images.
 --
+-- IMPORTANT ORDERING -- DO NOT APPLY THIS FILE FIRST.
+-- ----------------------------------------------------
+-- This file's earlier header (corrected below) wrongly claimed the
+-- code change that stops writing `url` had already shipped. It had
+-- not. Applying v09 against the previously-deployed code would
+-- reopen the upload bug it was meant to close, because the live
+-- code was still writing `url` and the column would suddenly not
+-- exist.
+--
+-- Truthful state (as of the commit that ships THIS file edit):
+--   * src/lib/listings.ts uploadListingImage() has been changed in
+--     the SAME commit as this header rewrite to write only
+--     storage_path + public_url. `url:` is removed from the insert.
+--   * That code change has NOT been deployed to Vercel as of the
+--     commit that writes this comment. The deploy happens whenever
+--     the next push hits Vercel build + propagation.
+--   * After deploy, the live code writes 4 columns
+--     (listing_id, storage_path, public_url, sort_order). The
+--     `url` column is still NOT NULL with no default in the live
+--     schema, so the FIRST upload after deploy will fail with:
+--       ERROR: 23502 null value in column "url"
+--     until either DROP NOT NULL or DROP COLUMN runs.
+--
+-- RECOMMENDED SAFE-DEPLOY SEQUENCE (no upload outage):
+--   1. Apply this one-liner FIRST, as a separate hotfix step
+--      BEFORE deploying the code change:
+--
+--        ALTER TABLE public.listing_images
+--          ALTER COLUMN url DROP NOT NULL;
+--
+--      This is safe with the OLD code (still writes url) AND with
+--      the NEW code (doesn't write url; column accepts null).
+--   2. Deploy the code change (the commit removing `url:` from
+--      uploadListingImage()).
+--   3. Confirm an admin upload still creates a listing_images row
+--      via /sell/edit/<id>.
+--   4. THEN apply the DROP COLUMN below. After this, the schema
+--      and code agree.
+--
+-- IF YOU APPLY THE DROP COLUMN WHILE OLD CODE IS STILL LIVE:
+-- the old code's insert references a column that no longer exists
+-- and fails with "column url does not exist". Roll back the code
+-- or restore the column.
+--
 -- Why this file exists: the table currently has THREE
 -- image-location columns:
 --
@@ -11,26 +55,11 @@
 --   public_url    text  NULL       (added later; the public CDN URL)
 --
 -- Every reader in src/ selects from `storage_path` and/or
--- `public_url`. Nothing in the app reads `url`. But `url` is
--- NOT NULL with no default, so every INSERT that omits it fails
--- with:
---
---   ERROR: 23502: null value in column "url" of relation
---   "listing_images" violates not-null constraint
---
--- That is exactly the bug that left the table at 0 rows while the
--- storage bucket filled with uploads -- the storage step succeeded
--- and the DB insert silently errored. Surfaced to the admin UI
--- as "null value in column url ..." which is not a useful message.
---
--- The application code now writes the same value to BOTH `url`
--- and `public_url` so uploads succeed pre-migration. After this
--- migration drops `url`, a follow-up commit will remove the
--- redundant `url:` write from src/lib/listings.ts uploadListingImage().
+-- `public_url`. Nothing in the app reads `url`. Dropping it
+-- removes a footgun.
 --
 -- Idempotent: ALTER TABLE ... DROP COLUMN IF EXISTS is a no-op
--- on re-run. Safe to apply at any time once the code change has
--- been deployed (which it has, in the same commit as this file).
+-- on re-run.
 --
 -- Apply: this file is committed for repo-as-record. Applying it
 -- is coordinated externally; I do not apply schema changes

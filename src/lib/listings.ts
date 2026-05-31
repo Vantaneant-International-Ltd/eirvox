@@ -356,20 +356,25 @@ export async function uploadListingImage(
     .from(LISTING_IMAGES_BUCKET)
     .getPublicUrl(path);
 
-  // Defensive: the table currently has a legacy `url` column that is
-  // NOT NULL with no default, alongside the newer `storage_path` /
-  // `public_url` pair the rest of the app reads from. Writing only
-  // public_url fails every insert with "null value in column url
-  // violates not-null constraint", which is what was breaking image
-  // uploads. We write the same value to both so the insert succeeds
-  // pre-migration. supabase/v09-listing-images-drop-legacy-url.sql
-  // removes the legacy column; after that's applied, drop `url:` from
-  // this insert in a follow-up commit.
+  // Writes the canonical pair: storage_path (bucket key) +
+  // public_url (the CDN URL derived from it). The legacy `url`
+  // column on listing_images is being dropped by
+  // supabase/v09-listing-images-drop-legacy-url.sql. This insert
+  // no longer writes it.
+  //
+  // SAFE-DEPLOY ORDERING (re-read v09 header before applying):
+  //   1. Apply the one-liner `ALTER TABLE public.listing_images
+  //      ALTER COLUMN url DROP NOT NULL;` so existing schema
+  //      accepts inserts that omit url.
+  //   2. Deploy this commit.
+  //   3. Confirm an upload still creates a row.
+  //   4. Apply v09 to drop the url column entirely.
+  // If steps 1+2 are reversed, the first upload after deploy
+  // fails with "null value in column url" until v09 is applied.
   const { data, error: dbErr } = await supabase
     .from('listing_images')
     .insert({
       listing_id: listingId,
-      url: urlData.publicUrl,
       storage_path: path,
       public_url: urlData.publicUrl,
       sort_order: sortOrder,

@@ -173,7 +173,37 @@ CREATE POLICY "reports_admin_all"
 
 
 -- =============================================================
--- §6  Reload PostgREST schema cache
+-- §6  Table grants -- REQUIRED, RLS alone is NOT sufficient
+-- =============================================================
+-- Supabase auto-grants SELECT/INSERT/UPDATE/DELETE on every newly
+-- created table to BOTH anon and authenticated by default. RLS
+-- policies then filter rows, but the table-level grant remains.
+-- The first apply of this file (without this block) left anon with
+-- table-level SELECT/INSERT on public.reports despite the admin-only
+-- policy. anon could not actually read rows because RLS gave them
+-- no matching policy, but the privilege was still on the role -- a
+-- single misapplied policy or a future ALTER would expose
+-- reporter_email and moderation notes. Hardened live and codified
+-- here so rebuilds do not reship the hole.
+--
+-- See HANDOFF.md "Migration rules" for the standing pattern: every
+-- new table must REVOKE the defaults and GRANT only the minimum.
+
+REVOKE ALL ON public.reports FROM anon;
+REVOKE ALL ON public.reports FROM authenticated;
+
+-- Authenticated admins triage rows via the SELECT/UPDATE path; the
+-- admin_all policy gates which rows they see/touch. No INSERT grant
+-- for authenticated: all inserts must go through /api/report with
+-- the service-role key (anonymous submission, server-validated).
+GRANT SELECT, UPDATE ON public.reports TO authenticated;
+
+-- Idempotent: REVOKE/GRANT are no-ops on already-revoked/already-
+-- granted privileges.
+
+
+-- =============================================================
+-- §7  Reload PostgREST schema cache
 -- =============================================================
 
 NOTIFY pgrst, 'reload schema';
