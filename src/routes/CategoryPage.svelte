@@ -274,7 +274,7 @@
             <!-- Real pagination -->
             <div class="pagination">
               <span class="evx-caption">
-                SHOWING {((page - 1) * PAGE_SIZE) + 1}–{(page - 1) * PAGE_SIZE + listings.length} OF {totalCount}
+                SHOWING {((page - 1) * PAGE_SIZE) + 1}-{(page - 1) * PAGE_SIZE + listings.length} OF {totalCount}
               </span>
               <div class="pagination__actions">
                 <button class="evx-btn evx-btn--ghost evx-btn--sm" disabled={page === 1}

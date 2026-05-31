@@ -313,7 +313,7 @@
     {#if dbListing.images && dbListing.images.length > 1}
       <section class="di-plates">
         <span class="evx-caption di-plates__label">
-          PHOTOGRAPHY · PLATES 02–{String(dbListing.images.length).padStart(2, '0')}
+          PHOTOGRAPHY · PLATES 02-{String(dbListing.images.length).padStart(2, '0')}
         </span>
         <div class="di-plates__grid">
           {#each dbListing.images.slice(1) as plate, i}
@@ -508,9 +508,9 @@
       </div>
     </section>
 
-    <!-- Plates 02–05 -->
+    <!-- Plates 02-05 -->
     <section class="di-plates">
-      <span class="evx-caption di-plates__label">PHOTOGRAPHY · PLATES 02–05</span>
+      <span class="evx-caption di-plates__label">PHOTOGRAPHY · PLATES 02-05</span>
       <div class="di-plates__grid">
         {#each [
           { n: '02', caption: 'Forged weave macro' },

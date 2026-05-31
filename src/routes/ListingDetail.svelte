@@ -467,7 +467,7 @@
           <div class="detail-aside-card">
             <span class="evx-caption detail-aside-card__title">DELIVERY</span>
             {#if listing.shipping_available}
-              <p class="detail-aside-card__body">Tracked &amp; insured — DPD Express, 2–3 days</p>
+              <p class="detail-aside-card__body">An Post registered recommended, 2-3 days. DPD Express on request.</p>
             {/if}
             {#if listing.collection_available}
               <p class="detail-aside-card__body">Collection — by arrangement, {listing.city ?? 'see listing'}</p>

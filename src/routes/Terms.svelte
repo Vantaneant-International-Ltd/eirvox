@@ -187,7 +187,7 @@
       <li>Your €49 deposit holds your allocation in the edition.</li>
       <li>Deposits are refundable in full within 24 hours of reservation, or if production QC fails.</li>
       <li>After 24 hours, the deposit covers materials and production planning and is non-refundable.</li>
-      <li>Expect 6–8 weeks from confirmation to dispatch.</li>
+      <li>Expect 6-8 weeks from confirmation to dispatch.</li>
       <li>Once production has begun on your piece, the order cannot be cancelled.</li>
     </ul>
   </section>

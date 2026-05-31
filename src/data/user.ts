@@ -272,7 +272,7 @@ export const conversations: Conversation[] = [
       {
         id: 'm-202',
         sender: 'seller',
-        text: 'Yes still here. Happy to put them aside for a viewing if you give me a day\'s notice — I work out of the unit Mon–Sat.',
+        text: 'Yes still here. Happy to put them aside for a viewing if you give me a day\'s notice — I work out of the unit Mon-Sat.',
         timestamp: '2 May · 17:48',
         read: true,
       },

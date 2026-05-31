@@ -172,7 +172,7 @@
         <div class="adm-field"><span class="adm-field__label">Sourcing method</span><div>{selected.sourcing_method ?? '—'}</div></div>
         <div class="adm-field"><span class="adm-field__label">Trading since</span><div>{selected.trading_since ?? '—'}</div></div>
         <div class="adm-field"><span class="adm-field__label">Price range</span>
-          <div>€{selected.price_low ?? 0} – €{selected.price_high ?? 0}</div>
+          <div>€{selected.price_low ?? 0} to €{selected.price_high ?? 0}</div>
         </div>
         <div class="adm-field"><span class="adm-field__label">Applied</span>
           <div class="adm-mono">{new Date(selected.applied_at).toLocaleString()}</div>

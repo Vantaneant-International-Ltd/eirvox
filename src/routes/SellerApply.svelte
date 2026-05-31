@@ -107,9 +107,9 @@
   ];
 
   const inventoryOptions = [
-    { value: '1-5',    label: '1–5 items' },
-    { value: '6-20',   label: '6–20 items' },
-    { value: '21-50',  label: '21–50 items' },
+    { value: '1-5',    label: '1-5 items' },
+    { value: '6-20',   label: '6-20 items' },
+    { value: '21-50',  label: '21-50 items' },
     { value: '50+',    label: '50+ items' },
   ];
 
