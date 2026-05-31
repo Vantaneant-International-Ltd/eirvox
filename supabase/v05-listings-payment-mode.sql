@@ -44,6 +44,27 @@ CREATE INDEX IF NOT EXISTS idx_sellers_is_house
   ON public.sellers (id) WHERE is_house = true;
 
 -- Flip the flag on the live VNTA seller row.
+--
+-- ONE-TIME SEED, not a desired-state assertion. Unlike the ALTER TABLE
+-- statements above, this UPDATE is NOT idempotent-guarded: if you ever
+-- UPDATE sellers SET is_house = false WHERE id = '...' for any reason
+-- and then re-run this file, this line silently re-flips it back to
+-- true. Treat the seed as a fact-set-on-first-apply, not as the source
+-- of truth for which seller is ÉIRVOX. After first apply, the column
+-- itself is the source of truth.
+--
+-- ENVIRONMENT-SPECIFIC UUID: 'e6b0992f-aa9b-4ef5-bb99-512386650fc2'
+-- is the VNTA seller row id on the live production project
+-- (arokrumaxjiidsqfpiii) as of the v05 migration baseline. Verified
+-- against live: trading_name='VNTA', tier='atelier', status='approved'.
+-- If you apply this against any other environment (staging, fresh
+-- branch DB, restored backup) OR if the VNTA row is ever reseeded
+-- with a new id, this UPDATE will affect zero rows and the
+-- is_house = true gate will match no seller — PayButton will silently
+-- never render anywhere. Verify the id matches the current VNTA row
+-- per-environment before applying, OR replace with a stable natural
+-- key (e.g. `WHERE trading_name = 'VNTA' AND status = 'approved'`)
+-- if you prefer.
 UPDATE public.sellers
    SET is_house = true
  WHERE id = 'e6b0992f-aa9b-4ef5-bb99-512386650fc2';
@@ -104,21 +125,41 @@ ALTER TABLE public.listings
 COMMIT;
 
 -- ── Smoke checks (run manually after apply, not part of the txn) ──
--- SELECT id, trading_name, is_house FROM public.sellers WHERE is_house = true;
---   expect exactly one row: VNTA (id e6b0992f-aa9b-4ef5-bb99-512386650fc2)
 --
--- SELECT payment_mode, count(*) FROM public.listings GROUP BY 1;
---   expect all rows in 'full' on first apply
+-- Pre-apply hygiene (run BEFORE every apply, including re-runs):
+--   SELECT count(*) FROM public.listings WHERE payment_mode <> 'full';
+--     If > 0, the DROP/ADD CONSTRAINT cycle below will re-validate
+--     those rows. Confirm they satisfy the new shape first, else the
+--     ADD CONSTRAINT will fail mid-transaction and roll the apply back.
+--     (On a first apply this is vacuously 0 since the column doesn't
+--     exist yet.)
 --
--- -- Constraints should reject these bad rows:
--- INSERT INTO public.listings (seller_id, title, price, payment_mode, deposit_amount)
--- VALUES ('e6b0992f-aa9b-4ef5-bb99-512386650fc2', 'test', 100, 'deposit', NULL);
---   expect: violates check constraint "listings_deposit_amount_required" (NULL)
+-- Post-apply state checks:
+--   SELECT id, trading_name, is_house
+--     FROM public.sellers WHERE is_house = true;
+--     expect exactly one row (the VNTA seed on live).
 --
--- INSERT INTO public.listings (seller_id, title, price, payment_mode, deposit_amount)
--- VALUES ('e6b0992f-aa9b-4ef5-bb99-512386650fc2', 'test', 149, 'deposit', 149);
---   expect: violates check constraint "listings_deposit_amount_required" (>= price)
+--   SELECT payment_mode, count(*) FROM public.listings GROUP BY 1;
+--     expect all rows in 'full' on first apply.
 --
--- INSERT INTO public.listings (seller_id, title, price, payment_mode, shipping_cost)
--- VALUES ('e6b0992f-aa9b-4ef5-bb99-512386650fc2', 'test', 100, 'full_plus_shipping', NULL);
---   expect: violates check constraint "listings_full_plus_shipping_requires_cost"
+-- Constraint-rejection probes — ILLUSTRATIVE only.
+-- These INSERTs are minimal-valid for the columns the checks care
+-- about; they intentionally name title + slug + price (the listings
+-- NOT NULL columns without defaults on live, verified) so the
+-- payment-related constraint is what actually trips, not a NOT NULL
+-- on something incidental. If your live schema has additional NOT
+-- NULL columns added since this file was written, augment these.
+-- Roll back any successful insert (or use a SAVEPOINT) — these are
+-- probes, not seed data.
+--
+--   INSERT INTO public.listings (title, slug, price, payment_mode, deposit_amount)
+--   VALUES ('probe', 'probe-deposit-null', 100, 'deposit', NULL);
+--     expect: violates check constraint "listings_deposit_amount_required" (NULL deposit)
+--
+--   INSERT INTO public.listings (title, slug, price, payment_mode, deposit_amount)
+--   VALUES ('probe', 'probe-deposit-ge-price', 149, 'deposit', 149);
+--     expect: violates check constraint "listings_deposit_amount_required" (deposit >= price)
+--
+--   INSERT INTO public.listings (title, slug, price, payment_mode, shipping_cost)
+--   VALUES ('probe', 'probe-shipping-null', 100, 'full_plus_shipping', NULL);
+--     expect: violates check constraint "listings_full_plus_shipping_requires_cost"
