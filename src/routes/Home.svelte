@@ -70,13 +70,12 @@
           {/if}
         </h1>
         <p class="hero__desc">
-          {settings ? `${settings.drive.total_allocation} pieces. Reservations close on allocation — we do not reprint.`
-                    : 'Each issue is one product, made once. Reservation deposit holds your allocation.'}
+          {settings ? `${settings.drive.total_allocation} pieces. Sold by ÉIRVOX direct, finished in Dublin. We do not reprint.`
+                    : 'Each issue is one product, made once. We do not reprint.'}
         </p>
         <div class="hero__price-row">
           <span class="hero__price">{formatPrice(settings?.drive.price_eur ?? 149)}</span>
           {#if settings}
-            <span class="hero__deposit evx-caption">· {formatPrice(settings.deposit.amount_eur)} refundable reservation deposit</span>
             <span class="hero__stock">
               <span class="hero__dot"></span>
               <span class="evx-caption">
@@ -87,10 +86,10 @@
         </div>
         <div class="hero__actions">
           <button class="evx-btn evx-btn--primary" on:click={() => navigate('/drive')}>
-            Reserve allocation — {formatPrice(settings?.deposit.amount_eur ?? 49)}
+            Read current issue →
           </button>
           <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/drive')}>
-            Read current issue
+            All DRIVE issues
           </button>
         </div>
       </div>
@@ -181,7 +180,7 @@
         <div class="drive-band__logo">DRIVE</div>
         <p class="drive-band__desc">{settings?.drive.issue_title ?? '—'}</p>
         <p class="drive-band__copy">
-          {settings ? `${settings.drive.total_allocation} pieces. ${settings.drive.remaining} remaining. Reservations close on allocation — we do not reprint.` : ''}
+          {settings ? `${settings.drive.total_allocation} pieces. ${settings.drive.remaining} remaining. We do not reprint.` : ''}
         </p>
       </div>
       <div class="drive-band__right">
@@ -191,10 +190,10 @@
           </span>
         {/if}
         <button class="evx-btn evx-btn--primary" on:click={() => navigate('/drive')}>
-          Reserve · {formatPrice(settings?.deposit.amount_eur ?? 49)} deposit
+          Read current issue →
         </button>
         <button class="evx-btn evx-btn--ghost-paper drive-band__archive" on:click={() => navigate('/drive')}>
-          All DRIVE issues →
+          All DRIVE issues
         </button>
       </div>
     </div>
@@ -236,10 +235,10 @@
     <div class="trust__inner">
       <div class="trust__item">
         <span class="evx-label trust__num">01</span>
-        <h3 class="trust__title">{formatPrice(settings?.deposit.amount_eur ?? 49)} refundable reservation deposits.</h3>
+        <h3 class="trust__title">Direct-to-seller payments. No middleman.</h3>
         <p class="trust__desc">
-          All reservation deposits are fully refundable until the item ships.
-          No risk, no lock-in — just your place in the queue.
+          Marketplace transactions are paid directly to the seller via Revolut.
+          ÉIRVOX is a venue, not a broker. We don't hold buyer funds.
         </p>
       </div>
       <div class="trust__item">
@@ -252,10 +251,11 @@
       </div>
       <div class="trust__item">
         <span class="evx-label trust__num">03</span>
-        <h3 class="trust__title">Protected payments coming soon.</h3>
+        <h3 class="trust__title">Refunds where legitimate.</h3>
         <p class="trust__desc">
-          Full Stripe Connect escrow in H2 2026. Until then, deposits are
-          processed directly and refunded in full if anything doesn't proceed.
+          On ÉIRVOX-owned items, we refund for legitimate issues at our discretion
+          (item not as described, fault on our side). See the
+          <a href="#/refund-policy">refund policy</a>.
         </p>
       </div>
     </div>
@@ -332,7 +332,6 @@
   .hero__desc { font-size: 16px; line-height: 1.65; color: var(--evx-ink-soft); max-width: 480px; margin-bottom: var(--evx-space-xl); }
   .hero__price-row { display: flex; align-items: baseline; gap: var(--evx-space-md); margin-bottom: var(--evx-space-xl); flex-wrap: wrap; }
   .hero__price { font-family: var(--evx-font-display); font-weight: 500; font-size: 32px; letter-spacing: -0.015em; }
-  .hero__deposit { color: var(--evx-ink-soft); }
   .hero__stock { display: flex; align-items: center; gap: 6px; }
   .hero__dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--evx-fox-orange); }
   .hero__actions { display: flex; gap: var(--evx-space-md); flex-wrap: wrap; }

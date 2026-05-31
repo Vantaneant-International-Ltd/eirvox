@@ -119,7 +119,7 @@
                   class="evx-btn evx-btn--primary evx-btn--sm"
                   on:click|stopPropagation={() => navigate(`/drive/${issue.slug}`)}
                 >
-                  Reserve · €49
+                  Read issue →
                 </button>
               {:else if issue.status === 'upcoming'}
                 <span class="evx-caption di-issue__upcoming-note">Announcement to follow</span>
@@ -147,23 +147,23 @@
           </p>
         </div>
         <div class="di-about__reserve">
-          <h3 class="di-about__reserve-heading">How reservations work.</h3>
+          <h3 class="di-about__reserve-heading">How DRIVE works.</h3>
           <ol class="di-about__steps">
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">01</span>
-              <span>Pay a €49 refundable deposit. This holds your allocation.</span>
+              <span>Each issue is a single specification, made once. Around ten pieces, never repeated.</span>
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">02</span>
-              <span>We confirm by email within 48 hours and begin production.</span>
+              <span>Open issues are purchasable direct from ÉIRVOX. Collection in Dublin, or post nationwide.</span>
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">03</span>
-              <span>Balance invoiced before dispatch. If QC fails, full refund.</span>
+              <span>Upcoming issues are announced ahead of opening. Express interest to be notified.</span>
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">04</span>
-              <span>Item shipped tracked and insured. Serialised for you.</span>
+              <span>Each piece is finished in Dublin, serialised, and shipped tracked. We do not reprint.</span>
             </li>
           </ol>
         </div>

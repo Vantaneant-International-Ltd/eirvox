@@ -44,6 +44,12 @@
       <h1 class="trust-hero__title">
         Money moves only<br/>when both sides are happy.
       </h1>
+      <!-- TODO TRUST&COMPLIANCE: copy below is factually incorrect under
+           the current hands-off architecture (no €49 default deposit;
+           ÉIRVOX does NOT hold marketplace deposits). Flagged as a
+           launch-blocker; this whole page needs rewriting in the Trust &
+           Compliance pass before public ship. Out of scope for the
+           stock-state / DRIVE-as-listings phase. -->
       <p class="trust-hero__sub">
         Every reservation on ÉIRVOX is backed by a €49 refundable deposit.
         High-value items pass through our Dublin authentication centre.
@@ -57,6 +63,11 @@
       <div class="trust-section__inner">
         <div class="trust-section__left">
           <h2 class="trust-section__heading">How the money flows.</h2>
+          <!-- TODO TRUST&COMPLIANCE: "held by ÉIRVOX" is factually wrong.
+               Marketplace deposits go direct to the seller's Revolut.
+               ÉIRVOX-owned deposits go to ÉIRVOX's Revolut Merchant
+               account (we are the merchant of record, not a custodian).
+               Rewrite in the Trust & Compliance pass. -->
           <p class="trust-section__sub">
             All reservation deposits are held by ÉIRVOX and refunded in full if a transaction doesn't proceed.
             No hidden charges, no administration fees.

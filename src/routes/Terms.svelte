@@ -68,6 +68,11 @@
       <li><strong>Buyer</strong> — anyone reserving or purchasing items.</li>
       <li><strong>Listing</strong> — a published item offered for sale.</li>
       <li><strong>Reservation</strong> — an expression of intent to purchase, secured by a deposit paid via Revolut.</li>
+      <!-- TODO TRUST&COMPLIANCE: "default €49" is stale. Marketplace
+           deposits no longer carry a platform default; deposit_amount
+           is set per listing by the seller. ÉIRVOX-owned listings set
+           it via the admin listing form. Rewrite in the Trust &
+           Compliance pass. -->
       <li><strong>Deposit</strong> — amount (default €49 for marketplace items) paid to the seller's Revolut account to hold an item. Refund terms set by the seller and Irish consumer law.</li>
       <li><strong>DRIVE</strong> — limited-run, made-to-order editions published by ÉIRVOX.</li>
       <li><strong>TRADE</strong> — verified directory of independent tradespeople.</li>
@@ -131,6 +136,11 @@
   <section class="legal-section">
     <span class="legal-section__num">07 · DEPOSITS</span>
     <h2 id="s-deposits" class="legal-section__h">Reservation deposits.</h2>
+    <!-- TODO TRUST&COMPLIANCE: "default €49 for marketplace items" is
+         stale. Deposit amounts are now per listing, set by the seller
+         (or admin for ÉIRVOX-owned). Also rewrite to reflect the
+         stock-state matrix: deposit is only offered on collection
+         fulfilment; delivery is always full price up front. -->
     <p>
       Where a listing offers a reservation deposit, payment is taken at checkout via
       <strong>Revolut Merchant API</strong> (Revolut Pay, Apple Pay, Google Pay, card, or instant bank transfer).
@@ -165,6 +175,14 @@
       DRIVE pieces are limited-run, made-to-order objects published by ÉIRVOX. Each issue specifies an edition
       size and one specification — there are no variants, no restocks.
     </p>
+    <!-- TODO TRUST&COMPLIANCE: this DRIVE-deposit list is stale.
+         DRIVE items are now stock-state-driven listings: in_stock
+         items take full payment on collection or delivery; incoming
+         (out-of-stock) items take a deposit on collection only (with
+         balance paid in person on collection). No "24-hour refund
+         window" rule applies; refund stance is the discretionary
+         policy at #/refund-policy. Rewrite in the Trust & Compliance
+         pass. -->
     <ul>
       <li>Your €49 deposit holds your allocation in the edition.</li>
       <li>Deposits are refundable in full within 24 hours of reservation, or if production QC fails.</li>
