@@ -5,6 +5,7 @@
   import { getAdminStats, type AdminStats } from '../lib/admin';
   import { getWaitlistCount } from '../lib/waitlist';
   import { getNewEnquiryCount } from '../lib/enquiries';
+  import { getNewReportCount } from '../lib/reports';
 
   export let title: string = 'Admin';
 
@@ -13,12 +14,14 @@
   let stats: AdminStats | null = null;
   let waitlistCount = 0;
   let newEnquiryCount = 0;
+  let newReportCount = 0;
 
   async function refreshStats() {
-    [stats, waitlistCount, newEnquiryCount] = await Promise.all([
+    [stats, waitlistCount, newEnquiryCount, newReportCount] = await Promise.all([
       getAdminStats(),
       getWaitlistCount(),
       getNewEnquiryCount(),
+      getNewReportCount(),
     ]);
   }
 
@@ -29,12 +32,13 @@
   $: user = $auth.user;
 
   // Sidebar nav items. `badgeSource` resolves to a number at render time.
-  type BadgeSource = keyof AdminStats | 'waitlist' | 'new_enquiries';
+  type BadgeSource = keyof AdminStats | 'waitlist' | 'new_enquiries' | 'new_reports';
   const NAV: Array<{ path: string; label: string; badgeSource?: BadgeSource }> = [
     { path: '/admin',               label: 'Dashboard' },
     { path: '/admin/listings',      label: 'Listings',      badgeSource: 'pending_listings' },
     { path: '/admin/sellers',       label: 'Sellers',       badgeSource: 'pending_sellers' },
     { path: '/admin/enquiries',     label: 'Enquiries',     badgeSource: 'new_enquiries' },
+    { path: '/admin/reports',       label: 'Reports',       badgeSource: 'new_reports' },
     { path: '/admin/reservations',  label: 'Reservations' },
     { path: '/admin/trade',         label: 'TRADE',         badgeSource: 'pending_trade' },
     { path: '/admin/users',         label: 'Users' },
@@ -47,6 +51,7 @@
     if (!source) return 0;
     if (source === 'waitlist') return waitlistCount;
     if (source === 'new_enquiries') return newEnquiryCount;
+    if (source === 'new_reports') return newReportCount;
     return stats?.[source] ?? 0;
   }
 
