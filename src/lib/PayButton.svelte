@@ -2,15 +2,42 @@
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { createCheckoutInstance, type RevolutCheckoutInstance } from './revolutCheckout';
 
-  /** Amount the buyer will pay, in euros. */
+  /** Amount in euros. Two roles depending on mode:
+   *   - Admin mode (no listingId): the amount the server charges.
+   *   - Listing mode (listingId set): DISPLAY ONLY in the success state.
+   *     The server resolves the actual charge from the listing record;
+   *     anything sent here is ignored server-side.
+   *  See api/payments/create-order.ts for the LISTING MODE / ADMIN MODE
+   *  contract. */
   export let amountEur: number;
-  /** Free text shown on the Revolut checkout / Revolut Pay sheet. */
+
+  /** ÉIRVOX-owned listing id. When set, the request to create-order is
+   *  in LISTING MODE: the server looks up the listing, verifies its
+   *  seller has is_house=true, and resolves the charge amount from
+   *  payment_mode. The client cannot influence the amount in this mode. */
+  export let listingId: string | null = null;
+
+  /** Free text shown on the Revolut checkout / Revolut Pay sheet.
+   *  Ignored server-side in LISTING MODE (server builds the description
+   *  from the listing title). */
   export let description: string = 'ÉIRVOX';
-  /** Free-form metadata attached to the order (visible in admin queue). */
+
+  /** Free-form metadata attached to the order (visible in admin queue).
+   *  In LISTING MODE the server prepends its own canonical fields
+   *  (listing_id, seller_id, payment_mode, resolved_amount_eur) and only
+   *  appends up to 4 non-conflicting client fields. */
   export let metadata: Record<string, string> = {};
+
   /** Path Revolut should redirect to on completion if the buyer uses
    *  the redirect/popup flow (popup also fires onSuccess in-place). */
   export let redirectPath: string = '/#/payment/return';
+
+  /** When true, render a small "Refund policy" link in the subline.
+   *  Auto-enabled in LISTING MODE since the public Pay flow must link
+   *  to a real refund policy; defaults to false for admin testing. */
+  export let showRefundLink: boolean = false;
+
+  $: refundLinkVisible = showRefundLink || !!listingId;
 
   const dispatch = createEventDispatcher<{
     success: { orderId: string };
@@ -34,15 +61,19 @@
     booting = true;
     bootError = '';
     try {
+      // LISTING MODE: send listing_id only; server resolves the amount,
+      // description, and seller validation. Any local amountEur is
+      // display-only and ignored server-side.
+      // ADMIN MODE: send the legacy { amount_eur, description, metadata }
+      // body the existing admin €1 self-test page uses.
+      const reqBody = listingId
+        ? { listing_id: listingId, metadata, redirect_path: redirectPath }
+        : { amount_eur: amountEur, description, metadata, redirect_path: redirectPath };
+
       const res = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          amount_eur: amountEur,
-          description,
-          metadata,
-          redirect_path: redirectPath,
-        }),
+        body: JSON.stringify(reqBody),
       });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {
@@ -121,6 +152,9 @@
       {popupOpen ? 'Opening…' : 'Pay with a card'}
     </button>
     <span class="paybtn__also">Apple Pay · Google Pay · Pay by bank also available</span>
+    {#if refundLinkVisible}
+      <a class="paybtn__refund" href="#/refund-policy">Refund policy</a>
+    {/if}
   {/if}
 </div>
 
@@ -165,6 +199,19 @@
     text-align: center;
     padding: 2px 0;
   }
+
+  .paybtn__refund {
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--evx-ink-soft);
+    text-align: center;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 0;
+    transition: color 200ms ease;
+  }
+  .paybtn__refund:hover { color: var(--evx-warm-black); }
 
   .paybtn__loading {
     font-family: var(--evx-font-mono);
