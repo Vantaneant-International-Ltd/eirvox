@@ -16,6 +16,7 @@
     formatPrice,
     type ListingWithExtras,
   } from '../lib/api';
+  import PayButton from '../lib/PayButton.svelte';
   import { navigate, currentPath } from '../lib/router';
   import { auth } from '../lib/auth';
   import { applySeo, seo } from '../lib/seo';
@@ -102,6 +103,30 @@
   // Active image source
   $: activeImageUrl = listing?.images?.[activeImage]?.public_url ?? listing?.cover_image ?? null;
   $: imageCount = listing?.images?.length ?? 0;
+
+  // PayButton render gate (cosmetic — the server in
+  // api/payments/create-order independently re-checks is_house and
+  // resolves the amount; a tampered client cannot bypass it).
+  $: isHouseListing = !!listing?.seller?.is_house;
+  $: payable = isHouseListing && listing?.status === 'active';
+
+  // Display-only resolved amount for the PayButton success-state strip.
+  // Server is authoritative for the actual charge.
+  $: payAmount = listing
+    ? listing.payment_mode === 'deposit'
+      ? (listing.deposit_amount ?? 0)
+      : listing.payment_mode === 'full_plus_shipping'
+        ? listing.price + (listing.shipping_cost ?? 0)
+        : listing.price
+    : 0;
+
+  $: payModeLabel = listing
+    ? listing.payment_mode === 'deposit'
+      ? 'DEPOSIT'
+      : listing.payment_mode === 'full_plus_shipping'
+        ? 'FULL PRICE + SHIPPING'
+        : 'FULL PRICE'
+    : '';
 </script>
 
 <Nav />
@@ -258,68 +283,26 @@
               <button class="evx-btn evx-btn--primary panel__cta-main" disabled>
                 Reserved
               </button>
+            {:else if payable}
+              <div class="panel__pay">
+                <div class="panel__pay-mode">
+                  <span class="evx-caption panel__pay-mode-label">{payModeLabel}</span>
+                  <span class="panel__pay-mode-amount">{formatPrice(payAmount)}</span>
+                  {#if listing.payment_mode === 'deposit'}
+                    <span class="evx-caption panel__pay-mode-of">of {formatPrice(listing.price)} total</span>
+                  {/if}
+                </div>
+                <PayButton
+                  listingId={listing.id}
+                  amountEur={payAmount}
+                  description={listing.title}
+                />
+              </div>
             {:else}
               <button class="evx-btn evx-btn--primary panel__cta-main" on:click={scrollToContact}>
                 Contact seller
               </button>
             {/if}
-          </div>
-
-          <!-- How reservation works -->
-          <details class="hrw">
-            <summary class="hrw__summary">
-              <span class="hrw__icon" aria-hidden="true">+</span>
-              <span class="hrw__title">How reservation works</span>
-            </summary>
-            <ol class="hrw__steps">
-              <li class="hrw__step">
-                <span class="evx-label hrw__num">01</span>
-                <span class="hrw__step-text">
-                  <strong>Pay €49 deposit.</strong>
-                  Holds your reservation. Refundable until the item ships.
-                </span>
-              </li>
-              <li class="hrw__step">
-                <span class="evx-label hrw__num">02</span>
-                <span class="hrw__step-text">
-                  <strong>We hold the item.</strong>
-                  Off the market while you arrange the deal with {listing.seller?.trading_name ?? 'the seller'}.
-                </span>
-              </li>
-              <li class="hrw__step">
-                <span class="evx-label hrw__num">03</span>
-                <span class="hrw__step-text">
-                  <strong>Agree the deal in Messages.</strong>
-                  Price, viewing, delivery — direct with the seller.
-                </span>
-              </li>
-              <li class="hrw__step">
-                <span class="evx-label hrw__num">04</span>
-                <span class="hrw__step-text">
-                  <strong>Deposit credits against balance.</strong>
-                  €49 deducted from your final amount. Full refund if the deal doesn't proceed.
-                </span>
-              </li>
-            </ol>
-            <a class="hrw__more evx-caption" href="#/trust">Full buyer protection details →</a>
-          </details>
-
-          <!-- Trust rows -->
-          <div class="panel__trust">
-            <div class="panel__trust-row">
-              <span class="evx-label panel__trust-num">01</span>
-              <div class="panel__trust-text">
-                <strong>€49 refundable deposit.</strong>
-                Holds your reservation. Fully refundable if you don't go ahead.
-              </div>
-            </div>
-            <div class="panel__trust-row">
-              <span class="evx-label panel__trust-num">02</span>
-              <div class="panel__trust-text">
-                <strong>Protected payments coming soon.</strong>
-                Full escrow on every transaction launches H2 2026.
-              </div>
-            </div>
           </div>
 
           <!-- Seller card -->
@@ -584,27 +567,14 @@
   .panel__cta-main { width: 100%; justify-content: space-between; }
   .panel__cta-offer { width: 100%; }
 
-  /* How reservation works — expandable */
-  .hrw { margin-top: var(--evx-space-md); border-top: 1px solid var(--evx-rule-light); padding-top: var(--evx-space-md); }
-  .hrw__summary { display: flex; align-items: center; gap: var(--evx-space-sm); cursor: pointer; list-style: none; padding: var(--evx-space-xs) 0; color: var(--evx-warm-black); font-family: var(--evx-font-display); font-size: 13px; font-weight: 500; transition: var(--evx-transition); }
-  .hrw__summary::-webkit-details-marker { display: none; }
-  .hrw__summary:hover { opacity: 0.70; }
-  .hrw__icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: 1px solid var(--evx-rule-light); color: var(--evx-ink-soft); font-family: var(--evx-font-mono); font-size: 12px; line-height: 1; transition: transform 200ms ease; }
-  .hrw[open] .hrw__icon { transform: rotate(45deg); }
-  .hrw__steps { display: flex; flex-direction: column; gap: 0; margin-top: var(--evx-space-md); padding-top: var(--evx-space-md); border-top: 1px solid var(--evx-rule-light); list-style: none; padding-left: 0; }
-  .hrw__step { display: flex; gap: var(--evx-space-md); padding: var(--evx-space-sm) 0; border-bottom: 1px solid var(--evx-rule-light); align-items: flex-start; }
-  .hrw__step:last-child { border-bottom: none; }
-  .hrw__num { color: var(--evx-fox-orange); flex-shrink: 0; margin-top: 2px; }
-  .hrw__step-text { font-size: 13px; line-height: 1.65; color: var(--evx-ink-soft); }
-  .hrw__step-text strong { color: var(--evx-warm-black); font-weight: 500; }
-  .hrw__more { display: inline-block; margin-top: var(--evx-space-md); color: var(--evx-warm-black); text-decoration: underline; text-underline-offset: 3px; transition: var(--evx-transition); }
-  .hrw__more:hover { opacity: 0.70; }
-
-  .panel__trust { display: flex; flex-direction: column; gap: var(--evx-space-lg); padding: var(--evx-space-xl) 0; border-top: 1px solid var(--evx-rule-light); border-bottom: 1px solid var(--evx-rule-light); margin-bottom: var(--evx-space-xl); }
-  .panel__trust-row { display: flex; gap: var(--evx-space-md); align-items: flex-start; }
-  .panel__trust-num { color: var(--evx-fox-orange); flex-shrink: 0; margin-top: 1px; }
-  .panel__trust-text { font-size: 13px; line-height: 1.6; color: var(--evx-ink-soft); }
-  .panel__trust-text strong { color: var(--evx-warm-black); font-weight: 500; }
+  /* Pay block — wraps the PayButton with an above-line label showing
+     what the buyer will be charged (deposit / full / full + shipping).
+     Server is the authoritative resolver. */
+  .panel__pay { display: flex; flex-direction: column; gap: var(--evx-space-md); width: 100%; }
+  .panel__pay-mode { display: flex; align-items: baseline; gap: var(--evx-space-sm); flex-wrap: wrap; }
+  .panel__pay-mode-label { color: var(--evx-fox-orange); }
+  .panel__pay-mode-amount { font-family: var(--evx-font-display); font-size: 18px; font-weight: 500; color: var(--evx-warm-black); }
+  .panel__pay-mode-of { color: var(--evx-ink-soft); }
 
   /* Seller card */
   .panel__seller { border: 1px solid var(--evx-rule-light); padding: var(--evx-space-lg); }

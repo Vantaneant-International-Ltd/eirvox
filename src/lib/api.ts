@@ -12,6 +12,10 @@ import { getCurrentUser } from './auth';
 
 export type SellerTier = 'verified' | 'atelier' | 'house';
 export type ListingStatus = 'draft' | 'pending_review' | 'active' | 'reserved' | 'sold' | 'removed';
+// Per-listing payment configuration; mirrors the DB column. The
+// PayButton uses this to display the right amount; the server is the
+// authoritative resolver via api/payments/create-order.
+export type PaymentMode = 'full' | 'full_plus_shipping' | 'deposit';
 
 export interface Category {
   id: string;
@@ -36,6 +40,10 @@ export interface Seller {
   // directly so buyers contact the seller without a platform middleman)
   email: string | null;
   phone: string | null;
+  // Merchant-of-record flag. True only for the seller row representing
+  // ÉIRVOX itself. Drives the PayButton render-gate on listing pages
+  // (cosmetic) and is re-checked server-side in create-order (real).
+  is_house: boolean;
   // Derived (not in DB yet, fall back to safe defaults)
   rating?: number;
   sales_count?: number;
@@ -79,6 +87,11 @@ export interface Listing {
   shipping_available: boolean;
   collection_available: boolean;
   accepts_offers: boolean;
+  // Payment configuration. Only meaningful when seller.is_house = true.
+  // Server resolves the authoritative charge from these fields.
+  payment_mode: PaymentMode;
+  deposit_amount: number | null;
+  shipping_cost: number | null;
   created_at: string;
   published_at: string | null;
 }
@@ -218,7 +231,7 @@ export interface ListingsOptions {
 
 const LISTING_SELECT = `
   *,
-  seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone ),
+  seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house ),
   images:listing_images ( id, public_url, sort_order )
 `;
 
@@ -259,7 +272,7 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
     .from('listings')
     .select(`
       *,
-      seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone ),
+      seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house ),
       images:listing_images ( id, listing_id, storage_path, public_url, sort_order ),
       specs:listing_specs ( id, listing_id, label, value, sort_order )
     `)
@@ -271,7 +284,7 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
       .from('listings')
       .select(`
         *,
-        seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone ),
+        seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house ),
         images:listing_images ( id, listing_id, storage_path, public_url, sort_order ),
         specs:listing_specs ( id, listing_id, label, value, sort_order )
       `)
