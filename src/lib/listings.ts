@@ -297,10 +297,20 @@ export async function uploadListingImage(
     .from(LISTING_IMAGES_BUCKET)
     .getPublicUrl(path);
 
+  // Defensive: the table currently has a legacy `url` column that is
+  // NOT NULL with no default, alongside the newer `storage_path` /
+  // `public_url` pair the rest of the app reads from. Writing only
+  // public_url fails every insert with "null value in column url
+  // violates not-null constraint", which is what was breaking image
+  // uploads. We write the same value to both so the insert succeeds
+  // pre-migration. supabase/v09-listing-images-drop-legacy-url.sql
+  // removes the legacy column; after that's applied, drop `url:` from
+  // this insert in a follow-up commit.
   const { data, error: dbErr } = await supabase
     .from('listing_images')
     .insert({
       listing_id: listingId,
+      url: urlData.publicUrl,
       storage_path: path,
       public_url: urlData.publicUrl,
       sort_order: sortOrder,
@@ -308,7 +318,14 @@ export async function uploadListingImage(
     .select('*')
     .single();
 
-  if (dbErr) return { ok: false, error: friendlyError(dbErr.message) };
+  if (dbErr) {
+    console.error('[uploadListingImage] DB insert failed:', {
+      listingId,
+      storagePath: path,
+      pgError: dbErr,
+    });
+    return { ok: false, error: friendlyError(dbErr.message) };
+  }
   return { ok: true, data: data as ListingImage };
 }
 

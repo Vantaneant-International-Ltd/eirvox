@@ -204,19 +204,31 @@
 
     uploading = true;
     uploadCount = 0;
+    saveErr = '';
     const startOrder = existingImages.length;
 
-    for (let i = 0; i < input.files.length; i++) {
-      if (existingImages.length >= 12) break;
-      uploadCount = i + 1;
-      const f = input.files[i];
-      const r = await uploadListingImage(seller.id, listing.id, f, startOrder + i);
-      if (r.ok && r.data) existingImages = [...existingImages, r.data];
-      else { saveErr = r.error ?? 'Upload failed.'; break; }
+    try {
+      for (let i = 0; i < input.files.length; i++) {
+        if (existingImages.length >= 12) break;
+        uploadCount = i + 1;
+        const f = input.files[i];
+        const r = await uploadListingImage(seller.id, listing.id, f, startOrder + i);
+        if (r.ok && r.data) {
+          existingImages = [...existingImages, r.data];
+        } else {
+          saveErr = r.error ?? 'Upload failed.';
+          scrollToBanner();
+          break;
+        }
+      }
+    } catch (err) {
+      console.error('[SellerEdit.onUploadFiles] unhandled:', err);
+      saveErr = err instanceof Error ? err.message : 'Upload failed unexpectedly.';
+      scrollToBanner();
+    } finally {
+      input.value = '';
+      uploading = false;
     }
-
-    input.value = '';
-    uploading = false;
   }
 
   async function removeImage(img: ListingImage) {
@@ -295,7 +307,7 @@
 
       <!-- Save messages -->
       {#if saveMsg}<div class="form-ok"><span class="evx-label">OK</span><p>{saveMsg}</p></div>{/if}
-      {#if saveErr}<div class="form-err"><span class="evx-label">ERROR</span><p>{saveErr}</p></div>{/if}
+      {#if saveErr}<div class="form-err" role="alert" aria-live="assertive"><span class="evx-label">ERROR</span><p>{saveErr}</p></div>{/if}
 
       <!-- Category -->
       <section class="edit-section">
