@@ -38,6 +38,7 @@
   import Cookies from './routes/Cookies.svelte';
   import AcceptableUse from './routes/AcceptableUse.svelte';
   import Returns from './routes/Returns.svelte';
+  import RefundPolicy from './routes/RefundPolicy.svelte';
   import TradeLanding from './routes/TradeLanding.svelte';
   import TradeCategory from './routes/TradeCategory.svelte';
   import TradeProfile from './routes/TradeProfile.svelte';
@@ -52,7 +53,7 @@
   // Legal pages are always reachable so privacy/cookie/terms links
   // in either gate hero can resolve. Required for GDPR (privacy must
   // be accessible to anyone, including pre-launch email-form visitors).
-  const ALWAYS_OPEN_PATHS = ['/privacy', '/terms', '/cookies', '/acceptable-use', '/returns'];
+  const ALWAYS_OPEN_PATHS = ['/privacy', '/terms', '/cookies', '/acceptable-use', '/returns', '/refund-policy'];
   // #dev hash bypasses both (sessionStorage-scoped).
   let bypassed = false;
   let maintenancePreview = false;
@@ -237,6 +238,8 @@
   <AcceptableUse />
 {:else if path === '/returns'}
   <Returns />
+{:else if path === '/refund-policy'}
+  <RefundPolicy />
 {:else}
   <NotFound />
 {/if}
