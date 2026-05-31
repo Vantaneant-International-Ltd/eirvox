@@ -16,6 +16,12 @@ export type ListingStatus =
   | 'sold'
   | 'removed';
 
+// Per-listing payment configuration for ÉIRVOX-owned listings.
+// Drives what the PayButton charges. Server-side create-order resolves
+// the amount from these fields; client values are display-only.
+// DB column listings.payment_mode, default 'full', CHECK constrained.
+export type PaymentMode = 'full' | 'full_plus_shipping' | 'deposit';
+
 export interface Category {
   id: string;
   slug: string;
@@ -60,6 +66,8 @@ export interface Listing {
   city: string | null;
   status: ListingStatus;
   views_count: number;
+  payment_mode: PaymentMode;
+  deposit_amount: number | null;
   created_at: string;
   updated_at: string;
   published_at: string | null;

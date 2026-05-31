@@ -14,7 +14,7 @@
     type ListingFilters,
     type MarketplaceCategory,
   } from '../../lib/admin';
-  import type { ListingStatus, ListingImage, ListingSpec } from '../../lib/listings';
+  import type { ListingStatus, ListingImage, ListingSpec, PaymentMode } from '../../lib/listings';
   import { applySeo } from '../../lib/seo';
 
   // ── State ──
@@ -150,6 +150,48 @@
     const r = await adminUpdateListing(id, patch);
     if (!r.ok) { alert(r.error ?? 'Update failed.'); return; }
     await refresh();
+  }
+
+  // ── Payment config (ÉIRVOX-owned listings only) ──
+  // Saves a partial patch to the open detail row and surfaces errors
+  // inline via detailError. Used by the payment_mode / deposit_amount /
+  // shipping_cost fields below; existing per-field on:blur handlers
+  // keep their fire-and-forget shape for backwards compatibility.
+  async function saveDetail(patch: Record<string, unknown>) {
+    if (!detail) return;
+    detailError = '';
+    const r = await adminUpdateListing(detail.listing.id, patch);
+    if (!r.ok) {
+      detailError = r.error ?? 'Update failed.';
+      return;
+    }
+    if (r.data) {
+      detail = {
+        ...detail,
+        listing: {
+          ...detail.listing,
+          ...r.data,
+          // Server returns the raw row; preserve joined fields the
+          // detail panel already loaded so they don't go missing.
+          seller: detail.listing.seller,
+          category: detail.listing.category,
+          cover_image: detail.listing.cover_image,
+        },
+      };
+    }
+    await refresh();
+  }
+
+  function onPaymentModeChange() {
+    if (!detail) return;
+    const mode = detail.listing.payment_mode as PaymentMode;
+    // When leaving deposit mode, clear deposit_amount so stale values
+    // don't surface if the user toggles back later. DB cross-column
+    // CHECKs only enforce deposit_amount when mode = 'deposit', so a
+    // stale value wouldn't fail validation — but it's confusing UX.
+    const patch: Record<string, unknown> = { payment_mode: mode };
+    if (mode !== 'deposit') patch.deposit_amount = null;
+    void saveDetail(patch);
   }
 </script>
 
@@ -394,8 +436,63 @@
 
           <div class="adm-field">
             <span class="adm-field__label">Seller</span>
-            <div class="adm-mono">{detail.listing.seller?.trading_name ?? '—'} · {detail.listing.seller?.handle ?? ''}</div>
+            <div class="adm-mono">
+              {detail.listing.seller?.trading_name ?? '—'} · {detail.listing.seller?.handle ?? ''}
+              {#if detail.listing.seller?.is_house}
+                <span class="adm-badge adm-badge--amber" style="margin-left: 8px;">ÉIRVOX-OWNED</span>
+              {/if}
+            </div>
           </div>
+
+          <!-- Payment config — only for ÉIRVOX-owned listings.
+               Configures what the public PayButton charges. The server
+               (api/payments/create-order) resolves the actual amount
+               from these fields; the values displayed here are for
+               admin visibility. -->
+          {#if detail.listing.seller?.is_house}
+            <div class="adm-field" style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--evx-rule-light);">
+              <span class="adm-field__label" style="color: var(--evx-fox-orange);">PAYMENT (ÉIRVOX-OWNED)</span>
+              <p class="adm-field__hint">
+                Sets what the PayButton charges on the public listing page. The server resolves the amount from these fields and rejects any client-supplied amount.
+              </p>
+            </div>
+
+            <div class="adm-field--row">
+              <div class="adm-field">
+                <span class="adm-field__label">Payment mode</span>
+                <select class="adm-field__select"
+                        bind:value={detail.listing.payment_mode}
+                        on:change={onPaymentModeChange}>
+                  <option value="full">Full price (€{detail.listing.price.toLocaleString()})</option>
+                  <option value="full_plus_shipping">Full price + shipping</option>
+                  <option value="deposit">Deposit only (awaiting stock)</option>
+                </select>
+              </div>
+
+              {#if detail.listing.payment_mode === 'full_plus_shipping'}
+                <div class="adm-field">
+                  <span class="adm-field__label">Shipping cost (€)</span>
+                  <input type="number" class="adm-field__input" min="1"
+                         bind:value={detail.listing.shipping_cost}
+                         on:blur={() => saveDetail({ shipping_cost: detail.listing.shipping_cost })} />
+                  <span class="adm-field__hint">Whole euros. Required when mode is full + shipping. Buyer pays €{((detail.listing.price ?? 0) + (detail.listing.shipping_cost ?? 0)).toLocaleString()} total.</span>
+                </div>
+              {/if}
+
+              {#if detail.listing.payment_mode === 'deposit'}
+                <div class="adm-field">
+                  <span class="adm-field__label">Deposit (€)</span>
+                  <input type="number" class="adm-field__input"
+                         min="1" max={Math.max(1, detail.listing.price - 1)}
+                         bind:value={detail.listing.deposit_amount}
+                         on:blur={() => saveDetail({ deposit_amount: detail.listing.deposit_amount })} />
+                  <span class="adm-field__hint">
+                    Whole euros. Must be 1 to €{Math.max(0, detail.listing.price - 1).toLocaleString()} (strictly less than price). Use this only when awaiting stock.
+                  </span>
+                </div>
+              {/if}
+            </div>
+          {/if}
 
           <!-- Specs -->
           {#if detail.specs.length > 0}

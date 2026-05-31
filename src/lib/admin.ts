@@ -93,7 +93,7 @@ export interface AdminListing extends Listing {
   featured: boolean;
   featured_at: string | null;
   rejection_reason: string | null;
-  seller: { id: string; trading_name: string | null; handle: string | null } | null;
+  seller: { id: string; trading_name: string | null; handle: string | null; is_house: boolean } | null;
   category: { id: string; name: string; slug: string } | null;
   cover_image: string | null;
 }
@@ -110,7 +110,7 @@ export async function getAllListings(filters: ListingFilters = {}): Promise<Admi
     .from('listings')
     .select(`
       *,
-      seller:sellers ( id, trading_name, handle ),
+      seller:sellers ( id, trading_name, handle, is_house ),
       category:categories ( id, name, slug ),
       images:listing_images ( public_url, sort_order )
     `);
@@ -204,7 +204,7 @@ export async function getListingDetail(id: string): Promise<{
     .from('listings')
     .select(`
       *,
-      seller:sellers ( id, trading_name, handle ),
+      seller:sellers ( id, trading_name, handle, is_house ),
       category:categories ( id, name, slug )
     `)
     .eq('id', id)
