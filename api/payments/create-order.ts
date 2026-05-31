@@ -235,7 +235,10 @@ async function resolveListingCharge(body: Body): Promise<ResolvedCharge | Respon
   } else if (fulfilment === 'collection') {
     amountEur = price;
   } else {
-    // delivery + full (in_stock or incoming): price + shipping_cost
+    // delivery + full (in_stock or incoming): price + shipping_cost.
+    // Invariant: shipping_cost MUST be > 0 here, by reject above.
+    // The €20 An Post default for house listings lives in the
+    // shipping_cost column (data), not as a hardcoded fallback here.
     const shipping = Number(row.shipping_cost);
     if (!Number.isFinite(shipping) || shipping <= 0) {
       return bad('Shipping cost is not configured for this listing.');

@@ -134,6 +134,7 @@
   $: hasShipping = !!listing?.shipping_available;
   $: hasCollection = !!listing?.collection_available;
   $: depositConfigured = (listing?.deposit_amount ?? 0) > 0;
+  $: shippingCostSet = (listing?.shipping_cost ?? 0) > 0;
 
   let fulfilment: 'collection' | 'delivery' | null = null;
   let isDeposit = false;
@@ -155,8 +156,19 @@
   $: if (mustDeposit && !isDeposit) isDeposit = true;
   $: if (!canDeposit && isDeposit) isDeposit = false;
 
+  // Delivery requires shipping_cost set; if it isn't, suppress the
+  // PayButton so the buyer doesn't see a delivery total that silently
+  // omits shipping. Server (api/payments/create-order) also rejects
+  // delivery + null shipping_cost. The €20 An Post default for house
+  // listings lives in the shipping_cost column (data, not code).
+  $: deliverySelectedWithoutShipping = fulfilment === 'delivery' && !shippingCostSet;
+  $: canShowPayButton = !!fulfilment && !deliverySelectedWithoutShipping;
+
   // Display amount for the success-state strip + mode label. Server
-  // is still authoritative on what's actually charged.
+  // is still authoritative on what's actually charged. The display
+  // formula adds shipping_cost when delivery is selected; when
+  // shipping_cost is null/0 we suppress the PayButton above rather
+  // than silently displaying just price.
   $: payAmount = !listing
     ? 0
     : isDeposit
@@ -365,7 +377,9 @@
 
                 {#if !fulfilment}
                   <p class="evx-caption panel__pay-hint">Pick collection or delivery to continue.</p>
-                {:else}
+                {:else if deliverySelectedWithoutShipping}
+                  <p class="evx-caption panel__pay-hint">Delivery is not priced yet for this listing. Pick collection, or contact the seller.</p>
+                {:else if canShowPayButton}
                   <PayButton
                     listingId={listing.id}
                     amountEur={payAmount}
