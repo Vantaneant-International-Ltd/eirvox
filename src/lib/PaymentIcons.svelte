@@ -18,14 +18,14 @@
 
 <div class="pmi" aria-label="Accepted payment methods" role="list">
 
-  <!-- Revolut Pay -->
+  <!-- Revolut Pay — wordmark single-piece per Revolut rebrand guidelines
+       (don't split R from rest of wordmark). Solid black bg #000 per
+       primary palette. "Pay" is a small sub-mark in the lockup. -->
   <span class="pmi__card pmi__card--dark" role="listitem" title="Revolut Pay">
     <svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect width="64" height="24" rx="3" fill="#0A0A0A"/>
-      <!-- Bold R, small Pay -->
-      <text x="8" y="17" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="14" font-weight="800" letter-spacing="-0.5">R</text>
-      <text x="19" y="17" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.2">evolut</text>
-      <text x="50" y="17" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="9" font-weight="500" letter-spacing="0.3">Pay</text>
+      <rect width="64" height="24" rx="3" fill="#000000"/>
+      <text x="8" y="16" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="-0.2">Revolut</text>
+      <text x="44" y="16" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="9" font-weight="500" letter-spacing="0.3">Pay</text>
     </svg>
   </span>
 
