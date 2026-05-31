@@ -57,7 +57,7 @@ export const currentUser: UserProfile = {
   id: 'u-001',
   firstName: 'Renato',
   lastName: 'G.',
-  email: 'renato@vnta.xyz',
+  email: 'demo@eirvox.ie',
   phone: '+353 85 1234567',
   city: 'Dublin 4',
   country: 'Ireland',

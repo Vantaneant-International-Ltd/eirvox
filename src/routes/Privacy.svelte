@@ -39,7 +39,7 @@
       <strong>data controller</strong> for personal information collected through eirvox.ie and associated services.
       We're part of the Vantaneant International Ltd group.
     </p>
-    <p>Contact: <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a></p>
+    <p>Contact: <a href="mailto:support@eirvox.ie">support@eirvox.ie</a></p>
   </section>
 
   <section class="legal-section">
@@ -123,7 +123,7 @@
       <li><strong>Withdraw consent</strong> — for processing based on consent.</li>
     </ul>
     <p>
-      To exercise any of these rights, email <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a>.
+      To exercise any of these rights, email <a href="mailto:support@eirvox.ie">support@eirvox.ie</a>.
       We respond within <strong>30 days</strong>. You also have the right to complain to the
       Irish Data Protection Commission: <a href="https://dataprotection.ie" target="_blank" rel="noopener">dataprotection.ie</a>.
     </p>
@@ -180,7 +180,7 @@
     <span class="legal-section__num">13 · CONTACT</span>
     <h2 id="p-contact" class="legal-section__h">Contact &amp; complaints.</h2>
     <p>
-      Privacy questions: <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a> — 30 day response.
+      Privacy questions: <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> — 30 day response.
     </p>
     <p>
       To complain to the regulator:

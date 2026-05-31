@@ -67,7 +67,7 @@
     <span class="legal-section__num">04 · REPORTING</span>
     <h2 id="au-report" class="legal-section__h">Reporting.</h2>
     <p>
-      See something off? Report it. Email <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a> with the
+      See something off? Report it. Email <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> with the
       listing or profile URL and what you observed. We review every report and respond within 48 hours.
     </p>
     <p>

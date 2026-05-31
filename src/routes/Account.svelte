@@ -417,7 +417,7 @@
         {:else if tab === 'settings'}
           <p class="acct-intro">
             Profile, notification preferences, and account actions. Email
-            <a href="mailto:renato@eirvox.ie" class="acct-intro__link">renato@eirvox.ie</a>
+            <a href="mailto:support@eirvox.ie" class="acct-intro__link">support@eirvox.ie</a>
             for anything not on this page.
           </p>
 
@@ -509,7 +509,7 @@
                   <strong class="action__title">Download my data</strong>
                   <p class="action__desc">A copy of your profile, reservations, messages, and saved items in JSON format.</p>
                 </div>
-                <a href="mailto:renato@eirvox.ie?subject=Data%20export%20request" class="action__link evx-caption">
+                <a href="mailto:support@eirvox.ie?subject=Data%20export%20request" class="action__link evx-caption">
                   Request export →
                 </a>
               </div>
@@ -518,7 +518,7 @@
                   <strong class="action__title">Delete account</strong>
                   <p class="action__desc">Removes your profile and all data. Active reservations must be cancelled first.</p>
                 </div>
-                <a href="mailto:renato@eirvox.ie?subject=Account%20deletion%20request" class="action__link evx-caption">
+                <a href="mailto:support@eirvox.ie?subject=Account%20deletion%20request" class="action__link evx-caption">
                   Contact us →
                 </a>
               </div>

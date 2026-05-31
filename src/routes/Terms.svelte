@@ -89,7 +89,7 @@
     </p>
     <p>
       You are responsible for your account credentials and any activity on your account.
-      Notify us immediately at <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a> if you suspect
+      Notify us immediately at <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> if you suspect
       unauthorised access.
     </p>
   </section>
@@ -337,7 +337,7 @@
       Trading as ÉIRVOX. Part of Vantaneant International Ltd.
     </p>
     <p>
-      Email: <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a>
+      Email: <a href="mailto:support@eirvox.ie">support@eirvox.ie</a>
     </p>
   </section>
 </LegalLayout>

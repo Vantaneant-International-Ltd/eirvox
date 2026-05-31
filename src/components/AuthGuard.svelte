@@ -61,7 +61,7 @@
         {#if requireRole === 'seller'}
           If you'd like to become a seller, apply to Cohort 03 below.
         {:else if requireRole === 'admin'}
-          If you believe this is a mistake, contact us at <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a>.
+          If you believe this is a mistake, contact us at <a href="mailto:support@eirvox.ie">support@eirvox.ie</a>.
         {/if}
       </p>
       <div class="guard__actions">

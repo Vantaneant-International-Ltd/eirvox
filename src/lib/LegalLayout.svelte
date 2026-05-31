@@ -73,7 +73,7 @@
           <span class="evx-label legal-footer-note__label">QUESTIONS?</span>
           <p class="legal-footer-note__body">
             Anything unclear, anything to flag — email
-            <a href="mailto:renato@eirvox.ie" class="legal-link">renato@eirvox.ie</a>
+            <a href="mailto:support@eirvox.ie" class="legal-link">support@eirvox.ie</a>
             and we'll come back to you within 48 hours.
           </p>
         </div>

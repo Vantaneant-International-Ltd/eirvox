@@ -25,10 +25,13 @@
   let error = '';
 
   onMount(() => {
-    // Pre-fill name/email if signed in.
+    // Pre-fill name only if signed in. Email is intentionally NOT
+    // prefilled: the only signed-in users are admins, and prefilling
+    // their login email (e.g. renato@vnta.xyz) into a public enquiry
+    // form leaks the admin identity into outbound enquiries from
+    // that machine. Visitors type their own email.
     const user = getCurrentUser();
     if (user) {
-      email = user.email ?? '';
       const meta = user.user_metadata as Record<string, unknown> | null;
       const fullName = (meta?.full_name as string | undefined) ?? '';
       if (fullName) name = fullName;

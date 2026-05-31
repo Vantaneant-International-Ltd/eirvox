@@ -121,7 +121,7 @@
         <li><button on:click={() => navigate('/about')}>About</button></li>
         <li><button on:click={() => navigate('/drive')}>DRIVE</button></li>
         <li><button on:click={() => navigate('/about')}>Press</button></li>
-        <li><a href="mailto:renato@eirvox.ie">Contact</a></li>
+        <li><a href="mailto:support@eirvox.ie">Contact</a></li>
         <li><button on:click={() => navigate('/sitemap')}>Sitemap</button></li>
       </ul>
     </div>
@@ -147,6 +147,17 @@
       <span class="footer__legal-sep">·</span>
       <button on:click={() => navigate('/returns')}>Returns &amp; Refunds</button>
     </div>
+  </div>
+
+  <!-- Founders (fine print). Public contact for the platform is
+       support@eirvox.ie; these are direct lines kept available. -->
+  <div class="footer__founders page-container">
+    <span class="evx-caption footer__legal-label">DIRECT</span>
+    <span class="evx-caption footer__founders-list">
+      <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a> (Founder)
+      <span class="footer__legal-sep">·</span>
+      <a href="mailto:kevin@eirvox.ie">kevin@eirvox.ie</a>
+    </span>
   </div>
 
   <!-- Copyright + parent company -->
@@ -325,7 +336,8 @@
 
   /* Legal links row */
   .footer__legal-row,
-  .footer__pay-row {
+  .footer__pay-row,
+  .footer__founders {
     display: flex;
     align-items: center;
     gap: var(--evx-space-lg);
@@ -335,6 +347,14 @@
   }
   .footer__pay-row { padding-bottom: 4px; }
   .footer__legal-label { color: var(--evx-ink-soft); flex-shrink: 0; }
+  .footer__founders { padding-top: var(--evx-space-md); padding-bottom: var(--evx-space-md); }
+  .footer__founders-list { color: var(--evx-ink-soft); }
+  .footer__founders-list a {
+    color: var(--evx-ink-soft);
+    text-decoration: none;
+    transition: var(--evx-transition);
+  }
+  .footer__founders-list a:hover { color: var(--evx-paper); }
   .footer__pay-methods {
     display: flex;
     flex-wrap: wrap;

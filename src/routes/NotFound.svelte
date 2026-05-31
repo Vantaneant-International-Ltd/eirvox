@@ -95,7 +95,7 @@
 
     <p class="nf-help evx-caption">
       Found a broken link on Éirvox? Email
-      <a href="mailto:renato@eirvox.ie" class="nf-help__link">renato@eirvox.ie</a>
+      <a href="mailto:support@eirvox.ie" class="nf-help__link">support@eirvox.ie</a>
       with the URL and we'll fix it.
     </p>
 
