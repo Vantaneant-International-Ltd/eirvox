@@ -52,6 +52,7 @@ const limiters: Record<string, Ratelimit | null> = {
   waitlist:            redis ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5,  '1 m'),  prefix: 'evx:waitlist'    }) : null,
   enquiries:           redis ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(2,  '30 s'), prefix: 'evx:enquiries'   }) : null,
   'seller-applications': redis ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(1, '1 m'), prefix: 'evx:seller-apps' }) : null,
+  reports:             redis ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(2,  '1 m'),  prefix: 'evx:reports'     }) : null,
 };
 
 export type LimiterKey = keyof typeof limiters;
