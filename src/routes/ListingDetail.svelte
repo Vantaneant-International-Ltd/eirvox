@@ -93,6 +93,14 @@
     document.getElementById('seller-contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // Mobile sticky CTA can't host the embedded Revolut button cleanly
+  // (it would create a second order alongside the panel button). On
+  // payable listings the sticky button scrolls the user up to the
+  // main PayButton instead.
+  function scrollToPay() {
+    document.getElementById('pay-block')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   // Derived: display tier for SellerPill
   $: tier = ((listing?.seller?.tier ?? 'verified').toUpperCase()) as 'HOUSE' | 'ATELIER' | 'VERIFIED';
   $: avatarLetter = (listing?.seller?.trading_name ?? '·').charAt(0).toUpperCase();
@@ -284,7 +292,7 @@
                 Reserved
               </button>
             {:else if payable}
-              <div class="panel__pay">
+              <div class="panel__pay" id="pay-block">
                 <div class="panel__pay-mode">
                   <span class="evx-caption panel__pay-mode-label">{payModeLabel}</span>
                   <span class="panel__pay-mode-amount">{formatPrice(payAmount)}</span>
@@ -437,14 +445,29 @@
     <!-- Mobile sticky CTA -->
     <div class="sticky-cta" role="region" aria-label="Listing actions">
       <div class="sticky-cta__price">
-        <span class="evx-caption sticky-cta__price-label">FROM</span>
-        <span class="sticky-cta__price-val">{formatPrice(listing.price)}</span>
+        <span class="evx-caption sticky-cta__price-label">
+          {#if payable && listing.payment_mode === 'deposit'}DEPOSIT
+          {:else if payable}PAY
+          {:else}FROM{/if}
+        </span>
+        <span class="sticky-cta__price-val">
+          {formatPrice(payable ? payAmount : listing.price)}
+        </span>
       </div>
       <div class="sticky-cta__btns">
-        <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={scrollToContact}
-                disabled={listing.status === 'sold' || listing.status === 'reserved'}>
-          {listing.status === 'sold' ? 'Sold' : listing.status === 'reserved' ? 'Reserved' : 'Contact seller'}
-        </button>
+        {#if listing.status === 'sold'}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" disabled>Sold</button>
+        {:else if listing.status === 'reserved'}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" disabled>Reserved</button>
+        {:else if payable}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={scrollToPay}>
+            Pay
+          </button>
+        {:else}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={scrollToContact}>
+            Contact seller
+          </button>
+        {/if}
       </div>
     </div>
 
