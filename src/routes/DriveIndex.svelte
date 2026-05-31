@@ -4,59 +4,89 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import { getDriveListings, type ListingWithExtras } from '../lib/api';
 
-  onMount(() => applySeo(seo.drive()));
+  // Render shape used by the card markup below. Both the DB-derived
+  // and hardcoded-fallback paths produce this shape.
+  type DriveCard = {
+    num: string;
+    slug: string | null;
+    title: string;
+    subtitle: string;
+    desc: string;
+    date: string;
+    status: 'open' | 'upcoming' | 'archived';
+    price: number | null;
+    remaining: number | null;
+    total: number | null;
+  };
 
-  const issues = [
-    {
-      num: '003',
-      slug: '003-mercedes-amg-gt',
-      title: 'Mercedes-AMG GT',
+  // Hardcoded fallback. Used ONLY when getDriveListings() returns 0
+  // rows, which covers the transition window before the v06 migration
+  // and the v06-drive-seed.sql have been applied. After the seed
+  // applies, the DB path takes over and this array is dead code (still
+  // shipped as a safety net).
+  const HARDCODED_FALLBACK: DriveCard[] = [
+    { num: '003', slug: '003-mercedes-amg-gt',  title: 'Mercedes-AMG GT',
       subtitle: 'V8 Biturbo · C192',
       desc: 'Forged carbon steering wheel. Eight pieces, Alcantara wrap, champagne stitch.',
-      date: 'May MMXXVI',
-      status: 'open',
-      price: 4250,
-      remaining: 5,
-      total: 8,
-    },
-    {
-      num: '004',
-      slug: null,
-      title: 'Volkswagen Golf R',
+      date: 'May MMXXVI', status: 'open',     price: 4250, remaining: 5,    total: 8 },
+    { num: '004', slug: null, title: 'Volkswagen Golf R',
       subtitle: 'Mk8 · 2.0T',
       desc: 'Issue 004 in preparation. Details to follow on reservation opening.',
-      date: 'Q3 MMXXVI',
-      status: 'upcoming',
-      price: null,
-      remaining: null,
-      total: null,
-    },
-    {
-      num: '002',
-      slug: null,
-      title: 'Porsche 911 GT3',
+      date: 'Q3 MMXXVI', status: 'upcoming', price: null, remaining: null, total: null },
+    { num: '002', slug: null, title: 'Porsche 911 GT3',
       subtitle: '992 · 4.0 Naturally Aspirated',
       desc: 'Forged carbon shift paddle set. Archived — sold out.',
-      date: 'Feb MMXXVI',
-      status: 'archived',
-      price: 1850,
-      remaining: 0,
-      total: 6,
-    },
-    {
-      num: '001',
-      slug: null,
-      title: 'BMW M3 Competition',
+      date: 'Feb MMXXVI', status: 'archived', price: 1850, remaining: 0,    total: 6 },
+    { num: '001', slug: null, title: 'BMW M3 Competition',
       subtitle: 'G80 · S58 Biturbo',
       desc: 'Alcantara handbrake grip and gear surrounds. Archived — sold out.',
-      date: 'Nov MMXXV',
-      status: 'archived',
-      price: 690,
-      remaining: 0,
-      total: 10,
-    },
+      date: 'Nov MMXXV', status: 'archived', price: 690, remaining: 0,    total: 10 },
   ];
+
+  function toCard(l: ListingWithExtras): DriveCard {
+    // drive_issue_state is the editorial state. Fall back to 'archived'
+    // (safest) if missing or unrecognised so the card renders something
+    // rather than crashing.
+    const s = l.drive_issue_state;
+    const status: DriveCard['status'] =
+      s === 'open' || s === 'upcoming' || s === 'archived' ? s : 'archived';
+    return {
+      num:       l.drive_issue ?? '???',
+      slug:      l.slug,
+      title:     l.title,
+      subtitle:  l.subtitle ?? '',
+      desc:      l.description ?? '',
+      date:      l.drive_issue_date ?? '',
+      status,
+      price:     status === 'upcoming' ? null : l.price,
+      remaining: l.drive_remaining_count ?? null,
+      total:     l.drive_made_count ?? null,
+    };
+  }
+
+  let issues: DriveCard[] = HARDCODED_FALLBACK;
+  let loading = true;
+  let usingFallback = true;
+
+  onMount(async () => {
+    applySeo(seo.drive());
+    try {
+      const rows = await getDriveListings({ limit: 24 });
+      if (rows.length > 0) {
+        issues = rows.map(toCard);
+        usingFallback = false;
+      }
+    } catch (err) {
+      // Defensive: if the DB query fails (e.g. drive_issue_state
+      // column absent pre-migration AND the implicit '*' join also
+      // errored), keep the hardcoded fallback.
+      console.warn('[DriveIndex] getDriveListings failed, using fallback:', err);
+    } finally {
+      loading = false;
+    }
+  });
 </script>
 
 <Nav />

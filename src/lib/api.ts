@@ -66,6 +66,10 @@ export interface ListingImage {
   storage_path: string;
   public_url: string | null;
   sort_order: number;
+  /** v06. Reused for DRIVE plate captions (single source for accessibility
+   *  description and editorial caption). Pre-existing column on
+   *  listing_images; just surfacing on the type. */
+  alt_text?: string | null;
 }
 
 export interface ListingSpec {
