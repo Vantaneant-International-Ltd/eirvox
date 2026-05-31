@@ -118,23 +118,58 @@
   $: isHouseListing = !!listing?.seller?.is_house;
   $: payable = isHouseListing && listing?.status === 'active';
 
-  // Display-only resolved amount for the PayButton success-state strip.
-  // Server is authoritative for the actual charge.
-  $: payAmount = listing
-    ? listing.payment_mode === 'deposit'
-      ? (listing.deposit_amount ?? 0)
-      : listing.payment_mode === 'full_plus_shipping'
-        ? listing.price + (listing.shipping_cost ?? 0)
-        : listing.price
-    : 0;
+  // v06 matrix wiring (buyer-side; server is authoritative).
+  //   stock_state: 'in_stock' or 'incoming' (defaults to 'in_stock'
+  //     when the column is absent pre-migration).
+  //   fulfilment: buyer's chosen 'collection' or 'delivery'. Required
+  //     by the server.
+  //   isDeposit: when true, server charges deposit_amount.
+  //
+  // Matrix:
+  //   in_stock + collection: full OR deposit
+  //   in_stock + delivery  : full only (price + shipping)
+  //   incoming + collection: deposit only
+  //   incoming + delivery  : full only (price + shipping)
+  $: stockState = (listing?.stock_state ?? 'in_stock') as 'in_stock' | 'incoming';
+  $: hasShipping = !!listing?.shipping_available;
+  $: hasCollection = !!listing?.collection_available;
+  $: depositConfigured = (listing?.deposit_amount ?? 0) > 0;
 
-  $: payModeLabel = listing
-    ? listing.payment_mode === 'deposit'
-      ? 'DEPOSIT'
-      : listing.payment_mode === 'full_plus_shipping'
-        ? 'FULL PRICE + SHIPPING'
-        : 'FULL PRICE'
-    : '';
+  let fulfilment: 'collection' | 'delivery' | null = null;
+  let isDeposit = false;
+
+  // Auto-pick fulfilment when only one option is enabled. Reset to
+  // null whenever a new listing loads (slug change) so the picker is
+  // fresh.
+  $: if (listing?.id) {
+    if (hasCollection && !hasShipping) fulfilment = 'collection';
+    else if (hasShipping && !hasCollection) fulfilment = 'delivery';
+  }
+
+  // Matrix-derived gates for the local controls.
+  $: canFull = fulfilment !== null && !(stockState === 'incoming' && fulfilment === 'collection');
+  $: canDeposit = fulfilment === 'collection' && depositConfigured;
+  $: mustDeposit = stockState === 'incoming' && fulfilment === 'collection';
+
+  // Force the deposit flag into a valid state for the current combo.
+  $: if (mustDeposit && !isDeposit) isDeposit = true;
+  $: if (!canDeposit && isDeposit) isDeposit = false;
+
+  // Display amount for the success-state strip + mode label. Server
+  // is still authoritative on what's actually charged.
+  $: payAmount = !listing
+    ? 0
+    : isDeposit
+      ? (listing.deposit_amount ?? 0)
+      : fulfilment === 'delivery'
+        ? listing.price + (listing.shipping_cost ?? 0)
+        : listing.price;
+
+  $: payModeLabel = isDeposit
+    ? 'DEPOSIT'
+    : fulfilment === 'delivery'
+      ? 'FULL PRICE + SHIPPING'
+      : 'FULL PRICE';
 </script>
 
 <Nav />
@@ -293,18 +328,58 @@
               </button>
             {:else if payable}
               <div class="panel__pay" id="pay-block">
+
+                {#if hasCollection && hasShipping}
+                  <div class="panel__pay-options" role="group" aria-label="Fulfilment">
+                    <button class="panel__pay-opt" class:panel__pay-opt--on={fulfilment === 'collection'}
+                            type="button" on:click={() => fulfilment = 'collection'}>
+                      Collection
+                    </button>
+                    <button class="panel__pay-opt" class:panel__pay-opt--on={fulfilment === 'delivery'}
+                            type="button" on:click={() => fulfilment = 'delivery'}>
+                      Delivery
+                    </button>
+                  </div>
+                {/if}
+
+                {#if canFull && canDeposit}
+                  <div class="panel__pay-options" role="group" aria-label="Payment">
+                    <button class="panel__pay-opt" class:panel__pay-opt--on={!isDeposit}
+                            type="button" on:click={() => isDeposit = false}>
+                      Pay full · {formatPrice(listing.price)}
+                    </button>
+                    <button class="panel__pay-opt" class:panel__pay-opt--on={isDeposit}
+                            type="button" on:click={() => isDeposit = true}>
+                      Deposit · {formatPrice(listing.deposit_amount ?? 0)}
+                    </button>
+                  </div>
+                {/if}
+
                 <div class="panel__pay-mode">
                   <span class="evx-caption panel__pay-mode-label">{payModeLabel}</span>
                   <span class="panel__pay-mode-amount">{formatPrice(payAmount)}</span>
-                  {#if listing.payment_mode === 'deposit'}
-                    <span class="evx-caption panel__pay-mode-of">of {formatPrice(listing.price)} total</span>
+                  {#if isDeposit}
+                    <span class="evx-caption panel__pay-mode-of">of {formatPrice(listing.price)} total · balance on collection</span>
                   {/if}
                 </div>
-                <PayButton
-                  listingId={listing.id}
-                  amountEur={payAmount}
-                  description={listing.title}
-                />
+
+                {#if !fulfilment}
+                  <p class="evx-caption panel__pay-hint">Pick collection or delivery to continue.</p>
+                {:else}
+                  <PayButton
+                    listingId={listing.id}
+                    amountEur={payAmount}
+                    description={listing.title}
+                    fulfilment={fulfilment}
+                    isDeposit={isDeposit}
+                  />
+                {/if}
+
+                {#if mustDeposit}
+                  <p class="evx-caption panel__pay-hint">
+                    Awaiting stock. Deposit holds your place; balance paid in person on collection.
+                  </p>
+                {/if}
               </div>
             {:else}
               <button class="evx-btn evx-btn--primary panel__cta-main" on:click={scrollToContact}>
@@ -446,7 +521,7 @@
     <div class="sticky-cta" role="region" aria-label="Listing actions">
       <div class="sticky-cta__price">
         <span class="evx-caption sticky-cta__price-label">
-          {#if payable && listing.payment_mode === 'deposit'}DEPOSIT
+          {#if payable && isDeposit}DEPOSIT
           {:else if payable}PAY
           {:else}FROM{/if}
         </span>
@@ -590,14 +665,36 @@
   .panel__cta-main { width: 100%; justify-content: space-between; }
   .panel__cta-offer { width: 100%; }
 
-  /* Pay block — wraps the PayButton with an above-line label showing
-     what the buyer will be charged (deposit / full / full + shipping).
-     Server is the authoritative resolver. */
+  /* Pay block — wraps the PayButton with fulfilment + payment-option
+     pickers and a resolved-amount label. Server is authoritative on
+     what's actually charged. */
   .panel__pay { display: flex; flex-direction: column; gap: var(--evx-space-md); width: 100%; }
+  .panel__pay-options { display: flex; gap: var(--evx-space-xs); flex-wrap: wrap; }
+  .panel__pay-opt {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 1px solid var(--evx-rule-light);
+    padding: 10px 14px;
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+    cursor: pointer;
+    transition: var(--evx-transition);
+  }
+  .panel__pay-opt:hover { color: var(--evx-warm-black); border-color: var(--evx-warm-black); }
+  .panel__pay-opt--on {
+    background: var(--evx-warm-black);
+    color: var(--evx-paper);
+    border-color: var(--evx-warm-black);
+  }
   .panel__pay-mode { display: flex; align-items: baseline; gap: var(--evx-space-sm); flex-wrap: wrap; }
   .panel__pay-mode-label { color: var(--evx-fox-orange); }
   .panel__pay-mode-amount { font-family: var(--evx-font-display); font-size: 18px; font-weight: 500; color: var(--evx-warm-black); }
   .panel__pay-mode-of { color: var(--evx-ink-soft); }
+  .panel__pay-hint { color: var(--evx-ink-soft); }
 
   /* Seller card */
   .panel__seller { border: 1px solid var(--evx-rule-light); padding: var(--evx-space-lg); }
