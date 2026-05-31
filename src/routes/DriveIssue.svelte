@@ -5,6 +5,7 @@
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import EnquiryForm from '../lib/EnquiryForm.svelte';
+  import PayButton from '../lib/PayButton.svelte';
   import { getListingBySlug, formatPrice, type ListingWithExtras } from '../lib/api';
 
   export let issueSlug: string;
@@ -18,6 +19,66 @@
 
   $: useFallback = !loading && !dbListing && (issueSlug === '003-mercedes-amg-gt' || !issueSlug);
   $: notFound = !loading && !dbListing && !useFallback;
+
+  // ── Payment wiring (mirrors src/routes/ListingDetail.svelte) ──
+  //
+  // PayButton gate (cosmetic; the server in api/payments/create-order
+  // re-checks seller.is_house and resolves the amount). is_house lives
+  // on sellers, never on listings; ownership is derived via the
+  // seller join in getListingBySlug.
+  //
+  // NOTE on seed data and matrix coverage: the current v06 DRIVE seed
+  // ships all 4 issues as in_stock + collection_available=true,
+  // shipping_available=false, deposit_amount=NULL. So the only matrix
+  // cell this page can exercise out of the box is full-price collection.
+  // To demonstrate deposit, set listings.deposit_amount on the row;
+  // to demonstrate delivery, set listings.shipping_available=true and
+  // listings.shipping_cost; to demonstrate incoming-stock flows, set
+  // listings.stock_state='incoming'. These are admin/data changes,
+  // handled externally.
+  $: isHouseListing = !!dbListing?.seller?.is_house;
+  $: dbPayable = !!dbListing && isHouseListing && dbListing.status === 'active';
+
+  $: stockState = (dbListing?.stock_state ?? 'in_stock') as 'in_stock' | 'incoming';
+  $: hasShipping = !!dbListing?.shipping_available;
+  $: hasCollection = !!dbListing?.collection_available;
+  $: depositConfigured = (dbListing?.deposit_amount ?? 0) > 0;
+  $: shippingCostSet = (dbListing?.shipping_cost ?? 0) > 0;
+
+  let fulfilment: 'collection' | 'delivery' | null = null;
+  let isDeposit = false;
+
+  // Auto-pick fulfilment when only one option is enabled. Resets on
+  // dbListing.id change (new slug load).
+  $: if (dbListing?.id) {
+    if (hasCollection && !hasShipping) fulfilment = 'collection';
+    else if (hasShipping && !hasCollection) fulfilment = 'delivery';
+  }
+
+  $: canFull = fulfilment !== null && !(stockState === 'incoming' && fulfilment === 'collection');
+  $: canDeposit = fulfilment === 'collection' && depositConfigured;
+  $: mustDeposit = stockState === 'incoming' && fulfilment === 'collection';
+
+  $: if (mustDeposit && !isDeposit) isDeposit = true;
+  $: if (!canDeposit && isDeposit) isDeposit = false;
+
+  // Delivery requires shipping_cost set; suppress the pay path
+  // otherwise so the buyer never sees a delivery total that silently
+  // omits shipping. Server (api/payments/create-order) also rejects
+  // delivery + null shipping_cost.
+  $: deliverySelectedWithoutShipping = fulfilment === 'delivery' && !shippingCostSet;
+  $: canShowPayButton = !!fulfilment && !deliverySelectedWithoutShipping;
+
+  $: payAmount = !dbListing ? 0
+    : isDeposit ? (dbListing.deposit_amount ?? 0)
+    : fulfilment === 'delivery' ? dbListing.price + (dbListing.shipping_cost ?? 0)
+    : dbListing.price;
+
+  $: payModeLabel = isDeposit
+    ? 'DEPOSIT'
+    : fulfilment === 'delivery'
+      ? 'FULL PRICE + SHIPPING'
+      : 'FULL PRICE';
 
   // Hero eyebrow expects just the year-style suffix ("MMXXVI"). The
   // editorial date string is "May MMXXVI" / "Q3 MMXXVI" / "Nov MMXXV";
@@ -107,15 +168,88 @@
           Archived. This issue is closed.
         {:else if dbListing.drive_issue_state === 'upcoming'}
           Upcoming. Express interest below to be notified when this issue opens.
+        {:else if dbPayable}
+          Purchasable direct from ÉIRVOX. Collection in Dublin or post nationwide.
         {:else}
-          Express interest below · we confirm by email
+          Express interest below.
         {/if}
       </p>
 
       <div class="di-hero__ctas">
-        <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
-          Express interest
-        </button>
+        {#if dbListing.drive_issue_state === 'archived'}
+          <!-- archived: no Pay, no Express Interest (per brief) -->
+        {:else if dbListing.drive_issue_state === 'upcoming'}
+          <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
+            Express interest
+          </button>
+        {:else if dbPayable}
+          <!-- open + payable: PayButton primary, Express Interest secondary -->
+          <div class="di-pay" id="pay-block">
+
+            {#if hasCollection && hasShipping}
+              <div class="di-pay__options" role="group" aria-label="Fulfilment">
+                <button class="di-pay__opt" class:di-pay__opt--on={fulfilment === 'collection'}
+                        type="button" on:click={() => fulfilment = 'collection'}>
+                  Collection
+                </button>
+                <button class="di-pay__opt" class:di-pay__opt--on={fulfilment === 'delivery'}
+                        type="button" on:click={() => fulfilment = 'delivery'}>
+                  Delivery
+                </button>
+              </div>
+            {/if}
+
+            {#if canFull && canDeposit}
+              <div class="di-pay__options" role="group" aria-label="Payment">
+                <button class="di-pay__opt" class:di-pay__opt--on={!isDeposit}
+                        type="button" on:click={() => isDeposit = false}>
+                  Pay full · {formatPrice(dbListing.price)}
+                </button>
+                <button class="di-pay__opt" class:di-pay__opt--on={isDeposit}
+                        type="button" on:click={() => isDeposit = true}>
+                  Deposit · {formatPrice(dbListing.deposit_amount ?? 0)}
+                </button>
+              </div>
+            {/if}
+
+            <div class="di-pay__mode">
+              <span class="evx-caption di-pay__mode-label">{payModeLabel}</span>
+              <span class="di-pay__mode-amount">{formatPrice(payAmount)}</span>
+              {#if isDeposit}
+                <span class="evx-caption di-pay__mode-of">of {formatPrice(dbListing.price)} total · balance on collection</span>
+              {/if}
+            </div>
+
+            {#if !fulfilment}
+              <p class="evx-caption di-pay__hint">Pick collection or delivery to continue.</p>
+            {:else if deliverySelectedWithoutShipping}
+              <p class="evx-caption di-pay__hint">Delivery is not priced yet for this issue. Pick collection, or get in touch.</p>
+            {:else if canShowPayButton}
+              <PayButton
+                listingId={dbListing.id}
+                amountEur={payAmount}
+                description={dbListing.title}
+                fulfilment={fulfilment}
+                isDeposit={isDeposit}
+              />
+            {/if}
+
+            {#if mustDeposit}
+              <p class="evx-caption di-pay__hint">
+                Awaiting stock. Deposit holds your place; balance paid in person on collection.
+              </p>
+            {/if}
+
+            <button class="di-pay__secondary" type="button" on:click={scrollToEnquiry}>
+              Questions, or not in stock? Express interest →
+            </button>
+          </div>
+        {:else}
+          <!-- House listing but not active, or non-house: keep Express Interest -->
+          <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
+            Express interest
+          </button>
+        {/if}
       </div>
     </div>
 
@@ -197,33 +331,57 @@
       </section>
     {/if}
 
-    <section class="di-reserve" id="enquiry">
-      <div class="di-reserve__inner">
-        <div class="di-reserve__left">
-          <span class="evx-caption di-reserve__pre">TO EXPRESS INTEREST</span>
-          <h2 class="di-reserve__heading">
-            {#if dbListing.drive_made_count}{dbListing.drive_made_count} will be made.<br/>One could be yours.{:else}Express interest in this issue.{/if}
-          </h2>
-          <div class="di-reserve__how">
-            <p class="di-reserve__how-body">
-              Tell us about your car. We'll confirm fitment and timing detail, and walk you through next steps.
-              No deposit at this stage.
-            </p>
-            <p class="di-reserve__how-body">
-              We respond within 48 hours.
-            </p>
+    {#if dbListing.drive_issue_state !== 'archived'}
+      <section class="di-reserve" id="enquiry">
+        <div class="di-reserve__inner">
+          <div class="di-reserve__left">
+            {#if dbPayable}
+              <!-- Open + payable: enquiry form is the secondary path
+                   for buyers with questions, or who want to be told
+                   when stock drops. The Pay button in the hero is the
+                   primary path. -->
+              <span class="evx-caption di-reserve__pre">QUESTIONS, OR NOT IN STOCK?</span>
+              <h2 class="di-reserve__heading">
+                Get in touch.
+              </h2>
+              <div class="di-reserve__how">
+                <p class="di-reserve__how-body">
+                  Buy directly above when stock is open. If you want to ask about fitment, timing,
+                  or want to be told when the next allocation drops, use the form.
+                </p>
+                <p class="di-reserve__how-body">
+                  We respond within 48 hours.
+                </p>
+              </div>
+            {:else}
+              <!-- Upcoming (and non-payable fallback): Express Interest
+                   is the only path; lead with it. -->
+              <span class="evx-caption di-reserve__pre">TO EXPRESS INTEREST</span>
+              <h2 class="di-reserve__heading">
+                {#if dbListing.drive_made_count}{dbListing.drive_made_count} will be made.<br/>One could be yours.{:else}Express interest in this issue.{/if}
+              </h2>
+              <div class="di-reserve__how">
+                <p class="di-reserve__how-body">
+                  Tell us about your car. We'll confirm fitment and timing detail, and walk you through next steps.
+                  No deposit at this stage.
+                </p>
+                <p class="di-reserve__how-body">
+                  We respond within 48 hours.
+                </p>
+              </div>
+            {/if}
+          </div>
+
+          <div class="di-reserve__form-wrap">
+            <EnquiryForm
+              subjectType="drive_issue"
+              driveIssueSlug={dbListing.slug ?? issueSlug}
+              messagePlaceholder="Your car (year, trim), and anything we should know about fitment, finish, or timing."
+            />
           </div>
         </div>
-
-        <div class="di-reserve__form-wrap">
-          <EnquiryForm
-            subjectType="drive_issue"
-            driveIssueSlug={dbListing.slug ?? issueSlug}
-            messagePlaceholder="Your car (year, trim), and anything we should know about fitment, finish, or timing."
-          />
-        </div>
-      </div>
-    </section>
+      </section>
+    {/if}
   </div>
 
 {:else if notFound}
@@ -503,6 +661,57 @@
 
   .di-hero__ctas { display: flex; gap: var(--evx-space-md); flex-wrap: wrap; }
   .di-hero__ctas a { text-decoration: none; }
+
+  /* Pay block inside the hero on open + payable DRIVE issues. Mirrors
+     the .panel__pay block in ListingDetail; same toggle visuals. */
+  .di-pay {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-md);
+    width: 100%;
+    max-width: 420px;
+  }
+  .di-pay__options { display: flex; gap: var(--evx-space-xs); flex-wrap: wrap; }
+  .di-pay__opt {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 1px solid var(--evx-rule-light);
+    padding: 10px 14px;
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+    cursor: pointer;
+    transition: var(--evx-transition);
+  }
+  .di-pay__opt:hover { color: var(--evx-warm-black); border-color: var(--evx-warm-black); }
+  .di-pay__opt--on {
+    background: var(--evx-warm-black);
+    color: var(--evx-paper);
+    border-color: var(--evx-warm-black);
+  }
+  .di-pay__mode { display: flex; align-items: baseline; gap: var(--evx-space-sm); flex-wrap: wrap; }
+  .di-pay__mode-label { color: var(--evx-fox-orange); }
+  .di-pay__mode-amount { font-family: var(--evx-font-display); font-size: 18px; font-weight: 500; color: var(--evx-warm-black); }
+  .di-pay__mode-of { color: var(--evx-ink-soft); }
+  .di-pay__hint { color: var(--evx-ink-soft); }
+  .di-pay__secondary {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: var(--evx-space-sm);
+    color: var(--evx-ink-soft);
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--evx-transition);
+  }
+  .di-pay__secondary:hover { color: var(--evx-warm-black); }
 
   .di-hero__plate {
     position: relative;
