@@ -42,137 +42,103 @@
     </div>
   </div>
 
-  <!-- Main link columns -->
+  <!-- Main link columns: brand + 4 nav columns -->
   <div class="footer__body page-container">
-    <!-- Brand -->
     <div class="footer__col footer__col--brand">
       <button class="footer__wordmark" on:click={() => navigate('/')} aria-label="ÉIRVOX home">
         <img src="/brand/wordmark.png" alt="ÉIRVOX" class="footer__wordmark-img" />
       </button>
       <p class="footer__tagline">
-        Ireland's premium marketplace for enthusiast objects.
-        Publisher of DRIVE — limited-run OEM+ pieces.
-        Operator of TRADE — verified independent tradespeople.
+        Ireland's premium marketplace for enthusiast objects. Publisher of DRIVE, operator of TRADE.
       </p>
-      <!-- Social -->
       <div class="footer__social">
         <a href="https://www.instagram.com/eirvox_" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on Instagram" class="footer__social-link">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
             <rect x="3" y="3" width="18" height="18" rx="4.5"/>
             <circle cx="12" cy="12" r="4.2"/>
             <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/>
           </svg>
         </a>
         <a href="https://www.linkedin.com/company/%C3%A9irvox/" target="_blank" rel="noopener noreferrer" aria-label="ÉIRVOX on LinkedIn" class="footer__social-link">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M19.5 3h-15A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3zM8.3 18H5.7V9.7h2.6V18zM7 8.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM18.3 18h-2.6v-4.2c0-1-.4-1.7-1.3-1.7-.7 0-1.1.5-1.3 1-.1.2-.1.4-.1.7V18h-2.6V9.7H13v1.1c.4-.6 1-1.3 2.2-1.3 1.6 0 3 1 3 3.3V18z"/>
           </svg>
         </a>
       </div>
     </div>
 
-    <!-- Buy -->
     <div class="footer__col">
       <span class="evx-label footer__head">Buy</span>
       <ul class="footer__links">
         <li><button on:click={() => navigate('/automotive')}>Browse</button></li>
         <li><button on:click={() => navigate('/automotive')}>Automotive</button></li>
         <li><button on:click={() => navigate('/watches')}>Watches</button></li>
-        <li><button on:click={() => navigate('/drive')}>DRIVE issues</button></li>
+        <li><button on:click={() => navigate('/drive')}>DRIVE</button></li>
       </ul>
     </div>
 
-    <!-- Sell -->
     <div class="footer__col">
       <span class="evx-label footer__head">Sell</span>
       <ul class="footer__links">
         <li><button on:click={() => navigate('/sell/apply')}>Apply</button></li>
         <li><button on:click={() => navigate('/sell')}>Tiers</button></li>
-        <li><button on:click={() => navigate('/sell')}>Seller terms</button></li>
         <li><button on:click={() => navigate('/sell')}>Fees</button></li>
+        <li><button on:click={() => navigate('/sell')}>Seller terms</button></li>
       </ul>
     </div>
 
-    <!-- Trade -->
     <div class="footer__col">
       <span class="evx-label footer__head">Trade</span>
       <ul class="footer__links">
-        <li><button on:click={() => navigate('/trade')}>Find a tradesperson</button></li>
-        <li><button on:click={() => navigate('/trade/apply')}>List your trade</button></li>
+        <li><button on:click={() => navigate('/trade')}>Find a trade</button></li>
+        <li><button on:click={() => navigate('/trade/apply')}>List a trade</button></li>
         <li><button on:click={() => navigate('/trade')}>Categories</button></li>
       </ul>
     </div>
 
-    <!-- Trust -->
     <div class="footer__col">
-      <span class="evx-label footer__head">Trust</span>
-      <ul class="footer__links">
-        <li><button on:click={() => navigate('/trust')}>Deposits</button></li>
-        <li><button on:click={() => navigate('/trust')}>Authentication</button></li>
-        <li><button on:click={() => navigate('/trust')}>Buyer protection</button></li>
-        <li><button on:click={() => navigate('/trust')}>Disputes</button></li>
-      </ul>
-    </div>
-
-    <!-- House -->
-    <div class="footer__col">
-      <span class="evx-label footer__head">House</span>
+      <span class="evx-label footer__head">Company</span>
       <ul class="footer__links">
         <li><button on:click={() => navigate('/about')}>About</button></li>
-        <li><button on:click={() => navigate('/drive')}>DRIVE</button></li>
-        <li><button on:click={() => navigate('/about')}>Press</button></li>
+        <li><button on:click={() => navigate('/trust')}>Trust</button></li>
         <li><a href="mailto:support@eirvox.ie">Contact</a></li>
         <li><button on:click={() => navigate('/sitemap')}>Sitemap</button></li>
       </ul>
     </div>
   </div>
 
-  <!-- Payment methods row -->
-  <div class="footer__pay-row page-container">
-    <span class="evx-caption footer__legal-label">PAYMENTS</span>
-    <PaymentIcons />
-  </div>
-
-  <!-- Legal links row -->
-  <div class="footer__legal-row page-container">
-    <span class="evx-caption footer__legal-label">LEGAL</span>
-    <div class="footer__legal-links">
-      <button on:click={() => navigate('/terms')}>Terms &amp; Conditions</button>
-      <span class="footer__legal-sep">·</span>
-      <button on:click={() => navigate('/privacy')}>Privacy Policy</button>
-      <span class="footer__legal-sep">·</span>
-      <button on:click={() => navigate('/cookies')}>Cookie Policy</button>
-      <span class="footer__legal-sep">·</span>
+  <!-- Legal links + payments (single row, no labels) -->
+  <div class="footer__meta page-container">
+    <div class="footer__meta-legal">
+      <button on:click={() => navigate('/terms')}>Terms</button>
+      <span class="footer__sep">·</span>
+      <button on:click={() => navigate('/privacy')}>Privacy</button>
+      <span class="footer__sep">·</span>
+      <button on:click={() => navigate('/cookies')}>Cookies</button>
+      <span class="footer__sep">·</span>
       <button on:click={() => navigate('/acceptable-use')}>Acceptable Use</button>
-      <span class="footer__legal-sep">·</span>
-      <button on:click={() => navigate('/returns')}>Returns &amp; Refunds</button>
+      <span class="footer__sep">·</span>
+      <button on:click={() => navigate('/returns')}>Returns</button>
+    </div>
+    <div class="footer__meta-pay">
+      <PaymentIcons />
     </div>
   </div>
 
-  <!-- Founders (fine print). Public contact for the platform is
-       support@eirvox.ie; these are direct lines kept available. -->
-  <div class="footer__founders page-container">
-    <span class="evx-caption footer__legal-label">DIRECT</span>
-    <span class="evx-caption footer__founders-list">
-      <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a> (Founder)
-      <span class="footer__legal-sep">·</span>
-      <a href="mailto:kevin@eirvox.ie">kevin@eirvox.ie</a>
-    </span>
-  </div>
-
-  <!-- Copyright + parent company -->
+  <!-- Bottom bar: copyright left, direct emails + locale right.
+       Public contact is support@eirvox.ie (in the Company column above);
+       these are direct lines kept available as fine print. -->
   <div class="footer__bar page-container">
-    <div class="footer__bar-left">
-      <span class="evx-caption footer__legal">
-        © 2026 ÉIRVOX Systems Ltd. Trading as ÉIRVOX.
-        A Vantaneant International Ltd company. All rights reserved.
-      </span>
-    </div>
-    <div class="footer__bar-right">
-      <span class="evx-caption footer__legal">
-        DUBLIN, IRELAND
-      </span>
-    </div>
+    <span class="evx-caption footer__bar-text">
+      © 2026 ÉIRVOX Systems Ltd · A Vantaneant International Ltd company
+    </span>
+    <span class="evx-caption footer__bar-text footer__bar-right">
+      <a href="mailto:renato@eirvox.ie">renato@eirvox.ie</a>
+      <span class="footer__sep">·</span>
+      <a href="mailto:kevin@eirvox.ie">kevin@eirvox.ie</a>
+      <span class="footer__sep">·</span>
+      DUBLIN, IRELAND
+    </span>
   </div>
 </footer>
 
@@ -242,14 +208,13 @@
   .footer__news-ok span { color: var(--evx-fox-orange); }
   .footer__news-ok p { font-size: 14px; color: rgba(245,242,237,0.85); }
 
-  /* Body */
+  /* Body: brand + 4 nav columns */
   .footer__body {
     display: grid;
-    grid-template-columns: 1.6fr repeat(5, 1fr);
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: var(--evx-space-2xl);
     padding-top: var(--evx-space-3xl);
     padding-bottom: var(--evx-space-2xl);
-    border-bottom: 1px solid var(--evx-rule-dark);
   }
 
   .footer__col {
@@ -257,6 +222,8 @@
     flex-direction: column;
     gap: var(--evx-space-md);
   }
+
+  .footer__col--brand { padding-right: var(--evx-space-xl); }
 
   .footer__wordmark {
     display: inline-flex;
@@ -267,10 +234,9 @@
     margin-bottom: var(--evx-space-sm);
   }
   .footer__wordmark-img {
-    height: 26px;
+    height: 24px;
     width: auto;
     display: block;
-    /* PNG is dark-on-transparent; invert for the dark footer background. */
     filter: invert(1) brightness(1.05);
   }
 
@@ -278,21 +244,20 @@
     font-size: 13px;
     line-height: 1.65;
     color: var(--evx-ink-soft);
-    max-width: 280px;
+    max-width: 320px;
   }
 
-  /* Social row */
   .footer__social {
     display: flex;
     gap: var(--evx-space-sm);
-    margin-top: var(--evx-space-md);
+    margin-top: var(--evx-space-sm);
   }
 
   .footer__social-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px; height: 32px;
+    width: 30px; height: 30px;
     border: 1px solid var(--evx-rule-dark);
     color: var(--evx-paper);
     text-decoration: none;
@@ -313,7 +278,7 @@
   .footer__links {
     display: flex;
     flex-direction: column;
-    gap: var(--evx-space-sm);
+    gap: 10px;
   }
 
   .footer__links button,
@@ -334,59 +299,47 @@
   .footer__links button:hover,
   .footer__links a:hover { opacity: 0.60; }
 
-  /* Legal links row */
-  .footer__legal-row,
-  .footer__pay-row,
-  .footer__founders {
+  /* Meta row: legal links left, payments right. One line on desktop. */
+  .footer__meta {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: var(--evx-space-lg);
     padding-top: var(--evx-space-lg);
-    padding-bottom: var(--evx-space-md);
+    padding-bottom: var(--evx-space-lg);
+    border-top: 1px solid var(--evx-rule-dark);
     flex-wrap: wrap;
   }
-  .footer__pay-row { padding-bottom: 4px; }
-  .footer__legal-label { color: var(--evx-ink-soft); flex-shrink: 0; }
-  .footer__founders { padding-top: var(--evx-space-md); padding-bottom: var(--evx-space-md); }
-  .footer__founders-list { color: var(--evx-ink-soft); }
-  .footer__founders-list a {
-    color: var(--evx-ink-soft);
-    text-decoration: none;
-    transition: var(--evx-transition);
-  }
-  .footer__founders-list a:hover { color: var(--evx-paper); }
-  .footer__pay-methods {
+
+  .footer__meta-legal,
+  .footer__meta-pay {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--evx-space-sm);
     align-items: center;
-  }
-  .footer__pay-method {
+    flex-wrap: wrap;
+    gap: 8px;
     font-family: var(--evx-font-mono);
     font-size: 11px;
     letter-spacing: 0.04em;
     color: var(--evx-ink-soft);
   }
-  .footer__pay-sep { color: var(--evx-rule-dark); }
-  .footer__legal-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--evx-space-sm);
-    align-items: center;
-  }
-  .footer__legal-links button {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--evx-ink-soft);
+  .footer__meta-pay :global(.pmi) { gap: 5px; }
+  .footer__meta-pay :global(.pmi__card svg) { height: 20px; }
+
+  .footer__meta-legal button {
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    color: inherit;
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
     transition: var(--evx-transition);
+    text-transform: uppercase;
   }
-  .footer__legal-links button:hover { color: var(--evx-paper); }
-  .footer__legal-sep { color: var(--evx-rule-dark); }
+  .footer__meta-legal button:hover { color: var(--evx-paper); }
+
+  .footer__sep { color: var(--evx-rule-dark); }
 
   /* Bottom bar */
   .footer__bar {
@@ -394,20 +347,33 @@
     justify-content: space-between;
     align-items: center;
     gap: var(--evx-space-md);
-    padding-top: var(--evx-space-lg);
+    padding-top: var(--evx-space-md);
     padding-bottom: var(--evx-space-lg);
-    border-top: 1px solid var(--evx-rule-dark);
     flex-wrap: wrap;
   }
 
-  .footer__legal { color: var(--evx-ink-soft); line-height: 1.6; }
+  .footer__bar-text {
+    color: var(--evx-ink-soft);
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .footer__bar-text a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--evx-transition);
+  }
+  .footer__bar-text a:hover { color: var(--evx-paper); }
+  .footer__bar-right { text-align: right; justify-content: flex-end; }
 
   @media (max-width: 1199px) {
     .footer__body {
       grid-template-columns: 1.5fr 1fr 1fr 1fr;
       gap: var(--evx-space-xl);
     }
-    .footer__col--brand { grid-column: 1 / -1; }
+    .footer__col--brand { grid-column: 1 / -1; padding-right: 0; }
+    .footer__tagline { max-width: 520px; }
   }
 
   @media (max-width: 767px) {
@@ -423,10 +389,12 @@
     .footer__body {
       grid-template-columns: 1fr 1fr;
     }
+    .footer__meta,
     .footer__bar {
       flex-direction: column;
       align-items: flex-start;
       gap: var(--evx-space-sm);
     }
+    .footer__bar-right { text-align: left; justify-content: flex-start; }
   }
 </style>
