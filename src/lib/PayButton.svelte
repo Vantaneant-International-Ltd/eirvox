@@ -14,8 +14,21 @@
   /** ÉIRVOX-owned listing id. When set, the request to create-order is
    *  in LISTING MODE: the server looks up the listing, verifies its
    *  seller has is_house=true, and resolves the charge amount from
-   *  payment_mode. The client cannot influence the amount in this mode. */
+   *  the v06 stock_state + fulfilment + is_deposit matrix. The client
+   *  cannot influence the amount in this mode. */
   export let listingId: string | null = null;
+
+  /** v06. Required when listingId is set. The buyer's chosen
+   *  fulfilment. Server rejects if not enabled on the listing or if
+   *  it conflicts with is_deposit (deposit + delivery rejected;
+   *  full + incoming + collection rejected). */
+  export let fulfilment: 'collection' | 'delivery' | null = null;
+
+  /** v06. Optional when listingId is set; defaults to false. If true,
+   *  server charges the listing's deposit_amount. Server rejects if
+   *  fulfilment is 'delivery' (deposit is collection-only this phase)
+   *  or if the listing has no deposit_amount configured. */
+  export let isDeposit: boolean = false;
 
   /** Free text shown on the Revolut checkout / Revolut Pay sheet.
    *  Ignored server-side in LISTING MODE (server builds the description
@@ -61,14 +74,33 @@
     booting = true;
     bootError = '';
     try {
-      // LISTING MODE: send listing_id only; server resolves the amount,
-      // description, and seller validation. Any local amountEur is
-      // display-only and ignored server-side.
+      // LISTING MODE: send listing_id + fulfilment (required by server)
+      // + is_deposit. Server resolves amount, description, validation;
+      // any local amountEur is display-only.
       // ADMIN MODE: send the legacy { amount_eur, description, metadata }
-      // body the existing admin €1 self-test page uses.
-      const reqBody = listingId
-        ? { listing_id: listingId, metadata, redirect_path: redirectPath }
-        : { amount_eur: amountEur, description, metadata, redirect_path: redirectPath };
+      // body the /admin/settings €1 self-test page uses.
+      let reqBody: Record<string, unknown>;
+      if (listingId) {
+        if (fulfilment !== 'collection' && fulfilment !== 'delivery') {
+          bootError = "Choose 'collection' or 'delivery' before paying.";
+          booting = false;
+          return;
+        }
+        reqBody = {
+          listing_id: listingId,
+          fulfilment,
+          is_deposit: isDeposit,
+          metadata,
+          redirect_path: redirectPath,
+        };
+      } else {
+        reqBody = {
+          amount_eur: amountEur,
+          description,
+          metadata,
+          redirect_path: redirectPath,
+        };
+      }
 
       const res = await fetch('/api/payments/create-order', {
         method: 'POST',
