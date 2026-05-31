@@ -16,11 +16,21 @@ export type ListingStatus =
   | 'sold'
   | 'removed';
 
-// Per-listing payment configuration for ÉIRVOX-owned listings.
-// Drives what the PayButton charges. Server-side create-order resolves
-// the amount from these fields; client values are display-only.
-// DB column listings.payment_mode, default 'full', CHECK constrained.
+/**
+ * @deprecated v06 drops the listings.payment_mode column. Use
+ * StockState + buyer-chosen fulfilment + deposit_amount presence
+ * instead. Kept exported during the defensive transition window so
+ * existing call sites (admin form, ListingDetail, create-order) keep
+ * compiling until their commits replace them.
+ */
 export type PaymentMode = 'full' | 'full_plus_shipping' | 'deposit';
+
+/** v06. Listing stock state. Drives the buyer payment-options matrix.
+ *  DB column listings.stock_state, default 'in_stock' NOT NULL. */
+export type StockState = 'in_stock' | 'incoming';
+
+/** v06. DRIVE editorial issue state. Only meaningful when is_drive=true. */
+export type DriveIssueState = 'open' | 'upcoming' | 'archived';
 
 export interface Category {
   id: string;
@@ -66,8 +76,21 @@ export interface Listing {
   city: string | null;
   status: ListingStatus;
   views_count: number;
-  payment_mode: PaymentMode;
+  /** @deprecated v06 drops this column. Optional so reads pre- and
+   *  post-migration both compile. New code must not branch on it. */
+  payment_mode?: PaymentMode;
   deposit_amount: number | null;
+  /** v06. Optional during transition: undefined pre-migration; reads
+   *  must fall back to 'in_stock'. */
+  stock_state?: StockState;
+  /** v06. NULL for non-DRIVE listings. */
+  drive_issue_state?: DriveIssueState | null;
+  drive_made_count?: number | null;
+  drive_remaining_count?: number | null;
+  drive_issue_date?: string | null;
+  /** Already in DB; surface on the type. */
+  is_drive?: boolean | null;
+  drive_issue?: string | null;
   created_at: string;
   updated_at: string;
   published_at: string | null;

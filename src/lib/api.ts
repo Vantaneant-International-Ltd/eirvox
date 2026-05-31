@@ -12,10 +12,20 @@ import { getCurrentUser } from './auth';
 
 export type SellerTier = 'verified' | 'atelier' | 'house';
 export type ListingStatus = 'draft' | 'pending_review' | 'active' | 'reserved' | 'sold' | 'removed';
-// Per-listing payment configuration; mirrors the DB column. The
-// PayButton uses this to display the right amount; the server is the
-// authoritative resolver via api/payments/create-order.
+
+/**
+ * @deprecated v06 drops the listings.payment_mode column. Use
+ * StockState + buyer-chosen fulfilment + deposit_amount presence
+ * instead. Kept exported during the defensive transition window so
+ * existing call sites keep compiling until their commits replace them.
+ */
 export type PaymentMode = 'full' | 'full_plus_shipping' | 'deposit';
+
+/** v06. Drives the buyer payment-options matrix on ÉIRVOX-owned listings. */
+export type StockState = 'in_stock' | 'incoming';
+
+/** v06. DRIVE editorial issue state. Only meaningful when is_drive=true. */
+export type DriveIssueState = 'open' | 'upcoming' | 'archived';
 
 export interface Category {
   id: string;
@@ -88,10 +98,23 @@ export interface Listing {
   collection_available: boolean;
   accepts_offers: boolean;
   // Payment configuration. Only meaningful when seller.is_house = true.
-  // Server resolves the authoritative charge from these fields.
-  payment_mode: PaymentMode;
+  // Server resolves the authoritative charge in api/payments/create-order.
+  /** @deprecated v06 drops this column. Optional so reads compile
+   *  pre- and post-migration. New code must use stock_state-based logic. */
+  payment_mode?: PaymentMode;
   deposit_amount: number | null;
   shipping_cost: number | null;
+  /** v06. Optional during transition: undefined when the column is
+   *  absent (pre-migration). Readers must fall back to 'in_stock'. */
+  stock_state?: StockState;
+  /** v06. DRIVE presentation fields. NULL/undefined for non-DRIVE listings. */
+  drive_issue_state?: DriveIssueState | null;
+  drive_made_count?: number | null;
+  drive_remaining_count?: number | null;
+  drive_issue_date?: string | null;
+  /** Already in DB pre-v06; surface on the type so DRIVE filters compile. */
+  is_drive?: boolean | null;
+  drive_issue?: string | null;
   created_at: string;
   published_at: string | null;
 }
@@ -316,6 +339,42 @@ export async function getFeaturedListings(limit = 8): Promise<ListingWithExtras[
 
 export async function getRecentListings(limit = 8): Promise<ListingWithExtras[]> {
   return getListings({ status: 'active', limit, sort: 'recent' });
+}
+
+/** v06. Fetch DRIVE-flagged listings, optionally filtered by issue
+ *  state ('open' / 'upcoming' / 'archived'). Sorted by drive_issue
+ *  number descending so newer issues lead.
+ *
+ *  Reads any-status (DRIVE includes 'draft' upcoming items + 'sold'
+ *  archived items, so the default active-only filter is wrong here).
+ *
+ *  Defensive: drive_issue_state may be absent in the row payload if
+ *  the v06 migration has not yet been applied. Callers must tolerate
+ *  undefined and fall back to ordering by drive_issue alone. */
+export async function getDriveListings(opts: {
+  state?: DriveIssueState | DriveIssueState[];
+  limit?: number;
+} = {}): Promise<ListingWithExtras[]> {
+  const { state, limit = 24 } = opts;
+  let q = supabase
+    .from('listings')
+    .select(LISTING_SELECT)
+    .eq('is_drive', true);
+
+  if (state) {
+    if (Array.isArray(state)) q = q.in('drive_issue_state', state);
+    else q = q.eq('drive_issue_state', state);
+  }
+
+  q = q.order('drive_issue', { ascending: false, nullsFirst: false })
+       .order('created_at', { ascending: false })
+       .limit(limit);
+
+  const r = await withTimeout(q, 10_000, 'getDriveListings');
+  if (!r.ok) return [];
+  const { data, error } = r.value as { data: any[] | null; error: unknown };
+  if (error || !data) return [];
+  return data.map(attachCover);
 }
 
 export async function getListingsBySeller(sellerId: string, limit = 8, excludeId?: string): Promise<ListingWithExtras[]> {
