@@ -23,6 +23,7 @@
     type ListingWithExtras,
     type ListingStatus,
     type ListingImage,
+    type DriveIssueState,
   } from '../lib/listings';
 
   export let listingId: string;
@@ -50,6 +51,15 @@
   type Spec = { label: string; value: string };
   let specs: Spec[] = [];
   let existingImages: ListingImage[] = [];
+
+  // DRIVE editorial fields. Admin-only block in the form; hydrated
+  // on load, persisted per-field on blur/change via updateListing().
+  let isDrive = false;
+  let driveIssue = '';
+  let driveIssueState: DriveIssueState | '' = '';
+  let driveMadeCount: number | string = '';
+  let driveRemainingCount: number | string = '';
+  let driveIssueDate = '';
 
   // Same shape as SellerCreate: value=DB enum, label=UI text.
   const conditionOptions: Array<{ value: string; label: string }> = [
@@ -130,8 +140,27 @@
           : []);
     existingImages = [...listing.images];
 
+    isDrive             = listing.is_drive === true;
+    driveIssue          = listing.drive_issue ?? '';
+    driveIssueState     = (listing.drive_issue_state as DriveIssueState | null) ?? '';
+    driveMadeCount      = listing.drive_made_count ?? '';
+    driveRemainingCount = listing.drive_remaining_count ?? '';
+    driveIssueDate      = listing.drive_issue_date ?? '';
+
     booting = false;
   });
+
+  // Per-field DRIVE patch. Used on:blur / on:change so each edit
+  // saves immediately (matches the admin Listings detail panel
+  // pattern). Errors surface via saveErr.
+  async function saveDrivePatch(patch: Record<string, unknown>) {
+    if (!listing) return;
+    const r = await updateListing(listing.id, patch);
+    if (!r.ok) {
+      saveErr = r.error ?? 'Could not save DRIVE field.';
+      scrollToBanner();
+    }
+  }
 
   // ── Save details ────────────────────────────────────────
 
@@ -397,6 +426,66 @@
           <button type="button" class="spec-add" on:click={addSpec}>+ Add specification</button>
         </div>
       </section>
+
+      <!-- DRIVE editorial fields (admin only). Centralises issue
+           metadata here so admins don't have to context-switch
+           between /sell/edit and /admin/listings. is_drive toggle
+           lets admin convert a regular listing into a DRIVE issue. -->
+      {#if $auth.profile?.role === 'admin'}
+        <section class="edit-section">
+          <h2 class="edit-h">DRIVE. <span class="evx-caption">admin only</span></h2>
+          <div class="field-row" style="margin-bottom: 12px;">
+            <label class="evx-checkbox">
+              <input type="checkbox" bind:checked={isDrive}
+                     on:change={() => saveDrivePatch({ is_drive: isDrive })} />
+              <span>This listing is a DRIVE issue</span>
+            </label>
+          </div>
+
+          {#if isDrive}
+            <div class="field-row" style="grid-template-columns: 1fr 1fr 1fr; gap: var(--evx-space-md);">
+              <div class="field">
+                <label class="field-label" for="d-issue">Issue number</label>
+                <input id="d-issue" type="text" class="field-input" placeholder="003"
+                       bind:value={driveIssue}
+                       on:blur={() => saveDrivePatch({ drive_issue: driveIssue || null })} />
+              </div>
+              <div class="field">
+                <label class="field-label" for="d-state">Issue state</label>
+                <select id="d-state" class="field-input"
+                        bind:value={driveIssueState}
+                        on:change={() => saveDrivePatch({ drive_issue_state: driveIssueState || null })}>
+                  <option value="">—</option>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="open">Open</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label" for="d-date">Issue date (display)</label>
+                <input id="d-date" type="text" class="field-input" placeholder="May MMXXVI"
+                       bind:value={driveIssueDate}
+                       on:blur={() => saveDrivePatch({ drive_issue_date: driveIssueDate || null })} />
+              </div>
+            </div>
+
+            <div class="field-row" style="grid-template-columns: 1fr 1fr; gap: var(--evx-space-md); margin-top: 12px;">
+              <div class="field">
+                <label class="field-label" for="d-made">Made count</label>
+                <input id="d-made" type="number" min="0" class="field-input"
+                       bind:value={driveMadeCount}
+                       on:blur={() => saveDrivePatch({ drive_made_count: driveMadeCount === '' ? null : Number(driveMadeCount) })} />
+              </div>
+              <div class="field">
+                <label class="field-label" for="d-remain">Remaining count</label>
+                <input id="d-remain" type="number" min="0" class="field-input"
+                       bind:value={driveRemainingCount}
+                       on:blur={() => saveDrivePatch({ drive_remaining_count: driveRemainingCount === '' ? null : Number(driveRemainingCount) })} />
+              </div>
+            </div>
+          {/if}
+        </section>
+      {/if}
 
       <!-- Photos -->
       <section class="edit-section">
