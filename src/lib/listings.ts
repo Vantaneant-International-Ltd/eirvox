@@ -190,8 +190,67 @@ export async function updateListing(
   return { ok: true, data: data as Listing };
 }
 
-/** Soft-delete: mark as removed instead of dropping the row. */
+/** Remove a listing: soft-delete the listing row (status='removed'
+ *  so reservations / orders / enquiries that FK to it stay valid) and
+ *  hard-delete its images everywhere they live -- storage bucket
+ *  objects AND listing_images rows. Without this, every removed
+ *  listing leaves orphans in the listing-images bucket forever, since
+ *  storage has no cascade from postgres FKs.
+ *
+ *  Order: read paths first, then storage.remove, then DB row delete,
+ *  finally the listing soft-delete. Storage failures are logged but
+ *  do not block the DB cleanup (a stale storage object is recoverable;
+ *  a listing stuck in a half-removed state is not).
+ */
 export async function deleteListing(id: string): Promise<Result<null>> {
+  // 1. Read every image's storage path BEFORE we delete the rows.
+  const { data: imgs, error: imgsErr } = await supabase
+    .from('listing_images')
+    .select('storage_path')
+    .eq('listing_id', id);
+
+  if (imgsErr) {
+    console.warn('[deleteListing] could not read listing_images:', imgsErr.message);
+  }
+
+  const paths = (imgs ?? [])
+    .map(r => (r as { storage_path: string | null }).storage_path)
+    .filter((p): p is string => typeof p === 'string' && p.length > 0);
+
+  // 2. Best-effort storage cleanup. supabase-js .remove([]) returns
+  //    {data, error}; we log and continue on either failure.
+  if (paths.length > 0) {
+    const { error: storageErr } = await supabase
+      .storage
+      .from(LISTING_IMAGES_BUCKET)
+      .remove(paths);
+
+    if (storageErr) {
+      console.warn('[deleteListing] storage cleanup partial/failed:', {
+        listingId: id,
+        paths,
+        error: storageErr,
+      });
+    }
+  }
+
+  // 3. Drop the listing_images rows. Keeping them after deletion
+  //    means the admin UI shows broken thumbnails for the removed
+  //    listing. The listings FK CASCADE would handle this on a hard
+  //    delete; we do it explicitly because we only soft-delete.
+  if (paths.length > 0) {
+    const { error: rowsErr } = await supabase
+      .from('listing_images')
+      .delete()
+      .eq('listing_id', id);
+
+    if (rowsErr) {
+      console.error('[deleteListing] listing_images delete failed:', rowsErr);
+      return { ok: false, error: friendlyError(rowsErr.message) };
+    }
+  }
+
+  // 4. Soft-delete the listing itself.
   const { error } = await supabase
     .from('listings')
     .update({ status: 'removed' as ListingStatus })
