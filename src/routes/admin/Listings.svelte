@@ -14,7 +14,7 @@
     type ListingFilters,
     type MarketplaceCategory,
   } from '../../lib/admin';
-  import type { ListingStatus, ListingImage, ListingSpec, PaymentMode } from '../../lib/listings';
+  import type { ListingStatus, ListingImage, ListingSpec, StockState, DriveIssueState } from '../../lib/listings';
   import { applySeo } from '../../lib/seo';
 
   // ── State ──
@@ -152,11 +152,9 @@
     await refresh();
   }
 
-  // ── Payment config (ÉIRVOX-owned listings only) ──
-  // Saves a partial patch to the open detail row and surfaces errors
-  // inline via detailError. Used by the payment_mode / deposit_amount /
-  // shipping_cost fields below; existing per-field on:blur handlers
-  // keep their fire-and-forget shape for backwards compatibility.
+  // ── Save helper for stock_state / DRIVE / deposit fields ──
+  // Partial patch + inline error via detailError. Existing per-field
+  // on:blur handlers keep their fire-and-forget shape.
   async function saveDetail(patch: Record<string, unknown>) {
     if (!detail) return;
     detailError = '';
@@ -180,18 +178,6 @@
       };
     }
     await refresh();
-  }
-
-  function onPaymentModeChange() {
-    if (!detail) return;
-    const mode = detail.listing.payment_mode as PaymentMode;
-    // When leaving deposit mode, clear deposit_amount so stale values
-    // don't surface if the user toggles back later. DB cross-column
-    // CHECKs only enforce deposit_amount when mode = 'deposit', so a
-    // stale value wouldn't fail validation — but it's confusing UX.
-    const patch: Record<string, unknown> = { payment_mode: mode };
-    if (mode !== 'deposit') patch.deposit_amount = null;
-    void saveDetail(patch);
   }
 </script>
 
@@ -444,54 +430,126 @@
             </div>
           </div>
 
-          <!-- Payment config — only for ÉIRVOX-owned listings.
-               Configures what the public PayButton charges. The server
-               (api/payments/create-order) resolves the actual amount
-               from these fields; the values displayed here are for
-               admin visibility. -->
-          {#if detail.listing.seller?.is_house}
+          <!-- Stock + fulfilment (ÉIRVOX-owned only).
+               Drives the public buyer payment matrix. The server in
+               api/payments/create-order re-derives the amount from
+               these fields and rejects any client-supplied amount.
+               Defensive: only renders when stock_state column is
+               present (post-v06-migration). Pre-migration the column
+               is absent (undefined) and this block stays hidden. -->
+          {#if detail.listing.seller?.is_house && detail.listing.stock_state !== undefined}
             <div class="adm-field" style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--evx-rule-light);">
               <span class="adm-field__label" style="color: var(--evx-fox-orange);">PAYMENT (ÉIRVOX-OWNED)</span>
               <p class="adm-field__hint">
-                Sets what the PayButton charges on the public listing page. The server resolves the amount from these fields and rejects any client-supplied amount.
+                Stock state plus the buyer's chosen fulfilment (collection or delivery) decides what they can pay.
+                Delivery is always full price up front. Deposit is collection-only (balance paid in person on collection).
+                Incoming stock is deposit-only on collection; delivery on incoming stock charges full price up front.
               </p>
             </div>
 
             <div class="adm-field--row">
               <div class="adm-field">
-                <span class="adm-field__label">Payment mode</span>
+                <span class="adm-field__label">Stock state</span>
                 <select class="adm-field__select"
-                        bind:value={detail.listing.payment_mode}
-                        on:change={onPaymentModeChange}>
-                  <option value="full">Full price (€{detail.listing.price.toLocaleString()})</option>
-                  <option value="full_plus_shipping">Full price + shipping</option>
-                  <option value="deposit">Deposit only (awaiting stock)</option>
+                        bind:value={detail.listing.stock_state}
+                        on:change={() => saveDetail({ stock_state: detail!.listing.stock_state })}>
+                  <option value="in_stock">In stock (item on hand)</option>
+                  <option value="incoming">Incoming (awaiting stock, ~1 month)</option>
                 </select>
               </div>
 
-              {#if detail.listing.payment_mode === 'full_plus_shipping'}
-                <div class="adm-field">
-                  <span class="adm-field__label">Shipping cost (€)</span>
-                  <input type="number" class="adm-field__input" min="1"
-                         bind:value={detail.listing.shipping_cost}
-                         on:blur={() => saveDetail({ shipping_cost: detail.listing.shipping_cost })} />
-                  <span class="adm-field__hint">Whole euros. Required when mode is full + shipping. Buyer pays €{((detail.listing.price ?? 0) + (detail.listing.shipping_cost ?? 0)).toLocaleString()} total.</span>
-                </div>
-              {/if}
-
-              {#if detail.listing.payment_mode === 'deposit'}
-                <div class="adm-field">
-                  <span class="adm-field__label">Deposit (€)</span>
-                  <input type="number" class="adm-field__input"
-                         min="1" max={Math.max(1, detail.listing.price - 1)}
-                         bind:value={detail.listing.deposit_amount}
-                         on:blur={() => saveDetail({ deposit_amount: detail.listing.deposit_amount })} />
-                  <span class="adm-field__hint">
-                    Whole euros. Must be 1 to €{Math.max(0, detail.listing.price - 1).toLocaleString()} (strictly less than price). Use this only when awaiting stock.
-                  </span>
-                </div>
-              {/if}
+              <div class="adm-field">
+                <span class="adm-field__label">Shipping cost (€)</span>
+                <input type="number" class="adm-field__input" min="0"
+                       bind:value={detail.listing.shipping_cost}
+                       on:blur={() => saveDetail({ shipping_cost: detail!.listing.shipping_cost })} />
+                <span class="adm-field__hint">
+                  Whole euros. Added to price when the buyer picks delivery. Required if delivery is offered.
+                </span>
+              </div>
             </div>
+
+            <div class="adm-field">
+              <span class="adm-field__label">Deposit (€)</span>
+              <input type="number" class="adm-field__input"
+                     min="1" max={Math.max(1, detail.listing.price - 1)}
+                     bind:value={detail.listing.deposit_amount}
+                     on:blur={() => saveDetail({ deposit_amount: detail!.listing.deposit_amount })} />
+              <span class="adm-field__hint">
+                Whole euros. Must be 1 to €{Math.max(0, detail.listing.price - 1).toLocaleString()} (strictly less than price). Leave empty if no deposit is offered. Only used when collection is available; balance is paid in person on collection.
+              </span>
+            </div>
+          {/if}
+
+          <!-- DRIVE editorial fields (only when is_drive=true).
+               Show alongside stock + fulfilment; admin can toggle the
+               is_drive flag here too. -->
+          {#if detail.listing.is_drive !== undefined}
+            <div class="adm-field" style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--evx-rule-light);">
+              <span class="adm-field__label" style="color: var(--evx-fox-orange);">DRIVE</span>
+              <p class="adm-field__hint">
+                Editorial-issue fields for the DRIVE imprint. Only meaningful when this listing is a DRIVE issue.
+              </p>
+              <label style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                <input type="checkbox" class="adm-checkbox"
+                       checked={detail.listing.is_drive === true}
+                       on:change={(e) => saveDetail({ is_drive: (e.currentTarget as HTMLInputElement).checked })} />
+                <span style="font-size: 13px;">This listing is a DRIVE issue (renders on the DRIVE pages instead of the marketplace).</span>
+              </label>
+            </div>
+
+            {#if detail.listing.is_drive === true}
+              <div class="adm-field--row">
+                <div class="adm-field">
+                  <span class="adm-field__label">Issue number</span>
+                  <input class="adm-field__input"
+                         bind:value={detail.listing.drive_issue}
+                         placeholder="003"
+                         on:blur={() => saveDetail({ drive_issue: detail!.listing.drive_issue })} />
+                  <span class="adm-field__hint">Three-digit issue number, e.g. "003".</span>
+                </div>
+
+                <div class="adm-field">
+                  <span class="adm-field__label">Issue state</span>
+                  <select class="adm-field__select"
+                          value={detail.listing.drive_issue_state ?? ''}
+                          on:change={(e) => saveDetail({ drive_issue_state: ((e.currentTarget as HTMLSelectElement).value || null) as DriveIssueState | null })}>
+                    <option value="">— not set —</option>
+                    <option value="open">Open (purchasable)</option>
+                    <option value="upcoming">Upcoming (announced, not on sale)</option>
+                    <option value="archived">Archived (sold out / historical)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="adm-field--row">
+                <div class="adm-field">
+                  <span class="adm-field__label">Issue date (editorial)</span>
+                  <input class="adm-field__input"
+                         bind:value={detail.listing.drive_issue_date}
+                         placeholder="May MMXXVI"
+                         on:blur={() => saveDetail({ drive_issue_date: detail!.listing.drive_issue_date })} />
+                  <span class="adm-field__hint">Free text; preserves editorial formatting (e.g. Roman numeral years).</span>
+                </div>
+
+                <div class="adm-field">
+                  <span class="adm-field__label">Made count</span>
+                  <input type="number" class="adm-field__input" min="0"
+                         bind:value={detail.listing.drive_made_count}
+                         on:blur={() => saveDetail({ drive_made_count: detail!.listing.drive_made_count })} />
+                  <span class="adm-field__hint">Display only. No auto-decrement on sale this phase.</span>
+                </div>
+
+                <div class="adm-field">
+                  <span class="adm-field__label">Remaining count</span>
+                  <input type="number" class="adm-field__input" min="0"
+                         max={detail.listing.drive_made_count ?? undefined}
+                         bind:value={detail.listing.drive_remaining_count}
+                         on:blur={() => saveDetail({ drive_remaining_count: detail!.listing.drive_remaining_count })} />
+                  <span class="adm-field__hint">Must be &le; made count. Update manually after each sale.</span>
+                </div>
+              </div>
+            {/if}
           {/if}
 
           <!-- Specs -->
