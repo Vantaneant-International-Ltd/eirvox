@@ -4,159 +4,124 @@
   import { applySeo } from '../lib/seo';
 
   onMount(() => applySeo({
-    title: 'Refund Policy (DRAFT)',
-    description: 'Refund policy for ÉIRVOX-owned listings paid via the ÉIRVOX checkout. Discretionary, legitimate-issue only. Pending human and legal review.',
+    title: 'Refund Policy',
+    description: 'How refunds and deposits work on ÉIRVOX-paid orders. Effective 1 June 2026, subject to final legal review.',
     path: '/refund-policy',
   }));
 
   const sections = [
-    { num: '00', id: 'rp-draft',         label: 'Draft status' },
-    { num: '01', id: 'rp-scope',         label: 'Scope' },
-    { num: '02', id: 'rp-eligible',      label: 'When we refund' },
-    { num: '03', id: 'rp-not-eligible',  label: 'When we do not refund' },
-    { num: '04', id: 'rp-how',           label: 'How to request a refund' },
-    { num: '05', id: 'rp-deposits',      label: 'Deposits' },
-    { num: '06', id: 'rp-statutory',     label: 'Statutory rights' },
+    { num: '01', id: 'rp-scope',     label: 'Scope' },
+    { num: '02', id: 'rp-deposits',  label: 'Deposits' },
+    { num: '03', id: 'rp-balance',   label: 'Balance on deposit orders' },
+    { num: '04', id: 'rp-full',      label: 'Full payments' },
+    { num: '05', id: 'rp-how',       label: 'How to request a refund' },
+    { num: '06', id: 'rp-statutory', label: 'Statutory rights' },
   ];
 </script>
 
 <LegalLayout
   title="Refund Policy."
   {sections}
-  intro="DRAFT, pending human and legal review. This page covers refunds for items where ÉIRVOX is the seller of record. For marketplace listings paid directly to third-party sellers, see Returns & Refunds."
+  intro="How refunds and deposits work on ÉIRVOX-paid orders. Effective 1 June 2026. This policy is subject to final legal review before public launch."
 >
-  <section class="legal-section">
-    <span class="legal-section__num">00 · DRAFT</span>
-    <h2 id="rp-draft" class="legal-section__h">Draft status.</h2>
-    <div style="border: 1px solid var(--evx-fox-orange); padding: var(--evx-space-md); margin-bottom: var(--evx-space-md);">
-      <p style="margin: 0;">
-        <strong>This page is a draft.</strong>
-        It has not yet been reviewed by a solicitor and is not the final, binding policy.
-        It is published so the payment flow has a link target. Treat the operational rules below
-        as the current intent; final wording may change after review.
-      </p>
-    </div>
-  </section>
-
   <section class="legal-section">
     <span class="legal-section__num">01 · SCOPE</span>
     <h2 id="rp-scope" class="legal-section__h">Scope.</h2>
     <p>
-      This policy applies when you pay <strong>ÉIRVOX</strong> directly through the
-      <strong>Pay</strong> button on a listing. These are listings where ÉIRVOX is the
-      seller of record, sourced and shipped by us.
+      This policy covers refunds for orders paid to ÉIRVOX through the
+      <strong>Pay</strong> button on a listing. ÉIRVOX is the seller of record for these
+      orders.
     </p>
     <p>
-      For marketplace listings paid directly to a third-party seller via that seller's own
-      Revolut account, see <a href="#/returns">Returns &amp; Refunds</a> instead. ÉIRVOX does
-      not hold those funds and cannot process refunds on the seller's behalf.
+      ÉIRVOX does not hold money on behalf of third parties. There is no escrow, no
+      buyer-protection guarantee, and no authentication or inspection service operating
+      between buyer and seller. Payment goes from your card or wallet to ÉIRVOX through
+      Revolut and is held by ÉIRVOX until the order is fulfilled or refunded under the
+      terms below.
     </p>
   </section>
 
   <section class="legal-section">
-    <span class="legal-section__num">02 · ELIGIBLE</span>
-    <h2 id="rp-eligible" class="legal-section__h">When we refund.</h2>
-    <p>
-      Refunds are at ÉIRVOX's discretion and are issued only for legitimate issues. Examples
-      of legitimate issues:
-    </p>
-    <ul>
-      <li>
-        <strong>Item not as described.</strong> The piece you receive materially differs from
-        the listing in condition, specification, authenticity, or completeness.
-      </li>
-      <li>
-        <strong>Fault on ÉIRVOX's side.</strong> We cannot fulfil the order, the wrong item
-        shipped, the item was damaged in transit while in our care, or we cannot source the
-        stock you placed a deposit against.
-      </li>
-      <li>
-        <strong>Statutory entitlement.</strong> Anything Irish consumer law requires us to
-        refund, including any applicable cooling-off period for distance sales of new goods.
-        See section 06.
-      </li>
-    </ul>
-    <p>
-      Where a refund is approved, it is issued via the original Revolut payment method.
-      Expect funds to return within 3 business days of approval.
-    </p>
-  </section>
-
-  <section class="legal-section">
-    <span class="legal-section__num">03 · NOT ELIGIBLE</span>
-    <h2 id="rp-not-eligible" class="legal-section__h">When we do not refund.</h2>
-    <p>
-      The following are not refundable except where statutory rights apply:
-    </p>
-    <ul>
-      <li>
-        <strong>Change of mind</strong> after the order is placed. Curated stock is sourced
-        against committed orders; cancelling shifts the cost onto us and the next buyer.
-      </li>
-      <li>
-        <strong>Buyer ghosting.</strong> If you stop responding after paying, do not collect
-        a shipment, or do not provide a deliverable address within a reasonable window, we
-        treat the order as fulfilled.
-      </li>
-      <li>
-        <strong>Failure to complete the purchase</strong> on your side after a deposit, where
-        we held the item or sourced stock against that deposit.
-      </li>
-      <li>
-        Items damaged after delivery by buyer handling.
-      </li>
-    </ul>
-  </section>
-
-  <section class="legal-section">
-    <span class="legal-section__num">04 · HOW</span>
-    <h2 id="rp-how" class="legal-section__h">How to request a refund.</h2>
-    <ul>
-      <li>
-        Email <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> within 7 days of
-        receiving the item (or, for a non-delivery or sourcing failure, within 7 days of the
-        expected delivery date).
-      </li>
-      <li>
-        Include the order reference from your Revolut payment receipt, photographs of the
-        item and packaging where relevant, and a short description of the issue.
-      </li>
-      <li>
-        We respond within 3 business days. If approved, the refund is issued through Revolut.
-        If declined, we explain why in writing.
-      </li>
-      <li>
-        If you disagree with the outcome, you retain your right to dispute the charge with
-        your card issuer or Revolut, and your statutory rights are unaffected.
-      </li>
-    </ul>
-  </section>
-
-  <section class="legal-section">
-    <span class="legal-section__num">05 · DEPOSITS</span>
+    <span class="legal-section__num">02 · DEPOSITS</span>
     <h2 id="rp-deposits" class="legal-section__h">Deposits.</h2>
     <p>
-      Some ÉIRVOX-owned listings take a deposit while we source or produce the item, typically
-      with a delivery window of about one month. Deposits credit toward the full price when
-      the item ships.
+      Some listings, including all DRIVE issues, take a deposit instead of full payment
+      up front. The deposit is <strong>10% of the listed price</strong>, paid through
+      Revolut. Placing it secures one of a limited number of units from the production
+      run.
+    </p>
+    <p>The deposit is refundable in any of these cases:</p>
+    <ul>
+      <li>ÉIRVOX cannot fulfil the order.</li>
+      <li>The production run does not happen, or stock cannot be supplied.</li>
+      <li>The fault is on ÉIRVOX's side.</li>
+    </ul>
+    <p>
+      The deposit is <strong>not refundable</strong> for change of mind, buyer no-show,
+      or failure to complete the purchase after the item is ready. In those cases the
+      deposit is forfeit; it secured the allocation.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <span class="legal-section__num">03 · BALANCE</span>
+    <h2 id="rp-balance" class="legal-section__h">Balance on deposit orders.</h2>
+    <p>
+      The remaining 90% of the order price is paid one of two ways:
     </p>
     <ul>
-      <li>
-        <strong>If we cannot source or produce the item:</strong> we refund the deposit in full.
-      </li>
-      <li>
-        <strong>If you cancel before we have committed sourcing or production:</strong>
-        we refund the deposit at our discretion.
-      </li>
-      <li>
-        <strong>If you cancel after we have committed sourcing or production:</strong>
-        the deposit is non-refundable; it covers the cost of the committed work.
-      </li>
-      <li>
-        <strong>If the delivered item is not as described:</strong> section 02 applies,
-        and the deposit forms part of the full-price refund.
-      </li>
+      <li><strong>Collection:</strong> in person, on the day you collect the item.</li>
+      <li><strong>Delivery:</strong> in full before dispatch.</li>
     </ul>
+    <p>
+      If the balance is not paid when the item is ready, the deposit is forfeit and the
+      allocation is released. We hold the item for a reasonable window after notifying
+      you it is ready; the exact window depends on the item and is communicated at that
+      point.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <span class="legal-section__num">04 · FULL PAYMENTS</span>
+    <h2 id="rp-full" class="legal-section__h">Full payments and in-stock items.</h2>
+    <p>
+      For in-stock items paid in full at checkout, refunds are at ÉIRVOX's discretion
+      and are issued only for legitimate issues:
+    </p>
+    <ul>
+      <li>The item is not as described.</li>
+      <li>The item is faulty.</li>
+      <li>The item is materially not as listed.</li>
+    </ul>
+    <p>
+      Refunds are not issued for change of mind once the item has been collected or
+      shipped, subject to statutory rights (see section 06).
+    </p>
+    <p>
+      Where a refund is approved, funds return via the original Revolut payment method,
+      typically within 3 business days of approval.
+    </p>
+  </section>
+
+  <section class="legal-section">
+    <span class="legal-section__num">05 · HOW</span>
+    <h2 id="rp-how" class="legal-section__h">How to request a refund.</h2>
+    <p>
+      Email <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> with:
+    </p>
+    <ul>
+      <li>The order reference from your Revolut payment receipt.</li>
+      <li>A short description of the issue.</li>
+      <li>Photographs of the item and packaging where relevant.</li>
+    </ul>
+    <p>
+      We respond within 5 business days. If we approve a refund, it is issued through
+      Revolut. If we decline, we explain why in writing.
+    </p>
+    <p>
+      You retain your right to dispute the charge with your card issuer or Revolut, and
+      your statutory rights are unaffected.
+    </p>
   </section>
 
   <section class="legal-section">
@@ -168,9 +133,9 @@
       Where statutory rights conflict with this policy, statutory rights take precedence.
     </p>
     <p>
-      This is operational policy copy. It is not legal advice. If you need advice on your
-      consumer rights, contact the Competition and Consumer Protection Commission (CCPC) or
-      a solicitor.
+      This is operational policy copy. It is not legal advice. For guidance on your
+      consumer rights, contact the Competition and Consumer Protection Commission
+      (CCPC) or a solicitor.
     </p>
   </section>
 </LegalLayout>

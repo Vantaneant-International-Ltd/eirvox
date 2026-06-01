@@ -125,7 +125,7 @@
       <span class="footer__sep">·</span>
       <button on:click={() => navigate('/acceptable-use')}>ACCEPTABLE USE</button>
       <span class="footer__sep">·</span>
-      <button on:click={() => navigate('/returns')}>RETURNS &amp; REFUNDS</button>
+      <button on:click={() => navigate('/refund-policy')}>REFUND POLICY</button>
     </div>
     <div class="footer__meta-pay">
       <PaymentIcons />
