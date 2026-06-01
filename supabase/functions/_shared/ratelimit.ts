@@ -1,18 +1,16 @@
 // ============================================================
 // ÉIRVOX — Rate limiting for Edge Functions
 // ============================================================
-// Same Upstash Redis approach as before. Fail-mode rules:
+// Same Upstash Redis approach as before. Fail-mode (current):
 //
-//   - production AND creds missing -> fail-CLOSED (503)
-//     A misconfigured prod deploy must not silently accept unbounded
-//     anonymous writes.
+//   - creds missing -> fail-OPEN with one-time warning
+//     The site has no Upstash account yet. Until one is wired,
+//     submissions go through. Risk is spam, not financial loss —
+//     payments are still rate-limited by Revolut at the hosted-
+//     checkout layer, and DB unique constraints catch dupes.
 //
-//   - non-production AND creds missing -> fail-OPEN with warning
-//
-// Production detection: we treat the function as production
-// whenever it's deployed to Supabase (SUPABASE_URL contains
-// .supabase.co). Local `supabase functions serve` runs against a
-// localhost SUPABASE_URL so it's treated as dev.
+// To re-tighten to fail-CLOSED later, change the early return in
+// rateLimit() below to return { allowed: false, failClosed: true }.
 //
 // Env vars:
 //   UPSTASH_REDIS_REST_URL
@@ -65,9 +63,7 @@ export async function rateLimit(req: Request, key: LimiterKey): Promise<RateLimi
   const limiter = limiters[key];
   if (!limiter) {
     warnMissingOnce();
-    return isProduction
-      ? { allowed: false, failClosed: true }
-      : { allowed: true };
+    return { allowed: true };
   }
   const ip = clientIp(req) ?? 'unknown';
   const result = await limiter.limit(ip);
