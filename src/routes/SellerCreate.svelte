@@ -13,6 +13,7 @@
     createListing,
     updateListing,
     uploadListingImage,
+    normaliseHeic,
     deleteListingImage,
     reorderImages,
     setListingSpecs,
@@ -192,30 +193,29 @@
   let pending: PendingImage[] = [];
   let uploadedRows: ListingImage[] = []; // populated during final save
 
-  function onPickFiles(e: Event) {
+  async function addPendingFile(raw: File) {
+    if (pending.length + uploadedRows.length >= 12) return;
+    const f = await normaliseHeic(raw);
+    pending = [...pending, {
+      id: crypto.randomUUID(),
+      file: f,
+      previewUrl: URL.createObjectURL(f),
+    }];
+  }
+  async function onPickFiles(e: Event) {
     const input = e.target as HTMLInputElement;
     if (!input.files) return;
-    for (const f of Array.from(input.files)) {
-      if (pending.length + uploadedRows.length >= 12) break;
-      pending = [...pending, {
-        id: crypto.randomUUID(),
-        file: f,
-        previewUrl: URL.createObjectURL(f),
-      }];
-    }
+    for (const f of Array.from(input.files)) await addPendingFile(f);
     input.value = '';
   }
-  function onDrop(e: DragEvent) {
+  async function onDrop(e: DragEvent) {
     e.preventDefault();
     if (!e.dataTransfer) return;
     for (const f of Array.from(e.dataTransfer.files)) {
-      if (pending.length >= 12) break;
-      if (!f.type.startsWith('image/')) continue;
-      pending = [...pending, {
-        id: crypto.randomUUID(),
-        file: f,
-        previewUrl: URL.createObjectURL(f),
-      }];
+      const name = f.name.toLowerCase();
+      const isHeic = name.endsWith('.heic') || name.endsWith('.heif');
+      if (!isHeic && !f.type.startsWith('image/')) continue;
+      await addPendingFile(f);
     }
   }
   function removePending(id: string) {
@@ -650,7 +650,7 @@
             <strong>Drag photos here or</strong>
             <label class="drop-zone__pick">
               <span>browse</span>
-              <input type="file" accept="image/*" multiple on:change={onPickFiles} hidden />
+              <input type="file" accept="image/*,.heic,.heif" multiple on:change={onPickFiles} hidden />
             </label>
             <span class="evx-caption drop-zone__hint">JPG / PNG / WEBP · up to 6 MB each</span>
           </div>

@@ -333,6 +333,37 @@ export interface UploadProgress {
   filename: string;
 }
 
+/** iPhone exports HEIC by default. Browsers/CDN can't render it and our
+ *  storage bucket rejects image/heic. Detect by extension or mime and
+ *  convert to JPEG client-side before upload. heic2any is ~500KB so it's
+ *  dynamic-imported only when we actually need it. */
+export async function normaliseHeic(file: File): Promise<File> {
+  const name = file.name.toLowerCase();
+  const isHeic =
+    name.endsWith('.heic') ||
+    name.endsWith('.heif') ||
+    file.type === 'image/heic' ||
+    file.type === 'image/heif';
+  if (!isHeic) return file;
+  let heicTo: typeof import('heic-to').heicTo;
+  try {
+    ({ heicTo } = await import('heic-to'));
+  } catch (err) {
+    console.error('[normaliseHeic] failed to load heic-to:', err);
+    throw new Error('Could not load HEIC converter. Try uploading a JPEG instead.');
+  }
+  let converted: Blob;
+  try {
+    converted = await heicTo({ blob: file, type: 'image/jpeg', quality: 0.9 });
+  } catch (err) {
+    console.error('[normaliseHeic] conversion failed:', err);
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`HEIC conversion failed (${msg}). Please export as JPEG from your camera roll and try again.`);
+  }
+  const newName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+  return new File([converted], newName, { type: 'image/jpeg' });
+}
+
 /** Upload one image. Stored at <seller_id>/<listing_id>/<random>.<ext>. */
 export async function uploadListingImage(
   sellerId: string,
@@ -340,6 +371,7 @@ export async function uploadListingImage(
   file: File,
   sortOrder: number
 ): Promise<Result<ListingImage>> {
+  file = await normaliseHeic(file);
   const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
   const rand = crypto.randomUUID().slice(0, 8);
   const path = `${sellerId}/${listingId}/${rand}.${ext}`;

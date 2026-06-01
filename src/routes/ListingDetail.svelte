@@ -20,6 +20,7 @@
   import ReportListingDialog from '../lib/ReportListingDialog.svelte';
   import { navigate, currentPath } from '../lib/router';
   import { auth } from '../lib/auth';
+  import { getOrCreateConversation } from '../lib/messaging';
   import { applySeo, seo } from '../lib/seo';
 
   export let slug: string;
@@ -92,6 +93,30 @@
   // platform-facilitated messaging, no enquiry queue routing.
   function scrollToContact() {
     document.getElementById('seller-contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Buyers now contact sellers via in-app messaging only — phone +
+  // email are no longer surfaced on the listing. House (ÉIRVOX-owned)
+  // listings still use scrollToPay since there's no "seller" to DM.
+  let messageBusy = false;
+  let messageErr = '';
+  async function messageSeller() {
+    if (!listing) return;
+    if (!$auth.user) {
+      navigate(`/login?next=${encodeURIComponent('/listing/' + slug)}`);
+      return;
+    }
+    if (listing.seller?.is_house) {
+      // House seller: don't open a thread, ÉIRVOX is the platform itself.
+      scrollToPay();
+      return;
+    }
+    messageBusy = true;
+    messageErr = '';
+    const r = await getOrCreateConversation(listing.id);
+    messageBusy = false;
+    if (!r.ok) { messageErr = r.error; return; }
+    navigate(`/messages/${r.data}`);
   }
 
   // Mobile sticky CTA can't host the embedded Revolut button cleanly
@@ -397,8 +422,8 @@
                 {/if}
               </div>
             {:else}
-              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={scrollToContact}>
-                Contact seller
+              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={messageSeller} disabled={messageBusy}>
+                {messageBusy ? 'Opening…' : 'Message seller'}
               </button>
             {/if}
           </div>
@@ -415,7 +440,13 @@
                   {/if}
                 </div>
                 <div class="panel__seller-info">
-                  <div class="panel__seller-name">{listing.seller.trading_name}</div>
+                  <div class="panel__seller-name">
+                    {#if listing.seller.is_house}
+                      <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--sm" />
+                    {:else}
+                      {listing.seller.trading_name}
+                    {/if}
+                  </div>
                   <SellerPill tier={tier} name={listing.seller.trading_name} rating={listing.seller.rating ?? null} compact={true} />
                   {#if listing.seller.city}
                     <span class="evx-caption panel__seller-loc">{listing.seller.city}</span>
@@ -474,17 +505,17 @@
               <p class="detail-aside-card__body">Collection — by arrangement, {listing.city ?? 'see listing'}</p>
             {/if}
             {#if !listing.shipping_available && !listing.collection_available}
-              <p class="detail-aside-card__body">Contact seller for delivery options.</p>
+              <p class="detail-aside-card__body">Ask the seller for delivery options.</p>
             {/if}
           </div>
 
           <div class="detail-aside-card">
             <span class="evx-caption detail-aside-card__title">CONTACT</span>
             <p class="detail-aside-card__body">
-              Reach out to {listing.seller?.trading_name ?? 'the seller'} directly. ÉIRVOX doesn't take messages on their behalf.
+              Chat with the seller in-app. Everything stays on ÉIRVOX so the refund policy covers you.
             </p>
-            <button class="evx-caption detail-aside-card__link" on:click={scrollToContact}>
-              SEE SELLER CONTACT →
+            <button class="evx-caption detail-aside-card__link" on:click={messageSeller} disabled={messageBusy}>
+              {messageBusy ? 'OPENING…' : 'MESSAGE SELLER →'}
             </button>
           </div>
 
@@ -504,7 +535,14 @@
       {#if sellerMore.length > 0 && listing.seller}
         <section class="more-from">
           <div class="more-from__header">
-            <h2 class="more-from__heading">More from {listing.seller.trading_name}</h2>
+            <h2 class="more-from__heading">
+              More from
+              {#if listing.seller.is_house}
+                <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--inline" />
+              {:else}
+                {listing.seller.trading_name}
+              {/if}
+            </h2>
           </div>
           <div class="more-from__grid">
             {#each sellerMore as l (l.id)}
@@ -554,53 +592,71 @@
             Pay
           </button>
         {:else}
-          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={scrollToContact}>
-            Contact seller
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={messageSeller} disabled={messageBusy}>
+            {messageBusy ? '…' : 'Message'}
           </button>
         {/if}
       </div>
     </div>
 
-    <!-- Seller contact panel — v1 is hands-off, ÉIRVOX is the venue not the broker -->
+    <!-- Seller contact panel — buyers reach sellers via in-app messaging.
+         Phone + email stay in DB for ID / 2FA but are never surfaced
+         publicly. Deals done in-app are covered by the refund policy;
+         off-site is the buyer's own risk. -->
     <section id="seller-contact" class="detail-contact page-container">
       <header class="detail-contact__head">
         <span class="evx-caption detail-contact__pre">CONTACT</span>
-        <h2 class="detail-contact__h">Reach out to <em>{listing.seller?.trading_name ?? 'the seller'}</em>.</h2>
+        <h2 class="detail-contact__h">
+          Message
+          {#if listing.seller?.is_house}
+            <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--inline" />
+          {:else}
+            <em>{listing.seller?.trading_name ?? 'the seller'}</em>
+          {/if}.
+        </h2>
         <p class="detail-contact__sub">
-          ÉIRVOX curates the listing but doesn't broker contact. Get in touch with the seller directly using the details below.
+          All conversations happen on ÉIRVOX. Sharing phone, email or WhatsApp moves the deal off-site —
+          ÉIRVOX refund protection ends the moment you leave the app.
         </p>
       </header>
+
+      {#if !listing.seller?.is_house}
+        <div class="detail-contact__cta">
+          {#if messageErr}<p class="detail-contact__err">{messageErr}</p>{/if}
+          <button class="evx-btn evx-btn--primary" on:click={messageSeller} disabled={messageBusy}>
+            {messageBusy ? 'Opening…' : 'Message seller →'}
+          </button>
+          <p class="evx-caption detail-contact__cta-note">
+            {#if !$auth.user}You'll be asked to sign in or create an account first.{:else}Free. No commitment.{/if}
+          </p>
+        </div>
+      {/if}
 
       <dl class="detail-contact__list">
         <div class="detail-contact__row">
           <dt>Trading name</dt>
-          <dd>{listing.seller?.trading_name ?? '—'}{#if listing.seller?.handle} <span class="detail-contact__handle">·  @{listing.seller.handle}</span>{/if}</dd>
+          <dd>
+            {#if listing.seller?.is_house}
+              <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--xs" />
+            {:else}
+              {listing.seller?.trading_name ?? '—'}
+            {/if}
+            {#if listing.seller?.handle} <span class="detail-contact__handle">·  @{listing.seller.handle}</span>{/if}
+          </dd>
         </div>
-        {#if listing.seller?.email}
-          <div class="detail-contact__row">
-            <dt>Email</dt>
-            <dd><a href={`mailto:${listing.seller.email}?subject=${encodeURIComponent('Re: ' + listing.title)}`}>{listing.seller.email}</a></dd>
-          </div>
-        {/if}
-        {#if listing.seller?.phone}
-          <div class="detail-contact__row">
-            <dt>Phone</dt>
-            <dd><a href={`tel:${listing.seller.phone.replace(/\s+/g, '')}`}>{listing.seller.phone}</a></dd>
-          </div>
-        {/if}
         {#if listing.seller?.city}
           <div class="detail-contact__row">
             <dt>Based in</dt>
             <dd>{listing.seller.city}</dd>
           </div>
         {/if}
+        {#if listing.seller?.created_at}
+          <div class="detail-contact__row">
+            <dt>Joined</dt>
+            <dd>{new Date(listing.seller.created_at).toLocaleDateString('en-IE', { month: 'short', year: 'numeric' })}</dd>
+          </div>
+        {/if}
       </dl>
-
-      {#if !listing.seller?.email && !listing.seller?.phone}
-        <p class="detail-contact__missing">
-          This seller hasn't added contact details yet. We've nudged them to update their profile.
-        </p>
-      {/if}
 
       <div class="detail-contact__report">
         <ReportListingDialog listingId={listing.id} listingTitle={listing.title} />
@@ -819,6 +875,21 @@
     transition: var(--evx-transition);
   }
   .detail-contact__row dd a:hover { color: var(--evx-fox-orange); }
+  .detail-contact__cta {
+    display: flex; flex-direction: column; align-items: flex-start;
+    gap: var(--evx-space-sm); padding: var(--evx-space-md) 0 var(--evx-space-lg);
+    border-bottom: 1px solid var(--evx-rule-light); margin-bottom: var(--evx-space-md);
+  }
+  .detail-contact__cta-note { color: var(--evx-ink-soft); }
+  .detail-contact__err {
+    color: #DC2626; font-size: 12px;
+    background: rgba(220, 38, 38, 0.08); padding: 6px 10px;
+    border-left: 3px solid #DC2626;
+  }
+  .brand-mark { display: inline-block; vertical-align: -2px; width: auto; }
+  .brand-mark--xs { height: 14px; }
+  .brand-mark--sm { height: 18px; }
+  .brand-mark--inline { height: 0.85em; vertical-align: baseline; }
   .detail-contact__handle {
     font-family: var(--evx-font-mono);
     font-size: 13px;

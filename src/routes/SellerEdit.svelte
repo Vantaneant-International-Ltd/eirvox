@@ -530,7 +530,7 @@
 
         {#if existingImages.length < 12}
           <label class="add-photos">
-            <input type="file" multiple accept="image/*" on:change={onUploadFiles} hidden />
+            <input type="file" multiple accept="image/*,.heic,.heif" on:change={onUploadFiles} hidden />
             <span class="add-photos__plus">+</span>
             <span><strong>Upload photos</strong> · JPG / PNG / WEBP · up to 6 MB each</span>
             {#if uploading}<span class="evx-caption">Uploading {uploadCount}…</span>{/if}

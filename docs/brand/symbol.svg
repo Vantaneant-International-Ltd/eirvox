@@ -1,0 +1,34 @@
+<!--
+  ÉIRVOX symbol — stylised fox head.
+  Approximation of the supplied PNG; replace with public/brand/symbol.png
+  when you want to use the original artwork.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" fill="currentColor">
+  <!-- Main fox head -->
+  <path d="M 175 540
+           C 200 480, 245 440, 300 415
+           L 320 280
+           L 395 380
+           C 440 365, 490 360, 530 365
+           L 595 220
+           L 615 395
+           C 685 415, 745 460, 790 525
+           L 880 410
+           L 825 555
+           C 855 605, 870 660, 870 720
+           C 870 745, 855 765, 825 770
+           L 700 740
+           C 660 770, 615 785, 565 785
+           L 540 855
+           L 510 770
+           C 460 770, 415 760, 380 740
+           L 285 790
+           L 290 700
+           C 220 660, 175 600, 175 540 Z" />
+
+  <!-- Eye highlight -->
+  <path d="M 380 510 L 410 480 L 425 510 L 395 525 Z" fill="#F5F2ED" />
+
+  <!-- Inner cheek curl -->
+  <path d="M 540 650 C 560 680, 590 690, 615 685 C 590 700, 555 705, 530 695 Z" fill="#F5F2ED" />
+</svg>

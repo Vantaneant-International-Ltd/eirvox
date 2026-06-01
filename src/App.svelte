@@ -20,6 +20,8 @@
   import About from './routes/About.svelte';
   import Login from './routes/Login.svelte';
   import Account from './routes/Account.svelte';
+  import Inbox from './routes/Inbox.svelte';
+  import Thread from './routes/Thread.svelte';
   import AdminDashboard from './routes/admin/Dashboard.svelte';
   import AdminListings from './routes/admin/Listings.svelte';
   import AdminSellers from './routes/admin/Sellers.svelte';
@@ -101,6 +103,7 @@
   $: tradeProfileParams = matchRoute('/trade/:categorySlug/:slug', path);
   $: tradeCategoryParams = matchRoute('/trade/:categorySlug', path);
   $: sellEditParams = matchRoute('/sell/edit/:listingId', path);
+  $: threadParams = matchRoute('/messages/:id', path);
   $: categoryMatch = CATEGORIES.find(c => path === `/${c}`) ?? null;
 
   // Trade slugs that should NOT match as categories
@@ -167,6 +170,16 @@
   <About />
 {:else if path === '/login'}
   <Login />
+
+<!-- ════ Messaging (auth required) ════ -->
+{:else if path === '/messages'}
+  <AuthGuard requireAuth={true}>
+    <Inbox />
+  </AuthGuard>
+{:else if threadParams}
+  <AuthGuard requireAuth={true}>
+    <Thread id={threadParams.id} />
+  </AuthGuard>
 
 <!-- ════ Account (auth required) ════ -->
 {:else if path === '/account'}

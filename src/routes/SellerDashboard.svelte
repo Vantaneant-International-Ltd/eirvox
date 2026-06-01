@@ -242,7 +242,13 @@
         {/if}
         <div class="dash-header__id">
           {#if seller}
-            <h1 class="dash-header__name">{seller.trading_name}</h1>
+            <h1 class="dash-header__name">
+              {#if seller.is_house}
+                <img src="/brand/wordmark.png" alt="ÉIRVOX" class="dash-header__wm" />
+              {:else}
+                {seller.trading_name}
+              {/if}
+            </h1>
             <div class="dash-header__meta">
               <span class="status {seller.status === 'approved' ? 'status--active' : seller.status === 'pending' ? 'status--pending_review' : 'status--removed'}">
                 <span class="status__dot"></span>
@@ -577,6 +583,7 @@
     font-size: 28px;
   }
   .dash-header__id { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .dash-header__wm { height: 0.9em; width: auto; vertical-align: -0.05em; display: inline-block; }
   .dash-header__name {
     font-family: var(--evx-font-display);
     font-size: clamp(28px, 4vw, 40px);

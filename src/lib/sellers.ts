@@ -31,6 +31,7 @@ export interface Seller {
   approved_at: string | null;
   created_at: string;
   updated_at: string;
+  is_house?: boolean;
 }
 
 export interface SellerApplyInput {

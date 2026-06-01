@@ -54,6 +54,7 @@ export interface Seller {
   // ÉIRVOX itself. Drives the PayButton render-gate on listing pages
   // (cosmetic) and is re-checked server-side in create-order (real).
   is_house: boolean;
+  created_at?: string;
   // Derived (not in DB yet, fall back to safe defaults)
   rating?: number;
   sales_count?: number;
@@ -121,6 +122,12 @@ export interface Listing {
   drive_issue?: string | null;
   created_at: string;
   published_at: string | null;
+  // v14 vehicle columns (cars / automotive only). NULL on every other category.
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+  vehicle_year?: number | null;
+  vehicle_mileage?: number | null;
+  county?: string | null;
 }
 
 export interface ListingWithExtras extends Listing {
@@ -254,17 +261,27 @@ export interface ListingsOptions {
   sort?: 'recent' | 'oldest' | 'price_asc' | 'price_desc' | 'popular';
   seller_id?: string;
   subcategory?: string;
+  // Vehicle filters (cars / automotive only)
+  vehicleMake?: string;
+  vehicleModel?: string;
+  yearMin?: number;
+  yearMax?: number;
+  mileageMax?: number;
+  county?: string;
+  priceMin?: number;
+  priceMax?: number;
 }
 
 const LISTING_SELECT = `
   *,
-  seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house ),
+  seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house, created_at ),
   images:listing_images ( id, public_url, sort_order )
 `;
 
 export async function getListings(options: ListingsOptions = {}): Promise<ListingWithExtras[]> {
   const {
     category, status = 'active', featured, limit = 24, offset = 0, sort = 'recent', seller_id, subcategory,
+    vehicleMake, vehicleModel, yearMin, yearMax, mileageMax, county, priceMin, priceMax,
   } = options;
 
   let q = supabase.from('listings').select(LISTING_SELECT);
@@ -274,6 +291,14 @@ export async function getListings(options: ListingsOptions = {}): Promise<Listin
   if (subcategory) q = q.eq('subcategory', subcategory);
   if (featured) q = q.eq('featured', true);
   if (seller_id) q = q.eq('seller_id', seller_id);
+  if (vehicleMake)  q = q.eq('vehicle_make',  vehicleMake);
+  if (vehicleModel) q = q.eq('vehicle_model', vehicleModel);
+  if (county)       q = q.eq('county',        county);
+  if (yearMin)      q = q.gte('vehicle_year', yearMin);
+  if (yearMax)      q = q.lte('vehicle_year', yearMax);
+  if (mileageMax)   q = q.lte('vehicle_mileage', mileageMax);
+  if (priceMin)     q = q.gte('price', priceMin);
+  if (priceMax)     q = q.lte('price', priceMax);
 
   switch (sort) {
     case 'oldest':     q = q.order('created_at',   { ascending: true });  break;
@@ -299,7 +324,7 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
     .from('listings')
     .select(`
       *,
-      seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house ),
+      seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house, created_at ),
       images:listing_images ( id, listing_id, storage_path, public_url, sort_order ),
       specs:listing_specs ( id, listing_id, label, value, sort_order )
     `)
@@ -311,7 +336,7 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
       .from('listings')
       .select(`
         *,
-        seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house ),
+        seller:sellers ( id, trading_name, handle, tier, city, logo_url, bio, email, phone, is_house, created_at ),
         images:listing_images ( id, listing_id, storage_path, public_url, sort_order ),
         specs:listing_specs ( id, listing_id, label, value, sort_order )
       `)

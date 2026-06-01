@@ -31,7 +31,32 @@
   let page = 1;
   const PAGE_SIZE = 15;
 
-  $: activeFilterCount = (selectedSubcategory ? 1 : 0) + (maxPrice ? 1 : 0);
+  // Vehicle filters (only shown for cars / automotive)
+  let vehicleMake = '';
+  let vehicleModel = '';
+  let yearMin: number | null = null;
+  let yearMax: number | null = null;
+  let mileageMax: number | null = null;
+  let county = '';
+
+  $: isVehicleCategory = category === 'cars' || category === 'automotive';
+
+  $: activeFilterCount =
+    (selectedSubcategory ? 1 : 0) +
+    (maxPrice ? 1 : 0) +
+    (vehicleMake ? 1 : 0) +
+    (vehicleModel ? 1 : 0) +
+    (yearMin ? 1 : 0) +
+    (yearMax ? 1 : 0) +
+    (mileageMax ? 1 : 0) +
+    (county ? 1 : 0);
+
+  const IE_COUNTIES = [
+    'Carlow','Cavan','Clare','Cork','Donegal','Dublin','Galway','Kerry','Kildare','Kilkenny',
+    'Laois','Leitrim','Limerick','Longford','Louth','Mayo','Meath','Monaghan','Offaly','Roscommon',
+    'Sligo','Tipperary','Waterford','Westmeath','Wexford','Wicklow','Antrim','Armagh','Down',
+    'Fermanagh','Londonderry','Tyrone',
+  ];
 
   // ── Load ──
   async function load() {
@@ -54,23 +79,34 @@
         sort: sortBy,
         limit: PAGE_SIZE,
         offset,
+        priceMax: maxPrice || undefined,
+        vehicleMake: vehicleMake || undefined,
+        vehicleModel: vehicleModel || undefined,
+        yearMin: yearMin ?? undefined,
+        yearMax: yearMax ?? undefined,
+        mileageMax: mileageMax ?? undefined,
+        county: county || undefined,
       }),
       getListingsCount(category, selectedSubcategory || undefined),
     ]);
 
-    // Apply maxPrice client-side (avoids extra round-trip)
-    listings = maxPrice ? rows.filter(l => l.price <= maxPrice) : rows;
+    listings = rows;
     totalCount = n;
     loading = false;
   }
 
   // Re-load on category prop change
-  $: if (category) { page = 1; selectedSubcategory = ''; maxPrice = 0; sortBy = 'recent'; void load(); }
+  $: if (category) {
+    page = 1; selectedSubcategory = ''; maxPrice = 0; sortBy = 'recent';
+    vehicleMake = ''; vehicleModel = ''; yearMin = null; yearMax = null; mileageMax = null; county = '';
+    void load();
+  }
 
   // Re-load when filters/sort/page change
   let firstFilter = true;
   $: {
     selectedSubcategory; maxPrice; sortBy; page;
+    vehicleMake; vehicleModel; yearMin; yearMax; mileageMax; county;
     if (firstFilter) firstFilter = false;
     else void load();
   }
@@ -81,6 +117,7 @@
     selectedSubcategory = '';
     maxPrice = 0;
     sortBy = 'recent';
+    vehicleMake = ''; vehicleModel = ''; yearMin = null; yearMax = null; mileageMax = null; county = '';
     page = 1;
   }
 
@@ -182,6 +219,52 @@
                   </li>
                 {/each}
               </ul>
+            </div>
+          {/if}
+
+          {#if isVehicleCategory}
+            <div class="filter-group">
+              <span class="evx-label filter-group__title">Vehicle</span>
+              <div class="filter-vehicle">
+                <label class="evx-caption filter-vehicle__lbl" for="vf-make">Make</label>
+                <input id="vf-make" type="text" class="filter-vehicle__input evx-caption"
+                       placeholder="Any" bind:value={vehicleMake}
+                       on:change={() => { page = 1; }} />
+
+                <label class="evx-caption filter-vehicle__lbl" for="vf-model">Model</label>
+                <input id="vf-model" type="text" class="filter-vehicle__input evx-caption"
+                       placeholder="Any" bind:value={vehicleModel}
+                       on:change={() => { page = 1; }} />
+
+                <label class="evx-caption filter-vehicle__lbl" for="vf-ymin">Year from</label>
+                <input id="vf-ymin" type="number" class="filter-vehicle__input evx-caption"
+                       placeholder="Any" min="1900" max="2030" bind:value={yearMin}
+                       on:change={() => { page = 1; }} />
+
+                <label class="evx-caption filter-vehicle__lbl" for="vf-ymax">Year to</label>
+                <input id="vf-ymax" type="number" class="filter-vehicle__input evx-caption"
+                       placeholder="Any" min="1900" max="2030" bind:value={yearMax}
+                       on:change={() => { page = 1; }} />
+
+                <label class="evx-caption filter-vehicle__lbl" for="vf-miles">Max mileage (km)</label>
+                <input id="vf-miles" type="number" class="filter-vehicle__input evx-caption"
+                       placeholder="Any" min="0" bind:value={mileageMax}
+                       on:change={() => { page = 1; }} />
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <span class="evx-label filter-group__title">Location</span>
+              <div class="filter-price">
+                <label class="evx-caption filter-price__label" for="vf-county">County</label>
+                <select id="vf-county" class="filter-vehicle__input evx-caption"
+                        bind:value={county} on:change={() => { page = 1; }}>
+                  <option value="">All Ireland</option>
+                  {#each IE_COUNTIES as c}
+                    <option value={c}>{c}</option>
+                  {/each}
+                </select>
+              </div>
             </div>
           {/if}
 
@@ -342,6 +425,10 @@
   .filter-price { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
   .filter-price__label { color: var(--evx-ink-soft); }
   .filter-price__input { background: transparent; border: none; border-bottom: 1px solid var(--evx-rule-light); padding: var(--evx-space-xs) 0; outline: none; color: var(--evx-warm-black); width: 100%; }
+  .filter-vehicle { display: grid; grid-template-columns: 1fr; gap: var(--evx-space-sm); }
+  .filter-vehicle__lbl { color: var(--evx-ink-soft); margin-top: var(--evx-space-xs); }
+  .filter-vehicle__input { background: transparent; border: none; border-bottom: 1px solid var(--evx-rule-light); padding: var(--evx-space-xs) 0; outline: none; color: var(--evx-warm-black); width: 100%; }
+  .filter-vehicle__input:focus { border-color: var(--evx-warm-black); }
   .filter-note { color: var(--evx-ink-soft); line-height: 1.6; }
 
   /* Sort bar */
