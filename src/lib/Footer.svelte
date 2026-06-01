@@ -15,7 +15,7 @@
     <!-- Brand column -->
     <div class="footer__col footer__col--brand">
       <button class="footer__wordmark" on:click={() => navigate('/')} aria-label="ÉIRVOX home">
-        <span class="footer__wordmark-text">ÉIRVOX</span>
+        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="footer__wordmark-img" />
       </button>
 
       <p class="footer__tagline">
@@ -180,13 +180,12 @@
     padding: 0;
     cursor: pointer;
   }
-  .footer__wordmark-text {
-    font-family: var(--evx-font-editorial);
-    font-size: 32px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--evx-paper);
-    line-height: 1;
+  .footer__wordmark-img {
+    height: 28px;
+    width: auto;
+    display: block;
+    /* PNG is dark-on-transparent; invert for the dark footer background. */
+    filter: invert(1) brightness(1.05);
   }
 
   .footer__tagline {

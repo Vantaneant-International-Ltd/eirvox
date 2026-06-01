@@ -274,6 +274,24 @@
     existingImages = copy;
   }
 
+  // Pin an image as the cover (sort_order = 0). Persists immediately
+  // (unlike moveImage / ←→ which only commit on Save). One click,
+  // definitive action -- the buyer page reads the first image by
+  // sort_order, so this is what changes the hero on the listing.
+  async function setAsCover(idx: number) {
+    if (idx <= 0 || idx >= existingImages.length) return;
+    saveErr = '';
+    const picked = existingImages[idx];
+    const rest   = existingImages.filter((_, i) => i !== idx);
+    const reordered = [picked, ...rest];
+    existingImages = reordered;
+    const r = await reorderImages(reordered.map(i => i.id));
+    if (!r.ok) {
+      saveErr = r.error ?? 'Could not pin cover.';
+      scrollToBanner();
+    }
+  }
+
   async function markSold() {
     if (!confirm('Mark this listing as sold?')) return;
     await save('sold');
@@ -498,6 +516,9 @@
                 {#if i === 0}<span class="evx-caption photo-tile__cover">COVER</span>{/if}
                 {#if img.public_url}<img src={img.public_url} alt="" />{:else}<span class="photo-tile__missing">missing</span>{/if}
                 <div class="photo-tile__bar">
+                  {#if i !== 0}
+                    <button on:click={() => setAsCover(i)} title="Set as cover" aria-label="Set as cover">★</button>
+                  {/if}
                   <button on:click={() => moveImage(i, -1)} disabled={i === 0}>←</button>
                   <button on:click={() => moveImage(i, 1)} disabled={i === existingImages.length - 1}>→</button>
                   <button on:click={() => removeImage(img)}>×</button>
