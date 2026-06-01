@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { createCheckoutInstance, type RevolutCheckoutInstance } from './revolutCheckout';
+  import { callFunction } from './supabase';
 
   /** Amount in euros. Two roles depending on mode:
    *   - Admin mode (no listingId): the amount the server charges.
@@ -102,15 +103,11 @@
         };
       }
 
-      const res = await fetch('/api/payments/create-order', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(reqBody),
-      });
+      const res = await callFunction('payments-create-order', { body: reqBody });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {
         bootError = res.status === 404
-          ? 'API not running. Use `npm run dev:api`.'
+          ? 'Payments function not found. Check Supabase Functions are deployed.'
           : `Server returned non-JSON (${res.status}).`;
         booting = false;
         return;

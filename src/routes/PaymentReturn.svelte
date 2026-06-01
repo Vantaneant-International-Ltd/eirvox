@@ -3,6 +3,7 @@
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
+  import { callFunction } from '../lib/supabase';
 
   let loading = true;
   let error = '';
@@ -39,11 +40,11 @@
     }
 
     try {
-      const res = await fetch(`/api/payments/order-status?id=${encodeURIComponent(orderId)}`);
+      const res = await callFunction('payments-order-status', { method: 'GET', query: { id: orderId } });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {
         error = res.status === 404
-          ? 'The /api/* routes are not running. Use `npm run dev:api` (Vercel CLI) so Edge routes are served.'
+          ? 'Payments function not found. Check Supabase Functions are deployed.'
           : `Server returned non-JSON (${res.status}).`;
       } else {
         const body = await res.json();
@@ -81,15 +82,13 @@
     receiptError = '';
     receiptSending = true;
     try {
-      const res = await fetch('/api/payments/send-receipt', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId, to: receiptEmail.trim().toLowerCase() }),
+      const res = await callFunction('payments-send-receipt', {
+        body: { order_id: orderId, to: receiptEmail.trim().toLowerCase() },
       });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {
         receiptError = res.status === 404
-          ? 'API not running. Use `npm run dev:api`.'
+          ? 'Payments function not found.'
           : `Server returned non-JSON (${res.status}).`;
       } else {
         const body = await res.json();

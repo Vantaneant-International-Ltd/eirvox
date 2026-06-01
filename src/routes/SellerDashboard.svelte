@@ -188,8 +188,10 @@
     if (!seller || profileSaving) return;
     profileSaving = true; profileMsg = ''; profileErr = '';
 
+    // trading_name is admin-only — sellers must request via support
+    // to change it (anti-impersonation). The form input is readonly;
+    // we also omit it from the patch so a DOM tweak can't bypass.
     const r = await updateSellerProfile(seller.id, {
-      trading_name: editTradingName.trim() || seller.trading_name,
       handle: editHandle.trim() || null,
       bio: editBio.trim() || null,
       email: editEmail.trim() || null,
@@ -242,13 +244,7 @@
         {/if}
         <div class="dash-header__id">
           {#if seller}
-            <h1 class="dash-header__name">
-              {#if seller.is_house}
-                <img src="/brand/wordmark.png" alt="ÉIRVOX" class="dash-header__wm" />
-              {:else}
-                {seller.trading_name}
-              {/if}
-            </h1>
+            <h1 class="dash-header__name">{seller.trading_name}</h1>
             <div class="dash-header__meta">
               <span class="status {seller.status === 'approved' ? 'status--active' : seller.status === 'pending' ? 'status--pending_review' : 'status--removed'}">
                 <span class="status__dot"></span>
@@ -504,7 +500,10 @@
           <div class="form-row">
             <div class="field">
               <label class="evx-caption field-label" for="pf-name">TRADING NAME</label>
-              <input id="pf-name" type="text" class="field-input" bind:value={editTradingName} required />
+              <input id="pf-name" type="text" class="field-input field-input--readonly" value={editTradingName} readonly />
+              <span class="evx-caption field-hint">
+                Locked. To change, email <a href="mailto:support@eirvox.ie?subject=Name change request">support@eirvox.ie</a> — admins approve to prevent impersonation.
+              </span>
             </div>
             <div class="field">
               <label class="evx-caption field-label" for="pf-handle">HANDLE</label>
@@ -583,7 +582,6 @@
     font-size: 28px;
   }
   .dash-header__id { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .dash-header__wm { height: 0.9em; width: auto; vertical-align: -0.05em; display: inline-block; }
   .dash-header__name {
     font-family: var(--evx-font-display);
     font-size: clamp(28px, 4vw, 40px);
@@ -871,6 +869,9 @@
     outline: none;
   }
   .field-input:focus { border-bottom-color: var(--evx-warm-black); }
+  .field-input--readonly { color: var(--evx-ink-soft); cursor: not-allowed; }
+  .field-hint { display: block; margin-top: 4px; color: var(--evx-ink-soft); font-size: 11px; line-height: 1.5; }
+  .field-hint a { color: var(--evx-fox-orange); }
   .field-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
 
   .form-ok, .form-err {

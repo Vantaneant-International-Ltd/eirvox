@@ -2,7 +2,7 @@
 // ÉIRVOX — Seller helpers (Supabase-backed)
 // ============================================================
 
-import { supabase } from './supabase';
+import { supabase, callFunction } from './supabase';
 import { getCurrentUser } from './auth';
 
 export type SellerStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
@@ -106,10 +106,8 @@ export async function applyAsSeller(input: SellerApplyInput): Promise<Result<Sel
 
   let res: Response;
   try {
-    res = await fetch('/api/seller-applications', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    res = await callFunction('seller-applications', {
+      body: {
         profile_id: user?.id ?? null,
         trading_name: input.trading_name,
         handle: input.handle,
@@ -124,7 +122,7 @@ export async function applyAsSeller(input: SellerApplyInput): Promise<Result<Sel
         price_high: input.price_high,
         sourcing_method: input.sourcing_method,
         tier: input.tier,
-      }),
+      },
     });
   } catch {
     return { ok: false, error: 'Could not reach the server. Try again in a moment.' };

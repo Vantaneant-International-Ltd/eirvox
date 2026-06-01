@@ -3,7 +3,7 @@
 // Client helper + admin queries.
 // ============================================================
 
-import { supabase, withTimeout } from './supabase';
+import { supabase, withTimeout, callFunction } from './supabase';
 
 export type EnquirySubjectType = 'listing' | 'drive_issue' | 'tradesperson' | 'general';
 export type EnquiryStatus = 'new' | 'replied' | 'closed' | 'spam';
@@ -64,10 +64,8 @@ export async function submitEnquiry(input: SubmitEnquiryInput): Promise<SubmitOu
 
   let res: Response;
   try {
-    res = await fetch('/api/enquiries', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    res = await callFunction('enquiries', {
+      body: {
         subject_type: input.subject_type,
         listing_id: input.listing_id ?? null,
         tradesperson_id: input.tradesperson_id ?? null,
@@ -77,7 +75,7 @@ export async function submitEnquiry(input: SubmitEnquiryInput): Promise<SubmitOu
         email: input.email.trim().toLowerCase(),
         phone: input.phone?.trim() || null,
         message: input.message.trim(),
-      }),
+      },
     });
   } catch {
     return { ok: false, reason: 'error', message: 'Could not reach the server. Try again in a moment.' };

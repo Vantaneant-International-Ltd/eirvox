@@ -9,6 +9,7 @@
   // returns {ok: true}. Errors surface inline.
   // ============================================================
   import { onMount } from 'svelte';
+  import { callFunction } from './supabase';
 
   export let listingId: string;
   export let listingTitle: string = '';
@@ -72,15 +73,13 @@
     submitting = true;
     let res: Response;
     try {
-      res = await fetch('/api/report', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+      res = await callFunction('report', {
+        body: {
           listing_id: listingId,
           reason,
           detail: detail.trim() || null,
           reporter_email: email.trim() ? email.trim().toLowerCase() : null,
-        }),
+        },
       });
     } catch {
       submitting = false;

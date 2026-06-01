@@ -3,7 +3,7 @@
 // Capture from the coming-soon page; review in /admin/waitlist.
 // ============================================================
 
-import { supabase, withTimeout } from './supabase';
+import { supabase, withTimeout, callFunction } from './supabase';
 
 export interface WaitlistEntry {
   id: string;
@@ -22,13 +22,9 @@ export function isValidEmail(value: string): boolean {
   return EMAIL_RE.test(value.trim());
 }
 
-/** Submit a waitlist row via the Vercel serverless route.
- *  Runs the insert with the service-role key on the server so the
- *  browser never needs anon INSERT on the waitlist table.
- *
- *  Local dev: `npm run dev:api` (vercel dev) serves /api/* alongside
- *  the Vite SPA on one port. Plain `npm run dev` (vite only) will
- *  404 the API call and this returns the generic error message. */
+/** Submit a waitlist row via the Supabase Edge Function.
+ *  Function runs with the service-role key on the server so the
+ *  browser never needs anon INSERT on the waitlist table. */
 export async function submitWaitlist(
   email: string,
   source = 'coming_soon'
@@ -40,11 +36,7 @@ export async function submitWaitlist(
 
   let res: Response;
   try {
-    res = await fetch('/api/waitlist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ email: value, source }),
-    });
+    res = await callFunction('waitlist', { body: { email: value, source } });
   } catch {
     return { ok: false, reason: 'error', message: 'Something went wrong. Try again.' };
   }

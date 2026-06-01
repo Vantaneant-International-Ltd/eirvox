@@ -17,6 +17,33 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   );
 }
 
+/** Base URL for Supabase Edge Functions. The endpoints previously
+ *  served at /api/* (Vercel serverless) now live at
+ *  <project>.supabase.co/functions/v1/<name>. Stays here so client
+ *  code never hardcodes the URL — see supabase/functions/README.md. */
+export const SUPABASE_FUNCTIONS_URL = `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1`;
+
+/** Wrapper around fetch() for calls to Edge Functions. Adds the
+ *  required `apikey` and `Authorization` headers (anon key by default;
+ *  callers can pass the user JWT via opts.authToken). */
+export async function callFunction(
+  name: string,
+  opts: { method?: string; body?: unknown; authToken?: string; query?: Record<string, string> } = {},
+): Promise<Response> {
+  const url = new URL(`${SUPABASE_FUNCTIONS_URL}/${name}`);
+  if (opts.query) for (const [k, v] of Object.entries(opts.query)) url.searchParams.set(k, v);
+  const token = opts.authToken ?? SUPABASE_ANON_KEY;
+  return fetch(url.toString(), {
+    method: opts.method ?? 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${token}`,
+    },
+    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+  });
+}
+
 // ── Database row types ──────────────────────────────────────
 
 export type UserRole = 'buyer' | 'seller' | 'tradesperson' | 'admin';

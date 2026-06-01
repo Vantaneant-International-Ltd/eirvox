@@ -95,20 +95,15 @@
     document.getElementById('seller-contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Buyers now contact sellers via in-app messaging only — phone +
-  // email are no longer surfaced on the listing. House (ÉIRVOX-owned)
-  // listings still use scrollToPay since there's no "seller" to DM.
+  // Buyers contact sellers via in-app messaging only — phone + email
+  // are not surfaced. House listings are DM-able too (the house seller
+  // is a person, not the platform).
   let messageBusy = false;
   let messageErr = '';
   async function messageSeller() {
     if (!listing) return;
     if (!$auth.user) {
       navigate(`/login?next=${encodeURIComponent('/listing/' + slug)}`);
-      return;
-    }
-    if (listing.seller?.is_house) {
-      // House seller: don't open a thread, ÉIRVOX is the platform itself.
-      scrollToPay();
       return;
     }
     messageBusy = true;
@@ -440,13 +435,7 @@
                   {/if}
                 </div>
                 <div class="panel__seller-info">
-                  <div class="panel__seller-name">
-                    {#if listing.seller.is_house}
-                      <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--sm" />
-                    {:else}
-                      {listing.seller.trading_name}
-                    {/if}
-                  </div>
+                  <div class="panel__seller-name">{listing.seller.trading_name}</div>
                   <SellerPill tier={tier} name={listing.seller.trading_name} rating={listing.seller.rating ?? null} compact={true} />
                   {#if listing.seller.city}
                     <span class="evx-caption panel__seller-loc">{listing.seller.city}</span>
@@ -535,14 +524,7 @@
       {#if sellerMore.length > 0 && listing.seller}
         <section class="more-from">
           <div class="more-from__header">
-            <h2 class="more-from__heading">
-              More from
-              {#if listing.seller.is_house}
-                <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--inline" />
-              {:else}
-                {listing.seller.trading_name}
-              {/if}
-            </h2>
+            <h2 class="more-from__heading">More from {listing.seller.trading_name}</h2>
           </div>
           <div class="more-from__grid">
             {#each sellerMore as l (l.id)}
@@ -607,12 +589,7 @@
       <header class="detail-contact__head">
         <span class="evx-caption detail-contact__pre">CONTACT</span>
         <h2 class="detail-contact__h">
-          Message
-          {#if listing.seller?.is_house}
-            <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--inline" />
-          {:else}
-            <em>{listing.seller?.trading_name ?? 'the seller'}</em>
-          {/if}.
+          Message <em>{listing.seller?.trading_name ?? 'the seller'}</em>.
         </h2>
         <p class="detail-contact__sub">
           All conversations happen on ÉIRVOX. Sharing phone, email or WhatsApp moves the deal off-site —
@@ -620,27 +597,21 @@
         </p>
       </header>
 
-      {#if !listing.seller?.is_house}
-        <div class="detail-contact__cta">
-          {#if messageErr}<p class="detail-contact__err">{messageErr}</p>{/if}
-          <button class="evx-btn evx-btn--primary" on:click={messageSeller} disabled={messageBusy}>
-            {messageBusy ? 'Opening…' : 'Message seller →'}
-          </button>
-          <p class="evx-caption detail-contact__cta-note">
-            {#if !$auth.user}You'll be asked to sign in or create an account first.{:else}Free. No commitment.{/if}
-          </p>
-        </div>
-      {/if}
+      <div class="detail-contact__cta">
+        {#if messageErr}<p class="detail-contact__err">{messageErr}</p>{/if}
+        <button class="evx-btn evx-btn--primary" on:click={messageSeller} disabled={messageBusy}>
+          {messageBusy ? 'Opening…' : 'Message seller →'}
+        </button>
+        <p class="evx-caption detail-contact__cta-note">
+          {#if !$auth.user}You'll be asked to sign in or create an account first.{:else}Free. No commitment.{/if}
+        </p>
+      </div>
 
       <dl class="detail-contact__list">
         <div class="detail-contact__row">
           <dt>Trading name</dt>
           <dd>
-            {#if listing.seller?.is_house}
-              <img src="/brand/wordmark.png" alt="ÉIRVOX" class="brand-mark brand-mark--xs" />
-            {:else}
-              {listing.seller?.trading_name ?? '—'}
-            {/if}
+            {listing.seller?.trading_name ?? '—'}
             {#if listing.seller?.handle} <span class="detail-contact__handle">·  @{listing.seller.handle}</span>{/if}
           </dd>
         </div>
@@ -886,10 +857,6 @@
     background: rgba(220, 38, 38, 0.08); padding: 6px 10px;
     border-left: 3px solid #DC2626;
   }
-  .brand-mark { display: inline-block; vertical-align: -2px; width: auto; }
-  .brand-mark--xs { height: 14px; }
-  .brand-mark--sm { height: 18px; }
-  .brand-mark--inline { height: 0.85em; vertical-align: baseline; }
   .detail-contact__handle {
     font-family: var(--evx-font-mono);
     font-size: 13px;
