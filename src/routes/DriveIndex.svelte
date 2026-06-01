@@ -134,7 +134,6 @@
             </div>
             <h2 class="di-issue__title">{issue.title}</h2>
             <p class="di-issue__subtitle">{issue.subtitle}</p>
-            <p class="di-issue__desc">{issue.desc}</p>
 
             <div class="di-issue__footer">
               {#if issue.status === 'open' && issue.price !== null}

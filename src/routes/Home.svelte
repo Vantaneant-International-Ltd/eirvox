@@ -10,6 +10,7 @@
     getCategories,
     getSiteSettings,
     getTradeCategories,
+    getDriveListings,
     formatPrice,
     type ListingWithExtras,
     type Category,
@@ -24,6 +25,10 @@
   let recent: ListingWithExtras[] = [];
   let tradeCats: TradeCategory[] = [];
   let settings: SiteSettings | null = null;
+  // Live DRIVE hero. Pulled from public.listings (single source of truth)
+  // instead of site_settings.drive, which used to hold a static "featured"
+  // blob that drifted out of date.
+  let driveHero: ListingWithExtras | null = null;
 
   let featLoading = true;
   let recentLoading = true;
@@ -33,11 +38,12 @@
   onMount(async () => {
     applySeo(seo.home());
 
-    // Settings + categories first (drive hero) — these block initial paint
-    [settings, categories, tradeCats] = await Promise.all([
+    // Settings + categories + DRIVE hero first (block initial paint)
+    [settings, categories, tradeCats, driveHero] = await Promise.all([
       getSiteSettings(),
       getCategories(),
       getTradeCategories(),
+      pickDriveHero(),
     ]);
     catsLoading = false;
     tradeLoading = false;
@@ -47,60 +53,88 @@
     void getRecentListings(8).then(rows => { recent = rows; recentLoading = false; });
   });
 
-  function driveTagline(s: SiteSettings | null): string {
-    if (!s) return 'OPEN FOR RESERVATION';
-    return `ISSUE ${String(s.drive.issue_number).padStart(3, '0')} · OPEN FOR RESERVATION`;
+  // Featured DRIVE issue: prefer the most recent OPEN one; fall back to
+  // the most recent UPCOMING; null if neither exists. Same data shape as
+  // any listing -- the hero reads drive_issue / drive_issue_date /
+  // drive_made_count / drive_remaining_count / price / title from the row.
+  async function pickDriveHero(): Promise<ListingWithExtras | null> {
+    const opens = await getDriveListings({ state: 'open', limit: 1 });
+    if (opens.length > 0) return opens[0];
+    const upcoming = await getDriveListings({ state: 'upcoming', limit: 1 });
+    return upcoming[0] ?? null;
   }
+
+  $: heroTagline = driveHero
+    ? (driveHero.drive_issue_state === 'open'
+        ? `ISSUE ${driveHero.drive_issue ?? '???'} · OPEN FOR RESERVATION`
+        : `ISSUE ${driveHero.drive_issue ?? '???'} · ${(driveHero.drive_issue_date ?? 'COMING SOON').toUpperCase()}`)
+    : 'DRIVE · NEXT ISSUE COMING SOON';
 </script>
 
 <Nav />
 
 <main>
-  <!-- DRIVE HERO ──────────────────────────────────── -->
+  <!-- DRIVE HERO ────────────────────────────────────
+       Pulled from public.listings (single source of truth).
+       Open issue: price + stock visible, primary CTA reads the issue.
+       Upcoming: copy goes soft, no price/stock numbers, CTA still
+                 links into the issue page (which renders its own
+                 upcoming-state UI). -->
   <section class="hero page-container">
     <div class="hero__inner">
       <div class="hero__text">
-        <span class="evx-caption hero__issue">{driveTagline(settings)}</span>
+        <span class="evx-caption hero__issue">{heroTagline}</span>
         <h1 class="hero__title">
-          {#if settings}
-            {settings.drive.issue_title}
+          {#if driveHero}
+            {driveHero.title}
             <em class="hero__italic">·</em>
           {:else}
-            Current DRIVE issue
+            DRIVE
           {/if}
         </h1>
         <p class="hero__desc">
-          {settings ? `${settings.drive.total_allocation} pieces. Sold by ÉIRVOX direct, finished in Dublin. We do not reprint.`
-                    : 'Each issue is one product, made once. We do not reprint.'}
+          {#if driveHero?.subtitle}{driveHero.subtitle}{:else}One product per issue. Made once. We do not reprint.{/if}
         </p>
-        <div class="hero__price-row">
-          <span class="hero__price">{formatPrice(settings?.drive.price_eur ?? 149)}</span>
-          {#if settings}
-            <span class="hero__stock">
-              <span class="hero__dot"></span>
-              <span class="evx-caption">
-                {settings.drive.remaining} OF {settings.drive.total_allocation} REMAINING
+
+        {#if driveHero?.drive_issue_state === 'open' && driveHero.price > 0}
+          <div class="hero__price-row">
+            <span class="hero__price">{formatPrice(driveHero.price)}</span>
+            {#if driveHero.drive_made_count != null && driveHero.drive_remaining_count != null}
+              <span class="hero__stock">
+                <span class="hero__dot"></span>
+                <span class="evx-caption">
+                  {driveHero.drive_remaining_count} OF {driveHero.drive_made_count} REMAINING
+                </span>
               </span>
-            </span>
-          {/if}
-        </div>
+            {/if}
+          </div>
+        {/if}
+
         <div class="hero__actions">
-          <button class="evx-btn evx-btn--primary" on:click={() => navigate('/drive')}>
-            Read current issue →
-          </button>
+          {#if driveHero}
+            <button class="evx-btn evx-btn--primary"
+                    on:click={() => navigate(`/drive/${driveHero!.slug}`)}>
+              {driveHero.drive_issue_state === 'open' ? 'Read current issue →' : 'View upcoming issue →'}
+            </button>
+          {/if}
           <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/drive')}>
             All DRIVE issues
           </button>
         </div>
       </div>
       <div class="hero__image">
-        <span class="evx-caption hero__plate">DRV-{String(settings?.drive.issue_number ?? 0).padStart(3, '0')}</span>
+        <span class="evx-caption hero__plate">DRV-{driveHero?.drive_issue ?? '???'}</span>
         <div class="hero__img-placeholder">
-          <span class="evx-caption hero__img-label">
-            {settings?.drive.issue_title ?? 'DRIVE'}
-          </span>
+          {#if driveHero?.cover_image}
+            <img src={driveHero.cover_image} alt={driveHero.title}
+                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" />
+          {:else}
+            <span class="evx-caption hero__img-label">{driveHero?.title ?? 'DRIVE'}</span>
+          {/if}
         </div>
-        <span class="evx-caption hero__img-caption">CURRENT ISSUE</span>
+        <span class="evx-caption hero__img-caption">
+          {driveHero?.drive_issue_state === 'open' ? 'CURRENT ISSUE' : 'NEXT ISSUE'}
+        </span>
       </div>
     </div>
   </section>
@@ -175,23 +209,30 @@
     <div class="drive-band__inner page-container">
       <div class="drive-band__left">
         <span class="evx-label drive-band__label">
-          ISSUE {String(settings?.drive.issue_number ?? 0).padStart(3, '0')}
+          {driveHero ? `ISSUE ${driveHero.drive_issue ?? '???'}` : 'DRIVE'}
         </span>
         <div class="drive-band__logo">DRIVE</div>
-        <p class="drive-band__desc">{settings?.drive.issue_title ?? '—'}</p>
+        <p class="drive-band__desc">{driveHero?.title ?? 'Next issue coming soon.'}</p>
         <p class="drive-band__copy">
-          {settings ? `${settings.drive.total_allocation} pieces. ${settings.drive.remaining} remaining. We do not reprint.` : ''}
+          {#if driveHero?.drive_issue_state === 'open' && driveHero.drive_made_count != null && driveHero.drive_remaining_count != null}
+            {driveHero.drive_made_count} pieces. {driveHero.drive_remaining_count} remaining. We do not reprint.
+          {:else if driveHero?.drive_issue_state === 'upcoming'}
+            {driveHero.drive_issue_date ?? 'Arriving soon'}. One product per issue. We do not reprint.
+          {/if}
         </p>
       </div>
       <div class="drive-band__right">
-        {#if settings}
+        {#if driveHero?.drive_issue_state === 'open' && driveHero.drive_made_count != null && driveHero.drive_remaining_count != null}
           <span class="evx-caption drive-band__remaining">
-            {settings.drive.remaining} OF {settings.drive.total_allocation} REMAINING
+            {driveHero.drive_remaining_count} OF {driveHero.drive_made_count} REMAINING
           </span>
         {/if}
-        <button class="evx-btn evx-btn--primary" on:click={() => navigate('/drive')}>
-          Read current issue →
-        </button>
+        {#if driveHero}
+          <button class="evx-btn evx-btn--primary"
+                  on:click={() => navigate(`/drive/${driveHero!.slug}`)}>
+            {driveHero.drive_issue_state === 'open' ? 'Read current issue →' : 'View upcoming issue →'}
+          </button>
+        {/if}
         <button class="evx-btn evx-btn--ghost-paper drive-band__archive" on:click={() => navigate('/drive')}>
           All DRIVE issues
         </button>
