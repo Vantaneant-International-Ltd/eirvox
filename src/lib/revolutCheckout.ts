@@ -10,8 +10,12 @@
 //   instance.payWithGooglePay(options)     Google Pay sheet
 //   instance.destroy()                     cleanup
 //
-// Token comes from POST /api/payments/create-order — it's Revolut's
-// per-order public id, NOT the merchant public key.
+// Token comes from POST /functions/v1/payments-create-order — it's
+// Revolut's per-order public id, NOT the merchant public key. We
+// therefore don't need VITE_REVOLUT_PUBLIC_KEY for this flow. If
+// we later add direct Apple Pay / Google Pay sheets or in-page card
+// fields, swap in window.RevolutCheckout.payments(publicKey) and
+// add the pk_ to .env as VITE_REVOLUT_PUBLIC_KEY.
 //
 // Docs: https://developer.revolut.com/docs/accept-payments/payment-methods/online-payments/payment-button-and-card-fields/web/get-started
 // ============================================================

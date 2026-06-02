@@ -56,6 +56,10 @@
 
       {#if subscribed}
         <p class="cs__confirm">You're on the list.</p>
+        <button type="button" class="cs__reset"
+                on:click={() => { localStorage.removeItem(STORAGE_KEY); subscribed = false; email = ''; errorMsg = ''; }}>
+          Use a different email →
+        </button>
       {:else}
         <form class="cs__form" on:submit={submit}>
           <label class="cs__sr" for="cs-email">Email address</label>
@@ -243,6 +247,14 @@
     color: #F5F2ED;
     padding: 8px 0;
   }
+  .cs__reset {
+    background: none; border: none; padding: 0; cursor: pointer;
+    font-family: 'JetBrains Mono', Menlo, monospace;
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(245, 242, 237, 0.55);
+    transition: color 200ms ease;
+  }
+  .cs__reset:hover { color: #E8742C; }
 
   /* ── Footer ── */
   .cs__footer {

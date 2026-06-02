@@ -100,11 +100,12 @@ Deno.serve(async (req: Request) => {
     .insert({ email, source });
 
   if (!error) {
-    // Fire-and-forget: don't make the user wait on the email.
-    // EdgeRuntime.waitUntil keeps the worker alive past the response so
-    // the email completes even though we already returned 200.
-    try { (globalThis as any).EdgeRuntime?.waitUntil(sendWelcomeEmail(email)); }
-    catch { void sendWelcomeEmail(email); }
+    // Synchronous await: the EdgeRuntime.waitUntil fire-and-forget
+    // pattern was silently no-op'ing the email call. Adds ~300ms to
+    // the user-facing response, totally acceptable.
+    console.log('[waitlist] insert ok, about to send welcome email to', email);
+    await sendWelcomeEmail(email);
+    console.log('[waitlist] welcome email path complete for', email);
     return ok(req);
   }
 
