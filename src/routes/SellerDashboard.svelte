@@ -52,6 +52,41 @@
   let profileMsg = '';
   let profileErr = '';
 
+  // Name-change request panel
+  let nameChangeOpen = false;
+  let nameChangeNew = '';
+  let nameChangeReason = '';
+  let nameChangeBusy = false;
+  let nameChangeMsg = '';
+  let nameChangeErr = '';
+  let pendingNameChange: { id: string; requested_name: string; created_at: string } | null = null;
+
+  async function loadPendingNameChange(sellerId: string) {
+    const { data } = await supabase
+      .from('seller_name_change_requests')
+      .select('id, requested_name, created_at')
+      .eq('seller_id', sellerId)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    pendingNameChange = (data as any) ?? null;
+  }
+
+  async function submitNameChange() {
+    if (nameChangeBusy || !nameChangeNew.trim()) return;
+    nameChangeBusy = true; nameChangeErr = ''; nameChangeMsg = '';
+    const { data, error } = await supabase.rpc('submit_name_change_request', {
+      p_requested_name: nameChangeNew.trim(),
+      p_reason: nameChangeReason.trim() || null,
+    });
+    nameChangeBusy = false;
+    if (error) { nameChangeErr = error.message; return; }
+    nameChangeMsg = 'Request submitted. Admin review usually within 48h.';
+    nameChangeNew = ''; nameChangeReason = '';
+    if (seller?.id) await loadPendingNameChange(seller.id);
+  }
+
   async function load() {
     loading = true;
     loadStatus = 'ok';
@@ -151,6 +186,7 @@
     editPhone       = seller.phone ?? '';
     editCity        = seller.city ?? '';
 
+    void loadPendingNameChange(seller.id);
     loading = false;
   }
 
@@ -502,8 +538,30 @@
               <label class="evx-caption field-label" for="pf-name">TRADING NAME</label>
               <input id="pf-name" type="text" class="field-input field-input--readonly" value={editTradingName} readonly />
               <span class="evx-caption field-hint">
-                Locked. To change, email <a href="mailto:support@eirvox.ie?subject=Name change request">support@eirvox.ie</a> — admins approve to prevent impersonation.
+                Locked. <button type="button" class="field-hint-link" on:click={() => { nameChangeOpen = !nameChangeOpen; nameChangeMsg = ''; nameChangeErr = ''; }}>
+                  {nameChangeOpen ? 'Cancel' : 'Request name change →'}
+                </button>
               </span>
+              {#if nameChangeOpen}
+                <div class="name-change-panel">
+                  {#if pendingNameChange}
+                    <p class="evx-caption name-change-pending">
+                      Pending request: <strong>{pendingNameChange.requested_name}</strong>. Admin review usually within 48h.
+                    </p>
+                  {:else}
+                    <label class="evx-caption field-label" for="ncn">NEW TRADING NAME</label>
+                    <input id="ncn" type="text" class="field-input" bind:value={nameChangeNew} maxlength="200" placeholder="What should this seller be called?" />
+                    <label class="evx-caption field-label" for="ncr" style="margin-top:10px;">REASON (OPTIONAL)</label>
+                    <textarea id="ncr" class="field-input field-textarea" bind:value={nameChangeReason} maxlength="2000" placeholder="Why the change? Rebranding, legal entity change, typo, etc."></textarea>
+                    {#if nameChangeErr}<p class="form-err" style="margin-top:8px;">{nameChangeErr}</p>{/if}
+                    {#if nameChangeMsg}<p class="form-ok"  style="margin-top:8px;">{nameChangeMsg}</p>{/if}
+                    <button type="button" class="evx-btn evx-btn--primary evx-btn--sm" style="margin-top:10px;"
+                            on:click={submitNameChange} disabled={nameChangeBusy || !nameChangeNew.trim()}>
+                      {nameChangeBusy ? 'Submitting…' : 'Submit request'}
+                    </button>
+                  {/if}
+                </div>
+              {/if}
             </div>
             <div class="field">
               <label class="evx-caption field-label" for="pf-handle">HANDLE</label>
@@ -872,6 +930,15 @@
   .field-input--readonly { color: var(--evx-ink-soft); cursor: not-allowed; }
   .field-hint { display: block; margin-top: 4px; color: var(--evx-ink-soft); font-size: 11px; line-height: 1.5; }
   .field-hint a { color: var(--evx-fox-orange); }
+  .field-hint-link { background: none; border: none; padding: 0; color: var(--evx-fox-orange); cursor: pointer; font: inherit; }
+  .field-hint-link:hover { text-decoration: underline; }
+  .name-change-panel {
+    margin-top: 12px; padding: 14px; background: var(--evx-paper-warm);
+    border-left: 3px solid var(--evx-fox-orange);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .name-change-pending { color: var(--evx-ink-soft); margin: 0; }
+  .name-change-pending strong { color: var(--evx-warm-black); }
   .field-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
 
   .form-ok, .form-err {

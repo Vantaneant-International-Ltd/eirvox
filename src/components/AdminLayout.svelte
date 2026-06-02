@@ -6,6 +6,7 @@
   import { getWaitlistCount } from '../lib/waitlist';
   import { getNewEnquiryCount } from '../lib/enquiries';
   import { getNewReportCount } from '../lib/reports';
+  import { getPendingNameChangeCount } from '../lib/nameChanges';
 
   export let title: string = 'Admin';
 
@@ -15,13 +16,15 @@
   let waitlistCount = 0;
   let newEnquiryCount = 0;
   let newReportCount = 0;
+  let pendingNameChangeCount = 0;
 
   async function refreshStats() {
-    [stats, waitlistCount, newEnquiryCount, newReportCount] = await Promise.all([
+    [stats, waitlistCount, newEnquiryCount, newReportCount, pendingNameChangeCount] = await Promise.all([
       getAdminStats(),
       getWaitlistCount(),
       getNewEnquiryCount(),
       getNewReportCount(),
+      getPendingNameChangeCount(),
     ]);
   }
 
@@ -32,11 +35,12 @@
   $: user = $auth.user;
 
   // Sidebar nav items. `badgeSource` resolves to a number at render time.
-  type BadgeSource = keyof AdminStats | 'waitlist' | 'new_enquiries' | 'new_reports';
+  type BadgeSource = keyof AdminStats | 'waitlist' | 'new_enquiries' | 'new_reports' | 'pending_name_changes';
   const NAV: Array<{ path: string; label: string; badgeSource?: BadgeSource }> = [
     { path: '/admin',               label: 'Dashboard' },
     { path: '/admin/listings',      label: 'Listings',      badgeSource: 'pending_listings' },
     { path: '/admin/sellers',       label: 'Sellers',       badgeSource: 'pending_sellers' },
+    { path: '/admin/name-changes',  label: 'Name changes',  badgeSource: 'pending_name_changes' },
     { path: '/admin/enquiries',     label: 'Enquiries',     badgeSource: 'new_enquiries' },
     { path: '/admin/reports',       label: 'Reports',       badgeSource: 'new_reports' },
     { path: '/admin/reservations',  label: 'Reservations' },
@@ -52,7 +56,8 @@
     if (source === 'waitlist') return waitlistCount;
     if (source === 'new_enquiries') return newEnquiryCount;
     if (source === 'new_reports') return newReportCount;
-    return stats?.[source] ?? 0;
+    if (source === 'pending_name_changes') return pendingNameChangeCount;
+    return stats?.[source as keyof AdminStats] ?? 0;
   }
 
   function active(p: string): boolean {

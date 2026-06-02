@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
   import { auth, initAuth } from './lib/auth';
-  import { isDevBypassed, isMaintenancePreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate, gatedLegalMode } from './lib/flags';
+  import { isDevBypassed, isMaintenancePreviewed, isComingSoonPreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate, gatedLegalMode } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
   import PaymentReturn from './routes/PaymentReturn.svelte';
@@ -33,6 +33,7 @@
   import AdminWaitlist from './routes/admin/Waitlist.svelte';
   import AdminEnquiries from './routes/admin/Enquiries.svelte';
   import AdminReports from './routes/admin/Reports.svelte';
+  import AdminNameChanges from './routes/admin/NameChanges.svelte';
   import Search from './routes/Search.svelte';
   import Sitemap from './routes/Sitemap.svelte';
   import NotFound from './routes/NotFound.svelte';
@@ -64,8 +65,9 @@
   // state is enough to identify them; no magic URL needed.
   let bypassed = false;
   let maintenancePreview = false;
+  let comingSoonPreview = false;
   $: isAdminBypass = $auth.profile?.role === 'admin';
-  $: rawGate = resolveGate($siteFlags, bypassed || isAdminBypass, $flagsLoading, maintenancePreview);
+  $: rawGate = resolveGate($siteFlags, bypassed || isAdminBypass, $flagsLoading, maintenancePreview, comingSoonPreview);
   // Legal-route whitelist falls through to the route block even when a gate is on.
   $: gate = ALWAYS_OPEN_PATHS.includes(path) ? 'live' : rawGate;
   // Tell LegalLayout to drop Nav + Footer when the visitor only got here
@@ -75,6 +77,7 @@
 
   onMount(() => {
     maintenancePreview = isMaintenancePreviewed();
+    comingSoonPreview = isComingSoonPreviewed();
     bypassed = isDevBypassed();
     void loadSiteFlags();
     // Init auth eagerly; the gates only hide the UI shell, auth itself
@@ -243,6 +246,10 @@
 {:else if path === '/admin/reports'}
   <AuthGuard requireRole="admin">
     <AdminReports />
+  </AuthGuard>
+{:else if path === '/admin/name-changes'}
+  <AuthGuard requireRole="admin">
+    <AdminNameChanges />
   </AuthGuard>
 
 {:else if path === '/search'}

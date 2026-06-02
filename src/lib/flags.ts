@@ -132,35 +132,58 @@ export function isDevBypassed(): boolean {
   return sessionStorage.getItem(DEV_BYPASS_KEY) === '1';
 }
 
-// ── Maintenance preview (DEV-only) ─────────────────────────────
+// ── Gate previews (production-safe) ───────────────────────────
 //
-// Lets the team see MaintenanceHero without flipping the live flag.
-// Activate by visiting <host>/#maintenance once in dev — the flag is
-// stored in sessionStorage and re-renders the gate as 'maintenance'
-// regardless of DB state. Gated on import.meta.env.DEV so production
-// builds cannot trigger this even if someone shares the #maintenance
-// link.
+// Admins bypass both gates by default (so /admin works after a
+// coming-soon flip), which means they can't see what visitors see.
+// These two hashes opt into a per-tab preview:
 //
-// Exit: visit <host>/#exit-preview (or just close the tab —
-// sessionStorage dies with the tab).
+//   <host>/#maintenance   → render MaintenanceHero this tab only
+//   <host>/#coming-soon   → render ComingSoonHero this tab only
+//   <host>/#exit-preview  → clear both, go back to normal
+//
+// Both stored in sessionStorage so the preview dies when the tab
+// closes. No DEV gate — harmless in production (only renders a
+// hero a regular visitor would already see).
 
 export const MAINTENANCE_PREVIEW_KEY = 'eirvox_maintenance_preview';
+export const COMING_SOON_PREVIEW_KEY = 'eirvox_coming_soon_preview';
+
+function clearAllPreviews() {
+  sessionStorage.removeItem(MAINTENANCE_PREVIEW_KEY);
+  sessionStorage.removeItem(COMING_SOON_PREVIEW_KEY);
+}
 
 export function isMaintenancePreviewed(): boolean {
   if (typeof window === 'undefined') return false;
-  if (!import.meta.env.DEV) return false;
-
   if (window.location.hash === '#maintenance') {
     sessionStorage.setItem(MAINTENANCE_PREVIEW_KEY, '1');
+    sessionStorage.removeItem(COMING_SOON_PREVIEW_KEY);
     history.replaceState(null, '', window.location.pathname + window.location.search);
     return true;
   }
   if (window.location.hash === '#exit-preview') {
-    sessionStorage.removeItem(MAINTENANCE_PREVIEW_KEY);
+    clearAllPreviews();
     history.replaceState(null, '', window.location.pathname + window.location.search);
     return false;
   }
   return sessionStorage.getItem(MAINTENANCE_PREVIEW_KEY) === '1';
+}
+
+export function isComingSoonPreviewed(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (window.location.hash === '#coming-soon') {
+    sessionStorage.setItem(COMING_SOON_PREVIEW_KEY, '1');
+    sessionStorage.removeItem(MAINTENANCE_PREVIEW_KEY);
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    return true;
+  }
+  if (window.location.hash === '#exit-preview') {
+    clearAllPreviews();
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+    return false;
+  }
+  return sessionStorage.getItem(COMING_SOON_PREVIEW_KEY) === '1';
 }
 
 // ── Derived: which gate (if any) should the app render? ────────
@@ -168,15 +191,17 @@ export function isMaintenancePreviewed(): boolean {
 export type GateMode = 'maintenance' | 'coming_soon' | 'live' | 'loading';
 
 /** Resolve the active gate. Pass the current bypass + preview state.
- *  Precedence: maintenance preview > dev bypass > maintenance flag >
- *  coming_soon flag > loading > live. */
+ *  Precedence: maintenance preview > coming-soon preview > dev bypass >
+ *  maintenance flag > coming_soon flag > loading > live. */
 export function resolveGate(
   flags: SiteFlags,
   bypassed: boolean,
   loading: boolean,
   maintenancePreview: boolean = false,
+  comingSoonPreview: boolean = false,
 ): GateMode {
   if (maintenancePreview) return 'maintenance';
+  if (comingSoonPreview) return 'coming_soon';
   if (bypassed) return 'live';
   if (flags.maintenance) return 'maintenance';
   if (flags.coming_soon) return 'coming_soon';
