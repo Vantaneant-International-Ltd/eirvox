@@ -36,6 +36,8 @@ async function sendWelcomeEmail(to: string): Promise<void> {
     '',
     'No spam between now and then. We mean it.',
     '',
+    'This is an automated message. Questions? Email support@eirvox.ie.',
+    '',
     'ÉIRVOX Systems Ltd · Dublin, Ireland',
     'https://eirvox.ie',
   ].join('\n');
@@ -56,7 +58,7 @@ async function sendWelcomeEmail(to: string): Promise<void> {
         <p style="margin:0;">No spam between now and then. We mean it.</p>
       </td></tr>
       <tr><td style="padding:8px 32px 28px;font-size:13px;line-height:1.6;color:#8A8680;">
-        Questions? Reply to this email or write to
+        This is an automated message and replies aren't monitored. Questions? Email
         <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
       </td></tr>
     </table>
@@ -67,7 +69,13 @@ async function sendWelcomeEmail(to: string): Promise<void> {
 </table>
 </body></html>`;
   try {
-    const r = await sendEmail({ to, subject, html, text, replyTo: 'support@eirvox.ie' });
+    // Hardcoded From overrides RESEND_FROM secret so this stays no-reply
+    // even if the shared default changes. No replyTo: any reply goes to
+    // no-reply@ and bounces, which is the desired signal for transactional.
+    const r = await sendEmail({
+      to, subject, html, text,
+      from: 'ÉIRVOX <no-reply@eirvox.ie>',
+    });
     if (!r.ok) console.warn('[waitlist] welcome email failed (insert still succeeded):', r.error);
   } catch (err) {
     console.warn('[waitlist] welcome email threw (insert still succeeded):', err);
