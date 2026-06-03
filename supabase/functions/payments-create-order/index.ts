@@ -9,7 +9,7 @@
 
 import { handleCors } from '../_shared/cors.ts';
 import { createOrder, eurosToMinor } from '../_shared/revolut.ts';
-import { supabaseAdmin, ok, bad, oops, readJson } from '../_shared/supabase-admin.ts';
+import { supabaseAdmin, ok, bad, oops, readJson, isValidEmail } from '../_shared/supabase-admin.ts';
 import { rateLimit, rateLimitResponse } from '../_shared/ratelimit.ts';
 
 type Fulfilment = 'collection' | 'delivery';
@@ -23,6 +23,10 @@ interface Body {
   description?: string;
   metadata?: Record<string, string>;
   redirect_path?: string;
+  // Order persistence + guest checkout: buyer must supply email here
+  // unless they're authenticated (in which case we use the JWT user's email).
+  buyer_email?: string;
+  buyer_profile_id?: string;  // forwarded from client when signed in
 }
 
 interface ResolvedCharge {
@@ -77,6 +81,36 @@ Deno.serve(async (req: Request) => {
     if (!order.checkout_url && !token) {
       console.error('[create-order] Revolut returned no checkout_url or token', order);
       return oops(req, 'Revolut returned no checkout URL or token.');
+    }
+
+    // Persist a reservation row tied to this Revolut order. The
+    // webhook (revolut-webhook) will look it up by revolut_order_id
+    // when payment completes and flip the listing.status. Only
+    // applies to LISTING mode — admin test charges (no listing_id)
+    // skip persistence.
+    if (typeof body.listing_id === 'string' && body.listing_id.trim()) {
+      const buyerEmail = (body.buyer_email ?? '').trim().toLowerCase();
+      if (buyerEmail && isValidEmail(buyerEmail)) {
+        const buyerProfileId = body.buyer_profile_id && /^[0-9a-f-]{36}$/i.test(body.buyer_profile_id)
+          ? body.buyer_profile_id : null;
+        const { error: persistErr } = await supabaseAdmin.rpc('record_order_created', {
+          p_revolut_order_id: order.id,
+          p_listing_id: body.listing_id.trim(),
+          p_buyer_email: buyerEmail,
+          p_buyer_profile_id: buyerProfileId,
+          p_amount_eur: Math.round(resolved.amountEur),
+          p_is_deposit: !!body.is_deposit,
+          p_fulfilment: body.fulfilment ?? 'collection',
+        });
+        if (persistErr) {
+          // Don't fail the buyer's checkout if persistence fails —
+          // they've already gotten the Revolut order. We log it loudly;
+          // admin can reconcile from the Revolut dashboard.
+          console.error('[create-order] record_order_created failed:', persistErr);
+        }
+      } else {
+        console.warn('[create-order] buyer_email missing/invalid — order not persisted');
+      }
     }
 
     return ok(req, {

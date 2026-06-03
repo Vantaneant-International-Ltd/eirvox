@@ -2,6 +2,7 @@
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { createCheckoutInstance, type RevolutCheckoutInstance } from './revolutCheckout';
   import { callFunction } from './supabase';
+  import { auth } from './auth';
 
   /** Amount in euros. Two roles depending on mode:
    *   - Admin mode (no listingId): the amount the server charges.
@@ -93,6 +94,13 @@
           is_deposit: isDeposit,
           metadata,
           redirect_path: redirectPath,
+          // Order persistence: forward signed-in user's email + profile
+          // so the server can write a reservation row keyed on revolut
+          // order_id. Guest checkout (no auth) is not wired yet — when
+          // it is, the form will collect buyer_email and we pass that
+          // here instead.
+          buyer_email: $auth.profile?.email ?? $auth.user?.email,
+          buyer_profile_id: $auth.user?.id,
         };
       } else {
         reqBody = {
