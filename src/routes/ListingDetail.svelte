@@ -95,12 +95,46 @@
     document.getElementById('seller-contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  // Share — prefer native share sheet (mobile iOS/Android system UI),
+  // fall back to clipboard with a quick visual confirmation. The URL
+  // we share is always the canonical /#/listing/:slug path so it round-
+  // trips correctly through hash routing.
+  let shareToast = '';
+  let shareToastTimer: ReturnType<typeof setTimeout> | null = null;
+  function flashShareToast(msg: string) {
+    shareToast = msg;
+    if (shareToastTimer) clearTimeout(shareToastTimer);
+    shareToastTimer = setTimeout(() => { shareToast = ''; }, 2400);
+  }
+  async function shareListing() {
+    if (!listing) return;
+    const url = `${window.location.origin}/#/listing/${listing.slug ?? listing.id}`;
+    const title = listing.title;
+    const text = `${title} — on ÉIRVOX`;
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch (err) {
+        // User cancelled the system share sheet — silent, NOT an error
+        if (err instanceof Error && err.name === 'AbortError') return;
+        // Any other failure → fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      flashShareToast('Link copied');
+    } catch {
+      flashShareToast('Copy failed — long-press the address bar instead');
+    }
+  }
+
   // Buyers contact sellers via in-app messaging only — phone + email
   // are not surfaced. House listings are DM-able too (the house seller
   // is a person, not the platform).
   let messageBusy = false;
   let messageErr = '';
-  async function messageSeller() {
+  async function messageSeller(prefilledDraft?: string) {
     if (!listing) return;
     if (!$auth.user) {
       navigate(`/login?next=${encodeURIComponent('/listing/' + slug)}`);
@@ -111,7 +145,30 @@
     const r = await getOrCreateConversation(listing.id);
     messageBusy = false;
     if (!r.ok) { messageErr = r.error; return; }
+    // Hand a pre-filled draft to the thread via sessionStorage so the
+    // composer opens with the offer line already typed and the buyer
+    // just hits Send. Thread.svelte reads + clears this on mount.
+    if (prefilledDraft) {
+      try { sessionStorage.setItem(`eirvox_thread_draft_${r.data}`, prefilledDraft); } catch { /* private mode */ }
+    }
     navigate(`/messages/${r.data}`);
+  }
+
+  async function makeOffer() {
+    if (!listing) return;
+    const raw = window.prompt(`Make an offer on "${listing.title}". Enter your amount in € (just the number):`);
+    if (raw == null) return;  // user cancelled
+    const amount = Math.round(Number(raw.replace(/[^\d.]/g, '')));
+    if (!Number.isFinite(amount) || amount <= 0) {
+      window.alert('Please enter a valid number, e.g. 8500');
+      return;
+    }
+    if (amount >= listing.price) {
+      const ok = window.confirm(`Your offer of €${amount.toLocaleString()} is at or above the asking price of €${listing.price.toLocaleString()}. Send anyway?`);
+      if (!ok) return;
+    }
+    const draft = `Offer: €${amount.toLocaleString()}\n\nHi, I'd like to offer €${amount.toLocaleString()} for "${listing.title}". Let me know if that works.`;
+    await messageSeller(draft);
   }
 
   // Mobile sticky CTA can't host the embedded Revolut button cleanly
@@ -159,13 +216,20 @@
 
   let fulfilment: 'collection' | 'delivery' | null = null;
   let isDeposit = false;
+  let showPayOptions = false;  // collapsed by default; "More options →"
 
-  // Auto-pick fulfilment when only one option is enabled. Reset to
-  // null whenever a new listing loads (slug change) so the picker is
-  // fresh.
-  $: if (listing?.id) {
-    if (hasCollection && !hasShipping) fulfilment = 'collection';
-    else if (hasShipping && !hasCollection) fulfilment = 'delivery';
+  // Zombie-proof defaults: pick the most "normal" option on listing
+  // load so the buyer doesn't have to think before they can tap Pay.
+  //   Fulfilment: delivery if priced, else collection (so the headline
+  //               amount works without a click).
+  //   Deposit:    false (pay-in-full is the obvious path; deposit is
+  //               surfaced via the disclosure unless mustDeposit forces it).
+  // Triggers only when fulfilment is still null (avoids overriding an
+  // explicit user pick on the same listing).
+  $: if (listing?.id && fulfilment === null) {
+    if (hasShipping && shippingCostSet)        fulfilment = 'delivery';
+    else if (hasCollection)                    fulfilment = 'collection';
+    else if (hasShipping)                      fulfilment = 'delivery';
   }
 
   // Matrix-derived gates for the local controls.
@@ -281,22 +345,33 @@
               </div>
             {/if}
 
-            <!-- Save button (top right of gallery) -->
-            <button class="gallery__save"
-                    class:gallery__save--saved={saved}
-                    on:click={toggleSave}
-                    aria-label={saved ? 'Remove from saved' : 'Save listing'}>
-              {#if saved}
-                <svg width="14" height="16" viewBox="0 0 14 16" fill="currentColor" aria-hidden="true">
-                  <path d="M1 1h12v14L7 11l-6 4V1z"/>
-                </svg>
-              {:else}
+            <!-- Save + Share buttons (top right of gallery) -->
+            <div class="gallery__actions">
+              <button class="gallery__action"
+                      class:gallery__action--on={saved}
+                      on:click={toggleSave}
+                      aria-label={saved ? 'Remove from saved' : 'Save listing'}>
+                {#if saved}
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="currentColor" aria-hidden="true">
+                    <path d="M1 1h12v14L7 11l-6 4V1z"/>
+                  </svg>
+                {:else}
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                    <path d="M1 1h12v14L7 11l-6 4V1z"/>
+                  </svg>
+                {/if}
+                <span class="gallery__action-label">{saved ? 'Saved' : 'Save'}</span>
+              </button>
+              <button class="gallery__action" on:click={shareListing} aria-label="Share this listing">
                 <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-                  <path d="M1 1h12v14L7 11l-6 4V1z"/>
+                  <path d="M7 1v10M3 5l4-4 4 4M1 11v3a1 1 0 001 1h10a1 1 0 001-1v-3"/>
                 </svg>
-              {/if}
-              {saved ? 'Saved' : 'Save'}
-            </button>
+                <span class="gallery__action-label">Share</span>
+              </button>
+            </div>
+            {#if shareToast}
+              <div class="gallery__toast" role="status">{shareToast}</div>
+            {/if}
           </div>
 
           <!-- Thumbs -->
@@ -362,45 +437,23 @@
             {:else if payable}
               <div class="panel__pay" id="pay-block">
 
-                {#if hasCollection && hasShipping}
-                  <div class="panel__pay-options" role="group" aria-label="Fulfilment">
-                    <button class="panel__pay-opt" class:panel__pay-opt--on={fulfilment === 'collection'}
-                            type="button" on:click={() => fulfilment = 'collection'}>
-                      Collection
-                    </button>
-                    <button class="panel__pay-opt" class:panel__pay-opt--on={fulfilment === 'delivery'}
-                            type="button" on:click={() => fulfilment = 'delivery'}>
-                      Delivery
-                    </button>
-                  </div>
-                {/if}
-
-                {#if canFull && canDeposit}
-                  <div class="panel__pay-options" role="group" aria-label="Payment">
-                    <button class="panel__pay-opt" class:panel__pay-opt--on={!isDeposit}
-                            type="button" on:click={() => isDeposit = false}>
-                      Pay full · {formatPrice(listing.price)}
-                    </button>
-                    <button class="panel__pay-opt" class:panel__pay-opt--on={isDeposit}
-                            type="button" on:click={() => isDeposit = true}>
-                      Deposit · {formatPrice(listing.deposit_amount ?? 0)}
-                    </button>
-                  </div>
-                {/if}
-
-                <div class="panel__pay-mode">
-                  <span class="evx-caption panel__pay-mode-label">{payModeLabel}</span>
-                  <span class="panel__pay-mode-amount">{formatPrice(payAmount)}</span>
-                  {#if isDeposit}
-                    <span class="evx-caption panel__pay-mode-of">of {formatPrice(listing.price)} total · balance on collection</span>
-                  {/if}
-                </div>
-
-                {#if !fulfilment}
-                  <p class="evx-caption panel__pay-hint">Pick collection or delivery to continue.</p>
-                {:else if deliverySelectedWithoutShipping}
-                  <p class="evx-caption panel__pay-hint">Delivery is not priced yet for this listing. Pick collection, or contact the seller.</p>
+                <!-- Primary CTA: one big button at the resolved amount.
+                     Defaults pre-pick fulfilment + payment mode so a
+                     first-time buyer sees a clear "Pay €X" without
+                     fiddling with toggles. Alternatives live in
+                     "More options" below. -->
+                {#if deliverySelectedWithoutShipping}
+                  <p class="evx-caption panel__pay-hint">
+                    Delivery isn't priced for this listing yet. Switch to collection below, or message the seller.
+                  </p>
                 {:else if canShowPayButton}
+                  <div class="panel__pay-primary">
+                    <span class="evx-caption panel__pay-mode-label">{payModeLabel}</span>
+                    <span class="panel__pay-mode-amount">{formatPrice(payAmount)}</span>
+                    {#if isDeposit}
+                      <span class="evx-caption panel__pay-mode-of">of {formatPrice(listing.price)} · balance on collection</span>
+                    {/if}
+                  </div>
                   <PayButton
                     listingId={listing.id}
                     amountEur={payAmount}
@@ -415,11 +468,66 @@
                     Awaiting stock. Deposit holds your place; balance paid in person on collection.
                   </p>
                 {/if}
+
+                <!-- More options disclosure (collection vs delivery,
+                     full vs deposit). Hidden behind a toggle so the
+                     primary path stays single-tap. -->
+                {#if (hasCollection && hasShipping) || (canFull && canDeposit)}
+                  <button class="panel__pay-disclose evx-caption"
+                          type="button"
+                          on:click={() => showPayOptions = !showPayOptions}
+                          aria-expanded={showPayOptions}>
+                    {showPayOptions ? 'Hide options' : 'More options'} →
+                  </button>
+                {/if}
+
+                {#if showPayOptions}
+                  <div class="panel__pay-extras">
+                    {#if hasCollection && hasShipping}
+                      <div class="panel__pay-row">
+                        <span class="evx-caption panel__pay-row-label">Fulfilment</span>
+                        <div class="panel__pay-options" role="group" aria-label="Fulfilment">
+                          <button class="panel__pay-opt" class:panel__pay-opt--on={fulfilment === 'collection'}
+                                  type="button" on:click={() => fulfilment = 'collection'}>
+                            Collection
+                          </button>
+                          <button class="panel__pay-opt" class:panel__pay-opt--on={fulfilment === 'delivery'}
+                                  type="button" on:click={() => fulfilment = 'delivery'}>
+                            Delivery
+                          </button>
+                        </div>
+                      </div>
+                    {/if}
+
+                    {#if canFull && canDeposit}
+                      <div class="panel__pay-row">
+                        <span class="evx-caption panel__pay-row-label">Payment</span>
+                        <div class="panel__pay-options" role="group" aria-label="Payment">
+                          <button class="panel__pay-opt" class:panel__pay-opt--on={!isDeposit}
+                                  type="button" on:click={() => isDeposit = false}>
+                            Full · {formatPrice(listing.price)}
+                          </button>
+                          <button class="panel__pay-opt" class:panel__pay-opt--on={isDeposit}
+                                  type="button" on:click={() => isDeposit = true}>
+                            Deposit · {formatPrice(listing.deposit_amount ?? 0)}
+                          </button>
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
+                {/if}
               </div>
             {:else}
-              <button class="evx-btn evx-btn--primary panel__cta-main" on:click={messageSeller} disabled={messageBusy}>
-                {messageBusy ? 'Opening…' : 'Message seller'}
-              </button>
+              <div class="panel__contact-stack">
+                <button class="evx-btn evx-btn--primary panel__cta-main" on:click={() => messageSeller()} disabled={messageBusy}>
+                  {messageBusy ? 'Opening…' : 'Message seller'}
+                </button>
+                {#if listing.accepts_offers !== false}
+                  <button class="evx-btn evx-btn--ghost panel__cta-main" on:click={makeOffer} disabled={messageBusy}>
+                    Make an offer
+                  </button>
+                {/if}
+              </div>
             {/if}
           </div>
 
@@ -574,7 +682,12 @@
             Pay
           </button>
         {:else}
-          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={messageSeller} disabled={messageBusy}>
+          {#if listing.accepts_offers !== false}
+            <button class="evx-btn evx-btn--ghost evx-btn--sm" on:click={makeOffer} disabled={messageBusy}>
+              Offer
+            </button>
+          {/if}
+          <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => messageSeller()} disabled={messageBusy}>
             {messageBusy ? '…' : 'Message'}
           </button>
         {/if}
@@ -599,9 +712,16 @@
 
       <div class="detail-contact__cta">
         {#if messageErr}<p class="detail-contact__err">{messageErr}</p>{/if}
-        <button class="evx-btn evx-btn--primary" on:click={messageSeller} disabled={messageBusy}>
-          {messageBusy ? 'Opening…' : 'Message seller →'}
-        </button>
+        <div class="detail-contact__cta-row">
+          <button class="evx-btn evx-btn--primary" on:click={() => messageSeller()} disabled={messageBusy}>
+            {messageBusy ? 'Opening…' : 'Message seller →'}
+          </button>
+          {#if listing.accepts_offers !== false}
+            <button class="evx-btn evx-btn--ghost" on:click={makeOffer} disabled={messageBusy}>
+              Make an offer
+            </button>
+          {/if}
+        </div>
         <p class="evx-caption detail-contact__cta-note">
           {#if !$auth.user}You'll be asked to sign in or create an account first.{:else}Free. No commitment.{/if}
         </p>
@@ -670,11 +790,15 @@
   .gallery__placeholder-text { color: rgba(245, 242, 237, 0.25); line-height: 1.6; }
   .gallery__listing-id { color: rgba(245, 242, 237, 0.30); }
 
-  .gallery__save {
+  .gallery__actions {
     position: absolute;
     top: var(--evx-space-md);
     right: var(--evx-space-md);
     z-index: 2;
+    display: flex;
+    gap: 6px;
+  }
+  .gallery__action {
     background: rgba(26, 26, 26, 0.6);
     color: var(--evx-paper);
     border: none;
@@ -689,8 +813,29 @@
     cursor: pointer;
     transition: background 200ms ease, color 200ms ease;
   }
-  .gallery__save:hover { background: rgba(26, 26, 26, 0.85); }
-  .gallery__save--saved { color: var(--evx-fox-orange); }
+  .gallery__action:hover { background: rgba(26, 26, 26, 0.85); }
+  .gallery__action--on { color: var(--evx-fox-orange); }
+  .gallery__toast {
+    position: absolute;
+    bottom: var(--evx-space-md);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    background: rgba(26, 26, 26, 0.85);
+    color: var(--evx-paper);
+    padding: 8px 14px;
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+    animation: toastIn 200ms ease;
+  }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @media (max-width: 480px) {
+    .gallery__action-label { display: none; }
+    .gallery__action { padding: 8px; }
+  }
 
   .gallery__thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--evx-space-sm); }
   .gallery__thumb { aspect-ratio: 1; background: var(--evx-graphite-mid); border: 1px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--evx-transition); opacity: 0.50; overflow: hidden; padding: 0; }
@@ -736,11 +881,27 @@
     color: var(--evx-paper);
     border-color: var(--evx-warm-black);
   }
-  .panel__pay-mode { display: flex; align-items: baseline; gap: var(--evx-space-sm); flex-wrap: wrap; }
-  .panel__pay-mode-label { color: var(--evx-fox-orange); }
-  .panel__pay-mode-amount { font-family: var(--evx-font-display); font-size: 18px; font-weight: 500; color: var(--evx-warm-black); }
-  .panel__pay-mode-of { color: var(--evx-ink-soft); }
+  .panel__pay-primary {
+    display: flex; align-items: baseline; gap: var(--evx-space-sm); flex-wrap: wrap;
+    padding-bottom: 4px;
+  }
+  .panel__pay-mode-label { color: var(--evx-fox-orange); font-family: var(--evx-font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .panel__pay-mode-amount { font-family: var(--evx-font-display); font-size: 28px; font-weight: 500; color: var(--evx-warm-black); letter-spacing: -0.02em; }
+  .panel__pay-mode-of { color: var(--evx-ink-soft); font-family: var(--evx-font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; width: 100%; }
   .panel__pay-hint { color: var(--evx-ink-soft); }
+  .panel__pay-disclose {
+    background: none; border: none; padding: 4px 0; cursor: pointer;
+    color: var(--evx-ink-soft); text-align: left;
+    transition: color 200ms ease;
+  }
+  .panel__pay-disclose:hover { color: var(--evx-warm-black); }
+  .panel__pay-extras {
+    display: flex; flex-direction: column; gap: var(--evx-space-md);
+    padding-top: var(--evx-space-sm);
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  .panel__pay-row { display: flex; flex-direction: column; gap: 6px; }
+  .panel__pay-row-label { color: var(--evx-ink-soft); }
 
   /* Seller card */
   .panel__seller { border: 1px solid var(--evx-rule-light); padding: var(--evx-space-lg); }
@@ -850,6 +1011,12 @@
     display: flex; flex-direction: column; align-items: flex-start;
     gap: var(--evx-space-sm); padding: var(--evx-space-md) 0 var(--evx-space-lg);
     border-bottom: 1px solid var(--evx-rule-light); margin-bottom: var(--evx-space-md);
+  }
+  .detail-contact__cta-row {
+    display: flex; gap: var(--evx-space-sm); flex-wrap: wrap;
+  }
+  .panel__contact-stack {
+    display: flex; flex-direction: column; gap: 8px;
   }
   .detail-contact__cta-note { color: var(--evx-ink-soft); }
   .detail-contact__err {

@@ -110,11 +110,9 @@
     </div>
   </div>
 
-  <!-- Meta row: legal links left, payment marks right.
-       Payment marks: greyscale via CSS filter today (icons in
-       PaymentIcons.svelte are simplified silhouettes). Swap to
-       official SVGs from /public/brand/payment/ when supplied,
-       see /public/brand/payment/README.md. -->
+  <!-- Meta row: legal links left, payment marks right in full
+       brand colour (Visa blue, Mastercard red/orange, Amex blue,
+       Google Pay multi-colour, etc). Drives trust at a glance. -->
   <div class="footer__meta page-container">
     <div class="footer__meta-legal">
       <button on:click={() => navigate('/terms')}>TERMS &amp; CONDITIONS</button>
@@ -346,17 +344,12 @@
   }
   .footer__meta-legal button:hover { color: var(--evx-paper); }
 
-  /* Payment marks greyscale until official SVGs land. The :global
-     overrides shrink the existing PaymentIcons chips and strip
-     colour so the row reads as fine print, not as a brand banner. */
+  /* Payment marks in full colour — zombie-brained buyers respect
+     the visa/mastercard/amex brand colours, not subtle greyscale. */
   .footer__meta-pay :global(.pmi) { gap: 6px; }
   .footer__meta-pay :global(.pmi__card svg) {
     height: 22px;
-    filter: grayscale(1) brightness(1.4) contrast(0.85);
-    opacity: 0.85;
-    transition: opacity 200ms ease;
   }
-  .footer__meta-pay :global(.pmi__card:hover svg) { opacity: 1; }
 
   .footer__sep { color: var(--evx-rule-dark); }
 

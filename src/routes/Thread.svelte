@@ -33,6 +33,15 @@
     if (!conv) { loading = false; return; }
     msgs = await listMessages(id);
     await markConversationRead(id);
+    // Pre-filled draft handoff from ListingDetail (e.g. Make Offer).
+    // Consume + clear so a refresh doesn't keep refilling.
+    try {
+      const stash = sessionStorage.getItem(`eirvox_thread_draft_${id}`);
+      if (stash && !draft) {
+        draft = stash;
+        sessionStorage.removeItem(`eirvox_thread_draft_${id}`);
+      }
+    } catch { /* private mode */ }
     loading = false;
     await tick();
     scrollAnchor?.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'end' });
@@ -137,6 +146,25 @@
         <div bind:this={scrollAnchor}></div>
       </ul>
 
+      <!-- Starter-prompt chips: only on an empty thread, only for the
+           buyer side (seller doesn't message themselves). One tap sends
+           the prompt as a message. Mirrors FB Marketplace's "Is this
+           still available?" instant-send pattern. -->
+      {#if msgs.length === 0 && $auth.user?.id === conv.buyer_id}
+        <div class="starter-prompts">
+          <span class="evx-caption starter-prompts__label">QUICK STARTS</span>
+          <div class="starter-prompts__chips">
+            {#each ['Is this still available?', 'Open to offers?', 'Where is collection?', 'Can I see more photos?'] as prompt}
+              <button class="starter-chip" type="button"
+                      on:click={async () => { draft = prompt; await onSend(); }}
+                      disabled={sending}>
+                {prompt}
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
       <form class="composer" on:submit|preventDefault={onSend}>
         {#if draftLooksLikePii}
           <div class="composer-warn">
@@ -209,6 +237,17 @@
   .msg-body { font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
   .msg-time { color: var(--evx-ink-soft); align-self: flex-end; }
   .msg--mine .msg-time { color: rgba(255,255,255,0.6); }
+
+  .starter-prompts { margin: var(--evx-space-md) 0 var(--evx-space-xl); display: flex; flex-direction: column; gap: 10px; }
+  .starter-prompts__label { color: var(--evx-ink-soft); }
+  .starter-prompts__chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .starter-chip {
+    background: var(--evx-paper-warm); border: 1px solid var(--evx-rule-light);
+    padding: 8px 14px; font-size: 13px; line-height: 1.3; color: var(--evx-warm-black);
+    cursor: pointer; transition: var(--evx-transition);
+  }
+  .starter-chip:hover { border-color: var(--evx-warm-black); background: var(--evx-paper); }
+  .starter-chip:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .composer {
     border-top: 1px solid var(--evx-rule-light); padding-top: var(--evx-space-md);
