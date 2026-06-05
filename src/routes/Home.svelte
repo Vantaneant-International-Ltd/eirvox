@@ -93,7 +93,7 @@
           {/if}
         </h1>
         <p class="hero__desc">
-          {#if driveHero?.subtitle}{driveHero.subtitle}{:else}One product per issue. Made once. We do not reprint.{/if}
+          {#if driveHero?.subtitle}{driveHero.subtitle}{:else}One product per issue. Made once. Not reprinted.{/if}
         </p>
 
         {#if driveHero?.drive_issue_state === 'open' && driveHero.price > 0}
@@ -185,9 +185,9 @@
     {:else if featured.length === 0}
       <div class="empty-state">
         <span class="evx-label empty-state__pre">COMING SOON</span>
-        <h3 class="empty-state__h">First featured listings arriving with Cohort 03.</h3>
+        <h3 class="empty-state__h">Empty by intention.</h3>
         <p class="empty-state__sub">
-          Until sellers are vetted in, we leave this space intentionally empty.
+          Sellers are vetted by hand. This space fills as they're admitted.
         </p>
         <div class="empty-state__actions">
           <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/sell/apply')}>
@@ -215,9 +215,9 @@
         <p class="drive-band__desc">{driveHero?.title ?? 'Next issue coming soon.'}</p>
         <p class="drive-band__copy">
           {#if driveHero?.drive_issue_state === 'open' && driveHero.drive_made_count != null && driveHero.drive_remaining_count != null}
-            {driveHero.drive_made_count} pieces. {driveHero.drive_remaining_count} remaining. We do not reprint.
+            {driveHero.drive_made_count} made. {driveHero.drive_remaining_count} left. Not reprinted.
           {:else if driveHero?.drive_issue_state === 'upcoming'}
-            {driveHero.drive_issue_date ?? 'Arriving soon'}. One product per issue. We do not reprint.
+            {driveHero.drive_issue_date ?? 'Arriving soon'}. One product per issue. Not reprinted.
           {/if}
         </p>
       </div>
@@ -257,9 +257,9 @@
     {:else if recent.length === 0}
       <div class="empty-state">
         <span class="evx-label empty-state__pre">COMING SOON</span>
-        <h3 class="empty-state__h">No listings yet - Cohort 03 closes 14 June.</h3>
+        <h3 class="empty-state__h">Quiet for now.</h3>
         <p class="empty-state__sub">
-          Approved sellers will appear here as soon as their first listings go live.
+          Listings appear as sellers go live.
         </p>
       </div>
     {:else}
@@ -276,27 +276,27 @@
     <div class="trust__inner">
       <div class="trust__item">
         <span class="evx-label trust__num">01</span>
-        <h3 class="trust__title">Direct-to-seller payments. No middleman.</h3>
+        <h3 class="trust__title">Paid direct to the seller.</h3>
         <p class="trust__desc">
-          Marketplace transactions are paid directly to the seller via Revolut.
-          ÉIRVOX is a venue, not a broker. We don't hold buyer funds.
+          Marketplace transactions go straight to the seller's Revolut.
+          We never hold buyer funds. ÉIRVOX is the venue, not the broker.
         </p>
       </div>
       <div class="trust__item">
         <span class="evx-label trust__num">02</span>
-        <h3 class="trust__title">Every seller verified by application.</h3>
+        <h3 class="trust__title">Sellers admitted by application.</h3>
         <p class="trust__desc">
-          Phone and ID verified before listing. Cohort-approved sellers across
-          three tiers - no open signup, no anonymous listings.
+          Every application is reviewed by hand. Three tiers.
+          No open signup. No anonymous accounts. Cohorts four times a year.
         </p>
       </div>
       <div class="trust__item">
         <span class="evx-label trust__num">03</span>
-        <h3 class="trust__title">Refunds where legitimate.</h3>
+        <h3 class="trust__title">Refunds where they're due.</h3>
         <p class="trust__desc">
-          On ÉIRVOX-owned items, we refund for legitimate issues at our discretion
-          (item not as described, fault on our side). See the
-          <a href="#/refund-policy">refund policy</a>.
+          On ÉIRVOX-owned listings, we refund for legitimate issues.
+          Item not as described. Fault on our side.
+          Full policy at <a href="#/refund-policy">/refund-policy</a>.
         </p>
       </div>
     </div>
@@ -307,10 +307,9 @@
     <div class="trade-band__inner">
       <div class="trade-band__left">
         <span class="evx-caption trade-band__pre">DIRECTORY · ÉIRVOX TRADE</span>
-        <h2 class="trade-band__h">Find verified tradespeople across Ireland.</h2>
+        <h2 class="trade-band__h">Verified tradespeople across Ireland.</h2>
         <p class="trade-band__sub">
-          ID-checked, credential-verified, admitted by application.
-          Flat monthly fee - no per-lead charges.
+          Admitted by application. Flat monthly fee, no per-lead charges.
         </p>
         <div class="trade-band__actions">
           <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/trade')}>
@@ -344,8 +343,8 @@
   <section class="sell-cta page-container">
     <div class="sell-cta__inner">
       <div>
-        <h2 class="sell-cta__heading">Sell on Éirvox.</h2>
-        <p class="sell-cta__sub">Lower fees than you're used to. Three tiers, cohort-approved. Apply once - list as soon as you're verified.</p>
+        <h2 class="sell-cta__heading">Sell on ÉIRVOX.</h2>
+        <p class="sell-cta__sub">Lower fees than you'd pay elsewhere. Three tiers. Apply once. List when approved.</p>
       </div>
       <div class="sell-cta__actions">
         <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
