@@ -182,9 +182,9 @@
               <span class="field-hint evx-caption">The name buyers see on your listings.</span>
             </div>
             <div class="field">
-              <label class="evx-caption field-label" for="f-handle">HANDLE (OPTIONAL)</label>
-              <input id="f-handle" type="text" class="field-input" placeholder="@mossco" bind:value={handle} />
-              <span class="field-hint evx-caption">For your future shop URL — /s/your-handle.</span>
+              <label class="evx-caption field-label" for="f-handle">INSTAGRAM (OPTIONAL)</label>
+              <input id="f-handle" type="text" class="field-input" placeholder="mossco" bind:value={handle} />
+              <span class="field-hint evx-caption">Without the @. Buyers see this as a clickable link on every listing.</span>
             </div>
           </div>
 

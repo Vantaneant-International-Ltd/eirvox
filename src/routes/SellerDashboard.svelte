@@ -228,7 +228,7 @@
     // to change it (anti-impersonation). The form input is readonly;
     // we also omit it from the patch so a DOM tweak can't bypass.
     const r = await updateSellerProfile(seller.id, {
-      handle: editHandle.trim() || null,
+      handle: editHandle.trim().replace(/^@/, '').toLowerCase() || null,
       bio: editBio.trim() || null,
       email: editEmail.trim() || null,
       phone: editPhone.trim() || null,
@@ -289,7 +289,13 @@
               <span class="evx-caption">
                 Tier · <strong>{seller.tier === 'atelier' ? 'Atelier · €19/mo · 5%' : seller.tier === 'verified' ? 'Verified · €0/mo · 7%' : 'House · invite'}</strong>
               </span>
-              {#if seller.handle}<span class="evx-caption">@{seller.handle}</span>{/if}
+              {#if seller.handle}
+                <a class="evx-caption dash-header__ig"
+                   href={`https://instagram.com/${seller.handle.replace(/^@/, '')}`}
+                   target="_blank" rel="noopener noreferrer">
+                  @{seller.handle.replace(/^@/, '')}
+                </a>
+              {/if}
             </div>
           {:else if loading}
             <h1 class="dash-header__name">Loading…</h1>
@@ -564,8 +570,9 @@
               {/if}
             </div>
             <div class="field">
-              <label class="evx-caption field-label" for="pf-handle">HANDLE</label>
-              <input id="pf-handle" type="text" class="field-input" placeholder="@yourshop" bind:value={editHandle} />
+              <label class="evx-caption field-label" for="pf-handle">INSTAGRAM</label>
+              <input id="pf-handle" type="text" class="field-input" placeholder="yourshop" bind:value={editHandle} />
+              <span class="evx-caption field-hint">Without the @. Buyers will see this as a clickable link to your Instagram.</span>
             </div>
           </div>
 
@@ -640,6 +647,8 @@
     font-size: 28px;
   }
   .dash-header__id { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .dash-header__ig { color: var(--evx-ink-soft); text-decoration: none; transition: color 200ms ease; }
+  .dash-header__ig:hover { color: var(--evx-fox-orange); }
   .dash-header__name {
     font-family: var(--evx-font-display);
     font-size: clamp(28px, 4vw, 40px);

@@ -732,9 +732,25 @@
           <dt>Trading name</dt>
           <dd>
             {listing.seller?.trading_name ?? '—'}
-            {#if listing.seller?.handle} <span class="detail-contact__handle">·  @{listing.seller.handle}</span>{/if}
           </dd>
         </div>
+        {#if listing.seller?.handle}
+          <div class="detail-contact__row">
+            <dt>Instagram</dt>
+            <dd>
+              <a class="detail-contact__ig"
+                 href={`https://instagram.com/${listing.seller.handle.replace(/^@/, '')}`}
+                 target="_blank" rel="noopener noreferrer">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" style="vertical-align: -2px; margin-right: 6px;">
+                  <rect x="3" y="3" width="18" height="18" rx="5"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+                </svg>
+                @{listing.seller.handle.replace(/^@/, '')}
+              </a>
+            </dd>
+          </div>
+        {/if}
         {#if listing.seller?.city}
           <div class="detail-contact__row">
             <dt>Based in</dt>
@@ -1029,6 +1045,13 @@
     font-size: 13px;
     color: var(--evx-ink-soft);
   }
+  .detail-contact__ig {
+    color: var(--evx-warm-black);
+    text-decoration: none !important;
+    display: inline-flex; align-items: center;
+    transition: color 200ms ease;
+  }
+  .detail-contact__ig:hover { color: var(--evx-fox-orange); }
   .detail-contact__missing {
     margin-top: var(--evx-space-md);
     font-size: 14px;
