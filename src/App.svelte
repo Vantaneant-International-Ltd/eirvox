@@ -57,7 +57,11 @@
   // Legal pages are always reachable so privacy/cookie/terms links
   // in either gate hero can resolve. Required for GDPR (privacy must
   // be accessible to anyone, including pre-launch email-form visitors).
-  const ALWAYS_OPEN_PATHS = ['/privacy', '/terms', '/cookies', '/acceptable-use', '/returns', '/refund-policy'];
+  // Routes that bypass gates: legal pages (required for GDPR access)
+  // plus /login so admins (and team) can sign in even when coming-soon
+  // is active. Without this Kevin can't reach the login form to claim
+  // his admin account on a fresh browser.
+  const ALWAYS_OPEN_PATHS = ['/privacy', '/terms', '/cookies', '/acceptable-use', '/returns', '/refund-policy', '/login'];
   // #dev hash bypasses both (sessionStorage-scoped).
   // Authenticated admins ALSO bypass automatically -- otherwise the
   // "Edit listing ->" target="_blank" link from admin/listings opens
