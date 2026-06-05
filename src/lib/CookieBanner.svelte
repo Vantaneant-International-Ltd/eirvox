@@ -5,6 +5,20 @@
   const STORAGE_KEY = 'eirvox-cookie-consent';
   let visible = false;
 
+  /** Push a consent update into Google's gtag (loaded in index.html
+   *  with Consent Mode v2 defaults of all-denied). Granted enables
+   *  Google Analytics tracking; denied leaves it as cookieless pings. */
+  function gtagConsent(analyticsGranted: boolean) {
+    const w = window as unknown as { gtag?: (...a: unknown[]) => void };
+    if (typeof w.gtag !== 'function') return;
+    w.gtag('consent', 'update', {
+      analytics_storage: analyticsGranted ? 'granted' : 'denied',
+      ad_storage:        'denied',
+      ad_user_data:      'denied',
+      ad_personalization: 'denied',
+    });
+  }
+
   onMount(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -18,10 +32,12 @@
 
   function accept() {
     try { localStorage.setItem(STORAGE_KEY, 'all'); } catch {}
+    gtagConsent(true);
     visible = false;
   }
   function essentialOnly() {
     try { localStorage.setItem(STORAGE_KEY, 'essential'); } catch {}
+    gtagConsent(false);
     visible = false;
   }
 </script>
@@ -42,7 +58,7 @@
       </p>
       <div class="banner__actions">
         <button class="evx-btn evx-btn--ghost-paper evx-btn--sm banner__btn" on:click={essentialOnly}>
-          Essential only
+          Decline
         </button>
         <button class="evx-btn evx-btn--primary evx-btn--sm banner__btn" on:click={accept}>
           Accept all

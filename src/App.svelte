@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { currentPath, matchRoute } from './lib/router';
   import { auth, initAuth } from './lib/auth';
+  import { initAnalytics } from './lib/analytics';
   import { isDevBypassed, isMaintenancePreviewed, isComingSoonPreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate, gatedLegalMode } from './lib/flags';
   import ComingSoonHero from './routes/ComingSoonHero.svelte';
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
@@ -87,6 +88,10 @@
     // Init auth eagerly; the gates only hide the UI shell, auth itself
     // is harmless to load (admin needs it to reach /admin in dev bypass).
     initAuth();
+    // Start the SPA-aware GA pageview tracker. Fires page_view on every
+    // hash-route change. Respects consent automatically via gtag's
+    // Consent Mode v2 (set in index.html + flipped by CookieBanner).
+    initAnalytics();
   });
 
   const CATEGORIES = [

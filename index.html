@@ -31,6 +31,47 @@
     <link rel="icon" type="image/png" href="/brand/symbol.png" />
     <link rel="apple-touch-icon" href="/brand/symbol.png" />
     <title>ÉIRVOX · Ireland's Premium Marketplace</title>
+
+    <!-- ============================================================
+         Google Analytics (gtag.js) with Consent Mode v2
+         ============================================================
+         GA loads on every page but is GATED on cookie consent. Default
+         is "denied" for analytics_storage; CookieBanner.svelte flips
+         to "granted" on Accept all, leaves denied on Essential only.
+         Until granted, gtag drops no cookies + sends only cookie-less
+         pings (advanced consent mode = ad/analytics measurement
+         without identifying the user). GDPR-compliant.
+
+         Auto-pageview is disabled (send_page_view: false) because hash
+         routing means GA's auto-pageview only fires once. src/lib/
+         analytics.ts subscribes to currentPath and emits page_view on
+         every navigation. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SNEJVZK2LE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+
+      // Read existing consent set on a prior visit BEFORE first config call
+      var EVX_CONSENT_KEY = 'eirvox-cookie-consent';
+      var __evxConsent = null;
+      try { __evxConsent = localStorage.getItem(EVX_CONSENT_KEY); } catch (e) {}
+      var __evxAnalyticsGranted = __evxConsent === 'all';
+
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: __evxAnalyticsGranted ? 'granted' : 'denied',
+        wait_for_update: 500
+      });
+
+      gtag('config', 'G-SNEJVZK2LE', {
+        anonymize_ip: true,
+        send_page_view: false   // SPA hash-routing tracker emits pageviews instead
+      });
+    </script>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
