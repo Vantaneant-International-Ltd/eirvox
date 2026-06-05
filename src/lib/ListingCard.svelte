@@ -134,7 +134,11 @@
 </div>
 
 <style>
-  .card { display: flex; flex-direction: column; cursor: pointer; transition: var(--evx-transition); outline: none; }
+  .card {
+    display: flex; flex-direction: column;
+    height: 100%;                          /* fill the grid cell so siblings line up */
+    cursor: pointer; transition: var(--evx-transition); outline: none;
+  }
   .card:hover { opacity: 0.88; }
   .card:focus-visible { outline: 2px solid var(--evx-fox-orange); outline-offset: 2px; }
 
@@ -163,16 +167,31 @@
   }
   .card__placeholder-text { color: rgba(245, 242, 237, 0.25); text-align: center; line-height: 1.5; }
 
-  .card__body { padding: var(--evx-space-md) 0; display: flex; flex-direction: column; gap: var(--evx-space-xs); }
+  .card__body {
+    padding: var(--evx-space-md) 0;
+    display: flex; flex-direction: column; gap: var(--evx-space-xs);
+    flex: 1;                                /* stretches so meta row hits the bottom */
+  }
   .card__eyebrow { color: var(--evx-ink-soft); }
   .card__title {
     font-family: var(--evx-font-display); font-size: 16px; font-weight: 500;
     line-height: 1.25; letter-spacing: -0.01em; color: var(--evx-warm-black); margin: 2px 0;
+    /* cap the title at two lines so wildly long titles can't shove the
+       price out of alignment vs siblings */
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
   }
-  .card__subtitle { font-family: var(--evx-font-mono); font-size: 11px; color: var(--evx-ink-soft); line-height: 1.5; }
+  .card__subtitle {
+    font-family: var(--evx-font-mono); font-size: 11px; color: var(--evx-ink-soft); line-height: 1.5;
+    /* same trick — cap at two lines so a verbose 'Stage 1 mapped · Res
+       delete · 220-240bhp' kind of line doesn't bleed past its sibling */
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
   .card__meta {
     display: flex; flex-direction: column; gap: var(--evx-space-sm);
-    margin-top: var(--evx-space-sm); padding-top: var(--evx-space-sm); border-top: 1px solid var(--evx-rule-light);
+    margin-top: auto;                       /* pin to bottom of the body */
+    padding-top: var(--evx-space-sm); border-top: 1px solid var(--evx-rule-light);
   }
   .card__price-row { display: flex; justify-content: space-between; align-items: baseline; }
   .card__price { font-family: var(--evx-font-display); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; color: var(--evx-warm-black); }
