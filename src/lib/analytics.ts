@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Google Analytics pageview tracker (SPA-aware)
+// ÉIRVOX - Google Analytics pageview tracker (SPA-aware)
 // ============================================================
 // The gtag snippet in index.html loads with `send_page_view: false`
 // because hash routing means GA's auto-pageview only fires once at
@@ -12,7 +12,7 @@
 // CookieBanner.svelte, analytics_storage stays denied and these
 // page_view events are dropped server-side; on Accept all they start
 // being recorded. So we can fire freely without checking consent
-// here — gtag respects it.
+// here - gtag respects it.
 // ============================================================
 
 import { currentPath } from './router';

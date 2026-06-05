@@ -282,7 +282,7 @@
                 {#if row.cover_image}
                   <img class="adm-table__thumb" src={row.cover_image} alt="" />
                 {:else}
-                  <div class="adm-table__thumb adm-table__thumb--empty">—</div>
+                  <div class="adm-table__thumb adm-table__thumb--empty">-</div>
                 {/if}
               </td>
               <td on:click={() => openDetail(row.id)}>
@@ -301,8 +301,8 @@
                   {/if}
                 {/if}
               </td>
-              <td on:click={() => openDetail(row.id)}>{row.seller?.trading_name ?? '—'}</td>
-              <td on:click={() => openDetail(row.id)}>{row.category?.name ?? row.category_slug ?? '—'}</td>
+              <td on:click={() => openDetail(row.id)}>{row.seller?.trading_name ?? '-'}</td>
+              <td on:click={() => openDetail(row.id)}>{row.category?.name ?? row.category_slug ?? '-'}</td>
               <td on:click|stopPropagation>
                 {#if editingField?.id === row.id && editingField.field === 'price'}
                   <input class="adm-input" type="number" bind:value={editValue} style="width: 100px;"
@@ -423,7 +423,7 @@
           <div class="adm-field">
             <span class="adm-field__label">Seller</span>
             <div class="adm-mono">
-              {detail.listing.seller?.trading_name ?? '—'} · {detail.listing.seller?.handle ?? ''}
+              {detail.listing.seller?.trading_name ?? '-'} · {detail.listing.seller?.handle ?? ''}
               {#if detail.listing.seller?.is_house}
                 <span class="adm-badge adm-badge--amber" style="margin-left: 8px;">ÉIRVOX-OWNED</span>
               {/if}
@@ -514,7 +514,7 @@
                   <select class="adm-field__select"
                           value={detail.listing.drive_issue_state ?? ''}
                           on:change={(e) => saveDetail({ drive_issue_state: ((e.currentTarget as HTMLSelectElement).value || null) as DriveIssueState | null })}>
-                    <option value="">— not set —</option>
+                    <option value="">- not set -</option>
                     <option value="open">Open (purchasable)</option>
                     <option value="upcoming">Upcoming (announced, not on sale)</option>
                     <option value="archived">Archived (sold out / historical)</option>

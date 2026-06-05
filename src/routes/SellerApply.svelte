@@ -18,7 +18,7 @@
   let submitting = false;
   let submitError = '';
 
-  // Step 1 — Business info
+  // Step 1 - Business info
   let tradingName = '';
   let handle = '';
   let email = '';
@@ -26,7 +26,7 @@
   let city = '';
   let tradingSince = '';
 
-  // Step 2 — Category & inventory
+  // Step 2 - Category & inventory
   let primaryCategory = '';
   let whatYouSell = '';
   let inventoryCount = '';
@@ -34,10 +34,10 @@
   let priceRangeHigh = '';
   let sourcingMethod = '';
 
-  // Step 3 — Tier
+  // Step 3 - Tier
   let tier: 'verified' | 'atelier' = 'atelier';
 
-  // Step 4 — Agreement
+  // Step 4 - Agreement
   let agreedId = false;
   let agreedTerms = false;
   let agreedCall = false;
@@ -140,7 +140,7 @@
         </div>
         <h1 class="apply-title">Sell on Éirvox.</h1>
         <p class="apply-sub">
-          A short application — five steps, about three minutes.
+          A short application - five steps, about three minutes.
           Cohort 03 reviews close 14 June; approved sellers go live on 01 July.
         </p>
       {/if}
@@ -275,14 +275,14 @@
 
           <div class="form-row form-row--2">
             <div class="field">
-              <label class="evx-caption field-label" for="f-low">PRICE RANGE — FROM (OPTIONAL)</label>
+              <label class="evx-caption field-label" for="f-low">PRICE RANGE - FROM (OPTIONAL)</label>
               <div class="field-prefix">
                 <span class="field-prefix__symbol">€</span>
                 <input id="f-low" type="number" class="field-input" placeholder="100" bind:value={priceRangeLow} />
               </div>
             </div>
             <div class="field">
-              <label class="evx-caption field-label" for="f-high">PRICE RANGE — TO (OPTIONAL)</label>
+              <label class="evx-caption field-label" for="f-high">PRICE RANGE - TO (OPTIONAL)</label>
               <div class="field-prefix">
                 <span class="field-prefix__symbol">€</span>
                 <input id="f-high" type="number" class="field-input" placeholder="5000" bind:value={priceRangeHigh} />
@@ -308,7 +308,7 @@
         <div class="form-header">
           <h2 class="form-h2">Pick a tier.</h2>
           <p class="form-sub">
-            You can change later. Atelier is the recommended path for most sellers — the €19/mo subscription pays for itself
+            You can change later. Atelier is the recommended path for most sellers - the €19/mo subscription pays for itself
             on a single sale, and you get a custom shop page and unlimited listings.
           </p>
         </div>
@@ -333,7 +333,7 @@
               <li>+ Up to 10 active listings</li>
               <li>+ Reservation deposits on every sale</li>
               <li>+ Standard listing tools</li>
-              <li class="tier-pick__neg">— No shop page</li>
+              <li class="tier-pick__neg">- No shop page</li>
             </ul>
             <p class="tier-pick__pitch evx-caption">
               Best for new entrants proving themselves before moving to Atelier.
@@ -386,7 +386,7 @@
         <div class="form-header">
           <h2 class="form-h2">Confirm the basics.</h2>
           <p class="form-sub">
-            Three checkboxes. Read them carefully — they're how the platform stays clean.
+            Three checkboxes. Read them carefully - they're how the platform stays clean.
           </p>
         </div>
 
@@ -407,7 +407,7 @@
             <div class="agree-item__body">
               <strong class="agree-item__title">ÉIRVOX Seller Terms.</strong>
               <p class="agree-item__desc">
-                You agree to the seller terms — accurate listings, honest condition reports, prompt shipping, and dispute resolution
+                You agree to the seller terms - accurate listings, honest condition reports, prompt shipping, and dispute resolution
                 through the platform. Full terms at the link below.
               </p>
               <button type="button" class="agree-item__link evx-caption" on:click={() => navigate('/trust')}>
@@ -433,19 +433,19 @@
           <span class="evx-label apply-summary__label">YOUR APPLICATION</span>
           <dl class="apply-summary__list">
             <dt class="apply-summary__dt">Trading name</dt>
-            <dd class="apply-summary__dd">{tradingName || '—'}</dd>
+            <dd class="apply-summary__dd">{tradingName || '-'}</dd>
 
             <dt class="apply-summary__dt">Email</dt>
-            <dd class="apply-summary__dd">{email || '—'}</dd>
+            <dd class="apply-summary__dd">{email || '-'}</dd>
 
             <dt class="apply-summary__dt">Location</dt>
-            <dd class="apply-summary__dd">{city || '—'}</dd>
+            <dd class="apply-summary__dd">{city || '-'}</dd>
 
             <dt class="apply-summary__dt">Category</dt>
-            <dd class="apply-summary__dd">{primaryCategory || '—'}</dd>
+            <dd class="apply-summary__dd">{primaryCategory || '-'}</dd>
 
             <dt class="apply-summary__dt">Inventory</dt>
-            <dd class="apply-summary__dd">{inventoryCount || '—'}</dd>
+            <dd class="apply-summary__dd">{inventoryCount || '-'}</dd>
 
             <dt class="apply-summary__dt">Tier</dt>
             <dd class="apply-summary__dd">{tier === 'atelier' ? 'Atelier · €19/mo · 5%' : 'Verified · €0/mo · 7%'}</dd>
@@ -480,7 +480,7 @@
         </h2>
         <p class="confirm__body">
           Your application is in front of the cohort review team.
-          We respond to every applicant — usually within 48 hours, occasionally up to 5 working days
+          We respond to every applicant - usually within 48 hours, occasionally up to 5 working days
           during high-volume weeks.
         </p>
 

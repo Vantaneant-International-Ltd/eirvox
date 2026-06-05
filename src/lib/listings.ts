@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Listing helpers (Supabase-backed)
+// ÉIRVOX - Listing helpers (Supabase-backed)
 // CRUD + storage upload + reservations
 // ============================================================
 
@@ -260,7 +260,7 @@ export async function deleteListing(id: string): Promise<Result<null>> {
   return { ok: true, data: null };
 }
 
-/** Set the listing status — used by Mark as Sold / Reserved / etc. */
+/** Set the listing status - used by Mark as Sold / Reserved / etc. */
 export async function setListingStatus(
   id: string,
   status: ListingStatus
@@ -440,7 +440,7 @@ export async function deleteListingImage(image: ListingImage): Promise<Result<nu
 
 /** Update sort_order for a list of images in the given order. */
 export async function reorderImages(orderedIds: string[]): Promise<Result<null>> {
-  // Batch into updates — Supabase has no array UPDATE in PostgREST.
+  // Batch into updates - Supabase has no array UPDATE in PostgREST.
   const ops = orderedIds.map((id, idx) =>
     supabase.from('listing_images').update({ sort_order: idx }).eq('id', id)
   );
@@ -544,13 +544,13 @@ function friendlyError(msg: string): string {
     return 'A required table is missing. Run supabase/v04-marketplace-schema.sql in Supabase.';
   }
   if (m.includes('row-level security')) {
-    return 'Permission denied — make sure your seller account is approved.';
+    return 'Permission denied - make sure your seller account is approved.';
   }
   if (m.includes('bucket not found')) {
     return 'Storage buckets missing. Run supabase/v04-marketplace-schema.sql in Supabase.';
   }
   if (m.includes('exceeded the maximum')) {
-    return 'That file is too large — keep image uploads under 6 MB.';
+    return 'That file is too large - keep image uploads under 6 MB.';
   }
   return msg;
 }

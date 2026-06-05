@@ -72,7 +72,7 @@
       </div>
       {#if featured.length === 0}
         <p style="color: var(--evx-ink-soft); font-size: 14px; padding: var(--evx-space-md) 0;">
-          No featured listings yet — they'll appear here as soon as Cohort 03 sellers go live.
+          No featured listings yet - they'll appear here as soon as Cohort 03 sellers go live.
         </p>
       {:else}
         <div class="nf-listings">

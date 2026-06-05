@@ -96,7 +96,7 @@
           redirect_path: redirectPath,
           // Order persistence: forward signed-in user's email + profile
           // so the server can write a reservation row keyed on revolut
-          // order_id. Guest checkout (no auth) is not wired yet — when
+          // order_id. Guest checkout (no auth) is not wired yet - when
           // it is, the form will collect buyer_email and we pass that
           // here instead.
           buyer_email: $auth.profile?.email ?? $auth.user?.email,
@@ -208,7 +208,7 @@
      the wrapper sensible width and let Revolut handle the visuals. */
   .paybtn__rev { width: 100%; min-height: 48px; }
 
-  /* Prominent Fox-Orange "Pay with a card" — visual sibling to the
+  /* Prominent Fox-Orange "Pay with a card" - visual sibling to the
      native Revolut Pay button above. Matches the rest of the site's
      primary CTAs. Opens Revolut's popup with all methods available. */
   .paybtn__card {

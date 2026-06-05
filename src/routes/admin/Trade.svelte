@@ -128,10 +128,10 @@
                 class:is-selected={selected?.id === row.id}>
               <td>{row.name}</td>
               <td>{categories.find(c => c.slug === row.trade)?.name ?? row.trade}</td>
-              <td>{row.town ?? '—'}{row.county ? `, ${row.county}` : ''}</td>
+              <td>{row.town ?? '-'}{row.county ? `, ${row.county}` : ''}</td>
               <td><span class="adm-badge adm-badge--neutral">{row.tier}</span></td>
               <td><span class={`adm-badge adm-badge--${badge.tone}`}>{badge.label}</span></td>
-              <td class="adm-mono">{row.rating ?? '—'}</td>
+              <td class="adm-mono">{row.rating ?? '-'}</td>
               <td class="adm-mono">{new Date(row.created_at).toLocaleDateString()}</td>
             </tr>
           {/each}
@@ -173,25 +173,25 @@
         </div>
 
         <div class="adm-field"><span class="adm-field__label">Trade</span><div>{selected.trade}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Tagline</span><div>{selected.tagline ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Bio</span><div style="white-space: pre-wrap;">{selected.bio ?? '—'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Tagline</span><div>{selected.tagline ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Bio</span><div style="white-space: pre-wrap;">{selected.bio ?? '-'}</div></div>
         <div class="adm-field--row">
-          <div class="adm-field"><span class="adm-field__label">County</span><div>{selected.county ?? '—'}</div></div>
-          <div class="adm-field"><span class="adm-field__label">Town</span><div>{selected.town ?? '—'}</div></div>
+          <div class="adm-field"><span class="adm-field__label">County</span><div>{selected.county ?? '-'}</div></div>
+          <div class="adm-field"><span class="adm-field__label">Town</span><div>{selected.town ?? '-'}</div></div>
         </div>
         <div class="adm-field"><span class="adm-field__label">Coverage areas</span>
-          <div>{(selected.coverage_areas ?? []).join(', ') || '—'}</div>
+          <div>{(selected.coverage_areas ?? []).join(', ') || '-'}</div>
         </div>
         <div class="adm-field--row">
-          <div class="adm-field"><span class="adm-field__label">Years experience</span><div>{selected.years_experience ?? '—'}</div></div>
+          <div class="adm-field"><span class="adm-field__label">Years experience</span><div>{selected.years_experience ?? '-'}</div></div>
           <div class="adm-field"><span class="adm-field__label">Completed jobs</span><div>{selected.completed_jobs}</div></div>
         </div>
         <div class="adm-field"><span class="adm-field__label">Qualifications</span>
-          <div>{(selected.qualifications ?? []).join(', ') || '—'}</div>
+          <div>{(selected.qualifications ?? []).join(', ') || '-'}</div>
         </div>
-        <div class="adm-field"><span class="adm-field__label">Phone</span><div class="adm-mono">{selected.phone ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Email</span><div class="adm-mono">{selected.email ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Response time</span><div>{selected.response_time ?? '—'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Phone</span><div class="adm-mono">{selected.phone ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Email</span><div class="adm-mono">{selected.email ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Response time</span><div>{selected.response_time ?? '-'}</div></div>
         <div class="adm-field"><span class="adm-field__label">Applied</span>
           <div class="adm-mono">{new Date(selected.applied_at).toLocaleString()}</div>
         </div>

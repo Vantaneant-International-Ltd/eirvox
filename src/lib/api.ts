@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — API layer (Supabase-backed)
+// ÉIRVOX - API layer (Supabase-backed)
 // Single source of truth for all read queries against the public
 // site. Pages should import from here instead of touching Supabase
 // directly.
@@ -172,7 +172,7 @@ export interface TradeCategory {
   count?: number;
 }
 
-// Site settings shape — mirrors lib/admin.ts
+// Site settings shape - mirrors lib/admin.ts
 export interface SiteSettings {
   cohort: { number: number; status: 'open' | 'closed'; closes_at: string; tagline: string };
   drive:  { issue_number: number; issue_title: string; total_allocation: number; remaining: number; price_eur: number };

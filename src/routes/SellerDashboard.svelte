@@ -116,7 +116,7 @@
       loading = false;
       if (result.reason === 'timeout') {
         loadStatus = 'timeout';
-        loadError = 'Supabase didn\'t reply in 10 seconds — most often the PostgREST schema cache is stale. Run supabase/v04-rls-reset.sql then refresh.';
+        loadError = 'Supabase didn\'t reply in 10 seconds - most often the PostgREST schema cache is stale. Run supabase/v04-rls-reset.sql then refresh.';
       } else {
         loadStatus = 'db-error';
         loadError = result.error instanceof Error ? result.error.message : 'Database error.';
@@ -130,7 +130,7 @@
       loadStatus = 'db-error';
       const m = (error.message ?? '').toLowerCase();
       if (m.includes('infinite recursion')) {
-        loadError = 'A profiles RLS policy is recursing. Run supabase/v04-rls-reset.sql in Supabase SQL Editor — it drops every policy on the affected tables and rebuilds the clean set.';
+        loadError = 'A profiles RLS policy is recursing. Run supabase/v04-rls-reset.sql in Supabase SQL Editor - it drops every policy on the affected tables and rebuilds the clean set.';
       } else if (m.includes('does not exist') || m.includes('schema cache')) {
         loadError = 'A required table is missing. Run supabase/v04-marketplace-schema.sql first.';
       } else {
@@ -162,14 +162,14 @@
       if (!insErr && created) seller = created as Seller;
     }
 
-    // No seller row yet — normal for buyers who haven't applied.
+    // No seller row yet - normal for buyers who haven't applied.
     if (!seller) {
       loading = false;
       loadStatus = 'no-seller';
       return;
     }
 
-    // 2. Seller exists — fetch stats + listings in parallel, each with
+    // 2. Seller exists - fetch stats + listings in parallel, each with
     //    its own timeout so one stuck query doesn't block the page.
     const [statsR, listingsR] = await Promise.all([
       withTimeout(Promise.resolve(getSellerStats(seller.id)), 10_000, 'stats'),
@@ -215,7 +215,7 @@
     if (r.ok) load();
   }
   async function duplicateListing(_id: string) {
-    alert('Duplicate goes to a fresh /sell/create — coming next phase.');
+    alert('Duplicate goes to a fresh /sell/create - coming next phase.');
   }
 
   // ── Profile save ──────────────────────────────────────────
@@ -224,7 +224,7 @@
     if (!seller || profileSaving) return;
     profileSaving = true; profileMsg = ''; profileErr = '';
 
-    // trading_name is admin-only — sellers must request via support
+    // trading_name is admin-only - sellers must request via support
     // to change it (anti-impersonation). The form input is readonly;
     // we also omit it from the patch so a DOM tweak can't bypass.
     const r = await updateSellerProfile(seller.id, {
@@ -258,7 +258,7 @@
   }
 
   function formatEuros(n: number | null | undefined): string {
-    if (n == null) return '—';
+    if (n == null) return '-';
     return '€' + Number(n).toLocaleString('en-IE');
   }
 </script>
@@ -348,7 +348,7 @@
         <h2 class="dash-state__h">You haven't applied to sell.</h2>
         <p>
           ÉIRVOX sellers are admitted by cohort. Cohort 03 is open until 14 June 2026.
-          Application takes about three minutes — we review every one within 48 hours.
+          Application takes about three minutes - we review every one within 48 hours.
         </p>
         <div class="dash-state__actions">
           <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
@@ -420,7 +420,7 @@
           </div>
           <div class="stat">
             <span class="evx-label stat__label">SELLER RATING</span>
-            <span class="stat__val">—</span>
+            <span class="stat__val">-</span>
             <span class="evx-caption stat__sub">No reviews yet</span>
           </div>
         </div>
@@ -458,7 +458,7 @@
           <div class="empty">
             <span class="evx-label">NOTHING YET</span>
             <h3 class="empty__h">You haven't created a listing.</h3>
-            <p>Most sellers start with three or four — variety lets buyers find you in different searches.</p>
+            <p>Most sellers start with three or four - variety lets buyers find you in different searches.</p>
             <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/create')}>
               Create your first listing →
             </button>
@@ -483,7 +483,7 @@
                   {/if}
                   <div class="lst-info">
                     <strong>{l.title}</strong>
-                    <span class="evx-caption">{l.subtitle ?? '—'}</span>
+                    <span class="evx-caption">{l.subtitle ?? '-'}</span>
                   </div>
                 </div>
                 <span class={statusBadgeClass(l.status)}>

@@ -71,7 +71,7 @@
             <li>+ Up to 10 active listings</li>
             <li>+ Reservation deposits on every sale</li>
             <li>+ Standard listing tools</li>
-            <li class="tier-card__neg">— No shop page</li>
+            <li class="tier-card__neg">- No shop page</li>
           </ul>
           <button class="evx-btn evx-btn--ghost tier-card__cta" on:click={() => navigate('/sell/apply')}>
             Apply as Verified
@@ -107,7 +107,7 @@
             <li>+ Issue / drop scheduling</li>
             <li>+ ÉIRVOX photography &amp; copy</li>
             <li>+ Co-authentication</li>
-            <li class="tier-card__neg">— By invitation only</li>
+            <li class="tier-card__neg">- By invitation only</li>
           </ul>
           <button class="evx-btn evx-btn--ghost tier-card__cta" disabled>
             By invitation
@@ -128,7 +128,7 @@
         </div>
         <div class="sell-addon__right">
           <strong>Required above €500.</strong><br/>
-          For watches and sneakers — automatic.
+          For watches and sneakers - automatic.
         </div>
       </div>
     </section>
@@ -140,7 +140,7 @@
           <span class="evx-caption sell-criteria__pre">WHAT WE LOOK FOR</span>
           <h2 class="sell-criteria__heading">Four things, that's it.</h2>
           <p class="sell-criteria__sub">
-            We respond to every applicant — usually within five working days.
+            We respond to every applicant - usually within five working days.
             Approval includes a short video call.
           </p>
         </div>

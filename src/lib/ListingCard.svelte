@@ -40,10 +40,10 @@
   const bg = ['#2A2825', '#3A3632', '#31302D', '#282624', '#35312E', '#2E2C29', '#373430', '#2C2A27'];
   $: cardBg = bg[(listing.id?.charCodeAt(0) ?? 65) % bg.length];
 
-  // Display tier (uppercase) — Supabase tiers are lower-case
+  // Display tier (uppercase) - Supabase tiers are lower-case
   $: tier = (listing.seller?.tier ?? 'verified').toUpperCase() as 'HOUSE' | 'ATELIER' | 'VERIFIED';
 
-  // Subtitle line — prefer subcategory, then condition, then subtitle
+  // Subtitle line - prefer subcategory, then condition, then subtitle
   $: eyebrow = listing.subcategory
     || (listing.category_slug ? prettyCategory(listing.category_slug) : '')
     || '';
@@ -65,7 +65,7 @@
   on:keydown={(e) => e.key === 'Enter' && navigate(`/listing/${slug}`)}
   tabindex="0"
   role="link"
-  aria-label="{listing.title} — {formatPrice(listing.price)}"
+  aria-label="{listing.title} - {formatPrice(listing.price)}"
 >
   <!-- Image area 5:6 ratio -->
   <div class="card__image" style={cover ? '' : `background: ${cardBg}`}>
@@ -183,7 +183,7 @@
   }
   .card__subtitle {
     font-family: var(--evx-font-mono); font-size: 11px; color: var(--evx-ink-soft); line-height: 1.5;
-    /* same trick — cap at two lines so a verbose 'Stage 1 mapped · Res
+    /* same trick - cap at two lines so a verbose 'Stage 1 mapped · Res
        delete · 220-240bhp' kind of line doesn't bleed past its sibling */
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden;

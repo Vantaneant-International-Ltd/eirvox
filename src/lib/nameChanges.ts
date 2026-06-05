@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Seller trading-name change requests
+// ÉIRVOX - Seller trading-name change requests
 // ============================================================
 // Sellers submit via submit_name_change_request RPC.
 // Admins approve/reject via approve/reject RPCs (both

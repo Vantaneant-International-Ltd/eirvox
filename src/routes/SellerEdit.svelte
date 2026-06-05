@@ -65,8 +65,8 @@
   const conditionOptions: Array<{ value: string; label: string }> = [
     { value: 'new',        label: 'OEM+ New' },
     { value: 'like_new',   label: 'Like New' },
-    { value: 'excellent',  label: 'Used — Excellent' },
-    { value: 'good',       label: 'Used — Good' },
+    { value: 'excellent',  label: 'Used - Excellent' },
+    { value: 'good',       label: 'Used - Good' },
     { value: 'refinished', label: 'Refinished' },
   ];
 
@@ -386,7 +386,7 @@
             <div class="field">
               <label class="evx-caption field-label" for="e-cond">CONDITION</label>
               <select id="e-cond" class="field-input" bind:value={condition}>
-                <option value="">—</option>
+                <option value="">-</option>
                 {#each conditionOptions as opt}<option value={opt.value}>{opt.label}</option>{/each}
               </select>
             </div>
@@ -473,7 +473,7 @@
                 <select id="d-state" class="field-input"
                         bind:value={driveIssueState}
                         on:change={() => saveDrivePatch({ drive_issue_state: driveIssueState || null })}>
-                  <option value="">—</option>
+                  <option value="">-</option>
                   <option value="upcoming">Upcoming</option>
                   <option value="open">Open</option>
                   <option value="archived">Archived</option>

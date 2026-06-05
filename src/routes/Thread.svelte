@@ -73,8 +73,8 @@
 
   function counterpartName(): string {
     const myId = $auth.user?.id;
-    if (!conv || !myId) return '—';
-    if (conv.buyer_id === myId) return conv.seller?.trading_name ?? '—';
+    if (!conv || !myId) return '-';
+    if (conv.buyer_id === myId) return conv.seller?.trading_name ?? '-';
     return conv.buyer?.full_name ?? 'Buyer';
   }
 
@@ -134,7 +134,7 @@
           <li class="msg" class:msg--mine={isMine(m)}>
             {#if m.contains_pii}
               <div class="msg-pii">
-                Off-site contact detail shared. Anything that happens after this message is between you and the other party — ÉIRVOX protection ends.
+                Off-site contact detail shared. Anything that happens after this message is between you and the other party - ÉIRVOX protection ends.
               </div>
             {/if}
             <div class="msg-bubble">
@@ -168,7 +168,7 @@
       <form class="composer" on:submit|preventDefault={onSend}>
         {#if draftLooksLikePii}
           <div class="composer-warn">
-            ⚠️ Looks like you're sharing contact details. Sending will move this deal off ÉIRVOX — our refund policy won't apply.
+            ⚠️ Looks like you're sharing contact details. Sending will move this deal off ÉIRVOX - our refund policy won't apply.
           </div>
         {/if}
         {#if sendErr}<div class="composer-err">{sendErr}</div>{/if}
@@ -176,7 +176,7 @@
           class="composer__input"
           rows="2"
           maxlength="4000"
-          placeholder="Type a message — press Enter to send, Shift+Enter for newline"
+          placeholder="Type a message - press Enter to send, Shift+Enter for newline"
           bind:value={draft}
           on:keydown={onKey}
           disabled={sending}

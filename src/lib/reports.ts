@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — reports data access (admin-side)
+// ÉIRVOX - reports data access (admin-side)
 // ============================================================
 //
 // Mirrors src/lib/enquiries.ts: thin wrappers around the supabase
@@ -136,7 +136,7 @@ export async function updateReport(
 function friendlyError(msg: string): string {
   const m = msg.toLowerCase();
   if (m.includes('row-level security')) {
-    return 'Permission denied — your profile.role must be admin.';
+    return 'Permission denied - your profile.role must be admin.';
   }
   if (m.includes('does not exist') || m.includes('schema cache')) {
     return 'Reports table is missing. Apply supabase/v08-reports.sql in Supabase.';

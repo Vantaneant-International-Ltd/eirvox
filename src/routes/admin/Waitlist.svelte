@@ -128,7 +128,7 @@
                 {#if row.source}
                   <span class="adm-badge adm-badge--neutral">{row.source}</span>
                 {:else}
-                  <span class="wl-muted">—</span>
+                  <span class="wl-muted">-</span>
                 {/if}
               </td>
               <td class="adm-mono">{formatDate(row.created_at)}</td>

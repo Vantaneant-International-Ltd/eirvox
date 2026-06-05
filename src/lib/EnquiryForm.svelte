@@ -71,7 +71,7 @@
     <span class="evx-label enq-thanks__label">RECEIVED</span>
     <h3 class="enq-thanks__h">We'll be in touch.</h3>
     <p class="enq-thanks__body">
-      We respond to every enquiry — usually within 24 hours during the week.
+      We respond to every enquiry - usually within 24 hours during the week.
     </p>
   </div>
 {:else}

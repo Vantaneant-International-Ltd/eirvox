@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Admin helpers (Supabase-backed)
+// ÉIRVOX - Admin helpers (Supabase-backed)
 // All functions assume the caller has profile.role = 'admin'.
 // RLS enforces this regardless.
 // ============================================================
@@ -494,7 +494,7 @@ export async function setUserSuspension(
   return { ok: true, data: data as AdminUser };
 }
 
-// ── Categories (admin) — both marketplace + trade ─────────
+// ── Categories (admin) - both marketplace + trade ─────────
 
 export interface MarketplaceCategory extends Category {
   active: boolean;
@@ -558,7 +558,7 @@ export async function deleteMarketplaceCategory(id: string): Promise<Result<null
     .select('*', { count: 'exact', head: true })
     .eq('category_id', id);
   if ((count ?? 0) > 0) {
-    return { ok: false, error: `Cannot delete — ${count} listings still use this category.` };
+    return { ok: false, error: `Cannot delete - ${count} listings still use this category.` };
   }
   const { error } = await supabase.from('categories').delete().eq('id', id);
   if (error) return { ok: false, error: friendlyError(error.message) };
@@ -571,7 +571,7 @@ export async function deleteTradeCategory(id: string, slug: string): Promise<Res
     .select('*', { count: 'exact', head: true })
     .eq('trade', slug);
   if ((count ?? 0) > 0) {
-    return { ok: false, error: `Cannot delete — ${count} tradespeople still in this category.` };
+    return { ok: false, error: `Cannot delete - ${count} tradespeople still in this category.` };
   }
   const { error } = await supabase.from('trade_categories').delete().eq('id', id);
   if (error) return { ok: false, error: friendlyError(error.message) };
@@ -707,7 +707,7 @@ function friendlyError(msg: string): string {
     return 'Admin tables missing. Run supabase/v04-admin-schema.sql in Supabase.';
   }
   if (m.includes('row-level security')) {
-    return 'Permission denied — your profile.role must be admin.';
+    return 'Permission denied - your profile.role must be admin.';
   }
   return msg;
 }

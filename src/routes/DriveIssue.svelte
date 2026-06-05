@@ -273,7 +273,7 @@
       <div class="di-spec__left">
         <span class="evx-caption di-spec__pre">THE SPECIFICATION</span>
         <h2 class="di-spec__heading">At a glance.</h2>
-        <p class="di-spec__sub">One specification — no variants. Each piece serialised in Dublin before it leaves the house.</p>
+        <p class="di-spec__sub">One specification - no variants. Each piece serialised in Dublin before it leaves the house.</p>
 
         {#if dbListing.specs && dbListing.specs.length > 0}
           <table class="di-spec__table">
@@ -299,7 +299,7 @@
         <blockquote class="di-spec__quote">
           "No variants. No restocks. No exceptions."
         </blockquote>
-        <cite class="di-spec__cite evx-caption">— RENATO G., CURATOR</cite>
+        <cite class="di-spec__cite evx-caption">- RENATO G., CURATOR</cite>
 
         {#if dbListing.description}
           {#each dbListing.description.split('\n\n') as para}
@@ -463,7 +463,7 @@
       <div class="di-spec__left">
         <span class="evx-caption di-spec__pre">THE SPECIFICATION</span>
         <h2 class="di-spec__heading">At a glance.</h2>
-        <p class="di-spec__sub">One specification — no variants. Each piece serialised in Dublin before it leaves the house.</p>
+        <p class="di-spec__sub">One specification - no variants. Each piece serialised in Dublin before it leaves the house.</p>
 
         <table class="di-spec__table">
           <tbody>
@@ -500,11 +500,11 @@
         <blockquote class="di-spec__quote">
           "No variants. No restocks. No exceptions."
         </blockquote>
-        <cite class="di-spec__cite evx-caption">— RENATO G., CURATOR</cite>
+        <cite class="di-spec__cite evx-caption">- RENATO G., CURATOR</cite>
 
         <p class="di-spec__body">
           The wheel is a one-piece forged-carbon shell, hand-trimmed and wrapped in Alcantara.
-          Champagne stitching runs the twelve-o'clock mark. Underneath, OEM electronics —
+          Champagne stitching runs the twelve-o'clock mark. Underneath, OEM electronics -
           no aftermarket switching, no warning lights, no compromises with the car.
         </p>
         <p class="di-spec__body">

@@ -27,7 +27,7 @@
   $: activeReservations = getActiveReservations();
 
   // Live saved listings from Supabase. We keep `savedItems` mock for legacy slugs
-  // but only render the live ones — when the user has none yet, show empty state.
+  // but only render the live ones - when the user has none yet, show empty state.
   let savedListings: ListingWithExtras[] = [];
   onMount(async () => {
     if ($auth.user) {
@@ -86,7 +86,7 @@
     if (status === 'completed') return 4;
     return 0;
   }
-  // Actions per status. v1 is hands-off — contact happens directly
+  // Actions per status. v1 is hands-off - contact happens directly
   // with sellers off-platform, so 'message seller' actions are gone.
   // The remaining flows (pay, confirm, track) are placeholders until
   // the H2 Stripe-Connect escrow ships.
@@ -339,7 +339,7 @@
                                   {:else if i === currentIdx}
                                     <span class="evx-caption timeline__step-date timeline__step-date--pending">In progress</span>
                                   {:else}
-                                    <span class="evx-caption timeline__step-date timeline__step-date--upcoming">—</span>
+                                    <span class="evx-caption timeline__step-date timeline__step-date--upcoming">-</span>
                                   {/if}
                                 </div>
                               </div>
@@ -398,7 +398,7 @@
             </div>
           {:else}
             <p class="acct-intro">
-              {savedListings.length} items kept for later. Sorted by date saved — newest first.
+              {savedListings.length} items kept for later. Sorted by date saved - newest first.
             </p>
 
             <div class="saved-grid">
@@ -483,7 +483,7 @@
             <div class="settings-list">
               {#each [
                 { key: 'newMessages',  label: 'New messages',   desc: 'When a seller replies or sends you a new message.' },
-                { key: 'priceDrops',   label: 'Price drops',    desc: 'On items you\'ve saved — emailed weekly.' },
+                { key: 'priceDrops',   label: 'Price drops',    desc: 'On items you\'ve saved - emailed weekly.' },
                 { key: 'driveReleases',label: 'DRIVE releases', desc: 'When a new DRIVE issue opens for reservation.' },
                 { key: 'weeklyDigest', label: 'Weekly digest',  desc: 'A summary of new listings in your saved categories.' },
               ] as item}
@@ -973,7 +973,7 @@
   }
   .empty__sub { font-size: 15px; line-height: 1.7; color: var(--evx-ink-soft); margin-bottom: var(--evx-space-md); }
 
-  /* Settings — profile */
+  /* Settings - profile */
   .profile-form { display: flex; flex-direction: column; gap: var(--evx-space-lg); }
 
   .profile-row {
@@ -1002,7 +1002,7 @@
     outline: none;
   }
 
-  /* Settings — list */
+  /* Settings - list */
   .settings-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--evx-rule-light); }
 
   .setting {
@@ -1025,7 +1025,7 @@
   .setting__title { font-family: var(--evx-font-display); font-size: 14px; font-weight: 500; color: var(--evx-warm-black); }
   .setting__desc { color: var(--evx-ink-soft); line-height: 1.5; }
 
-  /* Settings — actions */
+  /* Settings - actions */
   .settings-actions { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--evx-rule-light); }
 
   .action {

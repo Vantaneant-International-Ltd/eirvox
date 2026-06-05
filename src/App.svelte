@@ -125,7 +125,7 @@
 {#if gate === 'maintenance'}
   {#if maintenancePreview}
     <div class="dev-banner">
-      PREVIEW MODE — Maintenance gate is OFF for the public · visit <code>/#exit-preview</code> to leave
+      PREVIEW MODE - Maintenance gate is OFF for the public · visit <code>/#exit-preview</code> to leave
     </div>
   {/if}
   <MaintenanceHero />
@@ -134,7 +134,7 @@
 {:else}
 {#if bypassed && ($siteFlags.maintenance || $siteFlags.coming_soon)}
   <div class="dev-banner">
-    DEV MODE — {$siteFlags.maintenance ? 'Maintenance' : 'Coming soon'} is active for visitors
+    DEV MODE - {$siteFlags.maintenance ? 'Maintenance' : 'Coming soon'} is active for visitors
   </div>
 {/if}
 {#if path === '/'}

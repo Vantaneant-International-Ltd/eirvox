@@ -72,7 +72,7 @@
         <div class="legal-footer-note">
           <span class="evx-label legal-footer-note__label">QUESTIONS?</span>
           <p class="legal-footer-note__body">
-            Anything unclear, anything to flag — email
+            Anything unclear, anything to flag - email
             <a href="mailto:support@eirvox.ie" class="legal-link">support@eirvox.ie</a>
             and we'll come back to you within 48 hours.
           </p>

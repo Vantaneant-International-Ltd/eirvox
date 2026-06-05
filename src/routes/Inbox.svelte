@@ -36,8 +36,8 @@
 
   function counterpartName(c: ConversationSummary): string {
     const myId = $auth.user?.id;
-    if (!myId) return '—';
-    if (c.buyer_id === myId) return c.seller?.trading_name ?? '—';
+    if (!myId) return '-';
+    if (c.buyer_id === myId) return c.seller?.trading_name ?? '-';
     return c.buyer?.full_name ?? 'Buyer';
   }
 
@@ -77,7 +77,7 @@
                 {#if c.listing?.cover_image}
                   <img src={c.listing.cover_image} alt="" />
                 {:else}
-                  <span class="conv__cover-fallback">—</span>
+                  <span class="conv__cover-fallback">-</span>
                 {/if}
               </div>
               <div class="conv__body">

@@ -327,7 +327,7 @@
                 Curated {cat?.name?.toLowerCase() ?? category} arriving with Cohort 03.
               </h2>
               <p class="cat-coming-soon__sub">
-                We're admitting sellers by application — every listing here will be from a
+                We're admitting sellers by application - every listing here will be from a
                 phone- and ID-verified seller. Apply now to be the first seller in this category.
               </p>
               <div class="cat-coming-soon__actions">
@@ -451,7 +451,7 @@
   .cat-empty { padding: var(--evx-space-3xl) 0; display: flex; flex-direction: column; gap: var(--evx-space-md); color: var(--evx-ink-soft); }
   .cat-empty__reset { background: none; border: none; color: var(--evx-fox-orange); cursor: pointer; padding: 0; text-align: left; }
 
-  /* Premium "coming soon" — when category has 0 listings */
+  /* Premium "coming soon" - when category has 0 listings */
   .cat-coming-soon {
     padding: var(--evx-space-3xl) var(--evx-space-2xl);
     border: 1px solid var(--evx-rule-light);

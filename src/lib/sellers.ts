@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Seller helpers (Supabase-backed)
+// ÉIRVOX - Seller helpers (Supabase-backed)
 // ============================================================
 
 import { supabase, callFunction } from './supabase';
@@ -94,7 +94,7 @@ export interface SellerApplicationStub {
 
 /** Submit a seller application via the serverless route.
  *  Anonymous-friendly: works whether or not the visitor is signed in.
- *  Writes to seller_applications (not sellers — sellers only gets
+ *  Writes to seller_applications (not sellers - sellers only gets
  *  rows on admin approval via approve_seller_application()).
  *
  *  Local dev: `npm run dev:api` (vercel dev) to exercise the API.
@@ -215,16 +215,16 @@ function friendlyError(msg: string): string {
     return 'Database policy is misconfigured. Run supabase/v04-marketplace-schema.sql to fix it.';
   }
   if (m.includes('row-level security')) {
-    return 'Permission denied — make sure you are signed in.';
+    return 'Permission denied - make sure you are signed in.';
   }
   if (m.includes('does not exist') || m.includes('schema cache')) {
     return 'The marketplace tables are missing. Run supabase/v04-marketplace-schema.sql in the Supabase SQL Editor.';
   }
   if (m.includes('duplicate key') && m.includes('profile_id')) {
-    return 'You already have a seller application — view its status on the dashboard.';
+    return 'You already have a seller application - view its status on the dashboard.';
   }
   if (m.includes('duplicate key') && m.includes('handle')) {
-    return 'That handle is taken — try a different one.';
+    return 'That handle is taken - try a different one.';
   }
   return msg;
 }

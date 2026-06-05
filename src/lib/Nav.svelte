@@ -90,7 +90,7 @@
         <input
           type="search"
           class="nav__search evx-caption"
-          placeholder="Search listings — make, model, category…"
+          placeholder="Search listings - make, model, category…"
           aria-label="Search listings"
           bind:value={navSearch}
         />

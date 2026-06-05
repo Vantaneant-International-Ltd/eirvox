@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Messaging (buyer ↔ seller, scoped to a listing)
+// ÉIRVOX - Messaging (buyer ↔ seller, scoped to a listing)
 // ============================================================
 // Schema lives on public.conversations + public.messages.
 // Writes go through three SECURITY DEFINER RPCs added in
@@ -48,7 +48,7 @@ export interface ConversationSummary extends Conversation {
 
 // ── PII detection ────────────────────────────────────────────
 // Catches the common "let's take this off-app" patterns. False
-// positives are fine — we WANT to warn aggressively. The receiver
+// positives are fine - we WANT to warn aggressively. The receiver
 // can still read the message; the banner just says "ÉIRVOX
 // protection ends once you leave the app."
 
@@ -98,7 +98,7 @@ export async function markConversationRead(conversationId: string): Promise<void
 
 /** Inbox view. Returns conversations the caller participates in
  *  (either as buyer_id = self OR as owner of seller_id's profile).
- *  RLS handles the filter — we just SELECT * and Postgres returns
+ *  RLS handles the filter - we just SELECT * and Postgres returns
  *  only what the caller is allowed to see. */
 export async function listMyConversations(): Promise<ConversationSummary[]> {
   const { data: convs, error } = await supabase

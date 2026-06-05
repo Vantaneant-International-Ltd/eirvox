@@ -104,8 +104,8 @@
             <tr on:click={() => selectUser(row)}
                 class:is-selected={selected?.id === row.id}
                 class:adm-row--dim={row.suspended}>
-              <td>{row.full_name ?? '—'}</td>
-              <td class="adm-mono">{row.email ?? '—'}</td>
+              <td>{row.full_name ?? '-'}</td>
+              <td class="adm-mono">{row.email ?? '-'}</td>
               <td><span class="adm-badge adm-badge--neutral">{row.role}</span></td>
               <td class="adm-mono">{new Date(row.created_at).toLocaleDateString()}</td>
               <td>
@@ -137,11 +137,11 @@
           </div>
         {/if}
 
-        <div class="adm-field"><span class="adm-field__label">Email</span><div class="adm-mono">{selected.email ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Phone</span><div class="adm-mono">{selected.phone ?? '—'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Email</span><div class="adm-mono">{selected.email ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Phone</span><div class="adm-mono">{selected.phone ?? '-'}</div></div>
         <div class="adm-field--row">
-          <div class="adm-field"><span class="adm-field__label">City</span><div>{selected.city ?? '—'}</div></div>
-          <div class="adm-field"><span class="adm-field__label">Country</span><div>{selected.country ?? '—'}</div></div>
+          <div class="adm-field"><span class="adm-field__label">City</span><div>{selected.city ?? '-'}</div></div>
+          <div class="adm-field"><span class="adm-field__label">Country</span><div>{selected.country ?? '-'}</div></div>
         </div>
 
         <div class="adm-field">

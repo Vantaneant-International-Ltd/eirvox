@@ -123,9 +123,9 @@
       <span class="evx-label pr__label pr__label--{tone}">{label}</span>
       <h1 class="pr__h">
         {#if state === 'COMPLETED'}
-          Thanks — your payment of €{amount} went through.
+          Thanks - your payment of €{amount} went through.
         {:else if state === 'AUTHORISED'}
-          Authorised — €{amount} is on hold pending capture.
+          Authorised - €{amount} is on hold pending capture.
         {:else if state === 'CANCELLED'}
           You cancelled. No money moved.
         {:else if state === 'FAILED'}

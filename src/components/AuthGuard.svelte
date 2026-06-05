@@ -18,7 +18,7 @@
   // If requireRole is set, we implicitly require auth.
   $: effectiveRequireAuth = requireAuth || !!requireRole;
 
-  // Redirect to login if missing auth — only after init.
+  // Redirect to login if missing auth - only after init.
   let redirected = false;
   $: if (!pending && effectiveRequireAuth && !signedIn && !redirected) {
     redirected = true;

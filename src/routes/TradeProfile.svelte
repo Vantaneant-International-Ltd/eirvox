@@ -29,7 +29,7 @@
     if (t && cat) {
       applySeo({
         title: `${t.name} · ${cat.name}`,
-        description: `${t.tagline ?? ''} · ${t.years_experience ?? '—'}+ years experience · ÉIRVOX TRADE verified.`,
+        description: `${t.tagline ?? ''} · ${t.years_experience ?? '-'}+ years experience · ÉIRVOX TRADE verified.`,
         path: `/trade/${categorySlug}/${slug}`,
       });
     }
@@ -230,7 +230,7 @@
             <ul class="tp-side-card__list">
               <li>+ ID and credentials verified before listing.</li>
               <li>+ Reviews come from real, verified jobs.</li>
-              <li>+ Flat monthly fee — no per-lead charges.</li>
+              <li>+ Flat monthly fee - no per-lead charges.</li>
               <li>+ ÉIRVOX is a directory, not a contractor.</li>
             </ul>
             <button class="evx-caption tp-side-card__link" on:click={() => navigate('/trade')}>

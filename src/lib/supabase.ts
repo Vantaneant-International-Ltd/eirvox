@@ -1,6 +1,6 @@
 // ============================================================
-// ÉIRVOX — Supabase client
-// Public anon key. Safe to embed (read-only at row level —
+// ÉIRVOX - Supabase client
+// Public anon key. Safe to embed (read-only at row level -
 // Row Level Security in the database enforces real access control).
 // Loaded from VITE_SUPABASE_* env vars; see .env.example.
 // ============================================================
@@ -20,7 +20,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 /** Base URL for Supabase Edge Functions. The endpoints previously
  *  served at /api/* (Vercel serverless) now live at
  *  <project>.supabase.co/functions/v1/<name>. Stays here so client
- *  code never hardcodes the URL — see supabase/functions/README.md. */
+ *  code never hardcodes the URL - see supabase/functions/README.md. */
 export const SUPABASE_FUNCTIONS_URL = `${SUPABASE_URL.replace(/\/$/, '')}/functions/v1`;
 
 /** Wrapper around fetch() for calls to Edge Functions. Adds the
@@ -96,7 +96,7 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
 /** Race a promise against a timeout. Returns a Result-style object so
  *  callers can present a sensible UI instead of a forever-spinner.
  *  Common cause of timeouts: PostgREST schema cache out of sync after
- *  RLS policy changes — run supabase/v04-rls-reset.sql to clear. */
+ *  RLS policy changes - run supabase/v04-rls-reset.sql to clear. */
 export async function withTimeout<T>(
   promise: PromiseLike<T>,
   ms = 10_000,

@@ -105,7 +105,7 @@
       return;
     }
 
-    success = 'Account created — check your email to confirm, then sign in.';
+    success = 'Account created - check your email to confirm, then sign in.';
     // Switch to login mode but keep the email pre-filled
     password = '';
     confirmPassword = '';
@@ -124,7 +124,7 @@
       error = result.error ?? 'Could not send reset email.';
       return;
     }
-    success = 'Reset link sent. Check your email — it expires in 60 minutes.';
+    success = 'Reset link sent. Check your email - it expires in 60 minutes.';
   }
 </script>
 

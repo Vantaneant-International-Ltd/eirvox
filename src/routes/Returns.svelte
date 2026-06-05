@@ -5,7 +5,7 @@
 
   onMount(() => applySeo({
     title: 'Returns & Refunds',
-    description: 'How returns and refunds work on ÉIRVOX — for marketplace items, DRIVE editions, and TRADE subscriptions.',
+    description: 'How returns and refunds work on ÉIRVOX - for marketplace items, DRIVE editions, and TRADE subscriptions.',
     path: '/returns',
   }));
 
@@ -22,7 +22,7 @@
 <LegalLayout
   title="Returns & Refunds."
   {sections}
-  intro="The rules for getting money back, sending items back, and cancelling subscriptions. Clear answers — no fine print buried at the bottom."
+  intro="The rules for getting money back, sending items back, and cancelling subscriptions. Clear answers - no fine print buried at the bottom."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · DEPOSITS</span>
@@ -56,7 +56,7 @@
       </li>
     </ul>
     <p>
-      DRIVE editions are different — ÉIRVOX is the seller, so we handle DRIVE refunds directly.
+      DRIVE editions are different - ÉIRVOX is the seller, so we handle DRIVE refunds directly.
       See section 04 below.
     </p>
   </section>
@@ -65,7 +65,7 @@
     <span class="legal-section__num">02 · ITEMS</span>
     <h2 id="r-items" class="legal-section__h">Item returns.</h2>
     <p>
-      ÉIRVOX facilitates returns between buyers and sellers — we don't take the item back ourselves
+      ÉIRVOX facilitates returns between buyers and sellers - we don't take the item back ourselves
       because we're not the seller of record.
     </p>
     <ul>
@@ -75,7 +75,7 @@
       </li>
       <li>
         <strong>Change of mind:</strong> at the seller's discretion. Some sellers accept,
-        some don't — check the listing or message before reserving.
+        some don't - check the listing or message before reserving.
       </li>
       <li>
         Return shipping for change-of-mind returns is paid by the buyer unless otherwise agreed.
@@ -108,7 +108,7 @@
       <li>If production QC fails, your deposit is refunded in full and you do not receive the piece.</li>
       <li>
         <strong>No returns on completed DRIVE pieces</strong> unless the piece is defective
-        — these are made-to-order to your specification.
+        - these are made-to-order to your specification.
       </li>
       <li>Defects must be reported within 7 days of receipt with photographic evidence.</li>
     </ul>
@@ -119,7 +119,7 @@
     <h2 id="r-trade" class="legal-section__h">TRADE subscriptions.</h2>
     <p>
       TRADE subscriptions (Listed €9/mo, Pro €29/mo) can be cancelled at any time. Cancellation takes
-      effect at the <strong>end of the current billing cycle</strong> — you remain listed until then.
+      effect at the <strong>end of the current billing cycle</strong> - you remain listed until then.
     </p>
     <p>
       No refunds for partial months. Annual upfront subscribers can request a pro-rated refund within
@@ -148,7 +148,7 @@
       </li>
     </ol>
     <p>
-      Urgent or high-value disputes: <a href="mailto:disputes@eirvox.ie">disputes@eirvox.ie</a> — senior
+      Urgent or high-value disputes: <a href="mailto:disputes@eirvox.ie">disputes@eirvox.ie</a> - senior
       response within 4 hours during office hours.
     </p>
   </section>

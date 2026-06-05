@@ -1,6 +1,6 @@
 <script lang="ts">
   // ============================================================
-  // ÉIRVOX — payment method icon strip
+  // ÉIRVOX - payment method icon strip
   // ============================================================
   //
   // Inline SVG badges for the methods Revolut hosted checkout offers.
@@ -18,7 +18,7 @@
 
 <div class="pmi" aria-label="Accepted payment methods" role="list">
 
-  <!-- Revolut Pay — wordmark single-piece per Revolut rebrand guidelines
+  <!-- Revolut Pay - wordmark single-piece per Revolut rebrand guidelines
        (don't split R from rest of wordmark). Solid black bg #000 per
        primary palette. "Pay" is a small sub-mark in the lockup. -->
   <span class="pmi__card pmi__card--dark" role="listitem" title="Revolut Pay">

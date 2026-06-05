@@ -49,7 +49,7 @@
     setTimeout(() => { if (savedKey === 'flags') savedKey = null; }, 1800);
   }
 
-  // Revolut live-mode test charge — embedded PayButton renders a
+  // Revolut live-mode test charge - embedded PayButton renders a
   // native Revolut Pay button + a fallback link that opens the
   // popup with Apple Pay, Google Pay, card, and bank.
   let payTestKey = 0; // bump to force a fresh PayButton instance after a charge
@@ -129,7 +129,7 @@
       <h2 class="adm-section__h">Payments</h2>
       <div style="background: var(--evx-paper); border: 1px solid var(--evx-rule-light); padding: 24px;">
         <div class="adm-field">
-          <strong style="display: block; font-size: 14px; margin-bottom: 6px;">Revolut Merchant API — live integration test</strong>
+          <strong style="display: block; font-size: 14px; margin-bottom: 6px;">Revolut Merchant API - live integration test</strong>
           <p class="adm-field__hint">
             The native Revolut Pay button below creates a real €1 order against your live
             Revolut Merchant API. Use "another way" to test Apple Pay / Google Pay / Card / Bank.

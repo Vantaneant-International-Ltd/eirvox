@@ -344,7 +344,7 @@
   }
   .footer__meta-legal button:hover { color: var(--evx-paper); }
 
-  /* Payment marks in full colour — zombie-brained buyers respect
+  /* Payment marks in full colour - zombie-brained buyers respect
      the visa/mastercard/amex brand colours, not subtle greyscale. */
   .footer__meta-pay :global(.pmi) { gap: 6px; }
   .footer__meta-pay :global(.pmi__card svg) {

@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Mock user, orders, saved items, messages, activity
+// ÉIRVOX - Mock user, orders, saved items, messages, activity
 // ------------------------------------------------------------
 // Account/Messages still consume this mock store. Real reservation
 // data lives in Supabase (see lib/api.ts → getMySavedListings etc.).
@@ -168,21 +168,21 @@ export const conversations: Conversation[] = [
       {
         id: 'm-001',
         sender: 'user',
-        text: 'Hi — interested in the Tudor. Could I see a few closer shots of the lugs and the clasp engraving?',
+        text: 'Hi - interested in the Tudor. Could I see a few closer shots of the lugs and the clasp engraving?',
         timestamp: '25 May · 12:18',
         read: true,
       },
       {
         id: 'm-002',
         sender: 'seller',
-        text: 'Hi Renato — light hairlines on the lugs only, clasp engraving is sharp. Grabbing close-ups for you now.',
+        text: 'Hi Renato - light hairlines on the lugs only, clasp engraving is sharp. Grabbing close-ups for you now.',
         timestamp: '25 May · 12:24',
         read: true,
       },
       {
         id: 'm-003',
         sender: 'seller',
-        text: 'Three photos attached: lugs, clasp, and bezel macro. Watch hasn\'t been polished — what you see is what you get.',
+        text: 'Three photos attached: lugs, clasp, and bezel macro. Watch hasn\'t been polished - what you see is what you get.',
         timestamp: '25 May · 12:31',
         read: true,
       },
@@ -196,14 +196,14 @@ export const conversations: Conversation[] = [
       {
         id: 'm-005',
         sender: 'seller',
-        text: 'I\'d meet at €3,400 with free DPD — best I can do given the full set. Lower than €3,400 doesn\'t make sense for me.',
+        text: 'I\'d meet at €3,400 with free DPD - best I can do given the full set. Lower than €3,400 doesn\'t make sense for me.',
         timestamp: '26 May · 11:08',
         read: true,
       },
       {
         id: 'm-006',
         sender: 'user',
-        text: 'Fair enough — €3,400 works. Will reserve through the platform tonight.',
+        text: 'Fair enough - €3,400 works. Will reserve through the platform tonight.',
         timestamp: 'Today · 09:14',
         read: true,
       },
@@ -217,7 +217,7 @@ export const conversations: Conversation[] = [
       {
         id: 'm-008',
         sender: 'seller',
-        text: 'Also — happy to throw in the original spring-bar tool if you don\'t already have one. Let me know.',
+        text: 'Also - happy to throw in the original spring-bar tool if you don\'t already have one. Let me know.',
         timestamp: 'Today · 10:03',
         read: false,
       },
@@ -241,14 +241,14 @@ export const conversations: Conversation[] = [
       {
         id: 'm-102',
         sender: 'user',
-        text: 'Hi — quick question about fitment on the 2024 GT 63 Premium Plus. Any difference vs the standard GT 63?',
+        text: 'Hi - quick question about fitment on the 2024 GT 63 Premium Plus. Any difference vs the standard GT 63?',
         timestamp: '25 May · 18:45',
         read: true,
       },
       {
         id: 'm-103',
         sender: 'seller',
-        text: 'No difference — same column, same OEM electronics passthrough. Confirming with the fabricator and will follow up within 48h with a fitment note for your VIN.',
+        text: 'No difference - same column, same OEM electronics passthrough. Confirming with the fabricator and will follow up within 48h with a fitment note for your VIN.',
         timestamp: 'Yesterday · 14:22',
         read: false,
       },
@@ -265,21 +265,21 @@ export const conversations: Conversation[] = [
       {
         id: 'm-201',
         sender: 'user',
-        text: 'Hi — are these still available? Asking before I drive up from Dublin to view.',
+        text: 'Hi - are these still available? Asking before I drive up from Dublin to view.',
         timestamp: '2 May · 16:12',
         read: true,
       },
       {
         id: 'm-202',
         sender: 'seller',
-        text: 'Yes still here. Happy to put them aside for a viewing if you give me a day\'s notice — I work out of the unit Mon-Sat.',
+        text: 'Yes still here. Happy to put them aside for a viewing if you give me a day\'s notice - I work out of the unit Mon-Sat.',
         timestamp: '2 May · 17:48',
         read: true,
       },
       {
         id: 'm-203',
         sender: 'user',
-        text: 'Got it — I\'ll be in touch closer to the weekend. Thanks for the quick reply.',
+        text: 'Got it - I\'ll be in touch closer to the weekend. Thanks for the quick reply.',
         timestamp: '3 May · 09:30',
         read: true,
       },
@@ -303,7 +303,7 @@ export const conversations: Conversation[] = [
       {
         id: 'm-302',
         sender: 'seller',
-        text: 'All original 1980s E-track. Brackets are mixed — some original, some replaced under the lifetime warranty. Vitsœ paperwork available.',
+        text: 'All original 1980s E-track. Brackets are mixed - some original, some replaced under the lifetime warranty. Vitsœ paperwork available.',
         timestamp: '18 Apr · 10:14',
         read: true,
       },
@@ -334,7 +334,7 @@ export const activity: ActivityItem[] = [
   {
     id: 'a-002',
     type: 'reservation',
-    title: 'AMG GT — Carbon Steering Wheel reserved',
+    title: 'AMG GT - Carbon Steering Wheel reserved',
     detail: 'Issue 003 · €49 deposit · awaiting fitment confirmation',
     timestamp: '2 days ago',
     link: '/account/orders',

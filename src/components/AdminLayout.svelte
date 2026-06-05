@@ -10,7 +10,7 @@
 
   export let title: string = 'Admin';
 
-  // Pending badges — refresh on mount and on path change so each
+  // Pending badges - refresh on mount and on path change so each
   // navigation update the sidebar counts.
   let stats: AdminStats | null = null;
   let waitlistCount = 0;

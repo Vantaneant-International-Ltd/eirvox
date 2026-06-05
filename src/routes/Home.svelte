@@ -257,7 +257,7 @@
     {:else if recent.length === 0}
       <div class="empty-state">
         <span class="evx-label empty-state__pre">COMING SOON</span>
-        <h3 class="empty-state__h">No listings yet — Cohort 03 closes 14 June.</h3>
+        <h3 class="empty-state__h">No listings yet - Cohort 03 closes 14 June.</h3>
         <p class="empty-state__sub">
           Approved sellers will appear here as soon as their first listings go live.
         </p>
@@ -287,7 +287,7 @@
         <h3 class="trust__title">Every seller verified by application.</h3>
         <p class="trust__desc">
           Phone and ID verified before listing. Cohort-approved sellers across
-          three tiers — no open signup, no anonymous listings.
+          three tiers - no open signup, no anonymous listings.
         </p>
       </div>
       <div class="trust__item">
@@ -310,7 +310,7 @@
         <h2 class="trade-band__h">Find verified tradespeople across Ireland.</h2>
         <p class="trade-band__sub">
           ID-checked, credential-verified, admitted by application.
-          Flat monthly fee — no per-lead charges.
+          Flat monthly fee - no per-lead charges.
         </p>
         <div class="trade-band__actions">
           <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/trade')}>
@@ -345,7 +345,7 @@
     <div class="sell-cta__inner">
       <div>
         <h2 class="sell-cta__heading">Sell on Éirvox.</h2>
-        <p class="sell-cta__sub">Lower fees than you're used to. Three tiers, cohort-approved. Apply once — list as soon as you're verified.</p>
+        <p class="sell-cta__sub">Lower fees than you're used to. Three tiers, cohort-approved. Apply once - list as soon as you're verified.</p>
       </div>
       <div class="sell-cta__actions">
         <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>

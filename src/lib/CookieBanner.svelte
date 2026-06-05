@@ -25,7 +25,7 @@
       const stored = localStorage.getItem(STORAGE_KEY);
       visible = !stored;
     } catch {
-      // localStorage blocked (private mode etc.) — show the banner once
+      // localStorage blocked (private mode etc.) - show the banner once
       visible = true;
     }
   });

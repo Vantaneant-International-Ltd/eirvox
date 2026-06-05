@@ -201,7 +201,7 @@
                   {#if editingId === row.id}
                     <input class="adm-input" bind:value={editDesc} style="min-width: 240px;" />
                   {:else}
-                    <span class="adm-muted">{row.description ?? '—'}</span>
+                    <span class="adm-muted">{row.description ?? '-'}</span>
                   {/if}
                 </td>
                 <td>
@@ -226,7 +226,7 @@
         </table>
       </div>
       <p class="adm-muted" style="font-size: 12px; margin-top: 8px;">
-        Drag a row by its handle to reorder. Categories with listings/tradespeople can't be deleted — toggle them off instead.
+        Drag a row by its handle to reorder. Categories with listings/tradespeople can't be deleted - toggle them off instead.
       </p>
     </section>
   {/if}

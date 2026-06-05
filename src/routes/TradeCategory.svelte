@@ -139,7 +139,7 @@
           <h3 style="font-family: var(--evx-font-display); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin: var(--evx-space-sm) 0;">
             No verified {meta.name.toLowerCase()} yet.
           </h3>
-          <p>Applications are open — first approvals will appear here.</p>
+          <p>Applications are open - first approvals will appear here.</p>
           <div style="margin-top: var(--evx-space-md);">
             <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/trade/apply')}>
               List your trade →

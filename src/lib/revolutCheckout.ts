@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Revolut Checkout JS loader
+// ÉIRVOX - Revolut Checkout JS loader
 // ============================================================
 //
 // Dynamically loads https://merchant.revolut.com/embed.js and calls
@@ -10,7 +10,7 @@
 //   instance.payWithGooglePay(options)     Google Pay sheet
 //   instance.destroy()                     cleanup
 //
-// Token comes from POST /functions/v1/payments-create-order — it's
+// Token comes from POST /functions/v1/payments-create-order - it's
 // Revolut's per-order public id, NOT the merchant public key. We
 // therefore don't need VITE_REVOLUT_PUBLIC_KEY for this flow. If
 // we later add direct Apple Pay / Google Pay sheets or in-page card
@@ -24,7 +24,7 @@ const EMBED_SRC = 'https://merchant.revolut.com/embed.js';
 
 type CheckoutEnv = 'prod' | 'sandbox';
 
-// Whatever shape Revolut returns — we only call a few methods on it.
+// Whatever shape Revolut returns - we only call a few methods on it.
 export interface RevolutCheckoutInstance {
   revolutPay(target: HTMLElement, options?: Record<string, unknown>): unknown;
   payWithPopup(options: PopupOptions): void;
@@ -74,7 +74,7 @@ function loadScript(): Promise<void> {
 }
 
 /** Load embed.js (idempotent) and return a checkout instance for the
- *  given order token. env defaults to 'prod' — sandbox isn't wired
+ *  given order token. env defaults to 'prod' - sandbox isn't wired
  *  because the merchant API key in .env is a live key. */
 export async function createCheckoutInstance(
   token: string,

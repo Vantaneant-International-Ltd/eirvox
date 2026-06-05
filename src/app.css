@@ -1,5 +1,5 @@
 /* ============================================================
-   ÉIRVOX — Design Token System & Base Styles
+   ÉIRVOX - Design Token System & Base Styles
    Inter Tight + Newsreader Italic + JetBrains Mono
    Paper #F5F2ED · Ink #1A1A1A · Fox Orange #E8742C
    ============================================================ */
@@ -35,7 +35,7 @@
   --evx-font-editorial: 'Newsreader', Georgia, serif;
   --evx-font-mono:      'JetBrains Mono', 'Courier New', monospace;
 
-  /* Motion — 200ms opacity fade only */
+  /* Motion - 200ms opacity fade only */
   --evx-transition: opacity 200ms ease;
 
   /* Layout */
@@ -97,7 +97,7 @@ a {
 
 /* ── Typography utilities ── */
 
-/* JetBrains Mono — labels, captions, meta */
+/* JetBrains Mono - labels, captions, meta */
 .evx-label {
   font-family: var(--evx-font-mono);
   font-size: 10px;
@@ -115,7 +115,7 @@ a {
   line-height: 1.5;
 }
 
-/* Inter Tight — display headings */
+/* Inter Tight - display headings */
 .evx-display {
   font-family: var(--evx-font-display);
   font-weight: 500;
@@ -132,7 +132,7 @@ a {
   letter-spacing: -0.015em;
 }
 
-/* Newsreader — editorial accent, used sparingly */
+/* Newsreader - editorial accent, used sparingly */
 .evx-accent {
   font-family: var(--evx-font-editorial);
   font-style: italic;

@@ -117,7 +117,7 @@
             <tr on:click={() => { selected = row; actionError = ''; }}
                 class:is-selected={selected?.id === row.id}>
               <td>{row.trading_name}</td>
-              <td class="adm-mono">{row.handle ?? '—'}</td>
+              <td class="adm-mono">{row.handle ?? '-'}</td>
               <td><span class="adm-badge adm-badge--neutral">{row.tier}</span></td>
               <td><span class={`adm-badge adm-badge--${badge.tone}`}>{badge.label}</span></td>
               <td class="adm-mono">{row.listings_count ?? 0}</td>
@@ -162,15 +162,15 @@
           </div>
         </div>
 
-        <div class="adm-field"><span class="adm-field__label">Handle</span><div class="adm-mono">{selected.handle ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Email</span><div class="adm-mono">{selected.email ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Phone</span><div class="adm-mono">{selected.phone ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">City</span><div>{selected.city ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Primary category</span><div>{selected.primary_category ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">What they sell</span><div>{selected.what_they_sell ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Inventory size</span><div>{selected.inventory_count ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Sourcing method</span><div>{selected.sourcing_method ?? '—'}</div></div>
-        <div class="adm-field"><span class="adm-field__label">Trading since</span><div>{selected.trading_since ?? '—'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Handle</span><div class="adm-mono">{selected.handle ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Email</span><div class="adm-mono">{selected.email ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Phone</span><div class="adm-mono">{selected.phone ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">City</span><div>{selected.city ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Primary category</span><div>{selected.primary_category ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">What they sell</span><div>{selected.what_they_sell ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Inventory size</span><div>{selected.inventory_count ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Sourcing method</span><div>{selected.sourcing_method ?? '-'}</div></div>
+        <div class="adm-field"><span class="adm-field__label">Trading since</span><div>{selected.trading_since ?? '-'}</div></div>
         <div class="adm-field"><span class="adm-field__label">Price range</span>
           <div>€{selected.price_low ?? 0} to €{selected.price_high ?? 0}</div>
         </div>

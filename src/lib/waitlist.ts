@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Waitlist (Supabase-backed)
+// ÉIRVOX - Waitlist (Supabase-backed)
 // Capture from the coming-soon page; review in /admin/waitlist.
 // ============================================================
 

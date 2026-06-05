@@ -37,11 +37,11 @@
       date: 'Q3 MMXXVI', status: 'upcoming', price: null, remaining: null, total: null },
     { num: '002', slug: null, title: 'Porsche 911 GT3',
       subtitle: '992 · 4.0 Naturally Aspirated',
-      desc: 'Forged carbon shift paddle set. Archived — sold out.',
+      desc: 'Forged carbon shift paddle set. Archived - sold out.',
       date: 'Feb MMXXVI', status: 'archived', price: 1850, remaining: 0,    total: 6 },
     { num: '001', slug: null, title: 'BMW M3 Competition',
       subtitle: 'G80 · S58 Biturbo',
-      desc: 'Alcantara handbrake grip and gear surrounds. Archived — sold out.',
+      desc: 'Alcantara handbrake grip and gear surrounds. Archived - sold out.',
       date: 'Nov MMXXV', status: 'archived', price: 690, remaining: 0,    total: 10 },
   ];
 
@@ -102,7 +102,7 @@
       <p class="di-header__desc">
         Limited-run OEM+ pieces, one specification per issue.
         Made in Dublin, serialised before they leave the house.
-        One issue open at a time — no variants, no reprints.
+        One issue open at a time - no variants, no reprints.
       </p>
     </header>
 
@@ -171,7 +171,7 @@
             in a limited run. No variants. No restocks. Once the issue closes, it closes.
           </p>
           <p class="di-about__para">
-            The first issues are automotive — carbon, Alcantara, precision-finished in Dublin.
+            The first issues are automotive - carbon, Alcantara, precision-finished in Dublin.
             Future issues will extend into watches, fashion, and objects as the platform grows.
           </p>
         </div>

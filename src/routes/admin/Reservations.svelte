@@ -104,9 +104,9 @@
                 class:is-selected={selected?.id === row.id}
                 class:adm-row--dim={row.status === 'cancelled'}>
               <td class="adm-mono">{refKey(row)}</td>
-              <td>{row.listing?.title ?? '—'}</td>
-              <td>{row.buyer?.full_name ?? row.buyer?.email ?? '—'}</td>
-              <td>{row.seller?.trading_name ?? '—'}</td>
+              <td>{row.listing?.title ?? '-'}</td>
+              <td>{row.buyer?.full_name ?? row.buyer?.email ?? '-'}</td>
+              <td>{row.seller?.trading_name ?? '-'}</td>
               <td class="adm-mono">€{row.deposit_amount}</td>
               <td><span class={`adm-badge adm-badge--${badge.tone}`}>{badge.label}</span></td>
               <td class="adm-mono">{new Date(row.reserved_at).toLocaleDateString()}</td>
@@ -133,22 +133,22 @@
         {/if}
 
         <div class="adm-field"><span class="adm-field__label">Listing</span>
-          <div>{selected.listing?.title ?? '—'}</div>
+          <div>{selected.listing?.title ?? '-'}</div>
         </div>
         <div class="adm-field--row">
           <div class="adm-field"><span class="adm-field__label">List price</span>
-            <div class="adm-mono">€{selected.listing?.price?.toLocaleString() ?? '—'}</div>
+            <div class="adm-mono">€{selected.listing?.price?.toLocaleString() ?? '-'}</div>
           </div>
           <div class="adm-field"><span class="adm-field__label">Deposit</span>
             <div class="adm-mono">€{selected.deposit_amount}</div>
           </div>
         </div>
         <div class="adm-field"><span class="adm-field__label">Buyer</span>
-          <div>{selected.buyer?.full_name ?? '—'}</div>
+          <div>{selected.buyer?.full_name ?? '-'}</div>
           <div class="adm-mono adm-muted">{selected.buyer?.email ?? ''}</div>
         </div>
         <div class="adm-field"><span class="adm-field__label">Seller</span>
-          <div>{selected.seller?.trading_name ?? '—'}</div>
+          <div>{selected.seller?.trading_name ?? '-'}</div>
         </div>
         <div class="adm-field"><span class="adm-field__label">Status</span>
           <div><span class={`adm-badge adm-badge--${reservationStatusBadge[selected.status].tone}`}>

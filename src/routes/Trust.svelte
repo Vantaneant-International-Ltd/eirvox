@@ -13,7 +13,7 @@
   const faqs = [
     {
       q: 'Is ÉIRVOX only for high-end items?',
-      a: 'No. We have items from €135 to €48,500. The quality bar is on the seller, not the item. A €135 Aran cardigan from a Verified seller in Donegal sits on the same platform as a €4,250 DRIVE issue — because the trust system protects both.',
+      a: 'No. We have items from €135 to €48,500. The quality bar is on the seller, not the item. A €135 Aran cardigan from a Verified seller in Donegal sits on the same platform as a €4,250 DRIVE issue - because the trust system protects both.',
     },
     {
       q: 'What if I want to meet in person?',
@@ -53,7 +53,7 @@
       <p class="trust-hero__sub">
         Every reservation on ÉIRVOX is backed by a €49 refundable deposit.
         High-value items pass through our Dublin authentication centre.
-        If anything is off, you get a refund — not an argument.
+        If anything is off, you get a refund - not an argument.
       </p>
     </header>
 
@@ -76,7 +76,7 @@
         <ol class="trust-steps">
           {#each [
             { n: '01', title: 'You pay a €49 deposit.', body: 'Processed via Revolut or payment link. Refundable in full until the item ships.' },
-            { n: '02', title: 'Seller confirms within 48 hours.', body: 'If they don\'t confirm, your deposit is refunded — no questions, no support tickets.' },
+            { n: '02', title: 'Seller confirms within 48 hours.', body: 'If they don\'t confirm, your deposit is refunded - no questions, no support tickets.' },
             { n: '03', title: 'Balance agreed and paid.', body: 'Direct with the seller for marketplace items. ÉIRVOX invoices the balance for DRIVE.' },
             { n: '04', title: 'Item ships and deposit is credited.', body: 'The €49 is deducted from your final balance. Full refund if anything doesn\'t match.' },
             { n: '05', title: 'Full escrow coming in H2 2026.', body: 'Stripe Connect escrow will hold all funds until you confirm delivery. Currently in development.' },
@@ -101,7 +101,7 @@
           <h2 class="trust-section__heading">Checked before it ships.</h2>
           <p class="trust-section__sub">
             A small physical team in Dublin handles every item above the value threshold.
-            Required automatically — buyers and sellers can't opt out.
+            Required automatically - buyers and sellers can't opt out.
           </p>
         </div>
         <div class="trust-auth">
@@ -124,22 +124,22 @@
             <div class="trust-auth__col">
               <span class="evx-label">11-POINT PROTOCOL</span>
               <ul class="trust-auth__list">
-                <li>— Serial &amp; batch markings</li>
-                <li>— Materials &amp; build</li>
-                <li>— Stitching, weight, finish</li>
-                <li>— Box, papers, accessories</li>
-                <li>— Function &amp; operation</li>
-                <li>— Provenance trail</li>
+                <li>- Serial &amp; batch markings</li>
+                <li>- Materials &amp; build</li>
+                <li>- Stitching, weight, finish</li>
+                <li>- Box, papers, accessories</li>
+                <li>- Function &amp; operation</li>
+                <li>- Provenance trail</li>
               </ul>
             </div>
             <div class="trust-auth__col">
               <span class="evx-label">REQUIRED ON</span>
               <ul class="trust-auth__list">
-                <li>— All watches over €500</li>
-                <li>— All sneakers over €200</li>
-                <li>— Designer bags &amp; outerwear</li>
-                <li>— Cameras &amp; lenses</li>
-                <li>— Apple &amp; pro audio</li>
+                <li>- All watches over €500</li>
+                <li>- All sneakers over €200</li>
+                <li>- Designer bags &amp; outerwear</li>
+                <li>- Cameras &amp; lenses</li>
+                <li>- Apple &amp; pro audio</li>
               </ul>
             </div>
           </div>
@@ -156,11 +156,11 @@
         </div>
         <div class="trust-bullets">
           {#each [
-            'Item arrives as described — or full refund.',
-            'Tracked &amp; insured shipping — up to €2,500 included; higher cover at checkout.',
-            '7-day dispute window — counted from confirmed delivery.',
-            'Deposits refunded in full — no charge if sale doesn\'t proceed.',
-            'Authenticated items — refund + audit if authentication is later contested.',
+            'Item arrives as described - or full refund.',
+            'Tracked &amp; insured shipping - up to €2,500 included; higher cover at checkout.',
+            '7-day dispute window - counted from confirmed delivery.',
+            'Deposits refunded in full - no charge if sale doesn\'t proceed.',
+            'Authenticated items - refund + audit if authentication is later contested.',
           ] as item}
             <div class="trust-bullet">{@html item}</div>
           {/each}
@@ -177,11 +177,11 @@
         </div>
         <div class="trust-bullets">
           {#each [
-            'Reservation deposits — buyers are serious before they contact you.',
-            'Verified buyers only — phone + ID before purchase.',
-            'Documented shipping — disputes need photographic evidence of mismatch.',
-            'Shipping label provided — DPD or An Post Express, pre-paid.',
-            'Dispute mediation — ÉIRVOX reviews evidence on both sides.',
+            'Reservation deposits - buyers are serious before they contact you.',
+            'Verified buyers only - phone + ID before purchase.',
+            'Documented shipping - disputes need photographic evidence of mismatch.',
+            'Shipping label provided - DPD or An Post Express, pre-paid.',
+            'Dispute mediation - ÉIRVOX reviews evidence on both sides.',
           ] as item}
             <div class="trust-bullet">{item}</div>
           {/each}
@@ -197,7 +197,7 @@
           <h2 class="trust-section__heading">What's covered. What isn't.</h2>
           <p class="trust-section__sub">
             We refund the buyer first, then sort it out with the seller. The guarantee covers the cases
-            below — written plainly so there's no argument about it later.
+            below - written plainly so there's no argument about it later.
           </p>
         </div>
 
@@ -209,7 +209,7 @@
               {#each [
                 { t: 'Item not as described', d: 'Material defect, undisclosed damage, wrong reference, missing accessories.' },
                 { t: 'Item not received', d: 'Lost in transit, never shipped, or tracking shows non-delivery after 14 days.' },
-                { t: 'Counterfeit items', d: 'Independent authentication fails — full refund + audit of the seller account.' },
+                { t: 'Counterfeit items', d: 'Independent authentication fails - full refund + audit of the seller account.' },
                 { t: 'Seller no-show', d: 'Seller goes dark after deposit. Full refund and credit on your next reservation.' },
               ] as item}
                 <li class="coverage__item">
@@ -228,8 +228,8 @@
             <span class="evx-label coverage__head coverage__head--excluded">NOT COVERED</span>
             <ul class="coverage__list">
               {#each [
-                { t: 'Buyer\'s remorse', d: 'Changed your mind after delivery and the item matches the listing — that\'s a private resale, not our problem to fix.' },
-                { t: 'Minor cosmetic differences', d: 'Within the seller\'s stated condition. "Excellent" means light hairlines — those aren\'t a defect.' },
+                { t: 'Buyer\'s remorse', d: 'Changed your mind after delivery and the item matches the listing - that\'s a private resale, not our problem to fix.' },
+                { t: 'Minor cosmetic differences', d: 'Within the seller\'s stated condition. "Excellent" means light hairlines - those aren\'t a defect.' },
                 { t: 'Market value changes', d: 'Price drops or rises after purchase. We\'re not a financial product.' },
                 { t: 'Dispute filed after the window', d: 'Seven days from delivery confirmation. Outside that, the platform stops mediating.' },
               ] as item}
@@ -272,13 +272,13 @@
         <div class="trust-section__left">
           <h2 class="trust-section__heading">How to file.</h2>
           <p class="trust-section__sub">
-            Three steps. We work in your timezone — Dublin office hours plus Saturday morning cover.
+            Three steps. We work in your timezone - Dublin office hours plus Saturday morning cover.
           </p>
         </div>
 
         <ol class="dispute-steps">
           {#each [
-            { n: '01', t: 'Open a dispute in Messages.', d: 'On the conversation with the seller, click the "Report dispute" link in the thread header. Tell us what happened in plain English — no template required.' },
+            { n: '01', t: 'Open a dispute in Messages.', d: 'On the conversation with the seller, click the "Report dispute" link in the thread header. Tell us what happened in plain English - no template required.' },
             { n: '02', t: 'Send us your evidence.', d: 'Photos of the item as received, the original listing, tracking screenshots, the seller\'s messages. Anything that documents the mismatch.' },
             { n: '03', t: 'We mediate within 48 hours.', d: 'Both sides see our findings. If the buyer wins, the refund is processed the same day. If the seller wins, the buyer is told why with the evidence.' },
           ] as step}
@@ -295,7 +295,7 @@
         <div class="dispute-contact">
           <span class="evx-caption dispute-contact__label">URGENT OR HIGH-VALUE?</span>
           <p class="dispute-contact__body">
-            Items above €5,000, suspected counterfeit, or anything time-critical —
+            Items above €5,000, suspected counterfeit, or anything time-critical -
             email <a href="mailto:disputes@eirvox.ie" class="dispute-contact__link">disputes@eirvox.ie</a> directly
             and a senior team member responds within four hours during office hours.
           </p>

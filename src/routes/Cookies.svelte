@@ -37,10 +37,10 @@
     <h2 id="c-essential" class="legal-section__h">Essential cookies.</h2>
     <p>These are required for the site to function. You can't disable them and use the platform:</p>
     <ul>
-      <li><strong>Session</strong> — keeps you signed in across pages.</li>
-      <li><strong>Authentication</strong> — verifies your identity to the platform.</li>
-      <li><strong>Security</strong> — prevents cross-site request forgery and similar attacks.</li>
-      <li><strong>Consent preferences</strong> — remembers your cookie banner choice so it doesn't reappear.</li>
+      <li><strong>Session</strong> - keeps you signed in across pages.</li>
+      <li><strong>Authentication</strong> - verifies your identity to the platform.</li>
+      <li><strong>Security</strong> - prevents cross-site request forgery and similar attacks.</li>
+      <li><strong>Consent preferences</strong> - remembers your cookie banner choice so it doesn't reappear.</li>
     </ul>
   </section>
 
@@ -49,7 +49,7 @@
     <h2 id="c-analytics" class="legal-section__h">Analytics.</h2>
     <p>
       We use privacy-respecting analytics to understand which pages are used and how the platform performs.
-      Analytics data is aggregated and anonymous — we cannot link it back to you personally.
+      Analytics data is aggregated and anonymous - we cannot link it back to you personally.
     </p>
     <p>You can opt out via the cookie banner at the bottom of the page or in your browser settings.</p>
   </section>
@@ -67,7 +67,7 @@
     <span class="legal-section__num">05 · MANAGE</span>
     <h2 id="c-manage" class="legal-section__h">Managing cookies.</h2>
     <p>
-      You can manage cookies through your browser settings — most browsers let you block all cookies,
+      You can manage cookies through your browser settings - most browsers let you block all cookies,
       block third-party cookies, or delete cookies for a specific site. Note that disabling essential
       cookies will break the platform.
     </p>

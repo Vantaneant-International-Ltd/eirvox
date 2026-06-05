@@ -87,7 +87,7 @@
 
     seller = (sellerR.value.data as Seller | null) ?? null;
 
-    // v1 model (HANDOFF locked decision): "v1 is admin-curated — admin
+    // v1 model (HANDOFF locked decision): "v1 is admin-curated - admin
     // creates listings and uploads images; seller self-serve comes later."
     // If an admin loads this page without an attached sellers row,
     // auto-create a house seller for them so they can list directly.
@@ -147,27 +147,27 @@
   let step = 1;
   const TOTAL_STEPS = 6;
 
-  // Step 1 — Category
+  // Step 1 - Category
   let categoryId = '';
   let categorySlug = '';
 
-  // Step 2 — Details
+  // Step 2 - Details
   let title = '';
   let subtitle = '';
   let description = '';
   let condition = '';
   // Value = the DB enum (public.listing_condition); label = what we render.
   // Live enum has: new, like_new, excellent, good, fair, refinished.
-  // 'fair' is intentionally not surfaced — sellers shouldn't be listing fair items.
+  // 'fair' is intentionally not surfaced - sellers shouldn't be listing fair items.
   const conditionOptions: Array<{ value: string; label: string }> = [
     { value: 'new',        label: 'OEM+ New' },
     { value: 'like_new',   label: 'Like New' },
-    { value: 'excellent',  label: 'Used — Excellent' },
-    { value: 'good',       label: 'Used — Good' },
+    { value: 'excellent',  label: 'Used - Excellent' },
+    { value: 'good',       label: 'Used - Good' },
     { value: 'refinished', label: 'Refinished' },
   ];
 
-  // Step 3 — Pricing
+  // Step 3 - Pricing
   let price: number | string = '';
   let originalPrice: number | string = '';
   let acceptsOffers = true;
@@ -175,7 +175,7 @@
   let collectionAvailable = true;
   let shippingCost: number | string = '';
 
-  // Step 4 — Specs
+  // Step 4 - Specs
   type Spec = { label: string; value: string };
   let specs: Spec[] = [];
   function autopopSpecs() {
@@ -188,7 +188,7 @@
   function addSpec() { specs = [...specs, { label: '', value: '' }]; }
   function removeSpec(i: number) { specs = specs.filter((_, idx) => idx !== i); }
 
-  // Step 5 — Images (kept in memory until step 6 final save)
+  // Step 5 - Images (kept in memory until step 6 final save)
   type PendingImage = { id: string; file: File; previewUrl: string };
   let pending: PendingImage[] = [];
   let uploadedRows: ListingImage[] = []; // populated during final save
@@ -245,7 +245,7 @@
 
     // v1 model: admins self-curate, so "Submit" publishes directly
     // (status='active'). Regular sellers (later phase) still queue for
-    // review. The button label flips to 'Publish' when admin — see UI.
+    // review. The button label flips to 'Publish' when admin - see UI.
     const isAdmin = $auth.profile?.role === 'admin';
     const finalStatus: 'draft' | 'pending_review' | 'active' =
       intent === 'draft'
@@ -302,7 +302,7 @@
     }
 
     saving = false;
-    // Done — go to dashboard
+    // Done - go to dashboard
     navigate('/sell/dashboard');
   }
 
@@ -361,7 +361,7 @@
         <h1 class="create-title">List a new item.</h1>
         <p class="create-sub">
           Six short steps. You can save as draft at any time.
-          New listings are reviewed before going live — usually within 24 hours.
+          New listings are reviewed before going live - usually within 24 hours.
         </p>
       {/if}
     </header>
@@ -395,7 +395,7 @@
       <div class="cs-state cs-state--err">
         <span class="evx-label">NOT A SELLER YET</span>
         <h2>You need an approved seller account to create listings.</h2>
-        <p>Apply through Cohort 03 — five steps, three minutes. We respond within 48 hours.</p>
+        <p>Apply through Cohort 03 - five steps, three minutes. We respond within 48 hours.</p>
         <div class="cs-state__actions">
           <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
             Apply to sell →
@@ -482,7 +482,7 @@
           <div class="form-grid">
             <div class="field">
               <label class="evx-caption field-label" for="d-title">TITLE</label>
-              <input id="d-title" type="text" class="field-input field-input--lg" placeholder="Mercedes-AMG GT — carbon steering wheel" bind:value={title} required />
+              <input id="d-title" type="text" class="field-input field-input--lg" placeholder="Mercedes-AMG GT - carbon steering wheel" bind:value={title} required />
               <span class="field-hint evx-caption">Mention make and model first.</span>
             </div>
             <div class="field">
@@ -697,7 +697,7 @@
               {#if $auth.profile?.role === 'admin'}
                 "Publish" makes it live immediately.
               {:else}
-                "Submit for review" puts it in front of the ÉIRVOX team — usually live within 24 hours.
+                "Submit for review" puts it in front of the ÉIRVOX team - usually live within 24 hours.
               {/if}
             </p>
           </div>
@@ -713,7 +713,7 @@
               </div>
 
               <span class="evx-label review__category">
-                {categories.find(c => c.id === categoryId)?.name ?? '—'}
+                {categories.find(c => c.id === categoryId)?.name ?? '-'}
                 {#if condition} · {condition}{/if}
               </span>
               <h3 class="review__title">{title || 'Untitled listing'}</h3>

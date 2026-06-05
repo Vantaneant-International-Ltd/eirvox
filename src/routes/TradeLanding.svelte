@@ -44,7 +44,7 @@
       <p class="trade-hero__sub">
         Ireland's verified independent tradespeople. Every person listed is
         <strong>ID-checked, credential-verified, and admitted by application</strong>.
-        Flat monthly fee — no per-lead charges, no commission, no race to the bottom.
+        Flat monthly fee - no per-lead charges, no commission, no race to the bottom.
       </p>
 
       <div class="trade-hero__actions">
@@ -170,7 +170,7 @@
         </div>
       {:else if featured.length === 0}
         <div style="padding: var(--evx-space-2xl); border: 1px dashed var(--evx-rule-light); text-align: center; color: var(--evx-ink-soft);">
-          <p>No verified Pros yet — they'll appear here as soon as the first tradespeople are admitted.</p>
+          <p>No verified Pros yet - they'll appear here as soon as the first tradespeople are admitted.</p>
         </div>
       {:else}
         <div class="trade-featured__grid">

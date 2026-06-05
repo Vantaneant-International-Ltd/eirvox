@@ -18,7 +18,7 @@
   });
 
   $: marketplace = [
-    { path: '/',                 label: 'Home',                  desc: 'Marketplace landing — DRIVE hero, featured, recent.' },
+    { path: '/',                 label: 'Home',                  desc: 'Marketplace landing - DRIVE hero, featured, recent.' },
     ...categories.map(c => ({
       path: `/${c.slug}`,
       label: c.name,
@@ -27,7 +27,7 @@
   ];
 
   const drive = [
-    { path: '/drive', label: 'DRIVE — all issues', desc: 'Issue index. House-produced enthusiast objects.' },
+    { path: '/drive', label: 'DRIVE - all issues', desc: 'Issue index. House-produced enthusiast objects.' },
   ];
 
   const seller = [
@@ -84,7 +84,7 @@
       <span class="evx-caption sm-header__pre">ÉIRVOX · INDEX</span>
       <h1 class="sm-title">Sitemap.</h1>
       <p class="sm-sub">
-        Every page on Éirvox — grouped, with a one-line note on what each one's for.
+        Every page on Éirvox - grouped, with a one-line note on what each one's for.
         Useful for QA, crawlers, and finding what you've forgotten about.
       </p>
     </header>
@@ -112,7 +112,7 @@
         <h2 class="sm-section__title">Recent listings</h2>
         {#if sampleListings.length === 0}
           <p style="color: var(--evx-ink-soft); font-size: 13px;">
-            No listings yet — they'll appear here as soon as Cohort 03 sellers post their first.
+            No listings yet - they'll appear here as soon as Cohort 03 sellers post their first.
           </p>
         {:else}
           <ul class="sm-rows">

@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — SEO head management
+// ÉIRVOX - SEO head management
 // Updates document.title + meta tags per route. Hash-router friendly.
 // ============================================================
 
@@ -76,15 +76,15 @@ export const seo = {
 
   category: (slug: string, label: string, count: number): SeoData => ({
     title: label,
-    description: `${label} on ÉIRVOX — ${count} listings from verified Irish sellers. Express interest, no commitment until you've spoken with the seller.`,
+    description: `${label} on ÉIRVOX - ${count} listings from verified Irish sellers. Express interest, no commitment until you've spoken with the seller.`,
     path: `/${slug}`,
   }),
 
   listing: (title: string, subtitle: string | undefined, price: string, location: string, slug: string): SeoData => ({
     title,
     description: subtitle
-      ? `${subtitle}. ${price}. ${location}. Express interest on ÉIRVOX — Ireland's premium marketplace.`
-      : `${price}. ${location}. Express interest on ÉIRVOX — Ireland's premium marketplace.`,
+      ? `${subtitle}. ${price}. ${location}. Express interest on ÉIRVOX - Ireland's premium marketplace.`
+      : `${price}. ${location}. Express interest on ÉIRVOX - Ireland's premium marketplace.`,
     path: `/listing/${slug}`,
   }),
 
@@ -105,7 +105,7 @@ export const seo = {
   sell: (): SeoData => ({
     title: 'Sell on ÉIRVOX · Cohort 03 Open',
     description:
-      'Sell on Ireland\'s premium marketplace. Three tiers — Verified, Atelier, House. Cohort 03 applications open until 14 June.',
+      'Sell on Ireland\'s premium marketplace. Three tiers - Verified, Atelier, House. Cohort 03 applications open until 14 June.',
     path: '/sell',
   }),
 
@@ -118,7 +118,7 @@ export const seo = {
 
   sellCreate: (): SeoData => ({
     title: 'Create listing',
-    description: 'Draft a new listing on ÉIRVOX — six steps from category to review.',
+    description: 'Draft a new listing on ÉIRVOX - six steps from category to review.',
     path: '/sell/create',
   }),
 
@@ -144,7 +144,7 @@ export const seo = {
 
   login: (): SeoData => ({
     title: 'Sign in',
-    description: 'Sign in to ÉIRVOX. Magic-link sign-in — no password required.',
+    description: 'Sign in to ÉIRVOX. Magic-link sign-in - no password required.',
     path: '/login',
   }),
 
@@ -157,14 +157,14 @@ export const seo = {
     };
     return {
       title: titles[tab] ?? 'Account',
-      description: 'Your ÉIRVOX account — reservations, saved items, settings.',
+      description: 'Your ÉIRVOX account - reservations, saved items, settings.',
       path: tab === 'overview' ? '/account' : `/account/${tab}`,
     };
   },
 
   sitemap: (): SeoData => ({
     title: 'Sitemap',
-    description: 'Every page on ÉIRVOX — quick navigation for buyers, sellers, and crawlers.',
+    description: 'Every page on ÉIRVOX - quick navigation for buyers, sellers, and crawlers.',
     path: '/sitemap',
   }),
 

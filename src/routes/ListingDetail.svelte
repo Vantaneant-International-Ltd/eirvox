@@ -95,7 +95,7 @@
     document.getElementById('seller-contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Share — prefer native share sheet (mobile iOS/Android system UI),
+  // Share - prefer native share sheet (mobile iOS/Android system UI),
   // fall back to clipboard with a quick visual confirmation. The URL
   // we share is always the canonical /#/listing/:slug path so it round-
   // trips correctly through hash routing.
@@ -110,13 +110,13 @@
     if (!listing) return;
     const url = `${window.location.origin}/#/listing/${listing.slug ?? listing.id}`;
     const title = listing.title;
-    const text = `${title} — on ÉIRVOX`;
+    const text = `${title} - on ÉIRVOX`;
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
         await navigator.share({ title, text, url });
         return;
       } catch (err) {
-        // User cancelled the system share sheet — silent, NOT an error
+        // User cancelled the system share sheet - silent, NOT an error
         if (err instanceof Error && err.name === 'AbortError') return;
         // Any other failure → fall through to clipboard
       }
@@ -125,11 +125,11 @@
       await navigator.clipboard.writeText(url);
       flashShareToast('Link copied');
     } catch {
-      flashShareToast('Copy failed — long-press the address bar instead');
+      flashShareToast('Copy failed - long-press the address bar instead');
     }
   }
 
-  // Buyers contact sellers via in-app messaging only — phone + email
+  // Buyers contact sellers via in-app messaging only - phone + email
   // are not surfaced. House listings are DM-able too (the house seller
   // is a person, not the platform).
   let messageBusy = false;
@@ -190,7 +190,7 @@
   $: activeImageUrl = listing?.images?.[activeImage]?.public_url ?? listing?.cover_image ?? null;
   $: imageCount = listing?.images?.length ?? 0;
 
-  // PayButton render gate (cosmetic — the server in
+  // PayButton render gate (cosmetic - the server in
   // api/payments/create-order independently re-checks is_house and
   // resolves the amount; a tampered client cannot bypass it).
   $: isHouseListing = !!listing?.seller?.is_house;
@@ -599,7 +599,7 @@
               <p class="detail-aside-card__body">An Post registered recommended, 2-3 days. DPD Express on request.</p>
             {/if}
             {#if listing.collection_available}
-              <p class="detail-aside-card__body">Collection — by arrangement, {listing.city ?? 'see listing'}</p>
+              <p class="detail-aside-card__body">Collection - by arrangement, {listing.city ?? 'see listing'}</p>
             {/if}
             {#if !listing.shipping_available && !listing.collection_available}
               <p class="detail-aside-card__body">Ask the seller for delivery options.</p>
@@ -694,7 +694,7 @@
       </div>
     </div>
 
-    <!-- Seller contact panel — buyers reach sellers via in-app messaging.
+    <!-- Seller contact panel - buyers reach sellers via in-app messaging.
          Phone + email stay in DB for ID / 2FA but are never surfaced
          publicly. Deals done in-app are covered by the refund policy;
          off-site is the buyer's own risk. -->
@@ -705,7 +705,7 @@
           Message <em>{listing.seller?.trading_name ?? 'the seller'}</em>.
         </h2>
         <p class="detail-contact__sub">
-          All conversations happen on ÉIRVOX. Sharing phone, email or WhatsApp moves the deal off-site —
+          All conversations happen on ÉIRVOX. Sharing phone, email or WhatsApp moves the deal off-site -
           ÉIRVOX refund protection ends the moment you leave the app.
         </p>
       </header>
@@ -731,7 +731,7 @@
         <div class="detail-contact__row">
           <dt>Trading name</dt>
           <dd>
-            {listing.seller?.trading_name ?? '—'}
+            {listing.seller?.trading_name ?? '-'}
           </dd>
         </div>
         {#if listing.seller?.handle}
@@ -872,7 +872,7 @@
   .panel__cta-main { width: 100%; justify-content: space-between; }
   .panel__cta-offer { width: 100%; }
 
-  /* Pay block — wraps the PayButton with fulfilment + payment-option
+  /* Pay block - wraps the PayButton with fulfilment + payment-option
      pickers and a resolved-amount label. Server is authoritative on
      what's actually charged. */
   .panel__pay { display: flex; flex-direction: column; gap: var(--evx-space-md); width: 100%; }

@@ -5,7 +5,7 @@
 
   onMount(() => applySeo({
     title: 'Terms & Conditions',
-    description: 'Terms and conditions for ÉIRVOX — the marketplace, DRIVE editions, and TRADE directory.',
+    description: 'Terms and conditions for ÉIRVOX - the marketplace, DRIVE editions, and TRADE directory.',
     path: '/terms',
   }));
 
@@ -35,7 +35,7 @@
 <LegalLayout
   title="Terms & Conditions."
   {sections}
-  intro="These terms govern your use of the ÉIRVOX platform — the marketplace, DRIVE editions, and TRADE directory. They're written in plain English, with the legal precision required, and we'd rather you read them than skip past."
+  intro="These terms govern your use of the ÉIRVOX platform - the marketplace, DRIVE editions, and TRADE directory. They're written in plain English, with the legal precision required, and we'd rather you read them than skip past."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · INTRODUCTION</span>
@@ -46,8 +46,8 @@
       Referenced throughout as "ÉIRVOX", "we", "us", "our".
     </p>
     <p>
-      By accessing or using the platform — browsing listings, creating an account, applying as a seller or tradesperson,
-      placing a reservation deposit, or otherwise — you accept these terms and our <a href="#/privacy">Privacy Policy</a>.
+      By accessing or using the platform - browsing listings, creating an account, applying as a seller or tradesperson,
+      placing a reservation deposit, or otherwise - you accept these terms and our <a href="#/privacy">Privacy Policy</a>.
       If you don't accept, stop using the platform.
     </p>
     <p>You confirm you are at least 18 years old and legally able to enter binding agreements.</p>
@@ -55,7 +55,7 @@
       <strong>ÉIRVOX is a venue, not a broker.</strong> For marketplace listings, ÉIRVOX publishes the listing
       and connects you with the seller. Payments flow directly from buyer to seller's payment account; ÉIRVOX
       does not hold funds, mediate communication, or process refunds for marketplace transactions.
-      DRIVE editions are the exception — there, ÉIRVOX is the seller.
+      DRIVE editions are the exception - there, ÉIRVOX is the seller.
     </p>
   </section>
 
@@ -63,20 +63,20 @@
     <span class="legal-section__num">02 · DEFINITIONS</span>
     <h2 id="s-definitions" class="legal-section__h">Definitions.</h2>
     <ul>
-      <li><strong>Platform</strong> — the website at eirvox.ie and any associated services.</li>
-      <li><strong>Seller</strong> — an approved person or business listing items for sale.</li>
-      <li><strong>Buyer</strong> — anyone reserving or purchasing items.</li>
-      <li><strong>Listing</strong> — a published item offered for sale.</li>
-      <li><strong>Reservation</strong> — an expression of intent to purchase, secured by a deposit paid via Revolut.</li>
+      <li><strong>Platform</strong> - the website at eirvox.ie and any associated services.</li>
+      <li><strong>Seller</strong> - an approved person or business listing items for sale.</li>
+      <li><strong>Buyer</strong> - anyone reserving or purchasing items.</li>
+      <li><strong>Listing</strong> - a published item offered for sale.</li>
+      <li><strong>Reservation</strong> - an expression of intent to purchase, secured by a deposit paid via Revolut.</li>
       <!-- TODO TRUST&COMPLIANCE: "default €49" is stale. Marketplace
            deposits no longer carry a platform default; deposit_amount
            is set per listing by the seller. ÉIRVOX-owned listings set
            it via the admin listing form. Rewrite in the Trust &
            Compliance pass. -->
-      <li><strong>Deposit</strong> — amount (default €49 for marketplace items) paid to the seller's Revolut account to hold an item. Refund terms set by the seller and Irish consumer law.</li>
-      <li><strong>DRIVE</strong> — limited-run, made-to-order editions published by ÉIRVOX.</li>
-      <li><strong>TRADE</strong> — verified directory of independent tradespeople.</li>
-      <li><strong>Authentication</strong> — physical inspection of high-value items at the ÉIRVOX Dublin centre.</li>
+      <li><strong>Deposit</strong> - amount (default €49 for marketplace items) paid to the seller's Revolut account to hold an item. Refund terms set by the seller and Irish consumer law.</li>
+      <li><strong>DRIVE</strong> - limited-run, made-to-order editions published by ÉIRVOX.</li>
+      <li><strong>TRADE</strong> - verified directory of independent tradespeople.</li>
+      <li><strong>Authentication</strong> - physical inspection of high-value items at the ÉIRVOX Dublin centre.</li>
     </ul>
   </section>
 
@@ -99,7 +99,7 @@
     <h2 id="s-marketplace" class="legal-section__h">Marketplace rules.</h2>
     <p>
       ÉIRVOX connects buyers and sellers. <strong>We are not a party to the underlying sale of goods</strong>
-      between you and another user — the contract for sale is directly between Buyer and Seller,
+      between you and another user - the contract for sale is directly between Buyer and Seller,
       and we facilitate that transaction subject to these terms.
     </p>
     <p>
@@ -117,7 +117,7 @@
       <li>Publish accurate contact details (email, phone) on the seller profile so buyers can reach you directly. ÉIRVOX does not relay messages.</li>
       <li>Respond to buyers in a timely manner. We recommend within 48 hours.</li>
       <li>Ship within agreed timeframes. Document shipping with tracking.</li>
-      <li>Comply with all applicable laws — Irish consumer law, distance selling, returns where required.</li>
+      <li>Comply with all applicable laws - Irish consumer law, distance selling, returns where required.</li>
       <li>Handle refunds directly through your own Revolut Business (or equivalent) account. ÉIRVOX does not hold buyer funds or process refunds on your behalf.</li>
     </ul>
   </section>
@@ -127,7 +127,7 @@
     <h2 id="s-buyer" class="legal-section__h">Buyer obligations.</h2>
     <ul>
       <li>Provide accurate contact and delivery information.</li>
-      <li>Honour reservations in good faith — do not place deposits without intent to proceed.</li>
+      <li>Honour reservations in good faith - do not place deposits without intent to proceed.</li>
       <li>Inspect items on receipt and report issues within 7 days of confirmed delivery.</li>
       <li>Settle agreed balances within the timeframe agreed with the seller.</li>
     </ul>
@@ -163,7 +163,7 @@
       Check the listing terms before paying.
     </p>
     <p>
-      DRIVE editions (section 08) are different — ÉIRVOX is the seller, so DRIVE deposit rules and refunds
+      DRIVE editions (section 08) are different - ÉIRVOX is the seller, so DRIVE deposit rules and refunds
       are administered by us.
     </p>
   </section>
@@ -173,7 +173,7 @@
     <h2 id="s-drive" class="legal-section__h">DRIVE editions.</h2>
     <p>
       DRIVE pieces are limited-run, made-to-order objects published by ÉIRVOX. Each issue specifies an edition
-      size and one specification — there are no variants, no restocks.
+      size and one specification - there are no variants, no restocks.
     </p>
     <!-- TODO TRUST&COMPLIANCE: this DRIVE-deposit list is stale.
          DRIVE items are now stock-state-driven listings: in_stock
@@ -242,7 +242,7 @@
     <h2 id="s-disputes" class="legal-section__h">Disputes &amp; resolution.</h2>
     <p>
       If a dispute arises between Buyer and Seller, either party may open a case in Messages within
-      <strong>7 days of confirmed delivery</strong>. Both parties must submit evidence — photographs,
+      <strong>7 days of confirmed delivery</strong>. Both parties must submit evidence - photographs,
       shipping records, original listing screenshots, correspondence.
     </p>
     <p>

@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Auth store + helpers
+// ÉIRVOX - Auth store + helpers
 // Tracks Supabase session + the user's profile (incl. role).
 // ============================================================
 
@@ -211,15 +211,15 @@ function friendlyAuthError(msg: string): string {
   const m = msg.toLowerCase();
   if (m.includes('invalid login credentials')) return 'That email and password don\'t match.';
   if (m.includes('user already registered')) return 'An account with that email already exists. Try logging in.';
-  if (m.includes('email not confirmed')) return 'Confirm your email first — check your inbox.';
+  if (m.includes('email not confirmed')) return 'Confirm your email first - check your inbox.';
   if (m.includes('weak password') || m.includes('password should be at least')) {
-    return 'That password is too weak — use at least 8 characters with a mix of letters and numbers.';
+    return 'That password is too weak - use at least 8 characters with a mix of letters and numbers.';
   }
   if (m.includes('rate limit')) return 'Too many attempts. Wait a minute and try again.';
   if (m.includes('email rate limit')) return 'Too many emails sent. Wait a few minutes.';
   // Trigger failures on the profiles table
   if (m.includes('database error saving new user') || m.includes('handle_new_user')) {
-    return 'Database trigger error — your auth.users → profiles trigger is failing. Open Supabase → SQL Editor and run the patch in supabase/fix-profiles-trigger.sql, then try again.';
+    return 'Database trigger error - your auth.users → profiles trigger is failing. Open Supabase → SQL Editor and run the patch in supabase/fix-profiles-trigger.sql, then try again.';
   }
   if (m.includes('violates row-level security')) {
     return 'Row Level Security blocked that write. The profiles table needs an INSERT policy for new users (see supabase/fix-profiles-trigger.sql).';

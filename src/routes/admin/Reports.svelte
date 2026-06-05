@@ -150,8 +150,8 @@
                   <span class="adm-muted">deleted</span>
                 {/if}
               </td>
-              <td class="rep-cell-detail">{row.detail ?? '—'}</td>
-              <td class="adm-mono">{row.reporter_email ?? '—'}</td>
+              <td class="rep-cell-detail">{row.detail ?? '-'}</td>
+              <td class="adm-mono">{row.reporter_email ?? '-'}</td>
               <td>
                 <span class="adm-badge adm-badge--{badge.tone}">{badge.label}</span>
               </td>
@@ -205,12 +205,12 @@
 
         <div class="adm-field">
           <span class="adm-field__label">Reporter email</span>
-          <div class="adm-mono">{selected.reporter_email ?? '—'}</div>
+          <div class="adm-mono">{selected.reporter_email ?? '-'}</div>
         </div>
 
         <div class="adm-field">
           <span class="adm-field__label">Detail from reporter</span>
-          <div style="white-space: pre-wrap; line-height: 1.55;">{selected.detail ?? '—'}</div>
+          <div style="white-space: pre-wrap; line-height: 1.55;">{selected.detail ?? '-'}</div>
         </div>
 
         <div class="adm-field">
@@ -228,15 +228,15 @@
           </div>
           <div class="adm-field">
             <span class="adm-field__label">Reviewed</span>
-            <div class="adm-mono">{selected.reviewed_at ? formatDate(selected.reviewed_at) : '—'}</div>
+            <div class="adm-mono">{selected.reviewed_at ? formatDate(selected.reviewed_at) : '-'}</div>
           </div>
         </div>
 
         <div class="adm-field">
           <span class="adm-field__label">Triage metadata</span>
           <div class="adm-mono adm-muted" style="font-size: 11px; line-height: 1.6;">
-            ip_hash: {selected.ip_hash ?? '—'}<br/>
-            user_agent: {selected.user_agent ?? '—'}
+            ip_hash: {selected.ip_hash ?? '-'}<br/>
+            user_agent: {selected.user_agent ?? '-'}
           </div>
         </div>
       </div>

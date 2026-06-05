@@ -20,14 +20,14 @@
   let step = 1;
   const TOTAL_STEPS = 5;
 
-  // Step 1 — personal
+  // Step 1 - personal
   let fullName = '';
   let phone = '';
   let email = '';
   let county = '';
   let town = '';
 
-  // Step 2 — trade
+  // Step 2 - trade
   let tradeSlug = '';
   let years = '';
   let qualifications: string[] = [];
@@ -51,10 +51,10 @@
     else qualifications = [...qualifications, q];
   }
 
-  // Step 3 — plan
+  // Step 3 - plan
   let plan: 'listed' | 'pro' = 'pro';
 
-  // Step 4 — agreement
+  // Step 4 - agreement
   let agreedId = false;
   let agreedCreds = false;
   let agreedTerms = false;
@@ -106,7 +106,7 @@
         <span class="evx-caption ta-meta">TRADE · APPLICATION · 5 STEPS</span>
         <h1 class="ta-title">List your trade.</h1>
         <p class="ta-sub">
-          ÉIRVOX TRADE is a verified directory — ID-checked, credential-verified, admitted by application.
+          ÉIRVOX TRADE is a verified directory - ID-checked, credential-verified, admitted by application.
           Five short steps, then a 15-minute video call to confirm your identity and qualifications.
         </p>
       {/if}
@@ -220,7 +220,7 @@
             <input
               type="text"
               class="field-input"
-              placeholder="Other qualifications — comma separated"
+              placeholder="Other qualifications - comma separated"
               bind:value={qualificationOther}
               style="margin-top: 8px;"
             />
@@ -232,7 +232,7 @@
               id="f-bio"
               class="field-input field-textarea"
               bind:value={bio}
-              placeholder="What you specialise in, the kinds of jobs you do, what makes you worth hiring. Plain English — buyers can tell."
+              placeholder="What you specialise in, the kinds of jobs you do, what makes you worth hiring. Plain English - buyers can tell."
               rows="5"
               required
             ></textarea>
@@ -286,8 +286,8 @@
               <li>+ One county coverage</li>
               <li>+ Customer reviews</li>
               <li>+ Masked phone contact</li>
-              <li class="plan-card__neg">— No featured placement</li>
-              <li class="plan-card__neg">— No quote request form</li>
+              <li class="plan-card__neg">- No featured placement</li>
+              <li class="plan-card__neg">- No quote request form</li>
             </ul>
           </button>
 
@@ -331,7 +331,7 @@
         <div class="form-h">
           <h2 class="form-h2">Verification.</h2>
           <p class="form-sub">
-            Three boxes. Read them carefully — they're how TRADE stays a directory worth being on.
+            Three boxes. Read them carefully - they're how TRADE stays a directory worth being on.
           </p>
         </div>
 
@@ -369,12 +369,12 @@
         <div class="apply-summary">
           <span class="evx-label apply-summary__label">YOUR APPLICATION</span>
           <dl class="apply-summary__list">
-            <dt class="apply-summary__dt">Name</dt><dd class="apply-summary__dd">{fullName || '—'}</dd>
-            <dt class="apply-summary__dt">Trade</dt><dd class="apply-summary__dd">{tradeCategories.find(c => c.slug === tradeSlug)?.name || '—'}</dd>
-            <dt class="apply-summary__dt">Location</dt><dd class="apply-summary__dd">{town}{town && county ? ', ' : ''}{county || '—'}</dd>
-            <dt class="apply-summary__dt">Experience</dt><dd class="apply-summary__dd">{years ? `${years} years` : '—'}</dd>
+            <dt class="apply-summary__dt">Name</dt><dd class="apply-summary__dd">{fullName || '-'}</dd>
+            <dt class="apply-summary__dt">Trade</dt><dd class="apply-summary__dd">{tradeCategories.find(c => c.slug === tradeSlug)?.name || '-'}</dd>
+            <dt class="apply-summary__dt">Location</dt><dd class="apply-summary__dd">{town}{town && county ? ', ' : ''}{county || '-'}</dd>
+            <dt class="apply-summary__dt">Experience</dt><dd class="apply-summary__dd">{years ? `${years} years` : '-'}</dd>
             <dt class="apply-summary__dt">Plan</dt><dd class="apply-summary__dd">{plan === 'pro' ? 'Pro · €29/mo' : 'Listed · €9/mo'}</dd>
-            <dt class="apply-summary__dt">Qualifications</dt><dd class="apply-summary__dd">{qualifications.join(' · ') || '—'}</dd>
+            <dt class="apply-summary__dt">Qualifications</dt><dd class="apply-summary__dd">{qualifications.join(' · ') || '-'}</dd>
           </dl>
         </div>
 
@@ -398,7 +398,7 @@
           <em class="confirm__italic">We review within 48 hours.</em>
         </h2>
         <p class="confirm__body">
-          Your application is in front of the TRADE review team. We respond to every applicant —
+          Your application is in front of the TRADE review team. We respond to every applicant -
           usually within 48 hours. If you're shortlisted, we'll book a 15-minute video call to confirm
           your identity and run through your qualifications.
         </p>

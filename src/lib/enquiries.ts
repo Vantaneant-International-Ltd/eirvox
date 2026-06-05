@@ -1,5 +1,5 @@
 // ============================================================
-// ÉIRVOX — Enquiries (Express Interest)
+// ÉIRVOX - Enquiries (Express Interest)
 // Client helper + admin queries.
 // ============================================================
 

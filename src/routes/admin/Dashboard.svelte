@@ -90,7 +90,7 @@
       <h2 class="adm-section__h">Recent activity</h2>
       {#if activity.length === 0}
         <div class="adm-state">
-          <p class="adm-state__sub">No activity yet — once sellers post listings and buyers reserve items, they'll show up here.</p>
+          <p class="adm-state__sub">No activity yet - once sellers post listings and buyers reserve items, they'll show up here.</p>
         </div>
       {:else}
         <div class="adm-activity">

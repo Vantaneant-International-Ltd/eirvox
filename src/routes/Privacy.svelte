@@ -29,7 +29,7 @@
 <LegalLayout
   title="Privacy Policy."
   {sections}
-  intro="How ÉIRVOX handles your personal data. We collect what we need, hold it only as long as we need it, and we don't sell your data — to anyone, ever."
+  intro="How ÉIRVOX handles your personal data. We collect what we need, hold it only as long as we need it, and we don't sell your data - to anyone, ever."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · WHO WE ARE</span>
@@ -61,11 +61,11 @@
     <h2 id="p-why" class="legal-section__h">Why we collect it.</h2>
     <ul>
       <li>To operate your account and process reservations.</li>
-      <li>To verify sellers and tradespeople — identity, qualifications, eligibility.</li>
+      <li>To verify sellers and tradespeople - identity, qualifications, eligibility.</li>
       <li>To facilitate communication between users.</li>
-      <li>To improve the platform — anonymous analytics, feature usage patterns.</li>
+      <li>To improve the platform - anonymous analytics, feature usage patterns.</li>
       <li>To prevent fraud, abuse, and platform misuse.</li>
-      <li>To comply with legal obligations — tax, anti-money-laundering where applicable, court orders.</li>
+      <li>To comply with legal obligations - tax, anti-money-laundering where applicable, court orders.</li>
     </ul>
   </section>
 
@@ -74,10 +74,10 @@
     <h2 id="p-basis" class="legal-section__h">Legal basis.</h2>
     <p>Under the GDPR, we process your data under one or more of the following bases:</p>
     <ul>
-      <li><strong>Contract</strong> — to provide the service you've signed up for.</li>
-      <li><strong>Consent</strong> — for optional services like newsletters, where you've opted in.</li>
-      <li><strong>Legitimate interest</strong> — running the platform securely, preventing fraud.</li>
-      <li><strong>Legal obligation</strong> — tax records, regulatory compliance.</li>
+      <li><strong>Contract</strong> - to provide the service you've signed up for.</li>
+      <li><strong>Consent</strong> - for optional services like newsletters, where you've opted in.</li>
+      <li><strong>Legitimate interest</strong> - running the platform securely, preventing fraud.</li>
+      <li><strong>Legal obligation</strong> - tax records, regulatory compliance.</li>
     </ul>
   </section>
 
@@ -85,11 +85,11 @@
     <span class="legal-section__num">05 · SHARE</span>
     <h2 id="p-share" class="legal-section__h">Who we share with.</h2>
     <ul>
-      <li><strong>Sellers and tradespeople</strong> — when you reserve an item or request a quote, the relevant party receives the contact details needed to fulfil the transaction.</li>
-      <li><strong>Payment providers</strong> — Stripe, Revolut, and similar, to process payments.</li>
-      <li><strong>Authentication partners</strong> — for high-value item inspection in our Dublin centre.</li>
-      <li><strong>Shipping providers</strong> — DPD, An Post, and similar, when an item is shipped.</li>
-      <li><strong>Legal authorities</strong> — where required by law or court order.</li>
+      <li><strong>Sellers and tradespeople</strong> - when you reserve an item or request a quote, the relevant party receives the contact details needed to fulfil the transaction.</li>
+      <li><strong>Payment providers</strong> - Stripe, Revolut, and similar, to process payments.</li>
+      <li><strong>Authentication partners</strong> - for high-value item inspection in our Dublin centre.</li>
+      <li><strong>Shipping providers</strong> - DPD, An Post, and similar, when an item is shipped.</li>
+      <li><strong>Legal authorities</strong> - where required by law or court order.</li>
     </ul>
     <p>
       We do <strong>not sell your data to third parties</strong>, ever. We do not run behavioural advertising
@@ -114,13 +114,13 @@
     <h2 id="p-rights" class="legal-section__h">Your rights (GDPR).</h2>
     <p>You have the right to:</p>
     <ul>
-      <li><strong>Access</strong> — request a copy of the data we hold about you.</li>
-      <li><strong>Rectification</strong> — correct inaccurate data.</li>
-      <li><strong>Erasure</strong> — request deletion of your data ("right to be forgotten").</li>
-      <li><strong>Restriction</strong> — limit how we process your data.</li>
-      <li><strong>Portability</strong> — receive your data in a structured, machine-readable format.</li>
-      <li><strong>Objection</strong> — object to processing for legitimate interest reasons.</li>
-      <li><strong>Withdraw consent</strong> — for processing based on consent.</li>
+      <li><strong>Access</strong> - request a copy of the data we hold about you.</li>
+      <li><strong>Rectification</strong> - correct inaccurate data.</li>
+      <li><strong>Erasure</strong> - request deletion of your data ("right to be forgotten").</li>
+      <li><strong>Restriction</strong> - limit how we process your data.</li>
+      <li><strong>Portability</strong> - receive your data in a structured, machine-readable format.</li>
+      <li><strong>Objection</strong> - object to processing for legitimate interest reasons.</li>
+      <li><strong>Withdraw consent</strong> - for processing based on consent.</li>
     </ul>
     <p>
       To exercise any of these rights, email <a href="mailto:support@eirvox.ie">support@eirvox.ie</a>.
@@ -180,7 +180,7 @@
     <span class="legal-section__num">13 · CONTACT</span>
     <h2 id="p-contact" class="legal-section__h">Contact &amp; complaints.</h2>
     <p>
-      Privacy questions: <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> — 30 day response.
+      Privacy questions: <a href="mailto:support@eirvox.ie">support@eirvox.ie</a> - 30 day response.
     </p>
     <p>
       To complain to the regulator:

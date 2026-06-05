@@ -1,18 +1,18 @@
 // ============================================================
-// ÉIRVOX — Site flags (DB-backed, admin-toggleable)
+// ÉIRVOX - Site flags (DB-backed, admin-toggleable)
 // ============================================================
 //
 // Two independent visibility gates:
-//   coming_soon  — pre-launch landing. Visitors see ComingSoonHero,
+//   coming_soon  - pre-launch landing. Visitors see ComingSoonHero,
 //                  email capture goes into waitlist.
-//   maintenance  — temporary outage banner page with support email.
+//   maintenance  - temporary outage banner page with support email.
 //                  Takes precedence over coming_soon when both on.
 //
 // Both live in public.site_settings under key='flags' so the admin
 // panel can flip them without a redeploy. Anon SELECT on
 // site_settings is already permitted via site_settings_public_read.
 //
-// Cached in localStorage for instant render on next load — flags
+// Cached in localStorage for instant render on next load - flags
 // change rarely, eventual consistency is fine.
 // ============================================================
 
@@ -143,7 +143,7 @@ export function isDevBypassed(): boolean {
 //   <host>/#exit-preview  → clear both, go back to normal
 //
 // Both stored in sessionStorage so the preview dies when the tab
-// closes. No DEV gate — harmless in production (only renders a
+// closes. No DEV gate - harmless in production (only renders a
 // hero a regular visitor would already see).
 
 export const MAINTENANCE_PREVIEW_KEY = 'eirvox_maintenance_preview';

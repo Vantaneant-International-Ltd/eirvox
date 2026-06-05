@@ -82,7 +82,7 @@
             <span class="adm-badge adm-badge--{r.status === 'pending' ? 'amber' : r.status === 'approved' ? 'green' : 'grey'}">{r.status.toUpperCase()}</span>
           </div>
           <div class="ncq-row__meta">
-            Seller: <code>{r.seller?.trading_name ?? '—'}{r.seller?.handle ? ' · @' + r.seller.handle : ''}</code>
+            Seller: <code>{r.seller?.trading_name ?? '-'}{r.seller?.handle ? ' · @' + r.seller.handle : ''}</code>
             · Submitted {fmtDate(r.created_at)}
           </div>
           {#if r.reason}

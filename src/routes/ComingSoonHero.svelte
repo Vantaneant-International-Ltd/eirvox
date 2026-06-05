@@ -29,7 +29,7 @@
     submitting = false;
 
     if (result.ok || result.reason === 'duplicate') {
-      // Treat duplicate as "you're in" — same UI as success, with a tailored line.
+      // Treat duplicate as "you're in" - same UI as success, with a tailored line.
       localStorage.setItem(STORAGE_KEY, value);
       subscribed = true;
       if (result.ok === false) errorMsg = result.message;

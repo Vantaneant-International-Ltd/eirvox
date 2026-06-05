@@ -43,9 +43,9 @@
   }
 
   function subjectLabel(e: EnquiryRow): string {
-    if (e.subject_type === 'listing') return `Listing · ${e.listing_id?.slice(0, 8) ?? '—'}`;
-    if (e.subject_type === 'tradesperson') return `TRADE · ${e.tradesperson_id?.slice(0, 8) ?? '—'}`;
-    if (e.subject_type === 'drive_issue') return `DRIVE · ${e.drive_issue_slug ?? '—'}`;
+    if (e.subject_type === 'listing') return `Listing · ${e.listing_id?.slice(0, 8) ?? '-'}`;
+    if (e.subject_type === 'tradesperson') return `TRADE · ${e.tradesperson_id?.slice(0, 8) ?? '-'}`;
+    if (e.subject_type === 'drive_issue') return `DRIVE · ${e.drive_issue_slug ?? '-'}`;
     return 'General';
   }
 
