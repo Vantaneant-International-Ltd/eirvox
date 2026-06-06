@@ -19,37 +19,41 @@
       </header>
 
       <div class="about-article__body">
-        <p>ÉIRVOX started the way most good things do. Out of frustration.</p>
+        <p>ÉIRVOX started out of frustration.</p>
 
         <p>
-          We wanted to sell a few premium pieces. Not bury them in a DoneDeal feed next to
-          everything else, not hand a cut to eBay, not deal with StockX and its endless friction.
-          None of it fit what we were selling or how we wanted to sell it.
+          We wanted to sell a few premium pieces. DoneDeal felt wrong. eBay took its cut.
+          StockX was friction. None of it fit what we were selling.
         </p>
 
         <p>
-          So we did what made sense at the time. We posted to Facebook. It worked, but it was
-          messy. No proper pages, no way to present a piece the way it deserved, no system
-          behind any of it.
+          So we posted to Facebook. It worked, in the rough way Facebook works. No proper
+          pages. No system. No way to present a piece the way it deserved.
         </p>
 
         <p>
-          The website came next. We built the thing we actually wanted to use. Clean pages
-          that let a product breathe. Honest listings. A reservation and payment flow that
-          respects both sides of the deal. Curation over volume, because we would rather show
-          ten things worth owning than ten thousand things to scroll past.
+          The website was the answer. Clean pages that let a product breathe.
+          Honest listings. A payment flow that respects both sides. Curation over volume.
+          Ten things worth owning, not ten thousand to scroll past.
         </p>
 
         <p>
-          That is still the whole idea. ÉIRVOX is a curated home for premium goods in Ireland.
-          Cars, parts, watches, the occasional thing that does not fit a category but earns
-          its place anyway. Some of it we make ourselves under DRIVE, designed in Dublin and
-          assembled in small runs, never repeated. The rest comes from sellers we choose to
-          work with.
+          That is still the whole idea. A curated home for premium goods in Ireland.
+          Cars. Parts. Watches. The occasional thing that fits no category but earns
+          its place anyway.
         </p>
 
         <p>
-          We are still small. We like it that way for now. It means every piece on here
+          Some of it we make ourselves, under DRIVE. Designed in Dublin. Assembled
+          in small runs. Never repeated.
+        </p>
+
+        <p>
+          The rest comes from sellers we choose to work with.
+        </p>
+
+        <p>
+          We are small. We like it that way for now. Every piece on the site has
           passed through someone who cared whether it belonged.
         </p>
       </div>

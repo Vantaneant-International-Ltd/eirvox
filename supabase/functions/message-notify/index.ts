@@ -106,20 +106,21 @@ Deno.serve(async (req: Request) => {
     const threadUrl = `https://eirvox.ie/#/messages/${conv.id}`;
     const preview = msg.content.slice(0, 240);
 
-    const subject = `New message about "${listingTitle}"`;
+    const subject = `New message about "${listingTitle}".`;
+    const senderCap = senderLabel.charAt(0).toUpperCase() + senderLabel.slice(1);
     const text = [
       'ÉIRVOX',
       '',
-      `${senderLabel.charAt(0).toUpperCase() + senderLabel.slice(1)} sent you a message about ${listingTitle}.`,
+      `${senderCap} sent a message about ${listingTitle}.`,
       '',
       '----',
       preview,
       '----',
       '',
-      `Reply in the ÉIRVOX inbox:`,
+      'Reply in the ÉIRVOX inbox.',
       threadUrl,
       '',
-      'This is an automated message. Replies aren\'t monitored.',
+      'Replies are not monitored.',
       'For help: support@eirvox.ie',
     ].join('\n');
     const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${subject}</title></head>
@@ -129,17 +130,17 @@ Deno.serve(async (req: Request) => {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border:1px solid rgba(26,26,26,0.08);">
       <tr><td style="padding:32px 32px 16px;border-bottom:1px solid rgba(26,26,26,0.08);">
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#E8742C;">ÉIRVOX · NEW MESSAGE</div>
-        <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:500;margin-top:8px;line-height:1.2;">${senderLabel.charAt(0).toUpperCase() + senderLabel.slice(1)} messaged you.</div>
+        <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:500;margin-top:8px;line-height:1.2;">${senderCap} messaged you.</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:#8A8680;text-transform:uppercase;margin-top:6px;">RE: ${listingTitle}</div>
       </td></tr>
       <tr><td style="padding:24px 32px;">
         <div style="background:#F5F2ED;padding:16px;border-left:3px solid #E8742C;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${preview.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]!))}</div>
       </td></tr>
       <tr><td style="padding:8px 32px 32px;">
-        <a href="${threadUrl}" style="display:inline-block;background:#1A1A1A;color:#FFFFFF;padding:12px 24px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;">Open inbox →</a>
+        <a href="${threadUrl}" style="display:inline-block;background:#1A1A1A;color:#FFFFFF;padding:12px 24px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;">Open inbox</a>
       </td></tr>
       <tr><td style="padding:8px 32px 28px;font-size:12px;line-height:1.6;color:#8A8680;">
-        Automated message — replies aren't monitored. Reply inside ÉIRVOX or contact <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
+        Replies are not monitored. Reply inside ÉIRVOX, or write to <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
       </td></tr>
     </table>
     <div style="max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8A8680;text-align:center;">ÉIRVOX SYSTEMS LTD · DUBLIN, IRELAND</div>

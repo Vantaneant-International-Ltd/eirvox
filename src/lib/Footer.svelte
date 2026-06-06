@@ -19,17 +19,17 @@
       </button>
 
       <p class="footer__tagline">
-        Ireland's premium marketplace for enthusiast objects.
+        A curated marketplace for premium goods in Ireland.
         Publisher of DRIVE. Operator of TRADE.
       </p>
 
       <!-- Newsletter -->
       <div class="footer__news">
-        <span class="footer__news-pre">STAY IN THE LOOP</span>
+        <span class="footer__news-pre">JOIN THE LIST</span>
         {#if subscribed}
           <p class="footer__news-ok">
-            <span class="footer__news-ok-label">SUBSCRIBED</span>
-            Thanks. You'll hear from us.
+            <span class="footer__news-ok-label">ON THE LIST</span>
+            Thanks. You'll hear from us first.
           </p>
         {:else}
           <form class="footer__news-form" on:submit={subscribe}>

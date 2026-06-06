@@ -138,10 +138,10 @@
         <div class="apply-meta">
           <span class="evx-caption apply-cohort">COHORT 03 · OPEN UNTIL 14 JUNE</span>
         </div>
-        <h1 class="apply-title">Sell on Éirvox.</h1>
+        <h1 class="apply-title">Sell on ÉIRVOX.</h1>
         <p class="apply-sub">
-          A short application - five steps, about three minutes.
-          Cohort 03 reviews close 14 June; approved sellers go live on 01 July.
+          A short application. Five steps. About three minutes.
+          Approved sellers go live with the next cohort.
         </p>
       {/if}
     </header>
@@ -394,10 +394,10 @@
           <label class="agree-item" class:agree-item--checked={agreedId}>
             <input type="checkbox" class="agree-item__box" bind:checked={agreedId} />
             <div class="agree-item__body">
-              <strong class="agree-item__title">ID + phone verification.</strong>
+              <strong class="agree-item__title">Phone and ID, on request.</strong>
               <p class="agree-item__desc">
-                You agree to verify your phone number by SMS and provide a government-issued ID before your first listing goes live.
-                We do not display either to buyers.
+                If shortlisted, we may ask you to verify your phone by SMS and submit
+                a government-issued ID. Neither is shown to buyers.
               </p>
             </div>
           </label>
@@ -405,10 +405,10 @@
           <label class="agree-item" class:agree-item--checked={agreedTerms}>
             <input type="checkbox" class="agree-item__box" bind:checked={agreedTerms} />
             <div class="agree-item__body">
-              <strong class="agree-item__title">ÉIRVOX Seller Terms.</strong>
+              <strong class="agree-item__title">Seller Terms.</strong>
               <p class="agree-item__desc">
-                You agree to the seller terms - accurate listings, honest condition reports, prompt shipping, and dispute resolution
-                through the platform. Full terms at the link below.
+                You agree to accurate listings, honest condition descriptions, prompt
+                shipping, and dispute resolution through the platform.
               </p>
               <button type="button" class="agree-item__link evx-caption" on:click={() => navigate('/trust')}>
                 Read Seller Terms →
@@ -419,10 +419,10 @@
           <label class="agree-item" class:agree-item--checked={agreedCall}>
             <input type="checkbox" class="agree-item__box" bind:checked={agreedCall} />
             <div class="agree-item__body">
-              <strong class="agree-item__title">Short video call.</strong>
+              <strong class="agree-item__title">Short call.</strong>
               <p class="agree-item__desc">
-                If your application is shortlisted, we'll book a 15-minute video call to talk through your inventory.
-                This is how we keep the cohort small and the listing quality high.
+                If shortlisted, we book a 15-minute call to talk through your inventory.
+                It is how we keep the cohort small and the bar high.
               </p>
             </div>
           </label>
@@ -475,13 +475,12 @@
       <div class="confirm">
         <span class="evx-label confirm__label">APPLICATION RECEIVED</span>
         <h2 class="confirm__h">
-          We'll be in touch within
+          We will be in touch within
           <em class="confirm__italic">48 hours.</em>
         </h2>
         <p class="confirm__body">
-          Your application is in front of the cohort review team.
-          We respond to every applicant - usually within 48 hours, occasionally up to 5 working days
-          during high-volume weeks.
+          Your application is with the cohort review team. We respond to every applicant.
+          Usually within 48 hours. Occasionally up to five working days.
         </p>
 
         <div class="confirm__next">
@@ -489,19 +488,19 @@
           <ol class="confirm__steps">
             <li class="confirm__step">
               <span class="evx-label confirm__step-num">01</span>
-              <span><strong>Review.</strong> We read your application and look at your sourcing pitch.</span>
+              <span><strong>Review.</strong> We read your pitch and consider your sourcing.</span>
             </li>
             <li class="confirm__step">
               <span class="evx-label confirm__step-num">02</span>
-              <span><strong>Shortlist call.</strong> If you're shortlisted, we book a 15-minute video call.</span>
+              <span><strong>Call.</strong> If shortlisted, a 15-minute video chat.</span>
             </li>
             <li class="confirm__step">
               <span class="evx-label confirm__step-num">03</span>
-              <span><strong>Verification.</strong> Phone SMS + ID upload. Takes 10 minutes.</span>
+              <span><strong>Verify.</strong> Phone SMS and ID upload. Ten minutes.</span>
             </li>
             <li class="confirm__step">
               <span class="evx-label confirm__step-num">04</span>
-              <span><strong>Go live.</strong> Cohort 03 sellers go live on 01 July 2026.</span>
+              <span><strong>Go live.</strong> Approved sellers ship with the next cohort.</span>
             </li>
           </ol>
         </div>

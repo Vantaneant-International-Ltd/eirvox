@@ -13,23 +13,23 @@
   const faqs = [
     {
       q: 'Is ÉIRVOX only for high-end items?',
-      a: 'No. We have items from €135 to €48,500. The quality bar is on the seller, not the item. A €135 Aran cardigan from a Verified seller in Donegal sits on the same platform as a €4,250 DRIVE issue - because the trust system protects both.',
+      a: 'No. The quality bar is on the seller, not the price. A €135 cardigan from a vetted Donegal seller belongs on the same platform as a €13,000 car. What matters is honest condition and a real point of view.',
     },
     {
-      q: 'What if I want to meet in person?',
-      a: 'Collection is available on many listings. Arrange directly with the seller via Messages. ÉIRVOX does not mandate remote-only transactions for lower-value items.',
+      q: 'Can I meet in person?',
+      a: 'Collection is available on many listings. Arrange it with the seller through in-app messaging. ÉIRVOX does not require remote-only transactions.',
     },
     {
-      q: 'How do you stop scams?',
-      a: 'Every seller is phone and ID verified before their first listing goes live. Cohort approval means we\'ve reviewed their stock and their description standards. Buyers\' deposits are fully refundable until the item ships.',
+      q: 'How do you protect against scams?',
+      a: 'Sellers are admitted by application, not open signup. Every applicant is reviewed by hand. Buyer and seller communication stays in-app so we can see the conversation if a dispute arises. Phone numbers and email addresses are never published on listings.',
     },
     {
       q: 'Can I sell from Northern Ireland?',
-      a: 'Yes. ÉIRVOX operates across the island of Ireland, including Northern Ireland. Prices are displayed in Euro. Buyers in Northern Ireland can pay in Sterling if both parties agree.',
+      a: 'Yes. ÉIRVOX operates across the island of Ireland. Prices show in Euro. Buyers in Northern Ireland can pay in Sterling by direct arrangement.',
     },
     {
-      q: 'What can\'t I sell?',
-      a: 'No counterfeit items, no stolen goods, no items requiring export licences, no live animals, no weapons. Full prohibited items list on request.',
+      q: 'What can I not sell?',
+      a: 'No counterfeits. No stolen goods. No items requiring export licences. No live animals. No weapons. Full prohibited list on request.',
     },
   ];
 </script>
@@ -40,46 +40,34 @@
   <div class="page-container">
 
     <header class="trust-hero">
-      <span class="evx-caption trust-hero__pre">TRUST · DEPOSITS · AUTHENTICATION</span>
+      <span class="evx-caption trust-hero__pre">TRUST</span>
       <h1 class="trust-hero__title">
-        Money moves only<br/>when both sides are happy.
+        Trust earned,<br/>not promised.
       </h1>
-      <!-- TODO TRUST&COMPLIANCE: copy below is factually incorrect under
-           the current hands-off architecture (no €49 default deposit;
-           ÉIRVOX does NOT hold marketplace deposits). Flagged as a
-           launch-blocker; this whole page needs rewriting in the Trust &
-           Compliance pass before public ship. Out of scope for the
-           stock-state / DRIVE-as-listings phase. -->
       <p class="trust-hero__sub">
-        Every reservation on ÉIRVOX is backed by a €49 refundable deposit.
-        High-value items pass through our Dublin authentication centre.
-        If anything is off, you get a refund - not an argument.
+        ÉIRVOX is the venue, not the broker. Payments go direct to sellers.
+        Sellers are admitted by application, not open signup.
+        Refunds where they are due. Nothing fabricated. Nothing oversold.
       </p>
     </header>
 
-    <!-- 01 Deposits -->
+    <!-- 01 How money moves -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">01 · DEPOSITS</span>
+      <span class="evx-caption trust-section__num">01 · MONEY</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">How the money flows.</h2>
-          <!-- TODO TRUST&COMPLIANCE: "held by ÉIRVOX" is factually wrong.
-               Marketplace deposits go direct to the seller's Revolut.
-               ÉIRVOX-owned deposits go to ÉIRVOX's Revolut Merchant
-               account (we are the merchant of record, not a custodian).
-               Rewrite in the Trust & Compliance pass. -->
+          <h2 class="trust-section__heading">How money moves.</h2>
           <p class="trust-section__sub">
-            All reservation deposits are held by ÉIRVOX and refunded in full if a transaction doesn't proceed.
-            No hidden charges, no administration fees.
+            Marketplace transactions go straight from the buyer to the seller via Revolut.
+            We never sit in the middle. We never hold buyer funds.
           </p>
         </div>
         <ol class="trust-steps">
           {#each [
-            { n: '01', title: 'You pay a €49 deposit.', body: 'Processed via Revolut or payment link. Refundable in full until the item ships.' },
-            { n: '02', title: 'Seller confirms within 48 hours.', body: 'If they don\'t confirm, your deposit is refunded - no questions, no support tickets.' },
-            { n: '03', title: 'Balance agreed and paid.', body: 'Direct with the seller for marketplace items. ÉIRVOX invoices the balance for DRIVE.' },
-            { n: '04', title: 'Item ships and deposit is credited.', body: 'The €49 is deducted from your final balance. Full refund if anything doesn\'t match.' },
-            { n: '05', title: 'Full escrow coming in H2 2026.', body: 'Stripe Connect escrow will hold all funds until you confirm delivery. Currently in development.' },
+            { n: '01', title: 'Buyer pays the seller direct.', body: 'Card, Apple Pay, or Google Pay on Revolut. ÉIRVOX is the venue, not the merchant of record.' },
+            { n: '02', title: 'Reservation deposits are optional, per listing.', body: 'When a seller configures one, the deposit goes to the seller too. There is no ÉIRVOX escrow.' },
+            { n: '03', title: 'House listings are the exception.', body: 'On items sold directly by ÉIRVOX, we are the merchant of record. Refunds for legitimate issues are at our discretion. See /refund-policy.' },
+            { n: '04', title: 'No platform commission held back.', body: 'Sellers receive the full amount. Tier fees, if any, are billed separately.' },
           ] as step}
             <li class="trust-step">
               <span class="evx-label trust-step__num">{step.n}</span>
@@ -93,124 +81,67 @@
       </div>
     </section>
 
-    <!-- 02 Authentication -->
+    <!-- 02 Seller admission -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">02 · AUTHENTICATION</span>
+      <span class="evx-caption trust-section__num">02 · SELLERS</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">Checked before it ships.</h2>
+          <h2 class="trust-section__heading">Admission by application.</h2>
           <p class="trust-section__sub">
-            A small physical team in Dublin handles every item above the value threshold.
-            Required automatically - buyers and sellers can't opt out.
+            Every application is reviewed by hand. Three tiers.
+            Cohorts open four times a year. No open signup.
           </p>
         </div>
-        <div class="trust-auth">
-          <div class="trust-auth__steps">
-            {#each [
-              { n: '01', title: 'Seller ships to us.', body: 'Prepaid pack, tracked. €25 add-on, refunded if it fails.' },
-              { n: '02', title: 'Expert inspects.', body: '11-point physical check. Photographed. Logged.' },
-              { n: '03', title: 'Pass or fail.', body: 'Listing flagged, buyer refunded, seller suspended on fail.' },
-              { n: '04', title: 'Forward to buyer.', body: 'Tamper-proof seal + numbered authenticity card.' },
-            ] as step}
-              <div class="trust-auth__step">
-                <span class="evx-label trust-auth__num">{step.n}</span>
-                <strong>{step.title}</strong>
-                <span class="trust-auth__body">{step.body}</span>
-              </div>
-            {/each}
-          </div>
-
-          <div class="trust-auth__protocol">
-            <div class="trust-auth__col">
-              <span class="evx-label">11-POINT PROTOCOL</span>
-              <ul class="trust-auth__list">
-                <li>- Serial &amp; batch markings</li>
-                <li>- Materials &amp; build</li>
-                <li>- Stitching, weight, finish</li>
-                <li>- Box, papers, accessories</li>
-                <li>- Function &amp; operation</li>
-                <li>- Provenance trail</li>
-              </ul>
-            </div>
-            <div class="trust-auth__col">
-              <span class="evx-label">REQUIRED ON</span>
-              <ul class="trust-auth__list">
-                <li>- All watches over €500</li>
-                <li>- All sneakers over €200</li>
-                <li>- Designer bags &amp; outerwear</li>
-                <li>- Cameras &amp; lenses</li>
-                <li>- Apple &amp; pro audio</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03 Buyer protection -->
-    <section class="trust-section">
-      <span class="evx-caption trust-section__num">03 · BUYER PROTECTION</span>
-      <div class="trust-section__inner">
-        <div class="trust-section__left">
-          <h2 class="trust-section__heading">If the platform fails, you're covered.</h2>
-        </div>
         <div class="trust-bullets">
-          {#each [
-            'Item arrives as described - or full refund.',
-            'Tracked &amp; insured shipping - up to €2,500 included; higher cover at checkout.',
-            '7-day dispute window - counted from confirmed delivery.',
-            'Deposits refunded in full - no charge if sale doesn\'t proceed.',
-            'Authenticated items - refund + audit if authentication is later contested.',
-          ] as item}
-            <div class="trust-bullet">{@html item}</div>
-          {/each}
+          <div class="trust-bullet">Applications go through a single five-step form.</div>
+          <div class="trust-bullet">We read your sourcing pitch and consider your category.</div>
+          <div class="trust-bullet">Shortlisted applicants take a 15-minute call.</div>
+          <div class="trust-bullet">If approved, you go live with the next cohort.</div>
+          <div class="trust-bullet">Trading names are locked once issued. Changes require admin approval to prevent impersonation.</div>
         </div>
       </div>
     </section>
 
-    <!-- 04 Seller protection -->
+    <!-- 03 Communication -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">04 · SELLER PROTECTION</span>
+      <span class="evx-caption trust-section__num">03 · COMMUNICATION</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">You're covered too.</h2>
-        </div>
-        <div class="trust-bullets">
-          {#each [
-            'Reservation deposits - buyers are serious before they contact you.',
-            'Verified buyers only - phone + ID before purchase.',
-            'Documented shipping - disputes need photographic evidence of mismatch.',
-            'Shipping label provided - DPD or An Post Express, pre-paid.',
-            'Dispute mediation - ÉIRVOX reviews evidence on both sides.',
-          ] as item}
-            <div class="trust-bullet">{item}</div>
-          {/each}
-        </div>
-      </div>
-    </section>
-
-    <!-- 05 Buyer Protection Guarantee -->
-    <section class="trust-section">
-      <span class="evx-caption trust-section__num">05 · BUYER PROTECTION GUARANTEE</span>
-      <div class="trust-section__inner">
-        <div class="trust-section__left">
-          <h2 class="trust-section__heading">What's covered. What isn't.</h2>
+          <h2 class="trust-section__heading">Conversations stay on ÉIRVOX.</h2>
           <p class="trust-section__sub">
-            We refund the buyer first, then sort it out with the seller. The guarantee covers the cases
-            below - written plainly so there's no argument about it later.
+            Buyer and seller messaging happens in-app. Phone numbers and email
+            addresses are not published on listings.
+          </p>
+        </div>
+        <div class="trust-bullets">
+          <div class="trust-bullet">In-app messaging on every listing, free, no commitment.</div>
+          <div class="trust-bullet">Offers can be sent in one tap and replied to as a normal message.</div>
+          <div class="trust-bullet">If a message looks like a phone or email handover, ÉIRVOX flags it. Off-platform deals are outside our refund policy.</div>
+          <div class="trust-bullet">Disputes that begin on the platform can be reviewed by ÉIRVOX. Disputes that happen off it cannot.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Refunds -->
+    <section class="trust-section">
+      <span class="evx-caption trust-section__num">04 · REFUNDS</span>
+      <div class="trust-section__inner">
+        <div class="trust-section__left">
+          <h2 class="trust-section__heading">Where refunds apply.</h2>
+          <p class="trust-section__sub">
+            On ÉIRVOX-owned listings, we refund for legitimate issues at our discretion.
+            On seller listings, the seller is the merchant of record. Refunds are between buyer and seller.
           </p>
         </div>
 
         <div class="coverage">
-          <!-- Covered -->
           <div class="coverage__col coverage__col--covered">
-            <span class="evx-label coverage__head">COVERED</span>
+            <span class="evx-label coverage__head">ÉIRVOX-OWNED</span>
             <ul class="coverage__list">
               {#each [
-                { t: 'Item not as described', d: 'Material defect, undisclosed damage, wrong reference, missing accessories.' },
-                { t: 'Item not received', d: 'Lost in transit, never shipped, or tracking shows non-delivery after 14 days.' },
-                { t: 'Counterfeit items', d: 'Independent authentication fails - full refund + audit of the seller account.' },
-                { t: 'Seller no-show', d: 'Seller goes dark after deposit. Full refund and credit on your next reservation.' },
+                { t: 'Item not as described', d: 'Undisclosed damage or material defect. Refund considered case by case.' },
+                { t: 'Item not received', d: 'Lost in transit or never shipped. Refund processed once we confirm with the courier.' },
+                { t: 'Fault on our side', d: 'We sold something we should not have. Full refund.' },
               ] as item}
                 <li class="coverage__item">
                   <span class="coverage__mark coverage__mark--good">+</span>
@@ -223,15 +154,14 @@
             </ul>
           </div>
 
-          <!-- Not covered -->
           <div class="coverage__col coverage__col--excluded">
             <span class="evx-label coverage__head coverage__head--excluded">NOT COVERED</span>
             <ul class="coverage__list">
               {#each [
-                { t: 'Buyer\'s remorse', d: 'Changed your mind after delivery and the item matches the listing - that\'s a private resale, not our problem to fix.' },
-                { t: 'Minor cosmetic differences', d: 'Within the seller\'s stated condition. "Excellent" means light hairlines - those aren\'t a defect.' },
-                { t: 'Market value changes', d: 'Price drops or rises after purchase. We\'re not a financial product.' },
-                { t: 'Dispute filed after the window', d: 'Seven days from delivery confirmation. Outside that, the platform stops mediating.' },
+                { t: 'Buyer remorse', d: 'Item matches the listing and you changed your mind. That is a private resale.' },
+                { t: 'Minor cosmetic differences', d: 'Within the seller stated condition. "Excellent" is not "mint".' },
+                { t: 'Off-platform deals', d: 'If the transaction happened outside ÉIRVOX, we cannot mediate or refund.' },
+                { t: 'Seller listings', d: 'On listings sold by other sellers, refunds are between you and them.' },
               ] as item}
                 <li class="coverage__item">
                   <span class="coverage__mark coverage__mark--bad">−</span>
@@ -245,60 +175,24 @@
           </div>
         </div>
 
-        <div class="resolution">
-          <span class="evx-label resolution__label">RESOLUTION TIMELINE</span>
-          <div class="resolution__row">
-            <div class="resolution__cell">
-              <span class="resolution__num">24h</span>
-              <span class="evx-caption resolution__cell-label">FIRST RESPONSE</span>
-            </div>
-            <div class="resolution__cell">
-              <span class="resolution__num">5d</span>
-              <span class="evx-caption resolution__cell-label">MOST DISPUTES RESOLVED</span>
-            </div>
-            <div class="resolution__cell">
-              <span class="resolution__num">14d</span>
-              <span class="evx-caption resolution__cell-label">COMPLEX CASES (AUTH, FORENSIC)</span>
-            </div>
-          </div>
-        </div>
+        <p class="trust-section__sub" style="margin-top: 24px;">
+          Full policy at <a href="#/refund-policy">/refund-policy</a>.
+        </p>
       </div>
     </section>
 
-    <!-- 06 How to file a dispute -->
+    <!-- 05 What you can not sell -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">06 · FILING A DISPUTE</span>
+      <span class="evx-caption trust-section__num">05 · PROHIBITED</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">How to file.</h2>
-          <p class="trust-section__sub">
-            Three steps. We work in your timezone - Dublin office hours plus Saturday morning cover.
-          </p>
+          <h2 class="trust-section__heading">What does not belong.</h2>
         </div>
-
-        <ol class="dispute-steps">
-          {#each [
-            { n: '01', t: 'Open a dispute in Messages.', d: 'On the conversation with the seller, click the "Report dispute" link in the thread header. Tell us what happened in plain English - no template required.' },
-            { n: '02', t: 'Send us your evidence.', d: 'Photos of the item as received, the original listing, tracking screenshots, the seller\'s messages. Anything that documents the mismatch.' },
-            { n: '03', t: 'We mediate within 48 hours.', d: 'Both sides see our findings. If the buyer wins, the refund is processed the same day. If the seller wins, the buyer is told why with the evidence.' },
-          ] as step}
-            <li class="dispute-step">
-              <span class="evx-label dispute-step__num">{step.n}</span>
-              <div class="dispute-step__body">
-                <strong class="dispute-step__title">{step.t}</strong>
-                <p class="dispute-step__desc">{step.d}</p>
-              </div>
-            </li>
-          {/each}
-        </ol>
-
-        <div class="dispute-contact">
-          <span class="evx-caption dispute-contact__label">URGENT OR HIGH-VALUE?</span>
-          <p class="dispute-contact__body">
-            Items above €5,000, suspected counterfeit, or anything time-critical -
-            email <a href="mailto:disputes@eirvox.ie" class="dispute-contact__link">disputes@eirvox.ie</a> directly
-            and a senior team member responds within four hours during office hours.
-          </p>
+        <div class="trust-bullets">
+          <div class="trust-bullet">Counterfeit items.</div>
+          <div class="trust-bullet">Stolen goods.</div>
+          <div class="trust-bullet">Items that require export licences we do not facilitate.</div>
+          <div class="trust-bullet">Weapons. Live animals. Anything illegal under Irish law.</div>
         </div>
       </div>
     </section>
@@ -306,7 +200,7 @@
     <!-- FAQ -->
     <section class="trust-faq">
       <span class="evx-caption trust-section__num">COMMON QUESTIONS</span>
-      <h2 class="trust-faq__heading">Five things people ask first.</h2>
+      <h2 class="trust-faq__heading">Five things people ask.</h2>
       <div class="trust-faq__list">
         {#each faqs as faq, i}
           <div class="trust-faq__item">
@@ -378,6 +272,7 @@
   }
 
   .trust-section__sub { font-size: 14px; line-height: 1.7; color: var(--evx-ink-soft); }
+  .trust-section__sub a { color: var(--evx-warm-black); text-decoration: underline; text-underline-offset: 3px; }
 
   .trust-steps {
     display: flex;
@@ -400,46 +295,6 @@
   .trust-step__title { color: var(--evx-warm-black); font-weight: 500; }
   .trust-step__body { color: var(--evx-ink-soft); }
 
-  .trust-auth { display: flex; flex-direction: column; gap: var(--evx-space-2xl); }
-
-  .trust-auth__steps {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--evx-space-xl);
-  }
-
-  .trust-auth__step {
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-sm);
-    padding: var(--evx-space-lg);
-    border: 1px solid var(--evx-rule-light);
-    font-size: 14px;
-  }
-
-  .trust-auth__num { color: var(--evx-fox-orange); }
-  .trust-auth__step strong { color: var(--evx-warm-black); font-size: 15px; }
-  .trust-auth__body { color: var(--evx-ink-soft); line-height: 1.6; }
-
-  .trust-auth__protocol {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--evx-space-3xl);
-    padding-top: var(--evx-space-xl);
-    border-top: 1px solid var(--evx-rule-light);
-  }
-
-  .trust-auth__col { display: flex; flex-direction: column; gap: var(--evx-space-md); }
-
-  .trust-auth__list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-sm);
-    font-size: 14px;
-    color: var(--evx-ink-soft);
-    line-height: 1.5;
-  }
-
   .trust-bullets {
     display: flex;
     flex-direction: column;
@@ -454,7 +309,6 @@
     line-height: 1.5;
   }
 
-  /* ── 05 Coverage matrix ── */
   .coverage {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -514,65 +368,6 @@
     display: block;
   }
 
-  /* Resolution timeline */
-  .resolution {
-    margin-top: var(--evx-space-xl);
-    padding: var(--evx-space-lg);
-    background: rgba(232,116,44,0.04);
-    border-left: 2px solid var(--evx-fox-orange);
-  }
-  .resolution__label { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-md); }
-  .resolution__row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--evx-space-lg);
-  }
-  .resolution__cell {
-    display: flex; flex-direction: column;
-    gap: 4px;
-  }
-  .resolution__num {
-    font-family: var(--evx-font-display);
-    font-size: 28px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    color: var(--evx-warm-black);
-    line-height: 1;
-  }
-  .resolution__cell-label { color: var(--evx-ink-soft); line-height: 1.4; }
-
-  /* ── 06 Dispute steps ── */
-  .dispute-steps {
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-md);
-  }
-  .dispute-step {
-    display: grid;
-    grid-template-columns: 48px 1fr;
-    gap: var(--evx-space-lg);
-    padding: var(--evx-space-md);
-    border: 1px solid var(--evx-rule-light);
-  }
-  .dispute-step__num { color: var(--evx-fox-orange); margin-top: 2px; }
-  .dispute-step__body { display: flex; flex-direction: column; gap: var(--evx-space-xs); }
-  .dispute-step__title {
-    font-family: var(--evx-font-display);
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--evx-warm-black);
-  }
-  .dispute-step__desc { font-size: 14px; line-height: 1.65; color: var(--evx-ink-soft); }
-
-  .dispute-contact {
-    margin-top: var(--evx-space-lg);
-    padding: var(--evx-space-lg);
-    border-top: 1px solid var(--evx-rule-light);
-  }
-  .dispute-contact__label { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-sm); }
-  .dispute-contact__body { font-size: 14px; line-height: 1.7; color: var(--evx-ink-soft); }
-  .dispute-contact__link { color: var(--evx-warm-black); text-decoration: underline; text-underline-offset: 3px; }
-
   .trust-faq {
     padding-top: var(--evx-space-2xl);
     margin-bottom: var(--evx-space-2xl);
@@ -621,14 +416,6 @@
 
   @media (max-width: 1023px) {
     .trust-section__inner { grid-template-columns: 1fr; }
-    .trust-auth__steps { grid-template-columns: 1fr 1fr; }
-    .trust-auth__protocol { grid-template-columns: 1fr; }
     .coverage { grid-template-columns: 1fr; }
-    .resolution__row { grid-template-columns: 1fr; gap: var(--evx-space-md); }
-    .dispute-step { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 767px) {
-    .trust-auth__steps { grid-template-columns: 1fr; }
   }
 </style>

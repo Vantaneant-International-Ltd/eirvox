@@ -22,21 +22,20 @@ interface Body {
  *  confirm email until secrets are wired. */
 async function sendWelcomeEmail(to: string): Promise<void> {
   const subject = "You're on the ÉIRVOX list.";
-  const preheader = "We'll write to you first when the next drop lands.";
+  const preheader = "We will write to you first when the next drop lands.";
   const text = [
     'ÉIRVOX',
     '',
     "YOU'RE ON.",
     '',
-    'Thanks for joining the ÉIRVOX waitlist.',
+    'Thanks for joining the list.',
     '',
-    "We're admitting new buyers and sellers in cohorts. You'll hear",
-    'from us first when the next drop lands — cars, watches, design',
-    'objects, all sourced with the same eye.',
+    'Cohorts open four times a year. You will hear from us first.',
+    'Cars. Watches. Objects of consideration. Sourced with one eye.',
     '',
-    'No spam between now and then. We mean it.',
+    'Nothing between now and then. We mean it.',
     '',
-    'This is an automated message. Questions? Email support@eirvox.ie.',
+    'Replies are not monitored. Questions go to support@eirvox.ie.',
     '',
     'ÉIRVOX Systems Ltd · Dublin, Ireland',
     'https://eirvox.ie',
@@ -53,12 +52,12 @@ async function sendWelcomeEmail(to: string): Promise<void> {
         <div style="font-family:Georgia,'Times New Roman',serif;font-size:32px;font-weight:500;letter-spacing:-0.01em;line-height:1.1;margin-top:10px;">You're on.</div>
       </td></tr>
       <tr><td style="padding:24px 32px;font-size:15px;line-height:1.65;color:#1A1A1A;">
-        <p style="margin:0 0 14px;">Thanks for joining the ÉIRVOX waitlist.</p>
-        <p style="margin:0 0 14px;">We're admitting new buyers and sellers in cohorts. You'll hear from us first when the next drop lands — cars, watches, design objects, all sourced with the same eye.</p>
-        <p style="margin:0;">No spam between now and then. We mean it.</p>
+        <p style="margin:0 0 14px;">Thanks for joining the list.</p>
+        <p style="margin:0 0 14px;">Cohorts open four times a year. You will hear from us first. Cars. Watches. Objects of consideration. Sourced with one eye.</p>
+        <p style="margin:0;">Nothing between now and then. We mean it.</p>
       </td></tr>
       <tr><td style="padding:8px 32px 28px;font-size:13px;line-height:1.6;color:#8A8680;">
-        This is an automated message and replies aren't monitored. Questions? Email
+        Replies are not monitored. Questions go to
         <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
       </td></tr>
     </table>

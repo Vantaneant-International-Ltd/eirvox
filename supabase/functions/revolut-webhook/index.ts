@@ -100,12 +100,12 @@ async function sendSellerNewOrderEmail(data: any): Promise<void> {
     `Fulfilment: ${fulfilment}`,
     `Buyer:      ${data.buyer_email}`,
     '',
-    `Reach out to the buyer to arrange collection or delivery.`,
+    `The buyer is waiting to hear from you. Reach out to arrange ${fulfilment.toLowerCase()}.`,
     '',
-    `Manage this order in your seller dashboard:`,
+    `Manage this order in your seller dashboard.`,
     `https://eirvox.ie/#/sell/dashboard`,
     '',
-    'This is an automated message. Replies aren\'t monitored.',
+    'Replies are not monitored.',
     '',
     'ÉIRVOX Systems Ltd · Dublin, Ireland',
   ].join('\n');
@@ -133,10 +133,10 @@ async function sendSellerNewOrderEmail(data: any): Promise<void> {
         </table>
       </td></tr>
       <tr><td style="padding:8px 32px 28px;">
-        <a href="https://eirvox.ie/#/sell/dashboard" style="display:inline-block;background:#1A1A1A;color:#FFFFFF;padding:12px 24px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;">Open seller dashboard →</a>
+        <a href="https://eirvox.ie/#/sell/dashboard" style="display:inline-block;background:#1A1A1A;color:#FFFFFF;padding:12px 24px;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;">Open seller dashboard</a>
       </td></tr>
       <tr><td style="padding:8px 32px 28px;font-size:13px;line-height:1.6;color:#8A8680;">
-        Reach out to the buyer to arrange ${fulfilment.toLowerCase()}. This is an automated message; replies aren't monitored.
+        The buyer is waiting to hear from you. Reach out to arrange ${fulfilment.toLowerCase()}. Replies to this email are not monitored.
       </td></tr>
     </table>
     <div style="max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8A8680;text-align:center;">
@@ -163,9 +163,9 @@ async function sendBuyerConfirmationEmail(data: any): Promise<void> {
     data.is_deposit ? `Balance:    ${eur(data.balance_amount)} on collection` : '',
     `Fulfilment: ${fulfilment}`,
     '',
-    `${data.seller_name ?? 'The seller'} has been notified and will reach out to you.`,
+    `${data.seller_name ?? 'The seller'} has been notified. They will reach out to you to arrange ${fulfilment.toLowerCase()}.`,
     '',
-    'This is an automated message. Replies aren\'t monitored.',
+    'Replies to this email are not monitored.',
     'For help: support@eirvox.ie',
     '',
     'ÉIRVOX Systems Ltd · Dublin, Ireland',
@@ -192,10 +192,10 @@ async function sendBuyerConfirmationEmail(data: any): Promise<void> {
         </table>
       </td></tr>
       <tr><td style="padding:8px 32px 28px;font-size:14px;line-height:1.65;color:#1A1A1A;">
-        <strong>${data.seller_name ?? 'The seller'}</strong> has been notified and will reach out to you to arrange ${fulfilment.toLowerCase()}.
+        <strong>${data.seller_name ?? 'The seller'}</strong> has been notified. They will reach out to you to arrange ${fulfilment.toLowerCase()}.
       </td></tr>
       <tr><td style="padding:8px 32px 28px;font-size:13px;line-height:1.6;color:#8A8680;">
-        Automated message — replies aren't monitored. Need help? <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
+        Replies to this email are not monitored. For help, write to <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
       </td></tr>
     </table>
     <div style="max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8A8680;text-align:center;">

@@ -18,10 +18,10 @@
       <div class="sell-hero__badge evx-caption">FOR SELLERS · COHORT 03 · OPEN UNTIL 14 JUNE</div>
       <div class="sell-hero__inner">
         <div>
-          <h1 class="sell-hero__title">Sell on Éirvox.</h1>
+          <h1 class="sell-hero__title">Sell on ÉIRVOX.</h1>
           <p class="sell-hero__desc">
-            Ireland's premium marketplace. Lower fees than you're used to.
-            Verified buyers, protected transactions, and a quality bar you don't have to fight against.
+            A curated marketplace, not a feed. Lower fees than you'd pay elsewhere.
+            Cohort admission, considered listings, a quality bar that earns you better buyers.
           </p>
           <div class="sell-hero__actions">
             <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
@@ -67,10 +67,10 @@
           <h3 class="tier-card__name">Verified</h3>
           <p class="tier-card__price">7% commission · €0/mo</p>
           <ul class="tier-card__features">
-            <li>+ ID + phone verified</li>
             <li>+ Up to 10 active listings</li>
-            <li>+ Reservation deposits on every sale</li>
             <li>+ Standard listing tools</li>
+            <li>+ Optional reservation deposits</li>
+            <li>+ In-app buyer messaging</li>
             <li class="tier-card__neg">- No shop page</li>
           </ul>
           <button class="evx-btn evx-btn--ghost tier-card__cta" on:click={() => navigate('/sell/apply')}>
@@ -86,10 +86,9 @@
           <p class="tier-card__price tier-card__price--light">5% commission · €19/mo</p>
           <ul class="tier-card__features tier-card__features--light">
             <li>+ Everything in Verified</li>
-            <li>+ Custom shop page · /s/your-handle</li>
+            <li>+ Custom shop page</li>
             <li>+ Unlimited listings</li>
-            <li>+ Bulk listing CSV import</li>
-            <li>+ Detailed sales analytics</li>
+            <li>+ Sales analytics</li>
             <li>+ Priority support</li>
           </ul>
           <button class="evx-btn evx-btn--primary tier-card__cta" on:click={() => navigate('/sell/apply')}>
@@ -103,32 +102,14 @@
           <h3 class="tier-card__name">House</h3>
           <p class="tier-card__price">By arrangement · invite only</p>
           <ul class="tier-card__features">
-            <li>+ Editorial features on homepage</li>
-            <li>+ Issue / drop scheduling</li>
+            <li>+ Homepage editorial features</li>
+            <li>+ DRIVE issue scheduling</li>
             <li>+ ÉIRVOX photography &amp; copy</li>
-            <li>+ Co-authentication</li>
             <li class="tier-card__neg">- By invitation only</li>
           </ul>
           <button class="evx-btn evx-btn--ghost tier-card__cta" disabled>
             By invitation
           </button>
-        </div>
-      </div>
-
-      <!-- Authentication add-on -->
-      <div class="sell-addon">
-        <div class="sell-addon__left">
-          <span class="evx-caption sell-addon__label">ADD-ON</span>
-          <h3 class="sell-addon__title">Authentication</h3>
-          <p class="sell-addon__price evx-caption">€25/item · refunded on fail</p>
-        </div>
-        <div class="sell-addon__mid">
-          <strong>Sells 38% faster on average.</strong><br/>
-          Across watches, cameras, designer fashion.
-        </div>
-        <div class="sell-addon__right">
-          <strong>Required above €500.</strong><br/>
-          For watches and sneakers - automatic.
         </div>
       </div>
     </section>
@@ -138,17 +119,17 @@
       <div class="sell-criteria__inner">
         <div>
           <span class="evx-caption sell-criteria__pre">WHAT WE LOOK FOR</span>
-          <h2 class="sell-criteria__heading">Four things, that's it.</h2>
+          <h2 class="sell-criteria__heading">Four things.</h2>
           <p class="sell-criteria__sub">
-            We respond to every applicant - usually within five working days.
-            Approval includes a short video call.
+            We respond to every applicant. Usually within five working days.
+            Approval includes a short call.
           </p>
         </div>
         <ol class="sell-criteria__list">
           {#each [
             'A clear category and a strong point of view.',
             'Honest condition descriptions. No exaggeration.',
-            'Decent photography. We\'ll help if you\'re close.',
+            'Decent photography. We can help if you are close.',
             'Reliable shipping or a real collection point.',
           ] as item, i}
             <li class="sell-criteria__item">
