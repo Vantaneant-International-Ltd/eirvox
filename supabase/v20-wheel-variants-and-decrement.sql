@@ -221,15 +221,33 @@ GRANT  INSERT, UPDATE, DELETE ON public.listing_variants TO authenticated;
 -- Callable only by service_role (from inside the Revolut webhook
 -- after a verified payment). Never by anon. Never by authenticated.
 
+-- ── Bug-fix history ─────────────────────────────────────────
+-- First draft of this function used OUT params named variant_id,
+-- remaining, style_label, family_key. Three of those (variant_id,
+-- style_label, family_key) collide with column names on
+-- public.listing_variants when referenced inside the
+-- UPDATE ... RETURNING ... INTO r block. PostgreSQL refuses to
+-- compile that RETURNING list with 42702 "column reference
+-- ambiguous" on every call. The mandatory concurrency test caught
+-- it; the live function was rewritten to:
+--   1. Rename OUT params to out_variant_id / out_remaining /
+--      out_style_label / out_family_key, eliminating the name clash.
+--   2. Alias the table as lv inside the UPDATE so every column
+--      reference is qualified (lv.family_key, lv.style_key, etc.).
+-- complete_order uses SELECT * INTO v_dec (positional record) and
+-- never reads the OUT params by name, so renaming is local to this
+-- function. revolut-webhook reads complete_order's jsonb result and
+-- is not coupled to these names either.
+
 CREATE OR REPLACE FUNCTION public.decrement_variant_stock(
   p_listing_id  uuid,
   p_style_key   text,
   p_family_key  text
 ) RETURNS TABLE (
-  variant_id     uuid,
-  remaining      int,
-  style_label    text,
-  family_key     text
+  out_variant_id   uuid,
+  out_remaining    int,
+  out_style_label  text,
+  out_family_key   text
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -238,14 +256,14 @@ AS $$
 DECLARE
   r record;
 BEGIN
-  UPDATE public.listing_variants
-     SET stock_count = stock_count - 1,
+  UPDATE public.listing_variants AS lv
+     SET stock_count = lv.stock_count - 1,
          updated_at  = now()
-   WHERE listing_id  = p_listing_id
-     AND style_key   = p_style_key
-     AND family_key  = p_family_key
-     AND stock_count > 0
-  RETURNING id, stock_count, style_label, family_key
+   WHERE lv.listing_id = p_listing_id
+     AND lv.style_key  = p_style_key
+     AND lv.family_key = p_family_key
+     AND lv.stock_count > 0
+  RETURNING lv.id, lv.stock_count, lv.style_label, lv.family_key
        INTO r;
 
   IF r.id IS NULL THEN
@@ -257,10 +275,10 @@ BEGIN
       USING ERRCODE = 'P0001';
   END IF;
 
-  variant_id  := r.id;
-  remaining   := r.stock_count;
-  style_label := r.style_label;
-  family_key  := r.family_key;
+  out_variant_id  := r.id;
+  out_remaining   := r.stock_count;
+  out_style_label := r.style_label;
+  out_family_key  := r.family_key;
   RETURN NEXT;
 END;
 $$;
