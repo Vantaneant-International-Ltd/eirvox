@@ -29,7 +29,7 @@
 <LegalLayout
   title="Privacy Policy."
   {sections}
-  intro="How ÉIRVOX handles your personal data. We collect what we need, hold it only as long as we need it, and we don't sell your data - to anyone, ever."
+  intro="How ÉIRVOX handles your personal data. We collect what we need, hold it only as long as we need it, and we do not sell your data, to anyone, ever. Effective 1 June 2026. Pending final legal review before public launch."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · WHO WE ARE</span>
@@ -50,7 +50,7 @@
       <li><strong>Delivery information:</strong> shipping address (provided at reservation).</li>
       <li><strong>Payment information:</strong> processed by third-party providers (Stripe, Revolut, banks). We do not store full card numbers.</li>
       <li><strong>Seller / Tradesperson information:</strong> trading name, qualifications, certificates, photographs of work, references.</li>
-      <li><strong>Verification documents:</strong> government-issued ID for sellers and tradespeople, held securely and used only for verification.</li>
+      <li><strong>Verification documents:</strong> where requested for a specific applicant, a government-issued ID is held securely and used only to confirm identity and eligibility. We do not run background checks or financial verification.</li>
       <li><strong>Device &amp; usage data:</strong> IP address, browser type, pages visited, basic interaction events.</li>
       <li><strong>Communications:</strong> messages between buyers, sellers, tradespeople, and the platform.</li>
     </ul>
@@ -87,8 +87,7 @@
     <ul>
       <li><strong>Sellers and tradespeople</strong> - when you reserve an item or request a quote, the relevant party receives the contact details needed to fulfil the transaction.</li>
       <li><strong>Payment providers</strong> - Stripe, Revolut, and similar, to process payments.</li>
-      <li><strong>Authentication partners</strong> - for high-value item inspection in our Dublin centre.</li>
-      <li><strong>Shipping providers</strong> - DPD, An Post, and similar, when an item is shipped.</li>
+      <li><strong>Shipping providers</strong> - An Post and similar, when an item is shipped from Dublin.</li>
       <li><strong>Legal authorities</strong> - where required by law or court order.</li>
     </ul>
     <p>
