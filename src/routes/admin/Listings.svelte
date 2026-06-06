@@ -16,6 +16,7 @@
   } from '../../lib/admin';
   import type { ListingStatus, ListingImage, ListingSpec, StockState, DriveIssueState } from '../../lib/listings';
   import { applySeo } from '../../lib/seo';
+  import AdminVariantMatrix from '../../lib/AdminVariantMatrix.svelte';
 
   // ── State ──
   let loading = true;
@@ -550,6 +551,14 @@
                 </div>
               </div>
             {/if}
+          {/if}
+
+          <!-- Variant matrix (v20) — wheel consignment 2-axis stock + delta.
+               Only render for ÉIRVOX-owned listings in automotive / cars.
+               Server-side decrement on confirmed payment is the source of
+               truth for sold cells; this editor seeds + adjusts. -->
+          {#if detail.listing.seller?.is_house && (detail.listing.category_slug === 'automotive' || detail.listing.category_slug === 'cars')}
+            <AdminVariantMatrix listingId={detail.listing.id} />
           {/if}
 
           <!-- Specs -->
