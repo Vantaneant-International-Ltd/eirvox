@@ -100,7 +100,11 @@ Deno.serve(async (req: Request) => {
           ? body.buyer_profile_id : null;
         const variantStyleKey  = resolved.metadata.variant_style_key  || null;
         const variantFamilyKey = resolved.metadata.variant_family_key || null;
-        const { error: persistErr } = await supabaseAdmin.rpc('record_order_created', {
+        // Variant params are conditional: pre-v20 there is no 9-arg
+        // record_order_created and Postgres dispatches by signature.
+        // Omit the variant keys for non-variant orders so the v17
+        // 7-arg signature still resolves.
+        const persistArgs: Record<string, unknown> = {
           p_revolut_order_id: order.id,
           p_listing_id: body.listing_id.trim(),
           p_buyer_email: buyerEmail,
@@ -108,9 +112,12 @@ Deno.serve(async (req: Request) => {
           p_amount_eur: Math.round(resolved.amountEur),
           p_is_deposit: !!body.is_deposit,
           p_fulfilment: body.fulfilment ?? 'collection',
-          p_variant_style_key:  variantStyleKey,
-          p_variant_family_key: variantFamilyKey,
-        });
+        };
+        if (variantStyleKey && variantFamilyKey) {
+          persistArgs.p_variant_style_key  = variantStyleKey;
+          persistArgs.p_variant_family_key = variantFamilyKey;
+        }
+        const { error: persistErr } = await supabaseAdmin.rpc('record_order_created', persistArgs);
         if (persistErr) {
           // Don't fail the buyer's checkout if persistence fails —
           // they've already gotten the Revolut order. We log it loudly;
@@ -209,9 +216,16 @@ async function resolveListingCharge(req: Request, body: Body): Promise<ResolvedC
     .select('id', { count: 'exact', head: true })
     .eq('listing_id', listingId);
 
+  // 42P01 = undefined_table: v20 not applied yet. Treat as "no variants
+  // exist for this listing" so non-variant checkouts keep working until
+  // the migration lands. Other errors (network, permissions) still fail.
   if (variantCountErr) {
-    console.error('[create-order] variant count failed:', variantCountErr.message);
-    return oops(req, 'Could not verify listing variants.');
+    const code = (variantCountErr as { code?: string }).code;
+    if (code !== '42P01' && code !== 'PGRST205') {
+      console.error('[create-order] variant count failed:', variantCountErr.message);
+      return oops(req, 'Could not verify listing variants.');
+    }
+    console.warn('[create-order] listing_variants table missing; skipping variant logic (v20 not applied yet)');
   }
 
   if ((variantTotal ?? 0) > 0) {
