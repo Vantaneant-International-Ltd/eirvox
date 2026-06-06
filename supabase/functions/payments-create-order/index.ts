@@ -27,6 +27,11 @@ interface Body {
   // unless they're authenticated (in which case we use the JWT user's email).
   buyer_email?: string;
   buyer_profile_id?: string;  // forwarded from client when signed in
+  // 2-axis variant selection (wheel-specialist consignment line).
+  // When the listing carries a variant matrix, the buyer must pick
+  // exactly one (style, family) cell. Server re-resolves price + stock.
+  variant_style_key?: string;
+  variant_family_key?: string;
 }
 
 interface ResolvedCharge {
@@ -93,6 +98,8 @@ Deno.serve(async (req: Request) => {
       if (buyerEmail && isValidEmail(buyerEmail)) {
         const buyerProfileId = body.buyer_profile_id && /^[0-9a-f-]{36}$/i.test(body.buyer_profile_id)
           ? body.buyer_profile_id : null;
+        const variantStyleKey  = resolved.metadata.variant_style_key  || null;
+        const variantFamilyKey = resolved.metadata.variant_family_key || null;
         const { error: persistErr } = await supabaseAdmin.rpc('record_order_created', {
           p_revolut_order_id: order.id,
           p_listing_id: body.listing_id.trim(),
@@ -101,6 +108,8 @@ Deno.serve(async (req: Request) => {
           p_amount_eur: Math.round(resolved.amountEur),
           p_is_deposit: !!body.is_deposit,
           p_fulfilment: body.fulfilment ?? 'collection',
+          p_variant_style_key:  variantStyleKey,
+          p_variant_family_key: variantFamilyKey,
         });
         if (persistErr) {
           // Don't fail the buyer's checkout if persistence fails —
@@ -185,26 +194,82 @@ async function resolveListingCharge(req: Request, body: Body): Promise<ResolvedC
     return bad(req, 'This listing is incoming stock; collection requires a deposit.');
   }
 
+  // ── Variant resolution (wheel consignment matrix) ──────────
+  // If the listing has any variants, the buyer MUST select one.
+  // Server re-resolves the variant from style_key + family_key,
+  // re-checks stock_count > 0, and computes the price_delta. The
+  // client-supplied price is never trusted.
+  let variantStyleKey: string | null = null;
+  let variantFamilyKey: string | null = null;
+  let variantStyleLabel: string | null = null;
+  let variantPriceDelta = 0;
+
+  const { count: variantTotal, error: variantCountErr } = await supabaseAdmin
+    .from('listing_variants')
+    .select('id', { count: 'exact', head: true })
+    .eq('listing_id', listingId);
+
+  if (variantCountErr) {
+    console.error('[create-order] variant count failed:', variantCountErr.message);
+    return oops(req, 'Could not verify listing variants.');
+  }
+
+  if ((variantTotal ?? 0) > 0) {
+    const styleKey = typeof body.variant_style_key === 'string' ? body.variant_style_key.trim() : '';
+    const familyKey = typeof body.variant_family_key === 'string' ? body.variant_family_key.trim() : '';
+    if (!styleKey || !familyKey) {
+      return bad(req, 'This listing requires a fitment and style selection.');
+    }
+    if (styleKey.length > 64 || familyKey.length > 64) {
+      return bad(req, 'Invalid variant selection.');
+    }
+    const { data: variantRow, error: variantErr } = await supabaseAdmin
+      .from('listing_variants')
+      .select('id, style_key, style_label, family_key, stock_count, price_delta_eur')
+      .eq('listing_id', listingId)
+      .eq('style_key', styleKey)
+      .eq('family_key', familyKey)
+      .maybeSingle();
+
+    if (variantErr) {
+      console.error('[create-order] variant lookup failed:', variantErr.message);
+      return oops(req, 'Could not verify the selected variant.');
+    }
+    if (!variantRow) {
+      return bad(req, 'Selected fitment and style combination is not available.');
+    }
+    if (Number(variantRow.stock_count) <= 0) {
+      return bad(req, 'Selected fitment and style combination is sold out.');
+    }
+    variantStyleKey   = String(variantRow.style_key);
+    variantFamilyKey  = String(variantRow.family_key);
+    variantStyleLabel = String(variantRow.style_label);
+    variantPriceDelta = Number(variantRow.price_delta_eur) || 0;
+  }
+
   let amountEur: number;
   if (isDeposit) {
     const deposit = Number(row.deposit_amount);
     if (!Number.isFinite(deposit) || deposit <= 0 || deposit >= price) {
       return bad(req, 'Deposit is not configured for this listing.');
     }
+    // Deposit is fixed; variant_price_delta applies to the balance,
+    // not the deposit, by design.
     amountEur = deposit;
   } else if (fulfilment === 'collection') {
-    amountEur = price;
+    amountEur = price + variantPriceDelta;
   } else {
     const shipping = Number(row.shipping_cost);
     if (!Number.isFinite(shipping) || shipping <= 0) {
       return bad(req, 'Shipping cost is not configured for this listing.');
     }
-    amountEur = price + shipping;
+    amountEur = price + variantPriceDelta + shipping;
   }
 
   const titleSlice = typeof row.title === 'string' ? row.title.slice(0, 160) : 'ÉIRVOX';
   const tag = isDeposit ? ' (deposit)' : '';
-  const description = `ÉIRVOX — ${titleSlice}${tag}`;
+  const variantSuffix = variantStyleLabel ? ` · ${variantStyleLabel}` : '';
+  const description = `ÉIRVOX — ${titleSlice}${variantSuffix}${tag}`;
 
   const sellerId = typeof seller === 'object' && seller && 'id' in seller
     ? String((seller as { id: unknown }).id)
@@ -219,6 +284,12 @@ async function resolveListingCharge(req: Request, body: Body): Promise<ResolvedC
     is_deposit: String(isDeposit),
     resolved_amount_eur: String(amountEur),
   };
+  if (variantStyleKey && variantFamilyKey) {
+    metadata.variant_style_key   = variantStyleKey;
+    metadata.variant_family_key  = variantFamilyKey;
+    metadata.variant_style_label = variantStyleLabel ?? '';
+    metadata.variant_price_delta = String(variantPriceDelta);
+  }
 
   if (body.metadata && typeof body.metadata === 'object') {
     let count = 0;

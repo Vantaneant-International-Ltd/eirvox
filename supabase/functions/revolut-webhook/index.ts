@@ -84,17 +84,26 @@ async function sendSellerNewOrderEmail(data: any): Promise<void> {
     return;
   }
   const ref = data.reference;
-  const amountPaid = data.is_deposit ? data.deposit_amount : data.item_price;
+  const variantStyleLabel = typeof data.variant_style_label === 'string' ? data.variant_style_label : '';
+  const variantFamilyKey  = typeof data.variant_family_key  === 'string' ? data.variant_family_key  : '';
+  const variantPriceDelta = Number(data.variant_price_delta_eur) || 0;
+  const itemPriceResolved = Number(data.item_price) + variantPriceDelta;
+  const amountPaid = data.is_deposit ? data.deposit_amount : itemPriceResolved;
   const balanceLine = data.is_deposit
-    ? `Balance on collection: ${eur(data.balance_amount)}`
+    ? `Balance on collection: ${eur(Number(data.balance_amount) + variantPriceDelta)}`
     : 'Paid in full.';
   const fulfilment = data.delivery_preference === 'delivery' ? 'Delivery' : 'Collection';
-  const subject = `New order ${ref} · ${eur(amountPaid)} · ${data.listing_title}`;
+  const variantSuffix = variantStyleLabel
+    ? ` · ${variantStyleLabel}${variantFamilyKey ? ` (${variantFamilyKey.toUpperCase()})` : ''}`
+    : '';
+  const subject = `New order ${ref} · ${eur(amountPaid)} · ${data.listing_title}${variantSuffix}`;
   const text = [
     `ÉIRVOX · NEW ORDER ${ref}`,
     '',
     `Item:       ${data.listing_title}`,
-    `Listed at:  ${eur(data.item_price)}`,
+    variantStyleLabel ? `Style:      ${variantStyleLabel}` : '',
+    variantFamilyKey  ? `Fitment:    ${variantFamilyKey.toUpperCase()}` : '',
+    `Listed at:  ${eur(itemPriceResolved)}`,
     `Paid:       ${eur(amountPaid)} (${data.is_deposit ? 'deposit' : 'full payment'})`,
     `${balanceLine}`,
     `Fulfilment: ${fulfilment}`,
@@ -108,7 +117,7 @@ async function sendSellerNewOrderEmail(data: any): Promise<void> {
     'Replies are not monitored.',
     '',
     'ÉIRVOX Systems Ltd · Dublin, Ireland',
-  ].join('\n');
+  ].filter(Boolean).join('\n');
   const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${subject}</title></head>
 <body style="margin:0;background:#F5F2ED;font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#1A1A1A;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F2ED;padding:48px 16px;">
@@ -152,15 +161,21 @@ async function sendSellerNewOrderEmail(data: any): Promise<void> {
 async function sendBuyerConfirmationEmail(data: any): Promise<void> {
   if (!data.buyer_email) return;
   const ref = data.reference;
-  const amountPaid = data.is_deposit ? data.deposit_amount : data.item_price;
+  const variantStyleLabel = typeof data.variant_style_label === 'string' ? data.variant_style_label : '';
+  const variantFamilyKey  = typeof data.variant_family_key  === 'string' ? data.variant_family_key  : '';
+  const variantPriceDelta = Number(data.variant_price_delta_eur) || 0;
+  const itemPriceResolved = Number(data.item_price) + variantPriceDelta;
+  const amountPaid = data.is_deposit ? data.deposit_amount : itemPriceResolved;
   const subject = `Order ${ref} confirmed · ${eur(amountPaid)}`;
   const fulfilment = data.delivery_preference === 'delivery' ? 'Delivery' : 'Collection';
   const text = [
     `ÉIRVOX · ORDER ${ref}`,
     '',
     `Item:       ${data.listing_title}`,
+    variantStyleLabel ? `Style:      ${variantStyleLabel}` : '',
+    variantFamilyKey  ? `Fitment:    ${variantFamilyKey.toUpperCase()}` : '',
     `Paid:       ${eur(amountPaid)} (${data.is_deposit ? 'deposit' : 'full payment'})`,
-    data.is_deposit ? `Balance:    ${eur(data.balance_amount)} on collection` : '',
+    data.is_deposit ? `Balance:    ${eur(Number(data.balance_amount) + variantPriceDelta)} on collection` : '',
     `Fulfilment: ${fulfilment}`,
     '',
     `${data.seller_name ?? 'The seller'} has been notified. They will reach out to you to arrange ${fulfilment.toLowerCase()}.`,
