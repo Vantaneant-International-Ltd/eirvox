@@ -19,6 +19,14 @@
   } from '../lib/api';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import { siteFlags } from '../lib/flags';
+  import Wheels from './Wheels.svelte';
+
+  // v20 — wheel-specialist scope. When on, Home renders the focused
+  // /wheels landing inline. Flipping wheel_specialist_mode off in
+  // /admin/settings reveals the full marketplace Home without losing
+  // any data underneath.
+  $: wheelMode = $siteFlags.wheel_specialist_mode;
 
   let categories: Category[] = [];
   let featured: ListingWithExtras[] = [];
@@ -37,6 +45,10 @@
 
   onMount(async () => {
     applySeo(seo.home());
+
+    // Wheel-mode: Home renders <Wheels />, no need to fetch the
+    // marketplace surface.
+    if (wheelMode) return;
 
     // Settings + categories + DRIVE hero first (block initial paint)
     [settings, categories, tradeCats, driveHero] = await Promise.all([
@@ -70,6 +82,10 @@
         : `ISSUE ${driveHero.drive_issue ?? '???'} · ${(driveHero.drive_issue_date ?? 'COMING SOON').toUpperCase()}`)
     : 'DRIVE · NEXT ISSUE COMING SOON';
 </script>
+
+{#if wheelMode}
+  <Wheels />
+{:else}
 
 <Nav />
 
@@ -359,6 +375,7 @@
 </main>
 
 <Footer />
+{/if}
 
 <style>
   main { flex: 1; }

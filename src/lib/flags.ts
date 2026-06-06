@@ -24,6 +24,25 @@ export interface SiteFlags {
   maintenance: boolean;
   maintenance_message: string;
   support_email: string;
+  // v20. Wheel-specialist scope.
+  //
+  // When true:
+  //   - Nav.svelte renders the tight nav (Wheels / How / About /
+  //     Contact) and hides the marketplace categories + TRADE.
+  //   - Public listing queries (getListings + search) filter to
+  //     category_slug IN public_category_allowlist. Non-automotive
+  //     listings stay in the DB (reversible) but disappear from the
+  //     public site.
+  //   - Home renders the wheel-focused page.
+  //
+  // To revert to full marketplace: set wheel_specialist_mode=false in
+  // /admin/settings. Nothing is deleted. The marketplace categories
+  // re-appear, non-automotive listings re-appear, all DRIVE/TRADE
+  // infrastructure is intact.
+  wheel_specialist_mode: boolean;
+  /** Whitelist of category_slug values surfaced to the public site
+   *  when wheel_specialist_mode is on. Order is preserved for nav. */
+  public_category_allowlist: string[];
 }
 
 const CACHE_KEY = 'eirvox_site_flags';
@@ -35,6 +54,11 @@ const DEFAULT_FLAGS: SiteFlags = {
   maintenance: false,
   maintenance_message: "We're making a quick update. We'll be back shortly.",
   support_email: 'support@eirvox.ie',
+  // Default ON: the wheel-specialist repositioning is the launch
+  // posture. Toggle off in /admin/settings to expose the full
+  // marketplace; nothing is destructively removed.
+  wheel_specialist_mode: true,
+  public_category_allowlist: ['cars', 'automotive'],
 };
 
 /** Read cached flags from localStorage. Returns the defaults if no cache. */

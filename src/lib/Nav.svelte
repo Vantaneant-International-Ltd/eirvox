@@ -1,11 +1,17 @@
 <script lang="ts">
   import { currentPath, navigate, isActive } from './router';
   import { auth, signOut } from './auth';
+  import { siteFlags } from './flags';
 
   let menuOpen = false;
   let userMenuOpen = false;
   let userMenuEl: HTMLDivElement;
   let navSearch = '';
+
+  // v20 — wheel-specialist scope. When on, hide the marketplace
+  // category nav + TRADE + the broad search affordance. Show a
+  // focused four-link nav instead.
+  $: wheelMode = $siteFlags.wheel_specialist_mode;
 
   // Derived auth state
   $: profile = $auth.profile;
@@ -51,6 +57,20 @@
     { label: 'TRADE', path: '/trade' },
   ];
 
+  // Wheel-specialist focused nav. Replaces the marketplace categories
+  // when wheel_specialist_mode is on. DRIVE stays because it is the
+  // premium wheel tier; TRADE is hidden from launch nav.
+  const wheelNav = [
+    { label: 'Wheels',        path: '/wheels' },
+    { label: 'How it works',  path: '/wheels#how' },
+    { label: 'About',         path: '/about' },
+    { label: 'Contact',       path: 'mailto:support@eirvox.ie' },
+  ];
+
+  const wheelDirectories = [
+    { label: 'DRIVE', path: '/drive' },
+  ];
+
   const sellerSections = [
     { label: 'Apply', path: '/sell/apply' },
     { label: 'Create', path: '/sell/create' },
@@ -60,6 +80,10 @@
   $: isSellerRoute = $currentPath.startsWith('/sell');
 
   function handleNav(path: string) {
+    if (path.startsWith('mailto:') || path.startsWith('http')) {
+      window.location.href = path;
+      return;
+    }
     navigate(path);
     menuOpen = false;
     userMenuOpen = false;
@@ -77,57 +101,87 @@
       </button>
     </div>
 
-    <!-- Search -->
-    <div class="nav__centre">
-      <form class="nav__search-wrap" on:submit|preventDefault={() => {
-        const q = navSearch.trim();
-        if (q) handleNav(`/search?q=${encodeURIComponent(q)}`);
-      }}>
-        <svg class="nav__search-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-          <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>
-          <line x1="8.5" y1="8.5" x2="11" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
-        <input
-          type="search"
-          class="nav__search evx-caption"
-          placeholder="Search listings - make, model, category…"
-          aria-label="Search listings"
-          bind:value={navSearch}
-        />
-      </form>
-    </div>
+    <!-- Search (hidden in wheel-specialist mode; nothing to browse) -->
+    {#if !wheelMode}
+      <div class="nav__centre">
+        <form class="nav__search-wrap" on:submit|preventDefault={() => {
+          const q = navSearch.trim();
+          if (q) handleNav(`/search?q=${encodeURIComponent(q)}`);
+        }}>
+          <svg class="nav__search-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="8.5" y1="8.5" x2="11" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="search"
+            class="nav__search evx-caption"
+            placeholder="Search listings - make, model, category…"
+            aria-label="Search listings"
+            bind:value={navSearch}
+          />
+        </form>
+      </div>
+    {/if}
 
     <!-- Nav links + actions -->
     <nav class="nav__right" aria-label="Main navigation">
-      <ul class="nav__links">
-        {#each categories as cat}
-          <li>
-            <button
-              class="nav__link"
-              class:nav__link--active={isActive(cat.path, $currentPath)}
-              on:click={() => handleNav(cat.path)}
-            >
-              {cat.label}
-            </button>
-          </li>
-        {/each}
-        <li class="nav__sep" aria-hidden="true"></li>
-        {#each directories as d}
-          <li>
-            <button
-              class="nav__link nav__link--directory"
-              class:nav__link--active={isActive(d.path, $currentPath)}
-              on:click={() => handleNav(d.path)}
-            >
-              {d.label}
-            </button>
-          </li>
-        {/each}
-      </ul>
+      {#if wheelMode}
+        <ul class="nav__links">
+          {#each wheelNav as cat}
+            <li>
+              <button
+                class="nav__link"
+                class:nav__link--active={isActive(cat.path, $currentPath)}
+                on:click={() => handleNav(cat.path)}
+              >
+                {cat.label}
+              </button>
+            </li>
+          {/each}
+          <li class="nav__sep" aria-hidden="true"></li>
+          {#each wheelDirectories as d}
+            <li>
+              <button
+                class="nav__link nav__link--directory"
+                class:nav__link--active={isActive(d.path, $currentPath)}
+                on:click={() => handleNav(d.path)}
+              >
+                {d.label}
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <ul class="nav__links">
+          {#each categories as cat}
+            <li>
+              <button
+                class="nav__link"
+                class:nav__link--active={isActive(cat.path, $currentPath)}
+                on:click={() => handleNav(cat.path)}
+              >
+                {cat.label}
+              </button>
+            </li>
+          {/each}
+          <li class="nav__sep" aria-hidden="true"></li>
+          {#each directories as d}
+            <li>
+              <button
+                class="nav__link nav__link--directory"
+                class:nav__link--active={isActive(d.path, $currentPath)}
+                on:click={() => handleNav(d.path)}
+              >
+                {d.label}
+              </button>
+            </li>
+          {/each}
+        </ul>
 
-      <button class="evx-btn evx-btn--primary evx-btn--sm nav__sell" on:click={() => handleNav('/sell')}>
-        Sell
-      </button>
+        <button class="evx-btn evx-btn--primary evx-btn--sm nav__sell" on:click={() => handleNav('/sell')}>
+          Sell
+        </button>
+      {/if}
 
       {#if signedIn}
         <div class="nav__user" bind:this={userMenuEl}>
@@ -207,16 +261,27 @@
   {#if menuOpen}
     <div class="nav__drawer" role="navigation" aria-label="Mobile navigation">
       <ul class="nav__drawer-links">
-        {#each categories as cat}
-          <li>
-            <button class="nav__drawer-link" on:click={() => handleNav(cat.path)}>
-              {cat.label}
-            </button>
-          </li>
-        {/each}
-        <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
-        <li><button class="nav__drawer-link" on:click={() => handleNav('/trade')}>TRADE</button></li>
-        <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/sell')}>Sell on Éirvox</button></li>
+        {#if wheelMode}
+          {#each wheelNav as cat}
+            <li>
+              <button class="nav__drawer-link" on:click={() => handleNav(cat.path)}>
+                {cat.label}
+              </button>
+            </li>
+          {/each}
+          <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
+        {:else}
+          {#each categories as cat}
+            <li>
+              <button class="nav__drawer-link" on:click={() => handleNav(cat.path)}>
+                {cat.label}
+              </button>
+            </li>
+          {/each}
+          <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
+          <li><button class="nav__drawer-link" on:click={() => handleNav('/trade')}>TRADE</button></li>
+          <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/sell')}>Sell on Éirvox</button></li>
+        {/if}
 
         {#if signedIn}
           <li class="nav__drawer-divider" aria-hidden="true"></li>

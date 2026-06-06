@@ -7,6 +7,21 @@
 
 import { supabase, withTimeout } from './supabase';
 import { getCurrentUser } from './auth';
+import { get } from 'svelte/store';
+import { siteFlags } from './flags';
+
+// Public listing queries respect the wheel-specialist scope when on.
+// Returns the allowlist when active, or null (no filter) when off.
+function publicCategoryScope(): string[] | null {
+  try {
+    const f = get(siteFlags);
+    if (!f.wheel_specialist_mode) return null;
+    const list = Array.isArray(f.public_category_allowlist) ? f.public_category_allowlist : [];
+    return list.length > 0 ? list : null;
+  } catch {
+    return null;
+  }
+}
 
 // ── Re-exported / canonical types ────────────────────────────
 
@@ -270,6 +285,11 @@ export interface ListingsOptions {
   county?: string;
   priceMin?: number;
   priceMax?: number;
+  /** v20. Skip the wheel-specialist public_category_allowlist filter.
+   *  Set true from admin contexts that intentionally want to see every
+   *  category regardless of the launch scope. Default false (= apply
+   *  the scope, which is what the public site wants). */
+  bypassPublicScope?: boolean;
 }
 
 const LISTING_SELECT = `
@@ -282,6 +302,7 @@ export async function getListings(options: ListingsOptions = {}): Promise<Listin
   const {
     category, status = 'active', featured, limit = 24, offset = 0, sort = 'recent', seller_id, subcategory,
     vehicleMake, vehicleModel, yearMin, yearMax, mileageMax, county, priceMin, priceMax,
+    bypassPublicScope = false,
   } = options;
 
   let q = supabase.from('listings').select(LISTING_SELECT);
@@ -299,6 +320,14 @@ export async function getListings(options: ListingsOptions = {}): Promise<Listin
   if (mileageMax)   q = q.lte('vehicle_mileage', mileageMax);
   if (priceMin)     q = q.gte('price', priceMin);
   if (priceMax)     q = q.lte('price', priceMax);
+
+  // Wheel-specialist scope. Applies only when the caller did NOT pin
+  // a specific category (admin lists or category pages already pass
+  // their own category). bypassPublicScope=true skips this entirely.
+  if (!bypassPublicScope && !category && !seller_id) {
+    const scope = publicCategoryScope();
+    if (scope) q = q.in('category_slug', scope);
+  }
 
   switch (sort) {
     case 'oldest':     q = q.order('created_at',   { ascending: true });  break;
