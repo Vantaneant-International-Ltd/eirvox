@@ -467,6 +467,65 @@ export async function searchTradespeople(query: string, limit = 24): Promise<Tra
   return ((r.value as any).data ?? []) as Tradesperson[];
 }
 
+// ── Variants (v20 — wheel consignment 2-axis matrix) ────────
+//
+// A listing carries a variant matrix when STYLE × FITMENT_FAMILY
+// rows exist in public.listing_variants. The buyer must pick one
+// (style, family) cell; the server re-resolves the price + stock
+// in payments-create-order. UI here is for the picker only.
+
+export interface FitmentFamily {
+  key: string;
+  internal_name: string;
+  sort_order: number;
+}
+
+export interface FitmentChassis {
+  id: string;
+  family_key: string;
+  series: string;
+  chassis_codes: string;
+  years_label: string | null;
+  display_name: string;
+  sort_order: number;
+}
+
+export interface ListingVariant {
+  id: string;
+  listing_id: string;
+  style_key: string;
+  style_label: string;
+  family_key: string;
+  stock_count: number;
+  price_delta_eur: number;
+  sort_order: number;
+}
+
+export async function getListingVariants(listingId: string): Promise<ListingVariant[]> {
+  const r = await withTimeout(
+    supabase
+      .from('listing_variants')
+      .select('id, listing_id, style_key, style_label, family_key, stock_count, price_delta_eur, sort_order')
+      .eq('listing_id', listingId)
+      .order('sort_order', { ascending: true }),
+    10_000, 'listing_variants',
+  );
+  if (!r.ok) return [];
+  return (((r.value as any).data ?? []) as ListingVariant[]);
+}
+
+export async function getFitmentChassis(): Promise<FitmentChassis[]> {
+  const r = await withTimeout(
+    supabase
+      .from('fitment_chassis')
+      .select('id, family_key, series, chassis_codes, years_label, display_name, sort_order')
+      .order('sort_order', { ascending: true }),
+    10_000, 'fitment_chassis',
+  );
+  if (!r.ok) return [];
+  return (((r.value as any).data ?? []) as FitmentChassis[]);
+}
+
 // ── Tradespeople ─────────────────────────────────────────────
 
 export async function getTradeCategories(): Promise<TradeCategory[]> {

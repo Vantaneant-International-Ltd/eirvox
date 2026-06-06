@@ -52,6 +52,14 @@
    *  to a real refund policy; defaults to false for admin testing. */
   export let showRefundLink: boolean = false;
 
+  /** v20 wheel consignment 2-axis variant selection. Required server-side
+   *  when the listing carries listing_variants rows. Server re-resolves
+   *  the (style, family) cell, validates stock, and adds price_delta to
+   *  the resolved charge. Nothing here is trusted by the server; these
+   *  are just identifiers. */
+  export let variantStyleKey: string | null = null;
+  export let variantFamilyKey: string | null = null;
+
   $: refundLinkVisible = showRefundLink || !!listingId;
 
   const dispatch = createEventDispatcher<{
@@ -94,13 +102,11 @@
           is_deposit: isDeposit,
           metadata,
           redirect_path: redirectPath,
-          // Order persistence: forward signed-in user's email + profile
-          // so the server can write a reservation row keyed on revolut
-          // order_id. Guest checkout (no auth) is not wired yet - when
-          // it is, the form will collect buyer_email and we pass that
-          // here instead.
           buyer_email: $auth.profile?.email ?? $auth.user?.email,
           buyer_profile_id: $auth.user?.id,
+          ...(variantStyleKey && variantFamilyKey
+            ? { variant_style_key: variantStyleKey, variant_family_key: variantFamilyKey }
+            : {}),
         };
       } else {
         reqBody = {

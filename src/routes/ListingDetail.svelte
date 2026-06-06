@@ -17,6 +17,8 @@
     type ListingWithExtras,
   } from '../lib/api';
   import PayButton from '../lib/PayButton.svelte';
+  import VariantPicker from '../lib/VariantPicker.svelte';
+  import { getListingVariants } from '../lib/api';
   import ReportListingDialog from '../lib/ReportListingDialog.svelte';
   import { navigate, currentPath } from '../lib/router';
   import { auth } from '../lib/auth';
@@ -33,6 +35,12 @@
 
   let activeImage = 0;
   let saved = false;
+
+  // v20 — wheel-consignment 2-axis variants. When the listing has any
+  // rows in listing_variants, the standard pay matrix is replaced by
+  // VariantPicker (fitment-first, then style). Falls back gracefully
+  // for every other listing (most listings have no variants).
+  let hasVariants = false;
 
   // ── Load ──
   async function load() {
@@ -56,16 +64,18 @@
       listing.slug ?? listing.id,
     ));
 
-    // In parallel: similar, more-from-seller, saved status
-    const [sim, more, savedIds] = await Promise.all([
+    // In parallel: similar, more-from-seller, saved status, variants
+    const [sim, more, savedIds, vars] = await Promise.all([
       getSimilarListings(listing.category_slug, listing.id, 4),
       getListingsBySeller(listing.seller_id, 4, listing.id),
       $auth.user ? getMySavedItems() : Promise.resolve([] as string[]),
+      getListingVariants(listing.id),
     ]);
 
     similar = sim;
     sellerMore = more;
     saved = savedIds.includes(listing.id);
+    hasVariants = vars.length > 0;
     loading = false;
   }
 
@@ -434,6 +444,20 @@
               <button class="evx-btn evx-btn--primary panel__cta-main" disabled>
                 Reserved
               </button>
+            {:else if payable && hasVariants}
+              <!-- v20 — 2-axis variant matrix replaces the flat picker.
+                   Buyer picks their model, then the style; sold-out
+                   cells are visibly disabled. Server re-resolves
+                   price + stock in payments-create-order. -->
+              <div class="panel__pay" id="pay-block">
+                <VariantPicker
+                  listingId={listing.id}
+                  basePriceEur={listing.price}
+                  originalPriceEur={listing.original_price ?? null}
+                  listingTitle={listing.title}
+                  fulfilment={fulfilment ?? 'collection'}
+                />
+              </div>
             {:else if payable}
               <div class="panel__pay" id="pay-block">
 

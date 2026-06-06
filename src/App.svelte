@@ -8,6 +8,7 @@
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
   import PaymentReturn from './routes/PaymentReturn.svelte';
   import Home from './routes/Home.svelte';
+  import Wheels from './routes/Wheels.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
   import DriveIndex from './routes/DriveIndex.svelte';
@@ -139,6 +140,8 @@
 {/if}
 {#if path === '/'}
   <Home />
+{:else if path === '/wheels'}
+  <Wheels />
 {:else if categoryMatch}
   <CategoryPage category={categoryMatch} />
 {:else if listingParams}
