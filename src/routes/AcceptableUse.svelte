@@ -20,7 +20,7 @@
 <LegalLayout
   title="Acceptable Use."
   {sections}
-  intro="ÉIRVOX is a small, curated platform. The rules below keep it that way - clear, honest, and worth participating in."
+  intro="ÉIRVOX is a small, curated platform. The rules below keep it that way. Clear, honest, and worth participating in. Effective 1 June 2026. Pending final legal review before public launch."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · ALLOWED</span>

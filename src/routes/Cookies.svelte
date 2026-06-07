@@ -21,7 +21,7 @@
 <LegalLayout
   title="Cookie Policy."
   {sections}
-  intro="ÉIRVOX uses cookies only where they're necessary for the site to work, plus privacy-respecting analytics. We don't run behavioural advertising. We don't sell your data."
+  intro="ÉIRVOX uses cookies only where they are necessary for the site to work, plus privacy-respecting analytics. We do not run behavioural advertising. We do not sell your data. Effective 1 June 2026. Pending final legal review before public launch."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · WHAT</span>
