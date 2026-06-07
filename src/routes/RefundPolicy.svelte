@@ -28,16 +28,24 @@
     <span class="legal-section__num">01 · SCOPE</span>
     <h2 id="rp-scope" class="legal-section__h">Scope.</h2>
     <p>
-      This policy covers refunds for orders paid to ÉIRVOX through the
-      <strong>Pay</strong> button on a listing. ÉIRVOX is the seller of record for these
-      orders.
+      This policy covers refunds for <strong>ÉIRVOX-owned orders only</strong>. An order is
+      ÉIRVOX-owned when ÉIRVOX is the seller of record and the buyer pays ÉIRVOX directly
+      through Revolut. That includes all DRIVE editions and the standard wheel
+      consignment line.
     </p>
     <p>
-      ÉIRVOX does not hold money on behalf of third parties. There is no escrow, no
-      buyer-protection guarantee, and no authentication or inspection service operating
-      between buyer and seller. Payment goes from your card or wallet to ÉIRVOX through
-      Revolut and is held by ÉIRVOX until the order is fulfilled or refunded under the
-      terms below.
+      For ÉIRVOX-owned orders, payment goes from the buyer's card or wallet to ÉIRVOX
+      through Revolut and is held by ÉIRVOX until the order is fulfilled or refunded
+      under the terms below. There is no escrow on top of that. There is no buyer-
+      protection guarantee. There is no authentication or inspection service operating
+      between buyer and seller.
+    </p>
+    <p>
+      <strong>Marketplace reservation deposits paid directly to a seller are NOT covered
+      by this policy.</strong> Marketplace transactions are between buyer and seller;
+      refunds for those are handled by the seller through their own Revolut account.
+      See the Terms and Conditions section on Reservation deposits, and your statutory
+      rights under Irish consumer law, which are unaffected by this policy.
     </p>
   </section>
 
