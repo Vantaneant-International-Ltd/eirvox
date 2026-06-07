@@ -12,17 +12,16 @@
   const sections = [
     { num: '01', id: 'r-deposits',   label: 'Reservation deposits' },
     { num: '02', id: 'r-items',      label: 'Item returns' },
-    { num: '03', id: 'r-auth',       label: 'Authenticated items' },
-    { num: '04', id: 'r-drive',      label: 'DRIVE editions' },
-    { num: '05', id: 'r-trade',      label: 'TRADE subscriptions' },
-    { num: '06', id: 'r-disputes',   label: 'Dispute process' },
+    { num: '03', id: 'r-drive',      label: 'DRIVE editions' },
+    { num: '04', id: 'r-trade',      label: 'TRADE subscriptions' },
+    { num: '05', id: 'r-disputes',   label: 'Dispute process' },
   ];
 </script>
 
 <LegalLayout
   title="Returns & Refunds."
   {sections}
-  intro="The rules for getting money back, sending items back, and cancelling subscriptions. Clear answers - no fine print buried at the bottom."
+  intro="The rules for getting money back, sending items back, and cancelling subscriptions. Clear answers, no fine print buried at the bottom. Effective 1 June 2026. Pending final legal review before public launch."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · DEPOSITS</span>
@@ -87,20 +86,7 @@
   </section>
 
   <section class="legal-section">
-    <span class="legal-section__num">03 · AUTHENTICATED</span>
-    <h2 id="r-auth" class="legal-section__h">Authenticated items.</h2>
-    <p>
-      Items that passed ÉIRVOX authentication carry an extra guarantee: if the item is later
-      independently shown to be inauthentic, ÉIRVOX refunds the buyer in full and audits the seller account.
-    </p>
-    <p>
-      This applies even after the standard 7-day dispute window, where the buyer can demonstrate the item
-      was misrepresented at the time of sale.
-    </p>
-  </section>
-
-  <section class="legal-section">
-    <span class="legal-section__num">04 · DRIVE</span>
+    <span class="legal-section__num">03 · DRIVE</span>
     <h2 id="r-drive" class="legal-section__h">DRIVE editions.</h2>
     <ul>
       <li>Deposits are refundable in full within <strong>24 hours of reservation</strong>.</li>
@@ -115,7 +101,7 @@
   </section>
 
   <section class="legal-section">
-    <span class="legal-section__num">05 · TRADE</span>
+    <span class="legal-section__num">04 · TRADE</span>
     <h2 id="r-trade" class="legal-section__h">TRADE subscriptions.</h2>
     <p>
       TRADE subscriptions (Listed €9/mo, Pro €29/mo) can be cancelled at any time. Cancellation takes
@@ -128,7 +114,7 @@
   </section>
 
   <section class="legal-section">
-    <span class="legal-section__num">06 · DISPUTE PROCESS</span>
+    <span class="legal-section__num">05 · DISPUTE PROCESS</span>
     <h2 id="r-disputes" class="legal-section__h">Dispute process.</h2>
     <ol>
       <li>
