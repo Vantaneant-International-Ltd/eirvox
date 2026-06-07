@@ -327,8 +327,8 @@
                 Curated {cat?.name?.toLowerCase() ?? category} arriving with Cohort 03.
               </h2>
               <p class="cat-coming-soon__sub">
-                We're admitting sellers by application - every listing here will be from a
-                phone- and ID-verified seller. Apply now to be the first seller in this category.
+                We are admitting sellers by application. Every listing here will be from a
+                seller approved by our team. Apply now to be the first in this category.
               </p>
               <div class="cat-coming-soon__actions">
                 <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
