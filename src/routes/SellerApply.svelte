@@ -169,8 +169,8 @@
         <div class="form-header">
           <h2 class="form-h2">Who's selling?</h2>
           <p class="form-sub">
-            We use this to set up your seller profile and verify your account.
-            Phone and ID verification happens after approval.
+            We use this to set up your seller profile. After approval, we will
+            be in touch to confirm these details before you go live.
           </p>
         </div>
 
@@ -196,7 +196,7 @@
             <div class="field">
               <label class="evx-caption field-label" for="f-phone">PHONE</label>
               <input id="f-phone" type="tel" class="field-input" placeholder="+353 85 …" bind:value={phone} required />
-              <span class="field-hint evx-caption">Irish or Northern Irish number for SMS verification.</span>
+              <span class="field-hint evx-caption">Irish or Northern Irish number. We may call to discuss your application.</span>
             </div>
           </div>
 
@@ -329,7 +329,7 @@
             <h3 class="tier-pick__name">Verified</h3>
             <p class="tier-pick__price">€0/mo · 7% commission</p>
             <ul class="tier-pick__features">
-              <li>+ ID + phone verified</li>
+              <li>+ Application reviewed by hand</li>
               <li>+ Up to 10 active listings</li>
               <li>+ Reservation deposits on every sale</li>
               <li>+ Standard listing tools</li>
