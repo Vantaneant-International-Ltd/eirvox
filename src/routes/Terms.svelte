@@ -34,7 +34,7 @@
 <LegalLayout
   title="Terms & Conditions."
   {sections}
-  intro="These terms govern your use of the ÉIRVOX platform. The marketplace, DRIVE editions, and TRADE directory. Written in plain English. We would rather you read them than skip past."
+  intro="These terms govern your use of the ÉIRVOX platform. The marketplace, DRIVE editions, and TRADE directory. Written in plain English. We would rather you read them than skip past. Effective 1 June 2026. Pending final legal review before public launch."
 >
   <section class="legal-section">
     <span class="legal-section__num">01 · INTRODUCTION</span>
@@ -104,7 +104,7 @@
     <span class="legal-section__num">05 · SELLERS</span>
     <h2 id="s-seller" class="legal-section__h">Seller obligations.</h2>
     <ul>
-      <li>Application and cohort review are required before listing. Additional verification may be requested at admin discretion.</li>
+      <li>Application and cohort review are required before listing. ÉIRVOX may, at its discretion, ask a seller for follow-up information during admission or re-review.</li>
       <li>Descriptions must be accurate. Material defects must be disclosed in plain language.</li>
       <li>Communicate with buyers through ÉIRVOX in-app messaging. Direct contact details should not be published in listings.</li>
       <li>Respond to buyers in a timely manner. We recommend within 48 hours.</li>
