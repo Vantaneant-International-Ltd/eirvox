@@ -4,7 +4,7 @@
    Paper #F5F2ED · Ink #1A1A1A · Fox Orange #E8742C
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400;1,500&display=swap');
 
 /* ── Tokens ── */
 :root {
@@ -301,3 +301,104 @@ summary:focus-visible {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--evx-rule-light); }
+
+/* ============================================================
+   Dark cinematic system (wheels-mode)
+   Used by /wheels, WheelFinder, and the consignment detail page.
+   Brand DNA preserved. Fox Orange #E8742C remains the only UI
+   accent. Champagne #C9A961 is reserved for DRIVE eyebrow + LED
+   wash. Wheel finish swatches (blue / red) come from
+   listing_variants.accent_hex and are ONLY rendered as small
+   product-finish dots; they must never colour UI chrome.
+   ============================================================ */
+:root {
+  /* Warm near-blacks */
+  --evx-black:        #0E0D0C;
+  --evx-surface:      #141210;
+  --evx-surface-2:    #1B1815;
+  --evx-graphite-2:   #2E2A25;
+
+  /* Light on dark */
+  --evx-paper-soft:   #C7C2B9;
+  --evx-ink-faint:    #5C574F;
+
+  /* Accents (surgical) */
+  --evx-orange-glow:  rgba(232,116,44,0.55);
+  --evx-champagne-dim:#9C854E;
+
+  /* Rules on dark */
+  --evx-rule:         rgba(244,241,236,0.10);
+  --evx-rule-soft:    rgba(244,241,236,0.055);
+  --evx-rule-strong:  rgba(244,241,236,0.20);
+}
+
+/* Type primitives (dark-context). Re-usable everywhere. */
+.evx-label {
+  font-family: var(--evx-font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--evx-ink-soft);
+}
+.evx-meta {
+  font-family: var(--evx-font-mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--evx-paper-soft);
+}
+.evx-editorial {
+  font-family: var(--evx-font-editorial);
+  font-style: italic;
+  font-weight: 400;
+}
+.evx-wordmark {
+  font-family: var(--evx-font-display);
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+/* Carbon-weave placeholder (frames for studio photos not yet shot). */
+.evx-carbon {
+  position: relative;
+  background:
+    repeating-linear-gradient(45deg,  rgba(255,255,255,0.022) 0 2px, rgba(0,0,0,0) 2px 5px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,0.30) 0 2px, rgba(0,0,0,0) 2px 5px),
+    radial-gradient(135% 105% at 50% 24%, #353029 0%, #221f1a 42%, #110f0d 78%, #0b0a09 100%);
+  overflow: hidden;
+}
+.evx-carbon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(116deg, transparent 28%, rgba(244,241,236,0.13) 47%, rgba(244,241,236,0.02) 55%, transparent 68%);
+  pointer-events: none;
+}
+/* DRIVE = LED-lit mood. Lights the bottom of a PhotoFrame. */
+.evx-carbon--lit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 42% at 50% 88%, var(--evx-led, var(--evx-orange-glow)) 0%, transparent 62%),
+    radial-gradient(80% 60% at 50% 30%, rgba(201,169,97,0.10) 0%, transparent 60%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes evx-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes evx-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes evx-pulse {
+  0%,100% { opacity: 0.55; }
+  50%     { opacity: 1; }
+}
