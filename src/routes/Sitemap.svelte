@@ -4,7 +4,13 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import { siteFlags } from '../lib/flags';
   import { getCategories, getRecentListings, type Category, type ListingWithExtras } from '../lib/api';
+
+  // Wheel-specialist scope: list only wheel/DRIVE/account/house/legal
+  // routes. getCategories() already filters to the allowlist, so the
+  // marketplace rows collapse to the wheel category on their own.
+  $: wheelMode = $siteFlags.wheel_specialist_mode;
 
   let categories: Category[] = [];
   let sampleListings: ListingWithExtras[] = [];
@@ -18,7 +24,12 @@
   });
 
   $: marketplace = [
-    { path: '/',                 label: 'Home',                  desc: 'Marketplace landing - DRIVE hero, featured, recent.' },
+    { path: '/', label: 'Home', desc: wheelMode
+        ? 'Wheel-specialist landing - DRIVE hero, the line, find your fit.'
+        : 'Marketplace landing - DRIVE hero, featured, recent.' },
+    ...(wheelMode ? [
+      { path: '/wheels', label: 'Wheels', desc: 'The carbon wheel line and the BMW consignment piece.' },
+    ] : []),
     ...categories.map(c => ({
       path: `/${c.slug}`,
       label: c.name,
@@ -63,16 +74,26 @@
     { path: '/sitemap', label: 'Sitemap (this page)',  desc: 'Every page on the platform.' },
   ];
 
-  $: sections = [
-    { title: 'Marketplace', rows: marketplace },
-    { title: 'DRIVE',       rows: drive },
-    { title: 'Sellers',     rows: seller },
-    { title: 'Account',     rows: buyer },
-    { title: 'TRADE',       rows: trade },
-    { title: 'Transactional', rows: transactional },
-    { title: 'House',       rows: trust },
-    { title: 'Utility',     rows: utility },
-  ];
+  // Wheel mode hides the Sellers, TRADE and Transactional (search)
+  // sections entirely; flip the flag off to restore the full index.
+  $: sections = wheelMode
+    ? [
+        { title: 'Wheels',  rows: marketplace },
+        { title: 'DRIVE',   rows: drive },
+        { title: 'Account', rows: buyer },
+        { title: 'House',   rows: trust },
+        { title: 'Utility', rows: utility },
+      ]
+    : [
+        { title: 'Marketplace', rows: marketplace },
+        { title: 'DRIVE',       rows: drive },
+        { title: 'Sellers',     rows: seller },
+        { title: 'Account',     rows: buyer },
+        { title: 'TRADE',       rows: trade },
+        { title: 'Transactional', rows: transactional },
+        { title: 'House',       rows: trust },
+        { title: 'Utility',     rows: utility },
+      ];
 </script>
 
 <Nav />

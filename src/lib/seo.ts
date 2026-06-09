@@ -14,6 +14,9 @@ export interface SeoData {
   description: string;
   path?: string;
   ogImage?: string;
+  /** Emit <meta name="robots" content="noindex, follow">. Used for 404
+   *  and gated routes so crawlers drop hidden paths. Default false. */
+  noindex?: boolean;
 }
 
 function getOrCreateMeta(selector: string, attrs: Record<string, string>): HTMLMetaElement {
@@ -36,7 +39,7 @@ function getOrCreateLink(rel: string): HTMLLinkElement {
   return el;
 }
 
-export function applySeo({ title, description, path = '/', ogImage = OG_IMAGE }: SeoData): void {
+export function applySeo({ title, description, path = '/', ogImage = OG_IMAGE, noindex = false }: SeoData): void {
   if (typeof document === 'undefined') return;
 
   const fullTitle = title.includes(SITE) ? title : `${title} · ${SITE}`;
@@ -45,6 +48,11 @@ export function applySeo({ title, description, path = '/', ogImage = OG_IMAGE }:
   document.title = fullTitle;
 
   getOrCreateMeta('meta[name="description"]', { name: 'description' }).setAttribute('content', description);
+
+  // Robots. Every page sets this explicitly so navigating away from a
+  // noindex 404 restores index,follow on the next route.
+  getOrCreateMeta('meta[name="robots"]', { name: 'robots' })
+    .setAttribute('content', noindex ? 'noindex, follow' : 'index, follow');
 
   // Canonical
   getOrCreateLink('canonical').setAttribute('href', url);
@@ -172,5 +180,6 @@ export const seo = {
     title: 'Page not found',
     description: "The page you're looking for doesn't exist on ÉIRVOX. The marketplace is waiting.",
     path: '/404',
+    noindex: true,
   }),
 };

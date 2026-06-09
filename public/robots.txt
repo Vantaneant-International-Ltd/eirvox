@@ -1,0 +1,19 @@
+# ÉIRVOX robots
+# Wheel-specialist launch posture. The marketplace, seller and TRADE
+# flows exist but are gated by wheel_specialist_mode and must not be
+# crawled or indexed. The app is a hash-router SPA, so most crawlers
+# only ever see "/"; these Disallow lines are defence in depth alongside
+# the in-app 404s and the noindex meta the SPA emits on gated routes.
+
+User-agent: *
+Allow: /
+Disallow: /sell
+Disallow: /trade
+Disallow: /search
+Disallow: /cars
+Disallow: /watches
+Disallow: /fashion
+Disallow: /tech
+Disallow: /home-design
+Disallow: /audio-vinyl
+Disallow: /art
