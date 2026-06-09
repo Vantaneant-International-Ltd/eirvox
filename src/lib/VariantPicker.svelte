@@ -1,15 +1,15 @@
 <script lang="ts">
   // ============================================================
-  // Buyer-facing 2-axis variant picker for wheel-consignment listings.
+  // VariantPicker — buyer-facing 2-axis picker on the wheel detail.
   //
-  // Fitment-first UX: the buyer picks their actual model/chassis from a
-  // searchable list; we map that to one of the three internal family
-  // keys (m3 / m5 / e9d). They never see the codes. Then they pick a
-  // style; sold-out cells visibly disabled.
+  // The picker logic is unchanged from v20: distinct styles deduped
+  // across families, sold-out cells visibly disabled, server is the
+  // source of truth for price + stock via payments-create-order +
+  // decrement_variant_stock + complete_order. Only the chrome here
+  // changed to match the approved Claude Design prototype.
   //
-  // Server is the source of truth for price and stock. This component
-  // only routes the (style, family) selection to PayButton, which sends
-  // it to payments-create-order. The server re-resolves price + stock.
+  // Read pre-selection from query params (?chassis=<id>&style=<key>)
+  // so the WheelFinder hand-off lands the buyer on the right fit.
   // ============================================================
   import { onMount, createEventDispatcher } from 'svelte';
   import {
@@ -17,11 +17,15 @@
     type ListingVariant, type FitmentChassis,
   } from './api';
   import PayButton from './PayButton.svelte';
-  import { formatPrice } from './api';
+  import StyleChip from './wheels-ui/StyleChip.svelte';
+  import Check from './wheels-ui/Check.svelte';
+  import Chevron from './wheels-ui/Chevron.svelte';
+  import Money from './wheels-ui/Money.svelte';
+  import { currentPath } from './router';
 
   export let listingId: string;
-  export let basePriceEur: number;          // listings.price (sale price)
-  export let originalPriceEur: number | null = null;  // "was" reference
+  export let basePriceEur: number;
+  export let originalPriceEur: number | null = null;
   export let listingTitle: string = '';
   export let fulfilment: 'collection' | 'delivery' = 'collection';
 
@@ -37,6 +41,7 @@
 
   let selectedChassisId: string | null = null;
   let selectedStyleKey:  string | null = null;
+  let showFinderOverlay = false;
   let chassisFilter = '';
 
   onMount(async () => {
@@ -44,32 +49,45 @@
       getListingVariants(listingId),
       getFitmentChassis(),
     ]);
+
+    // Pre-select from query params (WheelFinder hand-off).
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    const qIdx = hash.indexOf('?');
+    if (qIdx >= 0) {
+      const qs = new URLSearchParams(hash.slice(qIdx + 1));
+      const c = qs.get('chassis');
+      const s = qs.get('style');
+      if (c && chassis.find(r => r.id === c)) selectedChassisId = c;
+      if (s) selectedStyleKey = s;
+    }
     loading = false;
   });
 
-  // Derived view-state.
   $: selectedChassis = chassis.find(c => c.id === selectedChassisId) ?? null;
   $: selectedFamilyKey = selectedChassis?.family_key ?? null;
 
-  // Distinct styles (deduped across families), in matrix sort order.
+  // 7 distinct styles, in matrix sort order.
   $: styles = (() => {
-    const seen = new Map<string, { key: string; label: string; sort: number }>();
+    const seen = new Map<string, { key: string; label: string; sort: number; accent: string | null }>();
     for (const v of variants) {
       if (!seen.has(v.style_key)) {
-        seen.set(v.style_key, { key: v.style_key, label: v.style_label, sort: v.sort_order });
+        seen.set(v.style_key, {
+          key: v.style_key,
+          label: v.style_label,
+          sort: v.sort_order,
+          accent: v.accent_hex ?? null,
+        });
       }
     }
     return Array.from(seen.values()).sort((a, b) => a.sort - b.sort);
   })();
 
-  // For each style, find the variant row matching the selected family
-  // (if any). Used to grey out sold-out cells and show price_delta.
   function variantFor(styleKey: string, familyKey: string | null): ListingVariant | null {
     if (!familyKey) return null;
     return variants.find(v => v.style_key === styleKey && v.family_key === familyKey) ?? null;
   }
 
-  $: selectedVariant = (selectedStyleKey && selectedFamilyKey)
+  $: selectedVariant = selectedStyleKey && selectedFamilyKey
     ? variantFor(selectedStyleKey, selectedFamilyKey)
     : null;
 
@@ -79,13 +97,10 @@
 
   $: payReady = !!(selectedVariant && selectedVariant.stock_count > 0);
 
-  $: filteredChassis = chassisFilter.trim()
-    ? chassis.filter(c => c.display_name.toLowerCase().includes(chassisFilter.trim().toLowerCase()))
-    : chassis;
-
+  // If selected style is sold-out under newly chosen family, clear it.
   function pickChassis(id: string) {
     selectedChassisId = id;
-    // If currently selected style is sold-out under the new family, clear it.
+    showFinderOverlay = false;
     if (selectedStyleKey) {
       const v = variantFor(selectedStyleKey, chassis.find(c => c.id === id)?.family_key ?? null);
       if (!v || v.stock_count <= 0) selectedStyleKey = null;
@@ -98,132 +113,131 @@
     selectedStyleKey = key;
   }
 
-  function clearAll() {
+  function clearFitment() {
     selectedChassisId = null;
     selectedStyleKey = null;
     chassisFilter = '';
   }
+
+  $: filteredChassis = chassisFilter.trim()
+    ? chassis.filter(c => c.display_name.toLowerCase().includes(chassisFilter.trim().toLowerCase()))
+    : chassis;
 </script>
 
-<section class="vp" aria-label="Choose your fitment and style">
+<section class="vp" aria-label="Choose your fitment and finish">
 
   {#if loading}
-    <div class="vp__loading">Loading fitments and styles.</div>
+    <p class="vp__loading">Loading.</p>
 
   {:else if variants.length === 0}
-    <div class="vp__empty">No variants configured for this listing yet.</div>
+    <p class="vp__empty">No variants configured for this listing yet.</p>
 
   {:else}
 
-    <!-- Step 1: fitment by real model name -->
-    <div class="vp__step">
-      <header class="vp__step-head">
-        <span class="vp__step-num">01</span>
-        <span class="vp__step-label">FIND YOUR FITMENT</span>
-      </header>
+    <!-- Fitment confirmation tag (or call-to-open if not yet picked) -->
+    {#if selectedChassis}
+      <div class="vp__fit">
+        <span class="vp__fit-check" aria-hidden="true">
+          <Check size={11} color="#fff" />
+        </span>
+        <span class="vp__fit-text">Fits your {selectedChassis.chassis_codes}</span>
+        <button class="vp__fit-change" type="button" on:click={() => (showFinderOverlay = true)}>change</button>
+      </div>
+    {:else}
+      <button class="vp__fit-prompt" type="button" on:click={() => (showFinderOverlay = true)}>
+        <span>Check it fits your car</span>
+        <Chevron size={10} color="var(--evx-ink-soft)" />
+      </button>
+    {/if}
 
-      {#if !selectedChassis}
-        <p class="vp__step-sub">Pick the model that matches your car. We will route it to the correct fitment group.</p>
-
-        <input type="search"
-               class="vp__search"
-               bind:value={chassisFilter}
-               placeholder="e.g. F30, 3-Series, E92"
-               autocomplete="off" />
-
-        <ul class="vp__chassis">
-          {#each filteredChassis as c (c.id)}
-            <li>
-              <button type="button"
-                      class="vp__chassis-row"
-                      on:click={() => pickChassis(c.id)}>
-                <span class="vp__chassis-name">{c.display_name}</span>
-              </button>
-            </li>
-          {:else}
-            <li class="vp__chassis-empty">No match. Try a chassis code or model name.</li>
-          {/each}
-        </ul>
-      {:else}
-        <div class="vp__chassis-chosen">
-          <div>
-            <span class="vp__chassis-chosen-label">FITMENT</span>
-            <div class="vp__chassis-chosen-name">{selectedChassis.display_name}</div>
-          </div>
-          <button type="button" class="vp__change" on:click={clearAll}>Change</button>
-        </div>
+    <!-- Style chips -->
+    <div class="vp__finish">
+      <span class="evx-label vp__finish-label">{selectedChassis ? 'Choose your finish' : 'Finish'}</span>
+      <div class="vp__chip-row" role="radiogroup" aria-label="Finish">
+        {#each styles as s (s.key)}
+          {@const v = variantFor(s.key, selectedFamilyKey)}
+          {@const soldOut = selectedFamilyKey ? (!v || v.stock_count <= 0) : false}
+          <StyleChip
+            label={s.label}
+            accentHex={s.accent}
+            active={selectedStyleKey === s.key && !soldOut}
+            disabled={soldOut}
+            on:click={() => pickStyle(s.key)}
+          />
+        {/each}
+      </div>
+      {#if selectedChassis && selectedStyleKey && selectedVariant}
+        <p class="vp__finish-stock">{selectedVariant.stock_count} available for your {selectedChassis.chassis_codes}.</p>
+      {:else if !selectedChassis}
+        <p class="vp__finish-stock">Pick your fitment to see stock and confirm price.</p>
       {/if}
     </div>
 
-    <!-- Step 2: style grid -->
-    {#if selectedChassis}
-      <div class="vp__step">
-        <header class="vp__step-head">
-          <span class="vp__step-num">02</span>
-          <span class="vp__step-label">CHOOSE A STYLE</span>
-        </header>
-        <p class="vp__step-sub">Each style ships in your selected fitment. Sold-out combinations are visibly disabled.</p>
-
-        <div class="vp__styles">
-          {#each styles as s (s.key)}
-            {@const v = variantFor(s.key, selectedFamilyKey)}
-            {@const soldOut = !v || v.stock_count <= 0}
-            {@const delta = v?.price_delta_eur ?? 0}
-            <button type="button"
-                    class="vp__style"
-                    class:vp__style--selected={selectedStyleKey === s.key && !soldOut}
-                    class:vp__style--soldout={soldOut}
-                    disabled={soldOut}
-                    aria-pressed={selectedStyleKey === s.key}
-                    on:click={() => pickStyle(s.key)}>
-              <span class="vp__style-label">{s.label}</span>
-              <span class="vp__style-meta">
-                {#if soldOut}
-                  Sold out
-                {:else}
-                  {delta > 0 ? `+${formatPrice(delta)}` : delta < 0 ? `−${formatPrice(Math.abs(delta))}` : 'No upcharge'}
-                {/if}
-              </span>
-              <span class="vp__style-stock">
-                {#if !soldOut && v}{v.stock_count} left{/if}
-              </span>
-            </button>
-          {/each}
+    <!-- Sticky buy bar -->
+    <div class="vp__buy">
+      <div class="vp__buy-meta">
+        <div class="vp__buy-style">
+          {selectedStyleKey ? styles.find(s => s.key === selectedStyleKey)?.label : 'Choose a finish'}
         </div>
+        <Money price={resolvedPriceEur}
+               was={originalPriceEur && originalPriceEur > resolvedPriceEur ? originalPriceEur : null}
+               size={20} />
       </div>
-    {/if}
-
-    <!-- Step 3: pay -->
-    {#if selectedChassis && selectedStyleKey && selectedVariant}
-      <div class="vp__pay">
-        <div class="vp__pay-line">
-          <span class="vp__pay-label">TOTAL</span>
-          <span class="vp__pay-price">
-            {#if originalPriceEur && originalPriceEur > resolvedPriceEur}
-              <s class="vp__was">{formatPrice(originalPriceEur)}</s>
-            {/if}
-            <strong>{formatPrice(resolvedPriceEur)}</strong>
-          </span>
-        </div>
-        <div class="vp__pay-sub">
-          {selectedChassis.display_name} · {selectedVariant.style_label}
-        </div>
-
+      <div class="vp__buy-cta">
         {#if payReady}
           <PayButton
             listingId={listingId}
             amountEur={resolvedPriceEur}
             fulfilment={fulfilment}
             isDeposit={false}
-            description={`ÉIRVOX — ${listingTitle} · ${selectedVariant.style_label}`}
-            variantStyleKey={selectedVariant.style_key}
-            variantFamilyKey={selectedVariant.family_key}
+            description={`ÉIRVOX — ${listingTitle} · ${selectedVariant?.style_label ?? ''}`}
+            variantStyleKey={selectedVariant?.style_key ?? null}
+            variantFamilyKey={selectedVariant?.family_key ?? null}
             showRefundLink={true}
             on:success={(e) => dispatch('success', e.detail)}
             on:error={(e) => dispatch('error', e.detail)}
             on:cancel={() => dispatch('cancel')}
           />
+        {:else}
+          <button class="vp__buy-disabled" type="button" disabled>
+            {selectedChassis ? 'Choose a finish' : 'Pick your fitment'}
+          </button>
         {/if}
+      </div>
+    </div>
+
+    <!-- Fitment finder overlay (light-weight inline chassis list) -->
+    {#if showFinderOverlay}
+      <div class="vp__overlay" role="dialog" tabindex="-1" aria-label="Choose your fitment"
+           on:click|self={() => (showFinderOverlay = false)}
+           on:keydown={(e) => { if (e.key === 'Escape') showFinderOverlay = false; }}>
+        <div class="vp__overlay-panel">
+          <header class="vp__overlay-head">
+            <span class="evx-label">Find your fit</span>
+            <button class="vp__overlay-close" type="button"
+                    on:click={() => (showFinderOverlay = false)} aria-label="Close">✕</button>
+          </header>
+          <input class="vp__overlay-search" type="search"
+                 placeholder="e.g. F30, 3 Series, E92"
+                 bind:value={chassisFilter} autocomplete="off" />
+          <ul class="vp__overlay-list">
+            {#each filteredChassis as c (c.id)}
+              <li>
+                <button class="vp__overlay-row" type="button" on:click={() => pickChassis(c.id)}>
+                  <span>{c.display_name}</span>
+                  <Chevron size={12} color="var(--evx-ink-soft)" />
+                </button>
+              </li>
+            {:else}
+              <li class="vp__overlay-empty">No match. Try a chassis code or model name.</li>
+            {/each}
+          </ul>
+          {#if selectedChassis}
+            <button class="vp__overlay-clear" type="button" on:click={clearFitment}>
+              Clear fitment
+            </button>
+          {/if}
+        </div>
       </div>
     {/if}
 
@@ -231,207 +245,201 @@
 </section>
 
 <style>
-  .vp { display: flex; flex-direction: column; gap: var(--evx-space-xl); }
-
-  .vp__loading, .vp__empty {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    color: var(--evx-ink-soft);
-    padding: var(--evx-space-md);
-  }
-
-  .vp__step {
+  .vp {
     display: flex;
     flex-direction: column;
-    gap: var(--evx-space-md);
-    padding-bottom: var(--evx-space-lg);
-    border-bottom: 1px solid var(--evx-rule-light);
-  }
-  .vp__step:last-of-type { border-bottom: none; }
-
-  .vp__step-head { display: flex; align-items: baseline; gap: var(--evx-space-sm); }
-  .vp__step-num {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--evx-fox-orange);
-  }
-  .vp__step-label {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--evx-warm-black);
-  }
-
-  .vp__step-sub {
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--evx-ink-soft);
-    margin: 0;
-  }
-
-  .vp__search {
+    gap: var(--evx-space-lg);
+    color: var(--evx-paper);
     font-family: var(--evx-font-display);
-    font-size: 15px;
-    padding: 12px 14px;
-    border: 1px solid var(--evx-rule-light);
-    background: var(--evx-white, #fff);
-    color: var(--evx-warm-black);
-    outline: none;
   }
-  .vp__search:focus { border-color: var(--evx-warm-black); }
+  .vp__loading, .vp__empty {
+    font-family: var(--evx-font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--evx-ink-soft);
+    padding: 14px 0;
+  }
 
-  .vp__chassis {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 260px;
-    overflow-y: auto;
-    border: 1px solid var(--evx-rule-light);
+  /* Fitment tag */
+  .vp__fit {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 13px;
+    border-radius: 2px;
+    background: rgba(232, 116, 44, 0.08);
+    border: 1px solid rgba(232, 116, 44, 0.3);
+    align-self: flex-start;
   }
-  .vp__chassis-row {
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--evx-rule-light);
-    padding: 12px 14px;
+  .vp__fit-check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--evx-fox-orange);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .vp__fit-text {
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--evx-paper);
+    white-space: nowrap;
+  }
+  .vp__fit-change {
+    font-family: var(--evx-font-mono);
+    font-size: 11.5px;
+    color: var(--evx-fox-orange);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none; border: none; cursor: pointer; padding: 0;
+  }
+
+  .vp__fit-prompt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 2px;
+    border: 1px solid var(--evx-rule);
+    background: transparent;
+    color: var(--evx-paper-soft);
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    align-self: flex-start;
     cursor: pointer;
+  }
+  .vp__fit-prompt:hover { border-color: var(--evx-rule-strong); color: var(--evx-paper); }
+
+  /* Finish picker */
+  .vp__finish { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
+  .vp__finish-label { color: var(--evx-ink-soft); }
+  .vp__chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .vp__finish-stock {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    color: var(--evx-ink-soft);
+  }
+
+  /* Sticky buy bar */
+  .vp__buy {
+    position: sticky;
+    bottom: 0;
+    margin: 20px -16px -16px;
+    padding: 14px 16px max(20px, env(safe-area-inset-bottom));
+    background: rgba(14, 13, 12, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--evx-rule);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 5;
+  }
+  .vp__buy-meta { flex-shrink: 0; min-width: 110px; }
+  .vp__buy-style {
+    font-family: var(--evx-font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+    margin-bottom: 4px;
+  }
+  .vp__buy-cta { flex: 1; }
+  .vp__buy-disabled {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 2px;
+    border: 1px solid var(--evx-rule-strong);
+    background: transparent;
+    color: var(--evx-ink-soft);
     font-family: var(--evx-font-display);
     font-size: 14px;
-    color: var(--evx-warm-black);
-    transition: background 150ms ease;
+    font-weight: 500;
+    cursor: not-allowed;
   }
-  .vp__chassis-row:hover { background: rgba(0, 0, 0, 0.03); }
-  .vp__chassis-row:last-child { border-bottom: none; }
 
-  .vp__chassis-empty {
+  /* Fitment overlay */
+  .vp__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(14, 13, 12, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: evx-fade 220ms ease both;
+  }
+  .vp__overlay-panel {
+    width: 100%;
+    max-width: 520px;
+    max-height: 86vh;
+    background: var(--evx-black);
+    border-top: 1px solid var(--evx-rule-strong);
+    border-radius: 8px 8px 0 0;
+    padding: 18px 18px max(22px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    animation: evx-rise 260ms ease both;
+  }
+  .vp__overlay-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 12px;
+  }
+  .vp__overlay-close {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--evx-rule);
+    background: transparent;
+    color: var(--evx-paper);
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .vp__overlay-search {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--evx-paper);
+    border: 1px solid var(--evx-rule);
+    padding: 12px 14px;
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 8px;
+  }
+  .vp__overlay-search:focus { border-color: var(--evx-rule-strong); }
+  .vp__overlay-list { list-style: none; margin: 0; padding: 0; }
+  .vp__overlay-row {
+    width: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    text-align: left;
+    padding: 14px 4px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--evx-rule-soft);
+    color: var(--evx-paper);
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .vp__overlay-row:hover { background: rgba(244, 241, 236, 0.035); }
+  .vp__overlay-empty {
     padding: 14px;
     font-size: 13px;
     color: var(--evx-ink-soft);
     text-align: center;
   }
-
-  .vp__chassis-chosen {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px;
-    border: 1px solid var(--evx-rule-light);
-    background: rgba(232, 116, 44, 0.03);
-  }
-  .vp__chassis-chosen-label {
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    color: var(--evx-fox-orange);
-    display: block;
-    margin-bottom: 4px;
-  }
-  .vp__chassis-chosen-name {
-    font-family: var(--evx-font-display);
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--evx-warm-black);
-  }
-  .vp__change {
-    background: none;
-    border: none;
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
+  .vp__overlay-clear {
+    margin-top: 12px;
+    width: 100%;
+    background: transparent;
     color: var(--evx-ink-soft);
-    text-decoration: underline;
+    border: 1px solid var(--evx-rule);
+    padding: 10px;
+    font-family: var(--evx-font-mono);
+    font-size: 11.5px;
     cursor: pointer;
-  }
-  .vp__change:hover { color: var(--evx-warm-black); }
-
-  .vp__styles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: var(--evx-space-sm);
-  }
-  .vp__style {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    padding: 14px;
-    border: 1px solid var(--evx-rule-light);
-    background: var(--evx-white, #fff);
-    cursor: pointer;
-    text-align: left;
-    transition: border-color 150ms ease, background 150ms ease;
-    min-height: 84px;
-  }
-  .vp__style:hover:not(:disabled) { border-color: var(--evx-warm-black); }
-  .vp__style--selected {
-    border-color: var(--evx-warm-black);
-    background: rgba(232, 116, 44, 0.05);
-  }
-  .vp__style--soldout {
-    opacity: 0.45;
-    cursor: not-allowed;
-    background: rgba(0, 0, 0, 0.02);
-  }
-  .vp__style-label {
-    font-family: var(--evx-font-display);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--evx-warm-black);
-  }
-  .vp__style-meta {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--evx-ink-soft);
-  }
-  .vp__style-stock {
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    color: var(--evx-fox-orange);
-    margin-top: 4px;
-  }
-
-  .vp__pay {
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-sm);
-    padding: var(--evx-space-lg);
-    background: var(--evx-paper);
-    border: 1px solid var(--evx-rule-light);
-  }
-  .vp__pay-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-  .vp__pay-label {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--evx-ink-soft);
-  }
-  .vp__pay-price {
-    font-family: var(--evx-font-display);
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--evx-warm-black);
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--evx-space-sm);
-  }
-  .vp__was {
-    font-size: 14px;
-    color: var(--evx-ink-soft);
-    text-decoration: line-through;
-  }
-  .vp__pay-sub {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    color: var(--evx-ink-soft);
   }
 </style>

@@ -528,13 +528,17 @@ export interface ListingVariant {
   stock_count: number;
   price_delta_eur: number;
   sort_order: number;
+  /** v20+. Optional wheel-finish swatch colour (e.g. '#2E5BBA' blue,
+   *  '#C0392B' red, null for plain). PRODUCT-FINISH indicator only;
+   *  never use as a UI accent. Fox orange remains the only UI accent. */
+  accent_hex?: string | null;
 }
 
 export async function getListingVariants(listingId: string): Promise<ListingVariant[]> {
   const r = await withTimeout(
     supabase
       .from('listing_variants')
-      .select('id, listing_id, style_key, style_label, family_key, stock_count, price_delta_eur, sort_order')
+      .select('id, listing_id, style_key, style_label, family_key, stock_count, price_delta_eur, sort_order, accent_hex')
       .eq('listing_id', listingId)
       .order('sort_order', { ascending: true }),
     10_000, 'listing_variants',
