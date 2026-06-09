@@ -113,7 +113,7 @@
       chassis: pickedGen.id,
       style: styleKey,
     });
-    navigate(`/listing/${consignmentSlug}?${params.toString()}`);
+    navigate(`/wheels/${consignmentSlug}?${params.toString()}`);
     dispatch('close');
   }
 

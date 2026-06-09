@@ -64,10 +64,10 @@
   }
 
   function openDrive(slugOrId: string) {
-    navigate(`/drive/${slugOrId}`);
+    navigate(`/wheels/${slugOrId}`);
   }
   function openConsignment() {
-    navigate(`/listing/${CONSIGNMENT_SLUG}`);
+    navigate(`/wheels/${CONSIGNMENT_SLUG}`);
   }
 </script>
 

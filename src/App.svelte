@@ -9,6 +9,7 @@
   import PaymentReturn from './routes/PaymentReturn.svelte';
   import Home from './routes/Home.svelte';
   import Wheels from './routes/Wheels.svelte';
+  import WheelDetail from './routes/WheelDetail.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
   import DriveIndex from './routes/DriveIndex.svelte';
@@ -111,6 +112,7 @@
   $: rawPath = $currentPath;
   $: path = rawPath.includes('?') ? rawPath.slice(0, rawPath.indexOf('?')) : rawPath;
 
+  $: wheelDetailParams = matchRoute('/wheels/:slug', path);
   $: listingParams = matchRoute('/listing/:slug', path);
   $: driveParams = matchRoute('/drive/:slug', path);
   $: tradeProfileParams = matchRoute('/trade/:categorySlug/:slug', path);
@@ -161,6 +163,8 @@
   <Home />
 {:else if path === '/wheels'}
   <Wheels />
+{:else if wheelDetailParams}
+  <WheelDetail slug={wheelDetailParams.slug} />
 {:else if categoryMatch}
   <CategoryPage category={categoryMatch} />
 {:else if listingParams}
