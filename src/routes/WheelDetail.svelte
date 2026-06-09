@@ -86,7 +86,14 @@
   // Standard wheels go through VariantPicker; this covers DRIVE issues
   // and any house wheel without a finish matrix.
   $: isHouseListing = !!listing?.seller?.is_house;
-  $: payable = isHouseListing && listing?.status === 'active' && !hasVariants;
+  // DRIVE visibility is decoupled from purchasability. An 'active' DRIVE
+  // issue is visible to the public under RLS, but the Reserve/deposit
+  // controls only open when the issue state is 'open'. 'upcoming' (or any
+  // non-open) issue shows the product without a buy control. Non-DRIVE
+  // house wheels are unaffected by this gate.
+  $: driveOpen = listing?.drive_issue_state === 'open';
+  $: payable = isHouseListing && listing?.status === 'active' && !hasVariants
+    && (!isDrive || driveOpen);
   $: stockState = (listing?.stock_state ?? 'in_stock') as 'in_stock' | 'incoming';
   $: hasShipping = !!listing?.shipping_available;
   $: hasCollection = !!listing?.collection_available;
@@ -214,7 +221,7 @@
         <span class="wd-ship__dot" aria-hidden="true"></span>
         <span>Shipped via An Post, Ireland.</span>
       </div>
-      {#if isDrive}
+      {#if isDrive && payable}
         <p class="wd-ship__note">
           Made to order. Reserve now; ships when the run is finished{listing.drive_issue_date ? ` in ${listing.drive_issue_date}` : ''}.
         </p>
@@ -261,17 +268,25 @@
           </div>
         </div>
       </section>
+    {:else if isDrive}
+      <!-- DRIVE visible but not open: honest arriving state, no buy control -->
+      <section class="wd-pay">
+        <div class="wd-arrive" class:wd-arrive--closed={listing.drive_issue_state === 'archived'}>
+          {#if listing.drive_issue_state === 'archived'}
+            <span class="wd-arrive__pre">DRIVE</span>
+            <span class="wd-arrive__date">This issue is closed.</span>
+          {:else}
+            <span class="wd-arrive__pre">Arriving</span>
+            <span class="wd-arrive__date">{listing.drive_issue_date ?? 'soon'}</span>
+            <span class="wd-arrive__note">Reservations open when the run begins.</span>
+          {/if}
+        </div>
+      </section>
     {:else if !hasVariants}
       <section class="wd-pay">
-        {#if isDrive}
-          <Btn variant="ghost" size="md" full href="mailto:support@eirvox.ie?subject=DRIVE%20interest">
-            Express interest
-          </Btn>
-        {:else}
-          <Btn variant="ghost" size="md" full on:click={() => navigate('/wheels')}>
-            Find your fit <Chevron size={12} color="var(--evx-paper)" />
-          </Btn>
-        {/if}
+        <Btn variant="ghost" size="md" full on:click={() => navigate('/wheels')}>
+          Find your fit <Chevron size={12} color="var(--evx-paper)" />
+        </Btn>
       </section>
     {/if}
 
@@ -452,6 +467,28 @@
   }
   .wd-pay__cta { flex: 1; }
   .wd-pay__hint { font-family: var(--evx-font-mono); font-size: 11px; color: var(--evx-ink-soft); }
+
+  /* DRIVE arriving (visible, not yet open) — calm champagne, no buy. */
+  .wd-arrive {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 16px 18px;
+    border: 1px solid var(--evx-champagne);
+    border-radius: 2px;
+    background: rgba(201, 169, 97, 0.06);
+  }
+  .wd-arrive--closed { border-color: var(--evx-rule); background: transparent; }
+  .wd-arrive__pre {
+    font-family: var(--evx-font-mono);
+    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--evx-champagne);
+  }
+  .wd-arrive__date {
+    font-family: var(--evx-font-display);
+    font-size: 18px; font-weight: 500; color: var(--evx-paper);
+  }
+  .wd-arrive__note {
+    font-family: var(--evx-font-mono); font-size: 11px; color: var(--evx-ink-soft);
+  }
 
   .wd-foot-pad { height: 40px; }
 
