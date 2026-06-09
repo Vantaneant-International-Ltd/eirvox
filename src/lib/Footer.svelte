@@ -1,6 +1,11 @@
 <script lang="ts">
   import { navigate } from './router';
+  import { siteFlags } from './flags';
   import PaymentIcons from './PaymentIcons.svelte';
+
+  // Wheel-specialist scope: hide Sell / TRADE / non-wheel category links.
+  // Flip wheel_specialist_mode off in /admin/settings to restore them.
+  $: wheelMode = $siteFlags.wheel_specialist_mode;
 
   let email = '';
   let subscribed = false;
@@ -11,7 +16,7 @@
 </script>
 
 <footer class="footer">
-  <div class="footer__body page-container">
+  <div class="footer__body page-container" class:footer__body--tight={wheelMode}>
     <!-- Brand column -->
     <div class="footer__col footer__col--brand">
       <button class="footer__wordmark" on:click={() => navigate('/')} aria-label="ÉIRVOX home">
@@ -64,6 +69,17 @@
       </div>
     </div>
 
+    {#if wheelMode}
+    <!-- WHEELS (tight launch footer) -->
+    <div class="footer__col">
+      <span class="footer__head">WHEELS</span>
+      <ul class="footer__links">
+        <li><button on:click={() => navigate('/wheels')}>Wheels</button></li>
+        <li><button on:click={() => navigate('/wheels#how')}>Find your fit</button></li>
+        <li><button on:click={() => navigate('/drive')}>DRIVE</button></li>
+      </ul>
+    </div>
+    {:else}
     <!-- BUY -->
     <div class="footer__col">
       <span class="footer__head">BUY</span>
@@ -95,6 +111,7 @@
         <li><button on:click={() => navigate('/trade')}>Categories</button></li>
       </ul>
     </div>
+    {/if}
 
     <!-- HOUSE (About / Trust / Contact / Sitemap.
          Keeping the single Trust link per brief: do not expand into
@@ -165,6 +182,11 @@
     gap: var(--evx-space-2xl);
     padding-top: var(--evx-space-3xl);
     padding-bottom: var(--evx-space-2xl);
+  }
+
+  /* Wheel-specialist launch: brand + WHEELS + HOUSE only. */
+  .footer__body--tight {
+    grid-template-columns: 2.2fr 1fr 1fr;
   }
 
   .footer__col { display: flex; flex-direction: column; gap: var(--evx-space-md); }
