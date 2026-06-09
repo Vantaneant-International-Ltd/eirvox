@@ -23,6 +23,7 @@
     type ListingWithExtras,
   } from '../lib/api';
   import WheelFinder from '../lib/WheelFinder.svelte';
+  import WheelsMenu from '../lib/WheelsMenu.svelte';
   import Wordmark from '../lib/wheels-ui/Wordmark.svelte';
   import PhotoFrame from '../lib/wheels-ui/PhotoFrame.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
@@ -35,6 +36,7 @@
   let driveItems: ListingWithExtras[] = [];
   let loading = true;
   let finderOpen = false;
+  let menuOpen = false;
   let scrolled = false;
 
   onMount(async () => {
@@ -75,12 +77,18 @@
 
   <!-- ━━━━━━ TOP BAR (sticky over hero, blurs on scroll) ━━━━━━ -->
   <header class="wp-top" class:wp-top--scrolled={scrolled}>
-    <Wordmark size={15} />
+    <button class="wp-top__home" type="button" on:click={() => navigate('/')} aria-label="ÉIRVOX home"
+            style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
+      <img src="/brand/wordmark.png" alt="ÉIRVOX"
+           style="height:16px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
+    </button>
     <button class="wp-top__menu" type="button"
-            on:click={() => navigate('/')} aria-label="Home">
+            on:click={() => (menuOpen = true)} aria-label="Open menu">
       <span></span><span></span>
     </button>
   </header>
+
+  <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
 
   <!-- ━━━━━━ HERO — full-bleed carbon-weave, DRIVE-led ━━━━━━ -->
   <section class="wp-hero evx-carbon evx-carbon--lit">
