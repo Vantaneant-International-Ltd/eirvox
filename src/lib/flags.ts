@@ -58,7 +58,12 @@ const DEFAULT_FLAGS: SiteFlags = {
   // posture. Toggle off in /admin/settings to expose the full
   // marketplace; nothing is destructively removed.
   wheel_specialist_mode: true,
-  public_category_allowlist: ['cars', 'automotive'],
+  // Wheels only. A listing is public iff is_drive (DRIVE wheels) OR its
+  // category_slug is in this list. 'cars' was dropped deliberately: the
+  // only 'cars' listing (VW Polo) is owner-set to draft and must stay
+  // hidden. The BMW consignment wheel carries category 'automotive'.
+  // Keep in lockstep with the v22 RLS fail-closed default.
+  public_category_allowlist: ['automotive'],
 };
 
 /** Read cached flags from localStorage. Returns the defaults if no cache. */

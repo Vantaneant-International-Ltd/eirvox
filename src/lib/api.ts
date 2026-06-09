@@ -23,6 +23,23 @@ function publicCategoryScope(): string[] | null {
   }
 }
 
+/** True when a category slug may appear on the public site. When wheel
+ *  mode is off, every category is public. */
+export function isCategoryPublic(slug: string | null | undefined): boolean {
+  const scope = publicCategoryScope();
+  if (!scope) return true;
+  return !!slug && scope.includes(slug);
+}
+
+/** True when a listing may be shown publicly: a DRIVE wheel (is_drive)
+ *  or a listing in an allowlisted category. Mirrors the v22 RLS rule.
+ *  Belt-and-braces only; RLS is the real gate. */
+export function isListingPublic(l: { is_drive?: boolean | null; category_slug?: string | null }): boolean {
+  const scope = publicCategoryScope();
+  if (!scope) return true;
+  return l.is_drive === true || (!!l.category_slug && scope.includes(l.category_slug));
+}
+
 // ── Re-exported / canonical types ────────────────────────────
 
 export type SellerTier = 'verified' | 'atelier' | 'house';
@@ -252,7 +269,12 @@ export async function getCategories(): Promise<Category[]> {
     counts = rows.reduce((acc, r) => { acc[r.category_slug] = Number(r.listing_count); return acc; }, {} as Record<string, number>);
   }
 
-  return cats.map(c => ({ ...c, listing_count: counts[c.slug] ?? 0 }));
+  const withCounts = cats.map(c => ({ ...c, listing_count: counts[c.slug] ?? 0 }));
+  // Hide non-allowlisted categories from public surfaces (Sitemap,
+  // NotFound) while wheel mode is on. Admin screens read the table
+  // directly via Supabase and are unaffected by this helper.
+  const scope = publicCategoryScope();
+  return scope ? withCounts.filter(c => scope.includes(c.slug)) : withCounts;
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
@@ -377,6 +399,10 @@ export async function getListingBySlug(slug: string): Promise<ListingWithExtras 
 
   if (error || !data) return null;
 
+  // Wheel-specialist scope (belt-and-braces; v22 RLS is the real gate).
+  // Never render an out-of-scope listing fetched by direct slug/id.
+  if (!isListingPublic(data as any)) return null;
+
   const imgs = ((data as any).images ?? []) as ListingImage[];
   imgs.sort((a, b) => a.sort_order - b.sort_order);
   const specs = ((data as any).specs ?? []) as ListingSpec[];
@@ -436,7 +462,12 @@ export async function getDriveListings(opts: {
 }
 
 export async function getListingsBySeller(sellerId: string, limit = 8, excludeId?: string): Promise<ListingWithExtras[]> {
-  const rows = await getListings({ seller_id: sellerId, status: 'active', limit: limit + 1 });
+  // The seller_id path in getListings intentionally skips the category
+  // scope, so a mixed-category seller would otherwise leak non-wheel rows
+  // into "more from seller". Drop out-of-scope rows here (belt-and-braces;
+  // v22 RLS is the real gate).
+  const rows = (await getListings({ seller_id: sellerId, status: 'active', limit: limit + 1 }))
+    .filter(isListingPublic);
   return excludeId ? rows.filter(l => l.id !== excludeId).slice(0, limit) : rows.slice(0, limit);
 }
 
