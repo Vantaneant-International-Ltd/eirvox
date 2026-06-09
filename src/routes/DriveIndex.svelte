@@ -101,8 +101,9 @@
       <h1 class="di-header__title">DRIVE</h1>
       <p class="di-header__desc">
         Limited-run OEM+ pieces, one specification per issue.
-        Made in Dublin, serialised before they leave the house.
-        One issue open at a time - no variants, no reprints.
+        Designed in Ireland, assembled abroad, finished in Dublin.
+        Serialised before they leave the house.
+        One issue open at a time, no variants, no reprints.
       </p>
     </header>
 

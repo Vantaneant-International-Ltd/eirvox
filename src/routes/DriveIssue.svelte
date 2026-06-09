@@ -503,7 +503,7 @@
         <cite class="di-spec__cite evx-caption">- RENATO G., CURATOR</cite>
 
         <p class="di-spec__body">
-          The wheel is a one-piece forged-carbon shell, hand-trimmed and wrapped in Alcantara.
+          The wheel is a one-piece forged-carbon shell, trimmed and wrapped in Alcantara.
           Champagne stitching runs the twelve-o'clock mark. Underneath, OEM electronics -
           no aftermarket switching, no warning lights, no compromises with the car.
         </p>

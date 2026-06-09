@@ -44,8 +44,8 @@
         </p>
 
         <p>
-          Some of it we make ourselves, under DRIVE. Designed in Dublin. Assembled
-          in small runs. Never repeated.
+          Some of it we publish ourselves, under DRIVE. Designed in Ireland,
+          assembled abroad, finished in Dublin. Small runs. Never repeated.
         </p>
 
         <p>
