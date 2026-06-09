@@ -18,6 +18,7 @@
 
 import { writable, derived } from 'svelte/store';
 import { supabase } from './supabase';
+import { syncPath } from './router';
 
 export interface SiteFlags {
   coming_soon: boolean;
@@ -156,6 +157,7 @@ export function isDevBypassed(): boolean {
   if (window.location.hash === '#dev') {
     sessionStorage.setItem(DEV_BYPASS_KEY, '1');
     history.replaceState(null, '', window.location.pathname + window.location.search);
+    syncPath();
     return true;
   }
   return sessionStorage.getItem(DEV_BYPASS_KEY) === '1';
@@ -189,11 +191,13 @@ export function isMaintenancePreviewed(): boolean {
     sessionStorage.setItem(MAINTENANCE_PREVIEW_KEY, '1');
     sessionStorage.removeItem(COMING_SOON_PREVIEW_KEY);
     history.replaceState(null, '', window.location.pathname + window.location.search);
+    syncPath();
     return true;
   }
   if (window.location.hash === '#exit-preview') {
     clearAllPreviews();
     history.replaceState(null, '', window.location.pathname + window.location.search);
+    syncPath();
     return false;
   }
   return sessionStorage.getItem(MAINTENANCE_PREVIEW_KEY) === '1';
@@ -205,11 +209,13 @@ export function isComingSoonPreviewed(): boolean {
     sessionStorage.setItem(COMING_SOON_PREVIEW_KEY, '1');
     sessionStorage.removeItem(MAINTENANCE_PREVIEW_KEY);
     history.replaceState(null, '', window.location.pathname + window.location.search);
+    syncPath();
     return true;
   }
   if (window.location.hash === '#exit-preview') {
     clearAllPreviews();
     history.replaceState(null, '', window.location.pathname + window.location.search);
+    syncPath();
     return false;
   }
   return sessionStorage.getItem(COMING_SOON_PREVIEW_KEY) === '1';

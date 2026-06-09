@@ -9,6 +9,16 @@ function getPath(): string {
 
 export const currentPath = writable<string>(getPath());
 
+/** Re-sync currentPath from the current URL. Required after a
+ *  history.replaceState() that strips the hash (the #dev / #maintenance /
+ *  #coming-soon / #exit-preview bypass handlers in flags.ts), because
+ *  replaceState does NOT fire a hashchange event. Without this the store
+ *  stays on the stale bypass token (e.g. 'dev'), which matches no route
+ *  and falls through to NotFound until a manual refresh. */
+export function syncPath(): void {
+  currentPath.set(getPath());
+}
+
 if (typeof window !== 'undefined') {
   window.addEventListener('hashchange', () => {
     currentPath.set(getPath());
