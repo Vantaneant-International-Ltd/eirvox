@@ -121,6 +121,23 @@
 
   // Trade slugs that should NOT match as categories
   const TRADE_RESERVED_PATHS = ['apply'];
+
+  // ── Wheel-specialist route gate ────────────────────────────
+  // When wheel_specialist_mode is on, the public site is narrowed to
+  // wheels. Marketplace browse, seller flows (incl. the AuthGuarded
+  // ones), TRADE, broad search, and any non-allowlisted category render
+  // NotFound (hard 404). Reuses the launch flag + allowlist and deletes
+  // nothing: flip the flag in /admin/settings to restore the full
+  // marketplace. /listing/:slug stays mounted - an out-of-scope slug
+  // returns null (RLS + api guard) and ListingDetail shows not-found.
+  $: wheelMode = $siteFlags.wheel_specialist_mode;
+  $: allowedCats = Array.isArray($siteFlags.public_category_allowlist) ? $siteFlags.public_category_allowlist : [];
+  $: hiddenByWheelMode = wheelMode && (
+    path === '/sell' || path.startsWith('/sell/') ||
+    path === '/trade' || path.startsWith('/trade/') ||
+    path === '/search' ||
+    (categoryMatch !== null && !allowedCats.includes(categoryMatch))
+  );
 </script>
 
 {#if gate === 'maintenance'}
@@ -138,7 +155,9 @@
     DEV MODE - {$siteFlags.maintenance ? 'Maintenance' : 'Coming soon'} is active for visitors
   </div>
 {/if}
-{#if path === '/'}
+{#if hiddenByWheelMode}
+  <NotFound />
+{:else if path === '/'}
   <Home />
 {:else if path === '/wheels'}
   <Wheels />
