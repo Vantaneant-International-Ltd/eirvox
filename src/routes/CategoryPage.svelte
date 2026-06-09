@@ -8,6 +8,7 @@
     getListings,
     getCategoryBySlug,
     getListingsCount,
+    isCategoryPublic,
     type ListingWithExtras,
     type Category,
   } from '../lib/api';
@@ -61,6 +62,15 @@
   // ── Load ──
   async function load() {
     loading = true;
+    // Wheel-specialist scope (defence in depth; App.svelte already 404s
+    // non-allowlisted category routes and v22 RLS returns no rows).
+    if (!isCategoryPublic(category)) {
+      catNotFound = true;
+      cat = null;
+      listings = [];
+      loading = false;
+      return;
+    }
     cat = await getCategoryBySlug(category);
     if (!cat) {
       catNotFound = true;
