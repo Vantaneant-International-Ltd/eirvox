@@ -252,7 +252,6 @@
             on:click={() => handleNav(item.path)}
           >{item.label}</button>
         {/each}
-        <span class="nav__seller-cohort evx-caption">COHORT 03 · CLOSES 14 JUN</span>
       </div>
     </div>
   {/if}
@@ -699,13 +698,6 @@
 
   .nav__seller-link:hover { opacity: 0.60; }
   .nav__seller-link--active { color: var(--evx-fox-orange); font-weight: 500; }
-
-  .nav__seller-cohort {
-    color: var(--evx-ink-soft);
-    margin-left: auto;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
 
   @media (max-width: 1023px) {
     .nav__centre { max-width: 280px; }

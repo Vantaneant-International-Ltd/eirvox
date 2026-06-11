@@ -15,13 +15,13 @@
 
     <!-- Hero -->
     <header class="sell-hero">
-      <div class="sell-hero__badge evx-caption">FOR SELLERS · COHORT 03 · OPEN UNTIL 14 JUNE</div>
+      <div class="sell-hero__badge evx-caption">FOR SELLERS</div>
       <div class="sell-hero__inner">
         <div>
           <h1 class="sell-hero__title">Sell on ÉIRVOX.</h1>
           <p class="sell-hero__desc">
             A curated marketplace, not a feed. Lower fees than you'd pay elsewhere.
-            Cohort admission, considered listings, a quality bar that earns you better buyers.
+            Admission by application, considered listings, a quality bar that earns you better buyers.
           </p>
           <div class="sell-hero__actions">
             <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
@@ -30,27 +30,6 @@
             <button class="evx-btn evx-btn--ghost" on:click={() => document.getElementById('tiers')?.scrollIntoView({ behavior: 'smooth' })}>
               How the tiers work
             </button>
-          </div>
-        </div>
-        <div class="sell-hero__cohort">
-          <span class="evx-caption sell-cohort__label">COHORT 03</span>
-          <div class="sell-cohort__rows">
-            <div class="sell-cohort__row">
-              <span class="evx-caption">OPENS</span>
-              <span class="evx-caption">12 MAY 2026</span>
-            </div>
-            <div class="sell-cohort__row">
-              <span class="evx-caption">CLOSES</span>
-              <span class="evx-caption sell-cohort__closes">14 JUNE 2026</span>
-            </div>
-            <div class="sell-cohort__row">
-              <span class="evx-caption">GO LIVE</span>
-              <span class="evx-caption">01 JULY 2026</span>
-            </div>
-          </div>
-          <div class="sell-cohort__slots">
-            <span class="sell-cohort__dot"></span>
-            <span class="evx-caption sell-cohort__slots-text">23 OF 40 SLOTS REMAINING</span>
           </div>
         </div>
       </div>
@@ -177,7 +156,7 @@
 
   .sell-hero__inner {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     gap: var(--evx-space-3xl);
     align-items: start;
   }
@@ -200,41 +179,6 @@
   }
 
   .sell-hero__actions { display: flex; gap: var(--evx-space-md); }
-
-  .sell-hero__cohort {
-    border: 1px solid var(--evx-rule-light);
-    padding: var(--evx-space-xl);
-    min-width: 240px;
-  }
-
-  .sell-cohort__label {
-    display: block;
-    color: var(--evx-ink-soft);
-    margin-bottom: var(--evx-space-md);
-  }
-
-  .sell-cohort__rows { display: flex; flex-direction: column; gap: var(--evx-space-sm); margin-bottom: var(--evx-space-lg); }
-
-  .sell-cohort__row {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--evx-space-xl);
-  }
-
-  .sell-cohort__row span:first-child { color: var(--evx-ink-soft); }
-
-  .sell-cohort__closes { color: var(--evx-fox-orange); }
-
-  .sell-cohort__slots { display: flex; align-items: center; gap: 6px; }
-
-  .sell-cohort__dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--evx-fox-orange);
-  }
-
-  .sell-cohort__slots-text { color: var(--evx-fox-orange); }
 
   /* Tiers */
   .sell-tiers { margin-bottom: var(--evx-space-2xl); }

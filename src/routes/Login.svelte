@@ -351,17 +351,6 @@
         </form>
       {/if}
 
-      <!-- Cohort cross-promo (only on login/signup) -->
-      {#if mode !== 'reset'}
-        <div class="login-cohort">
-          <span class="evx-caption login-cohort__text">
-            Want to sell? Cohort 03 is open until 14 June.
-          </span>
-          <button class="evx-caption login-cohort__link" on:click={() => navigate('/sell/apply')}>
-            Apply to sell →
-          </button>
-        </div>
-      {/if}
     </div>
   </div>
 </main>
@@ -520,22 +509,4 @@
     transition: var(--evx-transition);
   }
   .login-switch__link:hover { opacity: 0.70; }
-
-  /* Cohort cross-promo */
-  .login-cohort {
-    padding-top: var(--evx-space-xl);
-    border-top: 1px solid var(--evx-rule-light);
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-sm);
-  }
-  .login-cohort__text { color: var(--evx-ink-soft); }
-  .login-cohort__link {
-    background: none; border: none; padding: 0;
-    color: var(--evx-fox-orange);
-    cursor: pointer;
-    text-align: left;
-    transition: var(--evx-transition);
-  }
-  .login-cohort__link:hover { opacity: 0.70; }
 </style>

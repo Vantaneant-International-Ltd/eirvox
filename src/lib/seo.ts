@@ -111,16 +111,16 @@ export const seo = {
   }),
 
   sell: (): SeoData => ({
-    title: 'Sell on ÉIRVOX · Cohort 03 Open',
+    title: 'Sell on ÉIRVOX',
     description:
-      'Sell on Ireland\'s premium marketplace. Three tiers - Verified, Atelier, House. Cohort 03 applications open until 14 June.',
+      'Sell on Ireland\'s premium marketplace. Three tiers - Verified, Atelier, House. Admission by application.',
     path: '/sell',
   }),
 
   sellApply: (): SeoData => ({
-    title: 'Apply to sell · Cohort 03',
+    title: 'Apply to sell',
     description:
-      'Apply to sell on ÉIRVOX. Five steps, three minutes. Cohort 03 reviews close 14 June; approved sellers go live 01 July.',
+      'Apply to sell on ÉIRVOX. Five steps, three minutes. Every applicant is reviewed by hand.',
     path: '/sell/apply',
   }),
 
@@ -132,7 +132,7 @@ export const seo = {
 
   sellDashboard: (): SeoData => ({
     title: 'Seller dashboard preview',
-    description: 'Preview of the ÉIRVOX seller dashboard. Going live with Cohort 03 on 01 July 2026.',
+    description: 'Preview of the ÉIRVOX seller dashboard.',
     path: '/sell/dashboard',
   }),
 

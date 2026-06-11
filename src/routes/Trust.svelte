@@ -67,7 +67,7 @@
             { n: '01', title: 'Buyer pays the seller direct.', body: 'Card, Apple Pay, or Google Pay on Revolut. ÉIRVOX is the venue, not the merchant of record.' },
             { n: '02', title: 'Reservation deposits are optional, per listing.', body: 'When a seller configures one, the deposit goes to the seller too. There is no ÉIRVOX escrow.' },
             { n: '03', title: 'House listings are the exception.', body: 'On items sold directly by ÉIRVOX, we are the merchant of record. Refunds for legitimate issues are at our discretion. See /refund-policy.' },
-            { n: '04', title: 'No platform commission held back.', body: 'Sellers receive the full amount. Tier fees, if any, are billed separately.' },
+            { n: '04', title: 'We never deduct from the transaction.', body: 'Commission is invoiced separately. Current rates are published on /sell.' },
           ] as step}
             <li class="trust-step">
               <span class="evx-label trust-step__num">{step.n}</span>
