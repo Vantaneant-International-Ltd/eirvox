@@ -84,8 +84,8 @@
     menuOpen = false;
     userMenuOpen = false;
 
-    // In-page anchor (e.g. "/wheels#how"). The hash router can't carry a
-    // second '#', so navigate to the route, then scroll the target into
+    // In-page anchor (e.g. "/wheels#fitment"). The hash router can't carry
+    // a second '#', so navigate to the route, then scroll the target into
     // view once it has mounted. No router change.
     const hashIdx = path.indexOf('#');
     if (hashIdx > 0) {
