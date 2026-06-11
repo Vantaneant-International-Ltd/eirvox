@@ -7,7 +7,7 @@ const SITE = 'ÉIRVOX';
 const SITE_URL = 'https://eirvox.ie';
 const DEFAULT_DESC =
   "Ireland's premium marketplace for enthusiast objects. Verified sellers, reservation deposits, authenticated items.";
-const OG_IMAGE = `${SITE_URL}/og-image.svg`;
+const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export interface SeoData {
   title: string;
