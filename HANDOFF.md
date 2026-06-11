@@ -2,17 +2,26 @@
 
 Context for anyone (human or AI) picking up this project. Read before changing code or the database.
 
+## Companion documents (read in this order)
+
+1. **This file** — architecture, database, security, open issues.
+2. **`CLAUDE.md`** (repo root) — standing instructions for AI contributors. Auto-read by Claude Code.
+3. **`design/DIRECTION-LOCKFILE.md`** — the design constitution. Read before touching ANY UI, route, style, or user-facing copy. Locked direction, banned phrases, world boundaries, per-surface rules, drift check.
+
+If this file and the lockfile conflict on a design/copy matter, the lockfile wins. If they conflict on database/architecture, this file wins.
+
 ## What ÉIRVOX is
 
-Curated Irish marketplace for premium goods. Svelte 5 + Vite SPA, hash routing, Supabase backend, deploying to Vercel.
+**Launch posture (current): a Dublin carbon-steering-wheel specialist.** DRIVE limited-edition line + BMW fitted range, sold via direct Revolut payment (full or deposit). Controlled by `wheel_specialist_mode` flag in `public.site_settings.flags` — when on, Home renders the dark `/wheels` surface and the nav collapses to WHEELS · DRIVE · FINDER · ABOUT.
+
+**Long-term: a verification-led curated marketplace** ("StockX for enthusiast objects, starting where we can verify with our own hands") — NOT liquidity-led classifieds. The full marketplace (7 categories, sellers, TRADE) exists in this codebase, dormant behind the flag. Categories open only when their verification operation exists. While gated: zero visible references to marketplace surfaces anywhere — no nav items, no footer links, no teasers.
+
+Stack: Svelte 5 + Vite SPA, hash routing, Supabase (Postgres + Auth + Storage + Edge Functions), Vercel static deploy.
 
 - Supabase project ref: `arokrumaxjiidsqfpiii`
-- Active branch: `main`. All new work goes here.
-- Dormant branches (`archive/` prefix, kept for history, do not push):
-  - `archive/renato-2026-05-30` — the long-lived working branch that was merged into main on 2026-05-30
-  - `archive/legacy` — pre-rewrite history (was `archived`)
+- Active branch: `main`. Dormant branches keep the `archive/` prefix (do not push).
 - Contributors: Renato, Kevin
-- The site is gated behind two flags in `public.site_settings.flags` (`coming_soon`, `maintenance`), toggleable live from `/admin/settings`. `#dev` URL bypasses both for the current session. It is not publicly exposed yet.
+- Gating flags in `public.site_settings.flags`: `coming_soon`, `maintenance`, `wheel_specialist_mode` — toggleable live from `/admin/settings`. `#dev` URL bypasses gates for the session; authenticated admins bypass automatically. Not publicly exposed yet.
 
 ## Source of truth warning (read this first)
 
@@ -34,7 +43,7 @@ Four hardening changes are applied to the live DB and were each verified against
 
 Supabase auto-grants `SELECT, INSERT, UPDATE, DELETE` on every newly created table to BOTH `anon` and `authenticated`. It auto-grants `EXECUTE` on every newly created function to `PUBLIC`, `anon`, and `authenticated`. RLS policies filter rows but **do not remove the table-level grant.** A future ALTER, a misapplied policy, or a third-party tool reading `pg_class` will see the privilege and may act on it. RLS alone is not sufficient.
 
-This has now bitten the project four times: `admin_stats`, `approve_seller_application`, the audit log functions, and most recently `public.reports` (v08 shipped with anon-readable table grants on a table containing reporter emails; hardened live then codified back into `supabase/v08-reports.sql`).
+This has bitten the project four times: `admin_stats`, `approve_seller_application`, the audit log functions, and `public.reports` (v08 shipped with anon-readable table grants on a table containing reporter emails; hardened live then codified back into `supabase/v08-reports.sql`).
 
 **Every new table migration must include:**
 
@@ -44,7 +53,7 @@ REVOKE ALL ON public.<table> FROM authenticated;
 GRANT <minimum-set> ON public.<table> TO <roles-that-need-it>;
 ```
 
-For tables whose writes go through `/api/*` with the service-role key (the standard pattern for public-facing inserts on this project), `authenticated` typically gets `SELECT, UPDATE` only (admin triage via RLS); `anon` gets nothing.
+For tables whose writes go through Edge Functions with the service-role key (the standard pattern for public-facing inserts), `authenticated` typically gets `SELECT, UPDATE` only (admin triage via RLS); `anon` gets nothing.
 
 **Every new SECURITY DEFINER function migration must include:**
 
@@ -54,9 +63,9 @@ REVOKE EXECUTE ON FUNCTION public.<fn>(<args>) FROM anon;
 GRANT EXECUTE ON FUNCTION public.<fn>(<args>) TO <only-the-roles-that-call-it>;
 ```
 
-A SECURITY DEFINER function bypasses RLS by design; an over-broad EXECUTE grant lets unauthenticated callers run privileged code. The `REVOKE FROM PUBLIC` alone is not enough because `anon` and `authenticated` are named roles, not PUBLIC.
+A SECURITY DEFINER function bypasses RLS by design; an over-broad EXECUTE grant lets unauthenticated callers run privileged code. `REVOKE FROM PUBLIC` alone is not enough because `anon` and `authenticated` are named roles, not PUBLIC.
 
-Both REVOKE and GRANT are idempotent — safe to include in every migration without checking prior state. The block goes at the end of the file, after RLS policies, before `NOTIFY pgrst`.
+Both REVOKE and GRANT are idempotent — safe to include in every migration. The block goes at the end of the file, after RLS policies, before `NOTIFY pgrst`.
 
 Reviewers: if a migration creates a table or function without this block, reject it.
 
@@ -64,57 +73,67 @@ Reviewers: if a migration creates a table or function without this block, reject
 
 `supabase/fix-profiles-trigger.sql` recreates the profiles UPDATE policy with a comment claiming it blocks role changes. **It does not.** The real protection is the trigger in item 1 above, which is NOT in any committed SQL file.
 
-Reconciliation tasks (do before other feature work):
-- Add a committed migration under `supabase/` containing: the `protect_profile_privileged_columns` function + trigger, the `admin_stats` guard, and the `admin_activity_recent` security_invoker fix. Goal: repo becomes a faithful record of the hardened live DB.
+Reconciliation tasks (scheduled: first post-launch week, BEFORE any other migration):
+- Add `supabase/v23-security-reconciliation.sql` containing: the `protect_profile_privileged_columns` function + trigger, the `admin_stats` guard, and the `admin_activity_recent` security_invoker fix. Goal: repo becomes a faithful record of the hardened live DB.
 - Fix or remove the misleading comment in `fix-profiles-trigger.sql`.
 
-## Known frontend bugs
+## Architecture (current, verified against repo)
 
-All three previously-listed bugs in this section are fixed:
+- **Public writes** (waitlist, enquiries, seller applications, reports, payments) go through **Supabase Edge Functions** in `supabase/functions/` using the service-role key — NOT Vercel `api/` routes (that earlier architecture was removed; any doc or comment referencing `api/*.ts` routes is stale). Shared modules: `_shared/` (cors, email, ratelimit, turnstile, revolut, supabase-admin).
+- **Rate limiting + Turnstile**: implemented on the public-write Edge Functions (waitlist, enquiries, seller-applications, report, payments-create-order). The former "no rate limiting" launch blocker is RESOLVED.
+- **Payments:** direct Revolut checkout per listing (card / Apple Pay / Google Pay). **No cart — ever.** Full payment or deposit (deposit holds incoming stock; balance on collection). `payments-create-order` re-resolves price + stock server-side; the client never sets amounts. Webhook + order persistence wired.
+- **Deposits ARE the launch commerce model** for wheels/DRIVE. (The older "reservations are out of v1, use Express Interest" decision applied to the marketplace surface and predates wheel mode — do not remove deposit flows. "Express Interest"/enquiries remain the fallback verb for non-payable listings.)
+- **Auth:** Supabase magic link, PKCE flow. Auth is primarily an admin door today. Browsing and buying stay anonymous.
+- **Storage:** public-read-by-URL buckets, LIST disabled. Canonical image column is `storage_path`; URL derived at read time.
+- **Audit log:** append-only `audit_log`, trigger-written on `listings` and `sellers`, admin-read only.
+- **Deployment:** Vite `outDir: 'docs'`, Vercel output directory `docs`. Do not remove `docs/` or `CNAME` until a Vercel deploy is verified.
+- **Role enum:** untouched. `profiles.role` = platform access; seller status derives from `sellers.status`.
 
-- ~~`flowType: 'pkce'` missing on the Supabase client~~ — fixed in commit `925c77c` (`src/lib/supabase.ts:47`).
-- ~~Hardcoded anon URL/key in `src/lib/supabase.ts`~~ — fixed in commit `8ed8e29`. Both now load from `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. See `.env.example`. The server-only `SUPABASE_SERVICE_ROLE_KEY` lives in `.env` (no `VITE_` prefix) and is consumed only by `api/_lib/supabase-admin.ts` — never imported from `src/`.
-- ~~`UserRole` omits `tradesperson`~~ — fixed in commit `925c77c`.
+## The registry (signature mechanic — strict gate)
 
-Open issues (from audit, severity-tagged):
+Long-term differentiator: per-item serialized records ("DRIVE 001 — 001/250"; "REGISTERED" marks on future marketplace listings). **The registry mark and "every wheel is registered" copy ship ONLY when a real, database-backed serial record exists per item.** An unverifiable registry converts the signature mechanic into the signature lie. Schema/implementation for this does not exist yet — treat any registry UI as blocked until it does.
 
-- **MED · blocker before public ship.** No rate limiting on `api/seller-applications.ts` or `api/enquiries.ts`. Add Upstash KV per-IP throttle (or Cloudflare Turnstile) before `COMING_SOON = false`.
-- **MED.** PKCE auth `?code=…` lands at `/#/login` and outbound link clicks on that page leak the code in `Referer`. Mitigate with `exchangeCodeForSession` + `history.replaceState` to scrub the URL on Login mount, or a `<meta name="referrer">` header in `index.html`.
-- **LOW.** Unsalted SHA-256 IP hash in `api/seller-applications.ts` and `api/enquiries.ts`. IPv4 space is trivially reversible. Add an `IP_HASH_PEPPER` env var.
-- **LOW.** `{@html item}` in `src/routes/Trust.svelte:154` is safe today (hardcoded literal array) but is XSS-prone if data ever becomes dynamic.
+## Launch scope (approved — Phase A.1/A.2)
 
-Architecture follow-ups (not bugs but tracked):
+Pre-launch, in order:
+1. Truth edits: remove hardcoded cohort date + slot counter (`Sell.svelte`), fix commission wording (`Trust.svelte`).
+2. Footer imprint: entity / CRO 712304 / address / support@eirvox.ie. NO VAT until verified. No personal emails.
+3. OG image: interim type-only 1200×630 PNG (the SVG fails WhatsApp/X/iMessage scrapers).
+4. Mobile money-path manual QA (finder → variant → pay) on iPhone + Android; fix payment-blocking breakages only.
+5. Product photography (minimal grade: honest + well-lit beats editorial + late). Until it lands: designed photo slots (`--evx-surface-2` fill + mono shot annotation). The carbon-weave CSS placeholder is retired.
+6. Dark-world evolution pass on Wheels home / WheelDetail / Nav per lockfile §9 (in progress via Claude Code).
 
-- Many browser-side direct Supabase writes still exist in `src/lib/api.ts`, `src/lib/listings.ts`, `src/lib/sellers.ts`, and most of `src/lib/admin.ts`. The locked rule is "no browser-to-Supabase writes for public-facing or admin paths"; v1 grandfathers the admin ones since `is_admin()` RLS + the `protect_profile_privileged_columns` trigger defend them at the DB layer. Move to `/api/*` whenever each surface gets touched.
+Deferred to post-launch week one: `v23-security-reconciliation.sql`, code splitting, history routing/SEO, About founder-optional additions, everything Phase B/C.
 
-## Locked architecture decisions
+## [FACT NEEDED] protocol
 
-- **Auth:** Supabase magic link, PKCE flow. Public signups stay enabled. Login not surfaced prominently. Browsing, enquiries, and seller applications stay anonymous. Auth is primarily an admin door today; buyer/seller features come later.
-- **Public writes** (enquiries, seller applications, waitlist): go through Vercel serverless API routes using the service-role key. No browser-to-Supabase anon inserts. Turnstile is an env-gated future add-on, not built now.
-- **Seller applications** write to a dedicated `seller_applications` table, NOT directly into `sellers` (which should only get rows on approval).
-- **Reservations** are out of v1. Replace reservation CTAs with "Express Interest" wired into the enquiry path. Do not wire or expand reservations.
-- **Marketplace model:** v1 is admin-curated. Admin creates listings and uploads images. Seller self-serve comes later.
-- **Storage:** keep public-read-by-URL buckets, disable LIST on them. A private `seller-verification-documents` bucket is future (KYC), not this phase. Listing image canonical column is `storage_path`; derive the public URL at read time.
-- **Role enum:** leave untouched this phase. No enum migrations. `profiles.role` means platform access; seller status is derived from `sellers.status`, never from `role='seller'`.
-- **Audit logging** required before admin CRUD is "done": minimal append-only `audit_log` (id, actor_id, action, entity_type, entity_id, metadata jsonb, created_at), ideally written by triggers on `listings` and `sellers`.
-- **Deployment:** keep Vite `outDir: 'docs'`; set Vercel output directory to `docs`. Do not remove `docs/` or `CNAME` until a Vercel deploy is verified.
+Unknown facts render as visible `[FACT NEEDED: …]` tokens — never invented, never silently filled. Open tokens: registered address (blocks footer) · verified VAT · exact finishing steps · shipping carrier · fitting offer/price · support response commitment · all product photography · real wheel dimensions for the detail-page annotation layer.
 
-## Phase plan (re-baseline against current repo first)
+## Known frontend issues (current)
 
-The original C1–C11 plan was written against an older repo and is likely half-done or done differently. Before continuing:
+- **MED.** PKCE auth `?code=…` lands at `/#/login`; outbound link clicks can leak the code in `Referer`. `<meta name="referrer" content="strict-origin-when-cross-origin">` is in `index.html`; verify `exchangeCodeForSession` + URL scrub on Login mount.
+- **LOW.** Unsalted SHA-256 IP hash in edge functions. Add `IP_HASH_PEPPER` env var.
+- **LOW.** `{@html item}` in `src/routes/Trust.svelte` — safe today (hardcoded array), XSS-prone if dynamic. Replace when Trust is next touched.
+- **DEFERRED.** Single ~838KB bundle, all routes eager in `App.svelte`; Google Fonts via CSS `@import`; `ListingCard` per-card saved-items fetch (N+1, logged-in only). Post-launch.
+- Mock data residue: `src/data/user.ts` backs Account/Messages — these routes are gated out of wheel-mode nav; wire or remove before any account features ship.
 
-1. Inspect what is actually wired to Supabase vs still faked: auth (`src/lib/auth.ts`), listings reads (`src/lib/listings.ts`), admin gate (`src/routes/Admin.svelte`, `src/routes/admin/*`), public write paths.
-2. Do the schema reconciliation above.
-3. Then produce a corrected, short commit-by-commit plan and get approval before coding.
+Architecture follow-ups (tracked, not bugs):
+- Browser-side direct Supabase writes remain in `src/lib/api.ts`, `listings.ts`, `sellers.ts`, most of `admin.ts`. v1 grandfathers admin ones (defended at DB layer by `is_admin()` RLS + the privilege trigger). Move to Edge Functions whenever each surface gets touched.
 
-Remaining intended scope: real auth (PKCE), listings from DB, kill demo-data dependency, server-route write paths + `enquiries` and `seller_applications` tables, remove reservations, admin gate via real `is_admin()`, audit log, admin listings CRUD + image pipeline, seed 1 approved seller + 3+ real listings with images, deployment readiness + storage LIST and search_path hardening.
+## Trust & Compliance rules (launch blocker class — never regress)
 
-## Separate phase, do not skip before public launch
-
-**Trust & Compliance Pass** (launch blocker, not part of the data cutover): remove fabricated seller ratings and sales counts, reframe present-tense overclaims (Dublin authentication centre, phone+ID verification, insured shipping, held deposits), finalize Privacy / Terms / Seller Terms / Refund pages, fix the meta description. Wiring real data does NOT make the site launch-ready.
+- No fabricated ratings, sales counts, slot counters, cohort dates, or stock figures not wired to live data.
+- No present-tense overclaims: no escrow ("we never hold buyer funds" is the published policy), no authentication centre, no insured shipping, no worldwide shipping, no unkept response commitments.
+- Banned origin phrases (legal): "hand-finished", "finished by hand", "handmade", "by hand", "made in Ireland/Dublin". Approved copy ONLY: "Finished in Dublin." / "Designed in Ireland, assembled abroad, finished in Dublin."
+- Full copy constitution: lockfile §7.
 
 ## Working notes
 
 - Verify, do not assume. The repo and live DB have drifted before; check both.
-- Hand off frontend changes as small scoped commits, not whole-tree zips (a whole-tree zip against this live shared branch already caused a bad rebase once).
-- Supabase advisor (`get_advisors`) is useful but does NOT catch logic flaws like the role-escalation policy. Manual review still required.
+- Small scoped commits, never whole-tree zips (a zip already caused a bad rebase on this branch once).
+- Supabase advisor (`get_advisors`) does NOT catch logic flaws like the role-escalation policy. Manual review still required.
+- Run the lockfile §13 drift check on any UI/copy change before review.
+
+## Changelog
+
+- 2026-06-11 — Rewritten: edge-function architecture replaces stale `api/` route references; rate-limiting blocker marked resolved; wheel-specialist launch posture + flag documented; deposits confirmed as launch commerce model (supersedes "reservations out of v1" for wheel surfaces); registry gate added; lockfile + CLAUDE.md companion docs referenced; Phase A launch scope recorded; [FACT NEEDED] register added.
