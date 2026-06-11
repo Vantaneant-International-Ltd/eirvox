@@ -1,18 +1,27 @@
 <script lang="ts">
   // ============================================================
-  // /wheels — approved homepage (dark cinematic, DRIVE-led).
+  // /wheels — wheel-specialist homepage (dark world, lockfile §9).
   //
-  // Faithful translation of the approved prototype. Backend wiring:
+  // Numbered sections, top to bottom:
+  //   01 · IGNITION  — signature hero (statement + designed photo slot)
+  //   02 · MATERIAL  — four-tile macro strip (designed slots)
+  //   03 · FITMENT   — chassis selector → existing WheelFinder ritual
+  //   04 · DRIVE     — live limited series, names + state only (no numerals)
+  // …then the shared proof band + imprint footer (already approved).
+  //
+  // Backend wiring:
   //   * Consignment listing pulled by slug (status=active gate so the
-  //     row stays hidden until the reviewer flips it live).
+  //     row stays hidden until the reviewer flips it live). The hero CTA
+  //     degrades gracefully to the finder when that fetch returns null.
   //   * DRIVE pulled via getDriveListings, archived filtered out.
-  //   * Fitment chooser opens the new WheelFinder modal (live data).
+  //   * Chassis list pulled via getFitmentChassis (live BMW fitment).
   //
-  // Origin copy is the honest Apple-style framing per the brief:
-  //   short: "Designed in Ireland. Finished in Dublin."
-  //   full:  "Designed in Ireland, assembled abroad, finished in
-  //          Dublin."
-  // No "made in Dublin/Ireland", no "by hand", no "finished by hand".
+  // Photography: every image position is a designed slot
+  // (--evx-surface-2 fill + mono SHOT annotation). No carbon-weave
+  // placeholder. No motion beyond the existing evx-rise primitive.
+  //
+  // Origin copy lives in the proof band + footer, not the hero. No
+  // "made in Dublin/Ireland", no "by hand", no "finished by hand".
   // ============================================================
   import { onMount } from 'svelte';
   import { navigate } from '../lib/router';
@@ -20,20 +29,28 @@
   import { supabase } from '../lib/supabase';
   import {
     getDriveListings,
+    getFitmentChassis,
     type ListingWithExtras,
+    type FitmentChassis,
   } from '../lib/api';
   import WheelFinder from '../lib/WheelFinder.svelte';
   import WheelsMenu from '../lib/WheelsMenu.svelte';
   import Footer from '../lib/Footer.svelte';
-  import PhotoFrame from '../lib/wheels-ui/PhotoFrame.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
-  import Money from '../lib/wheels-ui/Money.svelte';
-  import Chevron from '../lib/wheels-ui/Chevron.svelte';
 
   const CONSIGNMENT_SLUG = 'bmw-m-sport-carbon-consignment';
 
+  const MATERIALS = [
+    '2×2 Twill carbon fibre',
+    'Alcantara grip',
+    'Integrated LED shift lights',
+    'Billet aluminium hardware',
+  ];
+
   let consignment: ListingWithExtras | null = null;
   let driveItems: ListingWithExtras[] = [];
+  let chassisList: FitmentChassis[] = [];
+  let selectedChassisId = '';
   let loading = true;
   let finderOpen = false;
   let menuOpen = false;
@@ -46,7 +63,7 @@
       path: '/wheels',
     });
 
-    const [{ data: con }, drives] = await Promise.all([
+    const [{ data: con }, drives, chassis] = await Promise.all([
       supabase
         .from('listings')
         .select('*, seller:sellers(id,trading_name,handle,tier,is_house), images:listing_images(id,public_url,sort_order)')
@@ -54,10 +71,12 @@
         .eq('status', 'active')
         .maybeSingle(),
       getDriveListings({ limit: 6 }),
+      getFitmentChassis(),
     ]);
 
     consignment = (con as ListingWithExtras | null) ?? null;
     driveItems = (drives ?? []).filter(d => d.drive_issue_state !== 'archived');
+    chassisList = chassis ?? [];
     loading = false;
   });
 
@@ -70,6 +89,24 @@
   }
   function openConsignment() {
     navigate(`/wheels/${CONSIGNMENT_SLUG}`);
+  }
+
+  // The fitment ritual. With a chosen chassis and a live consignment we
+  // jump straight to the configurator pre-seeded to that chassis; with
+  // no chassis (or no live consignment) we open the full finder.
+  function checkFitment() {
+    if (selectedChassisId && consignment) {
+      navigate(`/wheels/${CONSIGNMENT_SLUG}?chassis=${encodeURIComponent(selectedChassisId)}`);
+    } else {
+      finderOpen = true;
+    }
+  }
+
+  function driveState(state: string | null | undefined): string {
+    if (state === 'open') return 'Open';
+    if (state === 'upcoming') return 'Upcoming';
+    if (!state) return 'Upcoming';
+    return state.charAt(0).toUpperCase() + state.slice(1);
   }
 </script>
 
@@ -90,146 +127,87 @@
 
   <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
 
-  <!-- ━━━━━━ HERO — full-bleed carbon-weave, DRIVE-led ━━━━━━ -->
-  <section class="wp-hero evx-carbon evx-carbon--lit">
-    <div class="wp-hero__shade" aria-hidden="true"></div>
-    <span class="wp-hero__plate-cap">Photo · DRIVE BMW M Sport, LED lit</span>
+  <!-- ━━━━━━ 01 · IGNITION ━━━━━━ -->
+  <section class="wp-ignition">
+    <div class="wp-ig__inner">
+      <span class="evx-label wp-ig__eyebrow">01 · Ignition</span>
+      <h1 class="wp-ig__h">The two seconds<br/>before ignition.</h1>
+      <p class="evx-editorial wp-ig__stand">Engineered to be felt before it's seen.</p>
+      <div class="wp-ig__cta">
+        {#if consignment}
+          <Btn variant="primary" size="md" on:click={openConsignment}>Explore the wheel</Btn>
+        {/if}
+        <Btn variant="ghost" size="md" on:click={() => (finderOpen = true)}>Find your fit</Btn>
+      </div>
+    </div>
+    <div class="wp-slot wp-ig__photo" style="aspect-ratio:16/9;">
+      <span class="wp-slot__cap">SHOT 01 · ¾ FRONT</span>
+    </div>
+  </section>
 
-    <div class="wp-hero__inner">
-      <span class="evx-label wp-hero__eyebrow">Dublin · Carbon · LED</span>
-      <h1 class="wp-hero__h">
-        Carbon.<br/>
-        Designed in Ireland.<br/>
-        <span class="evx-editorial">Finished in Dublin.</span>
-      </h1>
-      <p class="wp-hero__sub">
-        Limited-run carbon steering wheels. DRIVE editions and a fitted BMW range.
-        Designed in Ireland, assembled abroad, finished in Dublin. Find the one that fits your car.
-      </p>
-      <div class="wp-hero__cta">
-        <Btn variant="primary" size="md" on:click={() => (finderOpen = true)}>Find your fit</Btn>
-        <Btn variant="ghost" size="md"
-             on:click={() => driveItems[0] && openDrive(driveItems[0].slug ?? driveItems[0].id)}>
-          Explore DRIVE
-        </Btn>
+  <!-- ━━━━━━ 02 · MATERIAL ━━━━━━ -->
+  <section class="wp-material">
+    <span class="evx-label wp-section__eyebrow">02 · Material</span>
+    <div class="wp-material__grid">
+      {#each MATERIALS as m, i}
+        <figure class="wp-material__tile">
+          <div class="wp-slot" style="aspect-ratio:5/6;">
+            <span class="wp-slot__cap">SHOT 0{i + 2}</span>
+          </div>
+          <figcaption class="wp-material__cap">{m}</figcaption>
+        </figure>
+      {/each}
+    </div>
+  </section>
+
+  <!-- ━━━━━━ 03 · FITMENT ━━━━━━ -->
+  <section class="wp-fitment" id="fitment">
+    <span class="evx-label wp-section__eyebrow">03 · Fitment</span>
+    <h2 class="wp-fitment__h">Your car. Your spec. Confirmed.</h2>
+    <div class="wp-fitment__row">
+      <div class="wp-slot wp-fitment__photo" style="aspect-ratio:16/9;">
+        <span class="wp-slot__cap">SHOT · BMW SILHOUETTE</span>
+      </div>
+      <div class="wp-fitment__control">
+        <label class="evx-label wp-fitment__label" for="chassis-select">Select chassis</label>
+        <select id="chassis-select" class="wp-fitment__select" bind:value={selectedChassisId}>
+          <option value="">All BMW chassis</option>
+          {#each chassisList as c (c.id)}
+            <option value={c.id}>{c.display_name}</option>
+          {/each}
+        </select>
+        <Btn variant="primary" size="md" on:click={checkFitment}>Check fitment</Btn>
       </div>
     </div>
   </section>
 
-  <!-- ━━━━━━ FIT BAND (target of the "How it works" nav link) ━━━━━━ -->
-  <section class="wp-fit" id="how">
-    <button class="wp-fit__card" type="button" on:click={() => (finderOpen = true)}>
-      <div class="wp-fit__head">
-        <span class="evx-label">Fitment finder</span>
-        <span class="wp-fit__icon">
-          <Chevron size={12} color="var(--evx-paper)" />
-        </span>
-      </div>
-      <h2 class="wp-fit__h">Will it fit your BMW?</h2>
-      <p class="wp-fit__sub">Pick your series, then your model. We do the rest. No part codes.</p>
-    </button>
-  </section>
-
-  <!-- ━━━━━━ DRIVE LED ━━━━━━ -->
-  <section class="wp-drive">
-    <div class="wp-drive__head">
-      <div>
-        <span class="evx-label wp-drive__eyebrow">DRIVE · Limited</span>
-        <h2 class="wp-drive__h">The carbon line</h2>
-      </div>
-      <span class="evx-meta wp-drive__count">
-        {String(driveItems.length).padStart(2, '0')} {driveItems.length === 1 ? 'piece' : 'pieces'}
-      </span>
+  <!-- ━━━━━━ 04 · DRIVE — names + state only, no edition numerals ━━━━━━ -->
+  <section class="wp-drive2">
+    <div class="wp-drive2__head">
+      <span class="evx-label wp-drive2__eyebrow">04 · DRIVE</span>
+      <h2 class="wp-drive2__h">The limited series.</h2>
     </div>
-    <p class="evx-editorial wp-drive__pull">
-      Designed in Ireland, finished in Dublin. Ten of each, then gone.
-    </p>
 
     {#if loading}
       <p class="wp-skel">Loading editions.</p>
     {:else if driveItems.length > 0}
-      <div class="wp-drive__rail">
+      <div class="wp-drive2__rail">
         {#each driveItems as d (d.id)}
-          <button class="wp-drive__card" type="button"
-                  on:click={() => openDrive(d.slug ?? d.id)}>
-            <PhotoFrame
-              lit
-              aspect="4 / 3"
-              caption={`${d.title} · LED lit`}
-              src={d.cover_image ?? d.images?.[0]?.public_url ?? null}
-              alt={d.title}
-            />
-            <div class="wp-drive__body">
-              <div class="wp-drive__meta">
-                <span class="evx-label wp-drive__marque">DRV-{d.drive_issue ?? '???'}</span>
-                <span class="evx-label wp-drive__arriving">
-                  {d.drive_issue_date ? d.drive_issue_date.toUpperCase() : 'UPCOMING'} · {d.drive_made_count ?? 10} made
-                </span>
-              </div>
-              <h3 class="wp-drive__title">{d.title}</h3>
-              {#if d.subtitle}<p class="wp-drive__desc">{d.subtitle}</p>{/if}
-              <div class="wp-drive__foot">
-                <Money price={d.price} was={d.original_price ?? null} size={16} />
-                <span class="wp-drive__view">View <Chevron size={11} color="var(--evx-paper)" /></span>
-              </div>
+          <button class="wp-drive2__card" type="button" on:click={() => openDrive(d.slug ?? d.id)}>
+            <div class="wp-slot wp-drive2__photo" style="aspect-ratio:4/3;">
+              <span class="wp-slot__cap">SHOT · {d.title}</span>
+            </div>
+            <div class="wp-drive2__body">
+              <h3 class="wp-drive2__title">{d.title}</h3>
+              <span class="evx-label wp-drive2__state">{driveState(d.drive_issue_state)}</span>
             </div>
           </button>
         {/each}
-        <div class="wp-drive__rail-pad" aria-hidden="true"></div>
+        <div class="wp-drive2__rail-pad" aria-hidden="true"></div>
       </div>
     {:else}
       <p class="wp-empty">DRIVE editions are upcoming. <a href="#/drive">DRIVE archive</a>.</p>
     {/if}
-  </section>
-
-  <!-- ━━━━━━ STANDARD — secondary billing ━━━━━━ -->
-  <section class="wp-std">
-    <div class="wp-std__inner">
-      <span class="evx-label wp-std__pre">Also available</span>
-      <div class="wp-std__row">
-        <div class="wp-std__media">
-          <PhotoFrame aspect="3 / 4" radius={2} caption="BMW wheel · carbon, unlit" />
-        </div>
-        <div class="wp-std__body">
-          {#if consignment}
-            <h3 class="wp-std__title">{consignment.title}</h3>
-            <p class="wp-std__sub">
-              The accessible range. Carbon and Alcantara, fitted to your chassis.
-              Seven finishes, three fitment groups.
-            </p>
-            <Money price={consignment.price} was={consignment.original_price ?? null} size={15} />
-            <div class="wp-std__cta">
-              <Btn variant="ghost" size="sm" on:click={openConsignment}>
-                Choose & buy <Chevron size={11} color="var(--evx-paper)" />
-              </Btn>
-            </div>
-          {:else}
-            <h3 class="wp-std__title">BMW Carbon Sport Wheel</h3>
-            <p class="wp-std__sub">
-              The accessible range. Carbon and Alcantara, fitted to your chassis.
-              Currently in preparation; the configurator opens when stock is checked in.
-            </p>
-            <Money price={300} was={399} size={15} />
-            <div class="wp-std__cta">
-              <Btn variant="ghost" size="sm" on:click={() => (finderOpen = true)}>
-                Find your fit <Chevron size={11} color="var(--evx-paper)" />
-              </Btn>
-            </div>
-          {/if}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ━━━━━━ THE HOUSE ━━━━━━ -->
-  <section class="wp-house">
-    <div class="wp-house__inner">
-      <span class="evx-label wp-house__pre">The house</span>
-      <p class="evx-editorial wp-house__pull">
-        Designed in Ireland, assembled abroad, finished in Dublin. We frame every photograph,
-        choose every supplier, and ship every wheel ourselves.
-      </p>
-    </div>
   </section>
 
   <!-- ━━━━━━ PROOF BAND — origin · buying · the company ━━━━━━ -->
@@ -307,127 +285,114 @@
   }
   .wp-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-paper); }
 
-  /* ── Hero ── */
-  .wp-hero {
+  /* ── Designed photo slot (shared) ── */
+  .wp-slot {
     position: relative;
-    min-height: 92vh;
-    padding: 0 22px 38px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    margin-top: -72px;
-    padding-top: 100px;
-    --evx-led: rgba(232, 116, 44, 0.45);
+    width: 100%;
+    background: var(--evx-surface-2);
+    border: 1px solid var(--evx-rule);
+    border-radius: 3px;
+    overflow: hidden;
   }
-  .wp-hero__shade {
-    position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(to bottom,
-      rgba(14, 13, 12, 0.55) 0%,
-      transparent 22%,
-      transparent 48%,
-      rgba(14, 13, 12, 0.92) 92%);
-  }
-  .wp-hero__plate-cap {
+  .wp-slot__cap {
     position: absolute;
-    left: 22px;
-    top: 110px;
+    left: 12px;
+    bottom: 11px;
     font-family: var(--evx-font-mono);
     font-size: 9.5px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(201, 169, 97, 0.7);
+    color: var(--evx-ink-soft);
   }
-  .wp-hero__inner {
-    position: relative;
-    z-index: 1;
-    animation: evx-rise 700ms ease both;
-    padding-bottom: 16px;
+
+  .wp-section__eyebrow { display: block; margin-bottom: 16px; color: var(--evx-ink-soft); }
+
+  /* ── 01 · Ignition ── */
+  .wp-ignition {
+    padding: 30px 22px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
   }
-  .wp-hero__eyebrow { color: var(--evx-champagne); margin-bottom: 18px; display: block; }
-  .wp-hero__h {
+  .wp-ig__inner { animation: evx-rise 700ms ease both; }
+  .wp-ig__eyebrow { display: block; color: var(--evx-ink-soft); margin-bottom: 18px; }
+  .wp-ig__h {
     font-family: var(--evx-font-display);
     font-weight: 600;
-    font-size: 48px;
+    font-size: 44px;
     line-height: 0.98;
     letter-spacing: -0.026em;
     color: var(--evx-paper);
-    margin-bottom: 18px;
+    margin: 0 0 16px;
   }
-  .wp-hero__h .evx-editorial { font-weight: 500; font-size: 0.92em; }
-  .wp-hero__sub {
-    font-size: 14.5px;
+  .wp-ig__stand {
+    font-size: 17px;
     color: var(--evx-paper-soft);
-    max-width: 320px;
+    max-width: 340px;
     margin: 0 0 24px;
-    line-height: 1.55;
+    line-height: 1.4;
   }
-  .wp-hero__cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .wp-ig__cta { display: flex; gap: 10px; flex-wrap: wrap; }
 
-  /* ── Fit band ── */
-  .wp-fit { padding: 0 18px; margin: 38px 0; }
-  .wp-fit__card {
+  /* ── 02 · Material ── */
+  .wp-material { padding: 42px 22px 8px; }
+  .wp-material__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .wp-material__tile { margin: 0; }
+  .wp-material__cap {
     display: block;
-    width: 100%;
-    text-align: left;
-    border: 1px solid var(--evx-rule);
-    border-radius: 3px;
-    padding: 22px 22px 24px;
-    background: linear-gradient(180deg, var(--evx-surface-2), var(--evx-surface));
-    color: var(--evx-paper);
-    cursor: pointer;
-    transition: border-color 200ms ease;
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-paper-soft);
+    margin-top: 9px;
   }
-  .wp-fit__card:hover { border-color: var(--evx-rule-strong); }
-  .wp-fit__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .wp-fit__icon {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    border: 1px solid var(--evx-rule-strong);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .wp-fit__h {
+
+  /* ── 03 · Fitment ── */
+  .wp-fitment { padding: 44px 22px 8px; }
+  .wp-fitment__h {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: 25px;
-    letter-spacing: -0.015em;
-    line-height: 1.08;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+    line-height: 1.06;
+    margin: 0 0 22px;
   }
-  .wp-fit__sub {
-    font-size: 13.5px;
-    color: var(--evx-ink-soft);
-    margin-top: 9px;
-    max-width: 300px;
-    line-height: 1.55;
+  .wp-fitment__row { display: flex; flex-direction: column; gap: 18px; }
+  .wp-fitment__control { display: flex; flex-direction: column; gap: 14px; }
+  .wp-fitment__label { display: block; color: var(--evx-ink-soft); }
+  .wp-fitment__select {
+    width: 100%;
+    background: var(--evx-surface-2);
+    border: 1px solid var(--evx-rule);
+    border-radius: 3px;
+    color: var(--evx-paper);
+    font-family: var(--evx-font-display);
+    font-size: 15px;
+    padding: 14px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
   }
+  .wp-fitment__select:focus { outline: none; border-color: var(--evx-rule-strong); }
 
-  /* ── DRIVE ── */
-  .wp-drive { margin-bottom: 8px; }
-  .wp-drive__head {
-    padding: 0 22px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 18px;
-  }
-  .wp-drive__eyebrow { color: var(--evx-champagne); margin-bottom: 9px; display: block; }
-  .wp-drive__h {
+  /* ── 04 · DRIVE ── */
+  .wp-drive2 { padding: 44px 0 8px; }
+  .wp-drive2__head { padding: 0 22px; margin-bottom: 18px; }
+  .wp-drive2__eyebrow { display: block; color: var(--evx-champagne); margin-bottom: 10px; }
+  .wp-drive2__h {
     font-family: var(--evx-font-display);
     font-weight: 500;
     font-size: 27px;
     letter-spacing: -0.02em;
     line-height: 1;
+    margin: 0;
   }
-  .wp-drive__count { color: var(--evx-ink-soft); white-space: nowrap; }
-  .wp-drive__pull {
-    font-size: 16.5px;
-    color: var(--evx-paper-soft);
-    padding: 0 22px;
-    margin: 0 0 20px;
-    max-width: 330px;
-  }
-  .wp-drive__rail {
+  .wp-drive2__rail {
     display: flex;
     gap: 14px;
     overflow-x: auto;
@@ -435,12 +400,11 @@
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
   }
-  .wp-drive__rail::-webkit-scrollbar { display: none; }
-  .wp-drive__rail-pad { flex: 0 0 8px; }
-
-  .wp-drive__card {
-    flex: 0 0 78%;
-    max-width: 320px;
+  .wp-drive2__rail::-webkit-scrollbar { display: none; }
+  .wp-drive2__rail-pad { flex: 0 0 8px; }
+  .wp-drive2__card {
+    flex: 0 0 70%;
+    max-width: 300px;
     scroll-snap-align: start;
     background: var(--evx-surface);
     border: 1px solid var(--evx-rule);
@@ -452,60 +416,21 @@
     padding: 0;
     transition: border-color 200ms ease, transform 200ms ease;
   }
-  .wp-drive__card:hover { border-color: rgba(232, 116, 44, 0.45); transform: translateY(-2px); }
-  .wp-drive__body { padding: 15px 16px 17px; }
-  .wp-drive__meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .wp-drive__marque { color: var(--evx-champagne); letter-spacing: 0.18em; }
-  .wp-drive__arriving { color: var(--evx-ink-soft); }
-  .wp-drive__title {
+  .wp-drive2__card:hover { border-color: rgba(232, 116, 44, 0.45); transform: translateY(-2px); }
+  .wp-drive2__photo { border: none; border-radius: 0; }
+  .wp-drive2__body { padding: 15px 16px 18px; display: flex; flex-direction: column; gap: 9px; }
+  .wp-drive2__title {
     font-family: var(--evx-font-display);
     font-weight: 500;
     font-size: 19px;
     letter-spacing: -0.01em;
-    margin: 9px 0 2px;
     line-height: 1.2;
-  }
-  .wp-drive__desc { font-size: 12.5px; color: var(--evx-ink-soft); margin-bottom: 14px; }
-  .wp-drive__foot { display: flex; align-items: center; justify-content: space-between; }
-  .wp-drive__view {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 12.5px;
-    color: var(--evx-paper);
-  }
-
-  /* ── Standard ── */
-  .wp-std { padding: 0 18px; margin: 46px 0 10px; }
-  .wp-std__inner { border-top: 1px solid var(--evx-rule); padding-top: 26px; }
-  .wp-std__pre { display: block; margin-bottom: 16px; }
-  .wp-std__row { display: flex; gap: 16px; align-items: stretch; }
-  .wp-std__media { flex: 0 0 38%; }
-  .wp-std__body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .wp-std__title {
-    font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: 20px;
-    letter-spacing: -0.01em;
-    line-height: 1.15;
     margin: 0;
   }
-  .wp-std__sub { font-size: 12.5px; color: var(--evx-ink-soft); margin: 8px 0 13px; line-height: 1.5; }
-  .wp-std__cta { margin-top: 16px; }
+  .wp-drive2__state { display: inline-block; color: var(--evx-champagne); letter-spacing: 0.16em; }
 
-  /* ── House ── */
-  .wp-house { padding: 0 22px; margin: 52px 0 40px; }
-  .wp-house__inner { border-top: 1px solid var(--evx-rule); padding-top: 30px; }
-  .wp-house__pre { display: block; margin-bottom: 16px; }
-  .wp-house__pull {
-    font-size: 22px;
-    line-height: 1.32;
-    color: var(--evx-paper);
-    text-wrap: pretty;
-    margin: 0;
-  }
   /* ── Proof band ── */
-  .wp-proof { padding: 0 22px; margin: 0 0 46px; }
+  .wp-proof { padding: 44px 22px 0; margin: 0 0 46px; }
   .wp-proof__inner {
     border-top: 1px solid var(--evx-rule);
     border-bottom: 1px solid var(--evx-rule);
@@ -552,19 +477,23 @@
 
   /* ── Desktop scaling (mobile-first; widen a touch above 600px) ── */
   @media (min-width: 600px) {
-    .wp-hero__h { font-size: 64px; }
-    .wp-hero__sub { font-size: 16px; max-width: 460px; }
-    .wp-fit__h { font-size: 30px; }
-    .wp-drive__card { flex: 0 0 380px; }
-    .wp-house__pull { font-size: 24px; max-width: 540px; }
+    .wp-ig__h { font-size: 60px; }
+    .wp-ig__stand { font-size: 19px; max-width: 460px; }
+    .wp-material__grid { grid-template-columns: repeat(4, 1fr); }
+    .wp-fitment__row { flex-direction: row; align-items: stretch; }
+    .wp-fitment__photo { flex: 1; }
+    .wp-fitment__control { flex: 0 0 280px; justify-content: center; }
+    .wp-fitment__h { font-size: 34px; }
+    .wp-drive2__card { flex: 0 0 320px; }
     .wp-proof__inner { grid-template-columns: 1fr 1fr 1fr; gap: var(--evx-space-2xl); }
     .wp-proof__col { padding: 26px 0; border-bottom: none; }
   }
   @media (min-width: 1024px) {
-    .wp-hero__h { font-size: 88px; }
-    .wp-hero__sub { font-size: 18px; }
-    .wp-hero, .wp-fit, .wp-drive__head, .wp-drive__pull, .wp-std,
-    .wp-house, .wp-proof { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
-    .wp-drive__rail { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
+    .wp-ig__h { font-size: 84px; }
+    .wp-ig__stand { font-size: 21px; }
+    .wp-ignition, .wp-material, .wp-fitment, .wp-drive2__head, .wp-proof {
+      padding-left: max(48px, 6vw); padding-right: max(48px, 6vw);
+    }
+    .wp-drive2__rail { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
   }
 </style>
