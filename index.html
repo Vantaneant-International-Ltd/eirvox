@@ -28,6 +28,10 @@
     <link rel="canonical" href="https://eirvox.ie/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts moved out of app.css @import so they fetch in parallel with
+         the bundle instead of after CSS parse. Same families/weights. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400;1,500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400;1,500&display=swap" />
     <link rel="icon" type="image/png" href="/brand/symbol.png" />
     <link rel="apple-touch-icon" href="/brand/symbol.png" />
     <title>ÉIRVOX · Ireland's Premium Marketplace</title>

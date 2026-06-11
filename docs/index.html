@@ -28,6 +28,10 @@
     <link rel="canonical" href="https://eirvox.ie/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts moved out of app.css @import so they fetch in parallel with
+         the bundle instead of after CSS parse. Same families/weights. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400;1,500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400;1,500&display=swap" />
     <link rel="icon" type="image/png" href="/brand/symbol.png" />
     <link rel="apple-touch-icon" href="/brand/symbol.png" />
     <title>ÉIRVOX · Ireland's Premium Marketplace</title>
@@ -72,8 +76,8 @@
         send_page_view: false   // SPA hash-routing tracker emits pageviews instead
       });
     </script>
-    <script type="module" crossorigin src="/assets/index-D_WQk61e.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-jYBM68vj.css">
+    <script type="module" crossorigin src="/assets/index-Q-c0XoNm.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-gA8tcK4I.css">
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>

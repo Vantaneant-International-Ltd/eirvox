@@ -4,7 +4,8 @@
    Paper #F5F2ED · Ink #1A1A1A · Fox Orange #E8742C
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@1,400;1,500&display=swap');
+/* Fonts are loaded via <link> in index.html (parallel fetch), not an
+   @import here (which would block on CSS parse). Same families/weights. */
 
 /* ── Tokens ── */
 :root {
