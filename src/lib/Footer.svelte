@@ -11,7 +11,6 @@
   // until verified). Registry carries the registered-address FACT token.
   // ============================================================
   import { navigate } from './router';
-  import Wordmark from './wheels-ui/Wordmark.svelte';
   import PaymentIcons from './PaymentIcons.svelte';
   import FactNeeded from './FactNeeded.svelte';
 
@@ -24,7 +23,7 @@
     <!-- Zone 1 · identity + registry -->
     <div class="footer__identity">
       <button class="footer__wordmark" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX home">
-        <Wordmark size={18} color={dark ? 'var(--evx-paper)' : 'var(--evx-ink)'} />
+        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="footer__logo" class:footer__logo--dark={dark} />
       </button>
 
       <p class="footer__origin">
@@ -115,6 +114,10 @@
   .footer__identity { display: flex; flex-direction: column; gap: var(--evx-space-md); padding-right: var(--evx-space-xl); }
 
   .footer__wordmark { display: inline-flex; align-self: flex-start; background: none; border: none; padding: 0; cursor: pointer; }
+  /* Canonical miniature wordmark: brand PNG. Identity zone, slightly
+     larger than the 16px chrome bars. Inverted to paper on dark. */
+  .footer__logo { height: 22px; width: auto; display: block; }
+  .footer__logo--dark { filter: invert(1) brightness(1.05); }
 
   .footer__origin {
     font-family: var(--evx-font-display);

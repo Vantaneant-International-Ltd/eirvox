@@ -118,7 +118,7 @@
     padding: 6px 0 22px;
   }
   .wm__logo {
-    height: 18px;
+    height: 16px;
     width: auto;
     display: block;
     /* PNG is dark-on-transparent; invert for the dark drawer. */

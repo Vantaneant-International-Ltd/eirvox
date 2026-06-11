@@ -21,7 +21,6 @@
     type FitmentChassis, type ListingVariant,
   } from './api';
   import { navigate } from './router';
-  import Wordmark from './wheels-ui/Wordmark.svelte';
   import Chevron from './wheels-ui/Chevron.svelte';
   import Check from './wheels-ui/Check.svelte';
   import StyleChip from './wheels-ui/StyleChip.svelte';
@@ -129,7 +128,7 @@
         <Chevron dir="left" size={13} color="var(--evx-paper)" />
       </button>
       <div class="finder__head-meta">
-        <Wordmark size={11} />
+        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="finder__logo" />
         <span class="evx-label" style="margin-top: 4px;">Find your fit</span>
       </div>
       <button class="finder__icon-btn" type="button" on:click={() => dispatch('close')} aria-label="Close">
@@ -273,6 +272,8 @@
     padding: 14px 18px 12px;
   }
   .finder__head-meta { display: flex; flex-direction: column; align-items: center; }
+  /* Canonical miniature wordmark (brand PNG), inverted on the dark finder. */
+  .finder__logo { height: 14px; width: auto; display: block; filter: invert(1) brightness(1.05); }
   .finder__icon-btn {
     width: 38px;
     height: 38px;

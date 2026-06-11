@@ -129,7 +129,7 @@
     <button class="wd-top__home" type="button" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX wheels"
             style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
       <img src="/brand/wordmark.png" alt="ÉIRVOX"
-           style="height:14px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
+           style="height:16px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
     </button>
     <button class="wd-top__icon wd-top__menu" type="button" on:click={() => (menuOpen = true)} aria-label="Open menu">
       <span></span><span></span>
