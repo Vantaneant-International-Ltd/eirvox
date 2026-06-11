@@ -84,9 +84,24 @@
       window.location.href = path;
       return;
     }
-    navigate(path);
     menuOpen = false;
     userMenuOpen = false;
+
+    // In-page anchor (e.g. "/wheels#how"). The hash router can't carry a
+    // second '#', so navigate to the route, then scroll the target into
+    // view once it has mounted. No router change.
+    const hashIdx = path.indexOf('#');
+    if (hashIdx > 0) {
+      const route = path.slice(0, hashIdx);
+      const anchor = path.slice(hashIdx + 1);
+      navigate(route);
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 90);
+      return;
+    }
+
+    navigate(path);
   }
 </script>
 

@@ -116,8 +116,8 @@
     </div>
   </section>
 
-  <!-- ━━━━━━ FIT BAND ━━━━━━ -->
-  <section class="wp-fit">
+  <!-- ━━━━━━ FIT BAND (target of the "How it works" nav link) ━━━━━━ -->
+  <section class="wp-fit" id="how">
     <button class="wp-fit__card" type="button" on:click={() => (finderOpen = true)}>
       <div class="wp-fit__head">
         <span class="evx-label">Fitment finder</span>
