@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
+  import WheelsMenu from '../lib/WheelsMenu.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import { getDriveListings, type ListingWithExtras } from '../lib/api';
@@ -69,6 +69,7 @@
   let issues: DriveCard[] = HARDCODED_FALLBACK;
   let loading = true;
   let usingFallback = true;
+  let menuOpen = false;
 
   onMount(async () => {
     applySeo(seo.drive());
@@ -89,10 +90,24 @@
   });
 </script>
 
-<Nav />
+<div class="di-page">
 
-<main id="main-content" class="drive-index">
-  <div class="page-container">
+  <!-- Dark product chrome, consistent with /wheels -->
+  <header class="di-top">
+    <button class="di-top__home" type="button" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX wheels"
+            style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
+      <img src="/brand/wordmark.png" alt="ÉIRVOX"
+           style="height:16px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
+    </button>
+    <button class="di-top__menu" type="button" on:click={() => (menuOpen = true)} aria-label="Open menu">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
+
+  <main id="main-content" class="drive-index">
+    <div class="page-container">
 
     <header class="di-header">
       <div class="di-header__top">
@@ -114,8 +129,8 @@
           class:di-issue--clickable={issue.slug !== null}
           role="link"
           tabindex={issue.slug ? 0 : undefined}
-          on:click={() => issue.slug && navigate(`/drive/${issue.slug}`)}
-          on:keydown={(e) => e.key === 'Enter' && issue.slug && navigate(`/drive/${issue.slug}`)}
+          on:click={() => issue.slug && navigate(`/wheels/${issue.slug}`)}
+          on:keydown={(e) => e.key === 'Enter' && issue.slug && navigate(`/wheels/${issue.slug}`)}
         >
           <div class="di-issue__image">
             <span class="evx-caption di-issue__num">ISSUE {issue.num}</span>
@@ -147,7 +162,7 @@
                 </div>
                 <button
                   class="evx-btn evx-btn--primary evx-btn--sm"
-                  on:click|stopPropagation={() => navigate(`/drive/${issue.slug}`)}
+                  on:click|stopPropagation={() => navigate(`/wheels/${issue.slug}`)}
                 >
                   Read issue →
                 </button>
@@ -201,17 +216,47 @@
     </section>
 
   </div>
-</main>
+  </main>
 
-<Footer />
+  <Footer dark={true} />
+</div>
 
 <style>
+  /* Dark product surface + chrome (existing tokens only). */
+  .di-page {
+    min-height: 100vh;
+    background: var(--evx-black);
+    color: var(--evx-paper);
+    font-family: var(--evx-font-display);
+    display: flex;
+    flex-direction: column;
+  }
+  .di-top {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    padding-top: max(env(safe-area-inset-top), 14px);
+    background: rgba(14, 13, 12, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--evx-rule-soft);
+  }
+  .di-top__menu {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 6px; background: none; border: none; cursor: pointer;
+  }
+  .di-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-paper); }
+
   .drive-index { flex: 1; padding-bottom: var(--evx-space-3xl); }
 
   .di-header {
     padding-top: var(--evx-space-2xl);
     padding-bottom: var(--evx-space-2xl);
-    border-bottom: 1px solid var(--evx-rule-light);
+    border-bottom: 1px solid var(--evx-rule);
     margin-bottom: var(--evx-space-2xl);
   }
 
@@ -223,14 +268,14 @@
     font-size: 80px;
     letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--evx-warm-black);
+    color: var(--evx-paper);
     margin-bottom: var(--evx-space-lg);
   }
 
   .di-header__desc {
     font-size: 16px;
     line-height: 1.65;
-    color: var(--evx-ink-soft);
+    color: var(--evx-paper-soft);
     max-width: 520px;
   }
 
@@ -244,7 +289,7 @@
   .di-issue {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--evx-rule-light);
+    border: 1px solid var(--evx-rule);
     overflow: hidden;
   }
 
@@ -315,14 +360,14 @@
     font-size: 22px;
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: var(--evx-warm-black);
+    color: var(--evx-paper);
   }
 
   .di-issue__subtitle {
     font-family: var(--evx-font-editorial);
     font-style: italic;
     font-size: 15px;
-    color: var(--evx-ink-soft);
+    color: var(--evx-paper-soft);
   }
 
   .di-issue__desc {
@@ -338,7 +383,7 @@
     align-items: center;
     margin-top: var(--evx-space-md);
     padding-top: var(--evx-space-md);
-    border-top: 1px solid var(--evx-rule-light);
+    border-top: 1px solid var(--evx-rule);
   }
 
   .di-issue__price-block {
@@ -373,7 +418,7 @@
 
   /* About */
   .di-about {
-    border-top: 1px solid var(--evx-rule-light);
+    border-top: 1px solid var(--evx-rule);
     padding-top: var(--evx-space-2xl);
   }
 
@@ -394,7 +439,7 @@
   .di-about__para {
     font-size: 15px;
     line-height: 1.75;
-    color: var(--evx-ink-soft);
+    color: var(--evx-paper-soft);
     margin-bottom: var(--evx-space-md);
   }
 
@@ -420,9 +465,9 @@
     align-items: flex-start;
     font-size: 14px;
     line-height: 1.65;
-    color: var(--evx-ink-soft);
+    color: var(--evx-paper-soft);
     padding-bottom: var(--evx-space-lg);
-    border-bottom: 1px solid var(--evx-rule-light);
+    border-bottom: 1px solid var(--evx-rule);
   }
 
   .di-about__step-num { color: var(--evx-fox-orange); flex-shrink: 0; }
