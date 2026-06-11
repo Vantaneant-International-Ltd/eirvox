@@ -24,7 +24,7 @@
   } from '../lib/api';
   import WheelFinder from '../lib/WheelFinder.svelte';
   import WheelsMenu from '../lib/WheelsMenu.svelte';
-  import Wordmark from '../lib/wheels-ui/Wordmark.svelte';
+  import Footer from '../lib/Footer.svelte';
   import PhotoFrame from '../lib/wheels-ui/PhotoFrame.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
   import Money from '../lib/wheels-ui/Money.svelte';
@@ -246,32 +246,8 @@
     </div>
   </section>
 
-  <!-- ━━━━━━ FOOTER ━━━━━━ -->
-  <footer class="wp-foot">
-    <Wordmark size={18} />
-    <p class="wp-foot__line">
-      Carbon steering wheels. Designed in Ireland, assembled abroad, finished in Dublin.
-      DRIVE limited line and a fitted BMW range.
-    </p>
-    <div class="wp-foot__cols">
-      <div>
-        <div class="evx-label wp-foot__h">Shop</div>
-        <a class="wp-foot__link" href="#/drive">DRIVE line</a>
-        <button class="wp-foot__link" type="button" on:click={openConsignment}>BMW wheels</button>
-        <button class="wp-foot__link" type="button" on:click={() => (finderOpen = true)}>Find your fit</button>
-      </div>
-      <div>
-        <div class="evx-label wp-foot__h">House</div>
-        <a class="wp-foot__link" href="#/about">The house</a>
-        <a class="wp-foot__link" href="#/trust">Trust</a>
-        <a class="wp-foot__link" href="mailto:support@eirvox.ie">support@eirvox.ie</a>
-      </div>
-    </div>
-    <div class="wp-foot__legal">
-      <span class="evx-meta wp-foot__copy">© ÉIRVOX 2026</span>
-      <span class="evx-meta wp-foot__copy">Dublin, IE</span>
-    </div>
-  </footer>
+  <!-- ━━━━━━ FOOTER (shared imprint, dark surface) ━━━━━━ -->
+  <Footer dark={true} />
 
   {#if finderOpen}
     <WheelFinder
@@ -525,48 +501,6 @@
   .wp-house__fact-k { margin-bottom: 5px; }
   .wp-house__fact-v { font-size: 13.5px; color: var(--evx-paper); }
 
-  /* ── Footer ── */
-  .wp-foot {
-    background: var(--evx-surface);
-    border-top: 1px solid var(--evx-rule);
-    padding: 34px 22px calc(40px + env(safe-area-inset-bottom));
-  }
-  .wp-foot__line {
-    font-size: 13px;
-    color: var(--evx-ink-soft);
-    margin: 16px 0 24px;
-    max-width: 320px;
-    line-height: 1.55;
-  }
-  .wp-foot__cols {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 16px;
-    margin-bottom: 28px;
-  }
-  .wp-foot__h { margin-bottom: 12px; }
-  .wp-foot__link {
-    display: block;
-    font-size: 13.5px;
-    color: var(--evx-paper-soft);
-    padding: 5px 0;
-    background: none;
-    border: none;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .wp-foot__link:hover { color: var(--evx-paper); }
-  .wp-foot__legal {
-    border-top: 1px solid var(--evx-rule-soft);
-    padding-top: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .wp-foot__copy { color: var(--evx-ink-faint); }
-
   /* ── Skeletons / empties ── */
   .wp-skel, .wp-empty {
     padding: 24px 22px;
@@ -583,7 +517,6 @@
     .wp-fit__h { font-size: 30px; }
     .wp-drive__card { flex: 0 0 380px; }
     .wp-house__pull { font-size: 24px; max-width: 540px; }
-    .wp-foot__cols { grid-template-columns: 1fr 1fr 1fr 1fr; }
   }
   @media (min-width: 1024px) {
     .wp-hero__h { font-size: 88px; }
