@@ -31,6 +31,7 @@
   import VariantPicker from '../lib/VariantPicker.svelte';
   import WheelsMenu from '../lib/WheelsMenu.svelte';
   import PhotoFrame from '../lib/wheels-ui/PhotoFrame.svelte';
+  import FactNeeded from '../lib/FactNeeded.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
   import Money from '../lib/wheels-ui/Money.svelte';
   import Chevron from '../lib/wheels-ui/Chevron.svelte';
@@ -147,17 +148,48 @@
     </div>
   {:else}
 
-    <!-- ━━ HERO ━━ -->
+    <!-- ━━ HERO — designed slot + static dimension annotation layer ━━ -->
     <section class="wd-hero">
-      <PhotoFrame
-        lit={isDrive}
-       
-        aspect="1 / 1"
-        index={activeImage + 1}
-        caption={`${listing.title}${isDrive ? ' · LED lit' : ' · carbon, unlit'}`}
-        src={activeImageUrl}
-        alt={listing.title}
-      />
+      <div class="wd-slot wd-hero__slot" style="aspect-ratio:1 / 1;">
+        {#if activeImageUrl}
+          <img class="wd-hero__img" src={activeImageUrl} alt={listing.title} />
+        {/if}
+
+        <!-- Static schematic + numbered dimension callouts. Real figures
+             arrive via the [FACT NEEDED] legend below; nothing is invented. -->
+        <svg class="wd-dim" viewBox="0 0 400 400" fill="none" aria-hidden="true">
+          <circle cx="200" cy="200" r="150" stroke="var(--evx-rule-strong)" stroke-width="1" />
+          <circle cx="200" cy="200" r="92" stroke="var(--evx-rule)" stroke-width="1" />
+          <circle cx="200" cy="200" r="15" fill="var(--evx-rule)" />
+          <!-- 3-spoke schematic -->
+          <line x1="200" y1="200" x2="200" y2="108" stroke="var(--evx-rule)" stroke-width="1" />
+          <line x1="200" y1="200" x2="280" y2="246" stroke="var(--evx-rule)" stroke-width="1" />
+          <line x1="200" y1="200" x2="120" y2="246" stroke="var(--evx-rule)" stroke-width="1" />
+          <!-- ① overall ⌀ dimension line (below the circle) -->
+          <line x1="58" y1="372" x2="342" y2="372" stroke="var(--evx-fox-orange)" stroke-width="1" />
+          <line x1="58" y1="365" x2="58" y2="379" stroke="var(--evx-fox-orange)" stroke-width="1" />
+          <line x1="342" y1="365" x2="342" y2="379" stroke="var(--evx-fox-orange)" stroke-width="1" />
+          <circle cx="200" cy="372" r="11" fill="none" stroke="var(--evx-fox-orange)" stroke-width="1" />
+          <text x="200" y="376" class="wd-dim__num">1</text>
+          <!-- ② grip ⌀ leader (right) -->
+          <line x1="292" y1="200" x2="356" y2="200" stroke="var(--evx-fox-orange)" stroke-width="1" stroke-dasharray="2 3" />
+          <circle cx="367" cy="200" r="11" fill="none" stroke="var(--evx-fox-orange)" stroke-width="1" />
+          <text x="367" y="204" class="wd-dim__num">2</text>
+          <!-- ③ rim thickness leader (top, outer→grip ring) -->
+          <line x1="200" y1="61" x2="200" y2="108" stroke="var(--evx-fox-orange)" stroke-width="1" stroke-dasharray="2 3" />
+          <circle cx="200" cy="50" r="11" fill="none" stroke="var(--evx-fox-orange)" stroke-width="1" />
+          <text x="200" y="54" class="wd-dim__num">3</text>
+        </svg>
+
+        <span class="wd-slot__cap">SHOT 01 · {isDrive ? '¾ FRONT · LED' : '¾ FRONT'}</span>
+      </div>
+
+      <dl class="wd-dim__legend">
+        <div class="wd-dim__item"><dt><span class="wd-dim__no">1</span> Overall ⌀</dt><dd><FactNeeded label="overall diameter" dark /></dd></div>
+        <div class="wd-dim__item"><dt><span class="wd-dim__no">2</span> Grip ⌀</dt><dd><FactNeeded label="grip diameter" dark /></dd></div>
+        <div class="wd-dim__item"><dt><span class="wd-dim__no">3</span> Rim</dt><dd><FactNeeded label="rim thickness" dark /></dd></div>
+      </dl>
+
       {#if images.length > 1}
         <div class="wd-thumbs">
           {#each images.slice(0, 4) as img, i (img.id)}
@@ -357,9 +389,45 @@
   }
   .wd-state h1 { font-size: 22px; font-weight: 500; color: var(--evx-paper); }
 
-  /* ── Hero ── */
-  .wd-hero { padding: 4px 0 0; }
-  .wd-thumbs { display: flex; gap: 8px; padding: 10px 18px 0; }
+  /* ── Hero (designed slot + dimension layer) ── */
+  .wd-hero { padding: 4px 18px 0; }
+  .wd-hero__slot { position: relative; }
+  .wd-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .wd-dim { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .wd-dim__num {
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    fill: var(--evx-fox-orange);
+    text-anchor: middle;
+  }
+  .wd-dim__legend {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 12px 0 0;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--evx-rule-soft);
+  }
+  .wd-dim__item { display: flex; flex-direction: column; gap: 6px; }
+  .wd-dim__item dt {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--evx-font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-paper-soft);
+  }
+  .wd-dim__item dd { margin: 0; }
+  .wd-dim__no {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px;
+    border: 1px solid var(--evx-fox-orange);
+    border-radius: 50%;
+    font-size: 9px;
+    color: var(--evx-fox-orange);
+  }
+
+  .wd-thumbs { display: flex; gap: 8px; padding: 10px 0 0; }
   .wd-thumb {
     flex: 1;
     border-radius: 2px;
