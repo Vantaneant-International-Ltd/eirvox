@@ -5,16 +5,22 @@
   import { navigate, currentPath } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import { getCategories, getFeaturedListings, type Category, type ListingWithExtras } from '../lib/api';
+  import { siteFlags } from '../lib/flags';
 
   let categories: Category[] = [];
   let featured: ListingWithExtras[] = [];
 
+  $: wheelMode = $siteFlags.wheel_specialist_mode;
+
   onMount(async () => {
     applySeo(seo.notFound());
-    [categories, featured] = await Promise.all([
-      getCategories(),
-      getFeaturedListings(3),
-    ]);
+    // Marketplace shortcuts are hidden in wheel-specialist mode; skip the queries.
+    if (!$siteFlags.wheel_specialist_mode) {
+      [categories, featured] = await Promise.all([
+        getCategories(),
+        getFeaturedListings(3),
+      ]);
+    }
   });
 
   $: attempted = $currentPath;
@@ -27,71 +33,91 @@
 
     <header class="nf-header">
       <span class="evx-caption nf-header__pre">ERROR · 404 · ROUTE NOT FOUND</span>
-      <h1 class="nf-title">
-        This page doesn't exist.
-        <em class="nf-title__italic">The marketplace is waiting.</em>
-      </h1>
-      <p class="nf-sub">
-        We couldn't find anything at <span class="nf-path"><span class="nf-path__hash">#</span>{attempted}</span>.
-        It may have moved, been removed, or the link was mistyped.
-      </p>
-
-      <div class="nf-actions">
-        <button class="evx-btn evx-btn--primary" on:click={() => navigate('/')}>
-          Back to home →
-        </button>
-        <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/automotive')}>
-          Browse marketplace
-        </button>
-        <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sitemap')}>
-          Sitemap
-        </button>
-      </div>
+      {#if wheelMode}
+        <h1 class="nf-title">
+          This page doesn't exist.
+          <em class="nf-title__italic">Back to the wheels.</em>
+        </h1>
+        <p class="nf-sub">
+          We couldn't find anything at <span class="nf-path"><span class="nf-path__hash">#</span>{attempted}</span>.
+          It may have moved, been removed, or the link was mistyped.
+        </p>
+        <div class="nf-actions">
+          <button class="evx-btn evx-btn--primary" on:click={() => navigate('/wheels')}>
+            Back to Wheels →
+          </button>
+          <a class="evx-btn evx-btn--ghost" href="mailto:support@eirvox.ie">
+            Contact support
+          </a>
+        </div>
+      {:else}
+        <h1 class="nf-title">
+          This page doesn't exist.
+          <em class="nf-title__italic">The marketplace is waiting.</em>
+        </h1>
+        <p class="nf-sub">
+          We couldn't find anything at <span class="nf-path"><span class="nf-path__hash">#</span>{attempted}</span>.
+          It may have moved, been removed, or the link was mistyped.
+        </p>
+        <div class="nf-actions">
+          <button class="evx-btn evx-btn--primary" on:click={() => navigate('/')}>
+            Back to home →
+          </button>
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/automotive')}>
+            Browse marketplace
+          </button>
+          <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sitemap')}>
+            Sitemap
+          </button>
+        </div>
+      {/if}
     </header>
 
-    <!-- Shortcuts -->
-    <section class="nf-shortcuts">
-      <div class="nf-shortcuts__head">
-        <span class="evx-label">START HERE</span>
-      </div>
+    {#if !wheelMode}
+      <!-- Shortcuts -->
+      <section class="nf-shortcuts">
+        <div class="nf-shortcuts__head">
+          <span class="evx-label">START HERE</span>
+        </div>
 
-      <div class="nf-cats">
-        {#each categories as cat}
-          <button class="nf-cat" on:click={() => navigate(`/${cat.slug}`)}>
-            <span class="nf-cat__name">{cat.name}</span>
-            <span class="evx-caption nf-cat__arrow">→</span>
-          </button>
-        {/each}
-      </div>
-    </section>
-
-    <!-- Suggested listings -->
-    <section class="nf-suggested">
-      <div class="nf-shortcuts__head">
-        <span class="evx-label">OR DROP INTO A LISTING</span>
-      </div>
-      {#if featured.length === 0}
-        <p style="color: var(--evx-ink-soft); font-size: 14px; padding: var(--evx-space-md) 0;">
-          No featured listings yet.
-        </p>
-      {:else}
-        <div class="nf-listings">
-          {#each featured as l (l.id)}
-            <button class="nf-listing" on:click={() => navigate(`/listing/${l.slug ?? l.id}`)}>
-              <div class="nf-listing__thumb">
-                {#if l.cover_image}<img src={l.cover_image} alt="" style="width:100%;height:100%;object-fit:cover;" />{/if}
-              </div>
-              <div class="nf-listing__body">
-                <strong class="nf-listing__title">{l.title}</strong>
-                <span class="evx-caption nf-listing__meta">
-                  {l.subcategory ?? l.category_slug ?? ''}{(l.subcategory || l.category_slug) && l.city ? ' · ' : ''}{l.city ?? ''}
-                </span>
-              </div>
+        <div class="nf-cats">
+          {#each categories as cat}
+            <button class="nf-cat" on:click={() => navigate(`/${cat.slug}`)}>
+              <span class="nf-cat__name">{cat.name}</span>
+              <span class="evx-caption nf-cat__arrow">→</span>
             </button>
           {/each}
         </div>
-      {/if}
-    </section>
+      </section>
+
+      <!-- Suggested listings -->
+      <section class="nf-suggested">
+        <div class="nf-shortcuts__head">
+          <span class="evx-label">OR DROP INTO A LISTING</span>
+        </div>
+        {#if featured.length === 0}
+          <p style="color: var(--evx-ink-soft); font-size: 14px; padding: var(--evx-space-md) 0;">
+            No featured listings yet.
+          </p>
+        {:else}
+          <div class="nf-listings">
+            {#each featured as l (l.id)}
+              <button class="nf-listing" on:click={() => navigate(`/listing/${l.slug ?? l.id}`)}>
+                <div class="nf-listing__thumb">
+                  {#if l.cover_image}<img src={l.cover_image} alt="" style="width:100%;height:100%;object-fit:cover;" />{/if}
+                </div>
+                <div class="nf-listing__body">
+                  <strong class="nf-listing__title">{l.title}</strong>
+                  <span class="evx-caption nf-listing__meta">
+                    {l.subcategory ?? l.category_slug ?? ''}{(l.subcategory || l.category_slug) && l.city ? ' · ' : ''}{l.city ?? ''}
+                  </span>
+                </div>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </section>
+    {/if}
 
     <p class="nf-help evx-caption">
       Found a broken link on Éirvox? Email

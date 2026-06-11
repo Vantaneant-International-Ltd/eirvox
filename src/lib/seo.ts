@@ -178,7 +178,7 @@ export const seo = {
 
   notFound: (): SeoData => ({
     title: 'Page not found',
-    description: "The page you're looking for doesn't exist on ÉIRVOX. The marketplace is waiting.",
+    description: "The page you're looking for doesn't exist on ÉIRVOX.",
     path: '/404',
     noindex: true,
   }),
