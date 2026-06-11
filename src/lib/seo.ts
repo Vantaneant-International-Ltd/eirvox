@@ -146,7 +146,7 @@ export const seo = {
   about: (): SeoData => ({
     title: 'About',
     description:
-      "ÉIRVOX is Ireland's premium marketplace for enthusiast objects. Marketplace-led, editorial accent, cohort-approved sellers. Founded in Dublin, 2026.",
+      'ÉIRVOX is a carbon steering-wheel specialist in Dublin. A fitted BMW range and the DRIVE edition line. Designed in Ireland, assembled abroad, finished in Dublin.',
     path: '/about',
   }),
 
