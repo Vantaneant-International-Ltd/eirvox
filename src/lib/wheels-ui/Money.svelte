@@ -11,7 +11,7 @@
     €{price}
   </span>
   {#if was && was > price}
-    <span class="money__was" style="font-size: {Math.round(size * 0.74)}px;">€{was}</span>
+    <span class="money__was" style="font-size: {Math.round(size * 0.72)}px;">Was €{was}</span>
   {/if}
 </span>
 
@@ -22,9 +22,10 @@
     gap: 8px;
   }
   .money__price { font-weight: 500; letter-spacing: 0.01em; }
+  /* "Was €X" — quiet mono reference price, never a strikethrough
+     (lockfile: original price reads as a prior figure, not a deletion). */
   .money__was {
     color: var(--evx-ink-soft);
-    text-decoration: line-through;
-    text-decoration-color: rgba(140, 134, 124, 0.6);
+    letter-spacing: 0.04em;
   }
 </style>

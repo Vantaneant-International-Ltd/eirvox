@@ -171,7 +171,7 @@
       {/if}
     </section>
 
-    <!-- ━━ HEADER ━━ -->
+    <!-- ━━ STATEMENT — tier, title, one-line statement ━━ -->
     <section class="wd-head">
       <div class="wd-head__tags">
         <TierTag tier={tier} />
@@ -179,31 +179,14 @@
       </div>
 
       <h1 class="wd-head__title">{listing.title}</h1>
-      {#if blurb}<p class="wd-head__blurb">{blurb}</p>{/if}
-
-      <div class="wd-head__price">
-        <Money price={listing.price} was={listing.original_price ?? null} size={22} />
-        {#if isDrive && arriving}<span class="wd-head__arriving">Arriving {arriving}</span>{/if}
-      </div>
+      {#if listing.subtitle}<p class="wd-head__statement">{listing.subtitle}</p>{/if}
+      {#if isDrive && arriving}<span class="wd-head__arriving">Arriving {arriving}</span>{/if}
     </section>
 
-    <!-- ━━ BUY: standard wheels via VariantPicker (dark, live finishes) ━━ -->
-    {#if hasVariants}
-      <section class="wd-buy">
-        <VariantPicker
-          listingId={listing.id}
-          basePriceEur={listing.price}
-          originalPriceEur={listing.original_price ?? null}
-          listingTitle={listing.title}
-          fulfilment="collection"
-        />
-      </section>
-    {/if}
-
-    <!-- ━━ THE DETAIL ━━ -->
+    <!-- ━━ SPECIFICATION — mono table ━━ -->
     {#if specs.length > 0}
       <section class="wd-detail">
-        <span class="evx-label wd-detail__pre">The detail</span>
+        <span class="evx-label wd-detail__pre">Specification</span>
         <div class="wd-detail__rows">
           {#each specs as sp (sp.label)}
             <div class="wd-detail__row">
@@ -215,22 +198,33 @@
       </section>
     {/if}
 
-    <!-- ━━ SHIPPING + DRIVE pay block ━━ -->
-    <section class="wd-ship">
-      <div class="wd-ship__line">
-        <span class="wd-ship__dot" aria-hidden="true"></span>
-        <span>Shipped via An Post, Ireland.</span>
+    <!-- ━━ MACRO STRIP — designed slots (no carbon-weave placeholder) ━━ -->
+    <section class="wd-macro">
+      <div class="wd-macro__grid">
+        {#each ['MACRO · WEAVE', 'MACRO · GRIP', 'MACRO · HARDWARE'] as cap}
+          <div class="wd-slot wd-macro__tile" style="aspect-ratio:1/1;">
+            <span class="wd-slot__cap">{cap}</span>
+          </div>
+        {/each}
       </div>
-      {#if isDrive && payable}
-        <p class="wd-ship__note">
-          Made to order. Reserve now; ships when the run is finished{listing.drive_issue_date ? ` in ${listing.drive_issue_date}` : ''}.
-        </p>
-      {/if}
     </section>
 
-    <!-- DRIVE / non-variant house wheel: dark deposit/full pay bar -->
-    {#if payable}
+    <!-- ━━ CTA ZONE — one buy path: variants / deposit / arriving / finder ━━ -->
+    {#if hasVariants}
+      <section class="wd-buy">
+        <VariantPicker
+          listingId={listing.id}
+          basePriceEur={listing.price}
+          originalPriceEur={listing.original_price ?? null}
+          listingTitle={listing.title}
+          fulfilment="collection"
+        />
+      </section>
+    {:else if payable}
       <section class="wd-pay">
+        {#if listing.original_price && listing.original_price > listing.price}
+          <Money price={listing.price} was={listing.original_price} size={20} />
+        {/if}
         {#if hasCollection && hasShipping}
           <div class="wd-pay__seg" role="group" aria-label="Fulfilment">
             <button class="wd-pay__opt" class:wd-pay__opt--on={fulfilment === 'collection'}
@@ -282,13 +276,33 @@
           {/if}
         </div>
       </section>
-    {:else if !hasVariants}
+    {:else}
       <section class="wd-pay">
         <Btn variant="ghost" size="md" full on:click={() => navigate('/wheels')}>
           Find your fit <Chevron size={12} color="var(--evx-paper)" />
         </Btn>
       </section>
     {/if}
+
+    <!-- ━━ ACCORDIONS ━━ -->
+    <section class="wd-acc-list">
+      {#if blurb}
+        <details class="wd-acc">
+          <summary class="wd-acc__sum">The detail</summary>
+          <div class="wd-acc__body"><p>{blurb}</p></div>
+        </details>
+      {/if}
+      <details class="wd-acc">
+        <summary class="wd-acc__sum">Shipping &amp; collection</summary>
+        <div class="wd-acc__body">
+          <p>Shipped via An Post, Ireland.</p>
+          {#if hasCollection}<p>Collection available in Dublin.</p>{/if}
+          {#if isDrive && payable}
+            <p>Made to order. Reserve now; ships when the run is finished{listing.drive_issue_date ? ` in ${listing.drive_issue_date}` : ''}.</p>
+          {/if}
+        </div>
+      </details>
+    </section>
 
     <div class="wd-foot-pad" aria-hidden="true"></div>
   {/if}
@@ -368,15 +382,17 @@
     letter-spacing: -0.025em;
     line-height: 1.0;
   }
-  .wd-head__blurb {
-    font-size: 14px;
+  .wd-head__statement {
+    font-family: var(--evx-font-editorial);
+    font-style: italic;
+    font-size: 18px;
     color: var(--evx-paper-soft);
-    margin: 12px 0 18px;
-    max-width: 360px;
-    line-height: 1.5;
+    margin: 14px 0 16px;
+    max-width: 380px;
+    line-height: 1.4;
   }
-  .wd-head__price { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
   .wd-head__arriving {
+    display: inline-block;
     font-family: var(--evx-font-mono);
     font-size: 10.5px;
     letter-spacing: 0.1em;
@@ -386,6 +402,60 @@
 
   /* ── Buy (VariantPicker host) ── */
   .wd-buy { padding: 24px 18px 0; }
+
+  /* ── Designed photo slot (shared) + macro strip ── */
+  .wd-slot {
+    position: relative;
+    width: 100%;
+    background: var(--evx-surface-2);
+    border: 1px solid var(--evx-rule);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .wd-slot__cap {
+    position: absolute;
+    left: 11px;
+    bottom: 10px;
+    font-family: var(--evx-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+  }
+  .wd-macro { padding: 30px 18px 0; }
+  .wd-macro__grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  /* ── Accordions (native details, type-only toggle, no icons) ── */
+  .wd-acc-list { padding: 30px 18px 0; }
+  .wd-acc { border-top: 1px solid var(--evx-rule-soft); }
+  .wd-acc:last-child { border-bottom: 1px solid var(--evx-rule-soft); }
+  .wd-acc__sum {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    font-family: var(--evx-font-display);
+    font-size: 15px;
+    color: var(--evx-paper);
+  }
+  .wd-acc__sum::-webkit-details-marker { display: none; }
+  .wd-acc__sum::after {
+    content: '+';
+    font-family: var(--evx-font-mono);
+    font-size: 16px;
+    color: var(--evx-ink-soft);
+  }
+  .wd-acc[open] .wd-acc__sum::after { content: '\2212'; }
+  .wd-acc__body {
+    padding: 0 0 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--evx-paper-soft);
+  }
+  .wd-acc__body p { margin: 0 0 8px; }
+  .wd-acc__body p:last-child { margin-bottom: 0; }
 
   /* ── The detail ── */
   .wd-detail { padding: 30px 18px 0; }
@@ -404,23 +474,6 @@
     color: var(--evx-ink-soft);
   }
   .wd-detail__v { font-size: 14px; color: var(--evx-paper); text-align: right; }
-
-  /* ── Shipping ── */
-  .wd-ship { padding: 22px 18px 0; }
-  .wd-ship__line {
-    display: flex; align-items: center; gap: 10px;
-    padding: 14px 0;
-    border-top: 1px solid var(--evx-rule);
-    font-size: 13.5px;
-    color: var(--evx-paper);
-  }
-  .wd-ship__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--evx-fox-orange); }
-  .wd-ship__note {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    color: var(--evx-ink-soft);
-    line-height: 1.5;
-  }
 
   /* ── DRIVE / non-variant pay block ── */
   .wd-pay { padding: 18px 18px 0; display: flex; flex-direction: column; gap: 12px; }
@@ -493,7 +546,7 @@
   .wd-foot-pad { height: 40px; }
 
   @media (min-width: 720px) {
-    .wd-hero, .wd-head, .wd-buy, .wd-detail, .wd-ship, .wd-pay {
+    .wd-hero, .wd-head, .wd-buy, .wd-detail, .wd-macro, .wd-pay, .wd-acc-list {
       max-width: 560px; margin-left: auto; margin-right: auto;
     }
   }
