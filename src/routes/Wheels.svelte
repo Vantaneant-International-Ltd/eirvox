@@ -229,19 +229,31 @@
         Designed in Ireland, assembled abroad, finished in Dublin. We frame every photograph,
         choose every supplier, and ship every wheel ourselves.
       </p>
-      <div class="wp-house__facts">
-        <div>
-          <div class="evx-label wp-house__fact-k">Based</div>
-          <div class="wp-house__fact-v">Dublin, Ireland</div>
-        </div>
-        <div>
-          <div class="evx-label wp-house__fact-k">Shipping</div>
-          <div class="wp-house__fact-v">An Post, Ireland</div>
-        </div>
-        <div>
-          <div class="evx-label wp-house__fact-k">DRIVE</div>
-          <div class="wp-house__fact-v">Limited to 10</div>
-        </div>
+    </div>
+  </section>
+
+  <!-- ━━━━━━ PROOF BAND — origin · buying · the company ━━━━━━ -->
+  <section class="wp-proof">
+    <div class="wp-proof__inner">
+      <div class="wp-proof__col">
+        <span class="evx-label wp-proof__h">01 · Origin</span>
+        <p class="wp-proof__body">
+          Designed in Ireland, assembled abroad, <span class="wp-proof__em">finished in Dublin.</span>
+        </p>
+      </div>
+      <div class="wp-proof__col">
+        <span class="evx-label wp-proof__h">02 · Buying</span>
+        <p class="wp-proof__body">
+          Paid direct via Revolut — card, Apple Pay or Google Pay. A deposit holds incoming stock.
+        </p>
+      </div>
+      <div class="wp-proof__col">
+        <span class="evx-label wp-proof__h">03 · The company</span>
+        <p class="evx-caption wp-proof__registry">
+          ÉIRVOX SYSTEMS LTD · CRO 712304<br/>
+          DUBLIN, IRELAND<br/>
+          <a class="wp-proof__mail" href="mailto:support@eirvox.ie">SUPPORT@EIRVOX.IE</a>
+        </p>
       </div>
     </div>
   </section>
@@ -492,14 +504,42 @@
     text-wrap: pretty;
     margin: 0;
   }
-  .wp-house__facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 28px;
-    margin-top: 24px;
+  /* ── Proof band ── */
+  .wp-proof { padding: 0 22px; margin: 0 0 46px; }
+  .wp-proof__inner {
+    border-top: 1px solid var(--evx-rule);
+    border-bottom: 1px solid var(--evx-rule);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
   }
-  .wp-house__fact-k { margin-bottom: 5px; }
-  .wp-house__fact-v { font-size: 13.5px; color: var(--evx-paper); }
+  .wp-proof__col {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--evx-rule-soft);
+  }
+  .wp-proof__col:last-child { border-bottom: none; }
+  .wp-proof__h { display: block; margin-bottom: 12px; }
+  .wp-proof__body {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--evx-paper-soft);
+    max-width: 320px;
+    margin: 0;
+  }
+  .wp-proof__em { color: var(--evx-paper); font-weight: 500; }
+  .wp-proof__registry {
+    color: var(--evx-paper-soft);
+    line-height: 1.7;
+    margin: 0;
+  }
+  .wp-proof__mail {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--evx-paper-soft);
+    transition: var(--evx-transition);
+  }
+  .wp-proof__mail:hover { color: var(--evx-paper); }
 
   /* ── Skeletons / empties ── */
   .wp-skel, .wp-empty {
@@ -517,12 +557,14 @@
     .wp-fit__h { font-size: 30px; }
     .wp-drive__card { flex: 0 0 380px; }
     .wp-house__pull { font-size: 24px; max-width: 540px; }
+    .wp-proof__inner { grid-template-columns: 1fr 1fr 1fr; gap: var(--evx-space-2xl); }
+    .wp-proof__col { padding: 26px 0; border-bottom: none; }
   }
   @media (min-width: 1024px) {
     .wp-hero__h { font-size: 88px; }
     .wp-hero__sub { font-size: 18px; }
     .wp-hero, .wp-fit, .wp-drive__head, .wp-drive__pull, .wp-std,
-    .wp-house, .wp-foot { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
+    .wp-house, .wp-proof { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
     .wp-drive__rail { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
   }
 </style>
