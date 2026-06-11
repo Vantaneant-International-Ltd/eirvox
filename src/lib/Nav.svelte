@@ -57,18 +57,15 @@
     { label: 'TRADE', path: '/trade' },
   ];
 
-  // Wheel-specialist focused nav. Replaces the marketplace categories
-  // when wheel_specialist_mode is on. DRIVE stays because it is the
-  // premium wheel tier; TRADE is hidden from launch nav.
+  // Wheel-specialist focused nav (lockfile §6 shared skeleton):
+  // WHEELS · DRIVE · FINDER · ABOUT. FINDER scrolls to the fitment
+  // section on /wheels (its "Check fitment" opens the finder ritual).
+  // Contact lives in the footer imprint, not the top bar.
   const wheelNav = [
-    { label: 'Wheels',        path: '/wheels' },
-    { label: 'How it works',  path: '/wheels#how' },
-    { label: 'About',         path: '/about' },
-    { label: 'Contact',       path: 'mailto:support@eirvox.ie' },
-  ];
-
-  const wheelDirectories = [
-    { label: 'DRIVE', path: '/drive' },
+    { label: 'Wheels', path: '/wheels' },
+    { label: 'DRIVE',  path: '/drive' },
+    { label: 'Finder', path: '/wheels#fitment' },
+    { label: 'About',  path: '/about' },
   ];
 
   const sellerSections = [
@@ -150,18 +147,6 @@
                 on:click={() => handleNav(cat.path)}
               >
                 {cat.label}
-              </button>
-            </li>
-          {/each}
-          <li class="nav__sep" aria-hidden="true"></li>
-          {#each wheelDirectories as d}
-            <li>
-              <button
-                class="nav__link nav__link--directory"
-                class:nav__link--active={isActive(d.path, $currentPath)}
-                on:click={() => handleNav(d.path)}
-              >
-                {d.label}
               </button>
             </li>
           {/each}
@@ -281,7 +266,6 @@
               </button>
             </li>
           {/each}
-          <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
         {:else}
           {#each categories as cat}
             <li>

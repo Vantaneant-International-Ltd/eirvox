@@ -29,6 +29,19 @@
 
   function go(path: string) {
     close();
+    // In-page anchor (e.g. "/wheels#fitment"): navigate to the route,
+    // then scroll the target into view once it has mounted. Mirrors
+    // Nav.handleNav; the hash router can't carry a second '#'.
+    const hashIdx = path.indexOf('#');
+    if (hashIdx > 0) {
+      const route = path.slice(0, hashIdx);
+      const anchor = path.slice(hashIdx + 1);
+      navigate(route);
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 90);
+      return;
+    }
     navigate(path);
   }
 
@@ -38,12 +51,14 @@
     navigate('/wheels');
   }
 
+  // Same four-item skeleton as the top nav (lockfile §6):
+  // WHEELS · DRIVE · FINDER · ABOUT. Trust + Contact live in the
+  // footer imprint, reachable by scrolling the page they sit on.
   const wheelLinks = [
-    { label: 'Wheels',       path: '/wheels' },
-    { label: 'Find your fit', path: '/wheels' },
-    { label: 'DRIVE',        path: '/drive' },
-    { label: 'About',        path: '/about' },
-    { label: 'Trust',        path: '/trust' },
+    { label: 'Wheels', path: '/wheels' },
+    { label: 'DRIVE',  path: '/drive' },
+    { label: 'Finder', path: '/wheels#fitment' },
+    { label: 'About',  path: '/about' },
   ];
 </script>
 
@@ -61,7 +76,6 @@
         {#each wheelLinks as l}
           <button class="wm__link" type="button" on:click={() => go(l.path)}>{l.label}</button>
         {/each}
-        <a class="wm__link" href="mailto:support@eirvox.ie" on:click={close}>Contact</a>
       </nav>
 
       <div class="wm__rule"></div>
