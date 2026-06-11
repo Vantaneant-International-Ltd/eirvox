@@ -68,7 +68,6 @@
 
       <nav class="wm__nav wm__nav--account">
         {#if signedIn}
-          <button class="wm__link" type="button" on:click={() => go('/account')}>Account</button>
           {#if isSeller && !wheelMode}
             <button class="wm__link" type="button" on:click={() => go('/sell/dashboard')}>My listings</button>
           {/if}

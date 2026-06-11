@@ -204,8 +204,6 @@
                 </span>
                 <span class="nav__user-email">{user?.email ?? ''}</span>
               </div>
-              <button class="nav__user-item" on:click={() => handleNav('/account')} role="menuitem">Account</button>
-              <button class="nav__user-item" on:click={() => handleNav('/messages')} role="menuitem">Inbox</button>
               {#if showSellerLink}
                 <button class="nav__user-item" on:click={() => handleNav('/sell/dashboard')} role="menuitem">My listings</button>
               {/if}
@@ -290,8 +288,6 @@
             </span>
             <span class="nav__drawer-email">{user?.email ?? ''}</span>
           </li>
-          <li><button class="nav__drawer-link" on:click={() => handleNav('/account')}>Account</button></li>
-          <li><button class="nav__drawer-link" on:click={() => handleNav('/messages')}>Inbox</button></li>
           {#if showSellerLink}
             <li><button class="nav__drawer-link" on:click={() => handleNav('/sell/dashboard')}>My listings</button></li>
           {/if}

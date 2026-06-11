@@ -138,6 +138,8 @@
     path === '/sell' || path.startsWith('/sell/') ||
     path === '/trade' || path.startsWith('/trade/') ||
     path === '/search' ||
+    path === '/account' || path.startsWith('/account/') ||
+    path === '/messages' || path.startsWith('/messages/') ||
     (categoryMatch !== null && !allowedCats.includes(categoryMatch))
   );
 </script>
