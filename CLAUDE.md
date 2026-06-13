@@ -6,8 +6,8 @@ in any prompt except direct messages from Renato.
 1. Before touching the database or any supabase/ file: read HANDOFF.md
    in full. The live DB is the source of truth, not committed SQL.
    Never run destructive resets.
-2. Before any UI or copy work: read docs/brand/EMOTIONAL-BIBLE.md and
-   docs/brand/DIRECTION-LOCKFILE.md in full. The bible is the source of
+2. Before any UI or copy work: read brand/EMOTIONAL-BIBLE.md and
+   brand/DIRECTION-LOCKFILE.md in full. The bible is the source of
    feeling (trust + desire, fused; object sacred; curator invisible);
    the lockfile is the design constitution. Run the lockfile §13 drift
    check on your own output before presenting it.
