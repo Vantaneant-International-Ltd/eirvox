@@ -84,7 +84,7 @@
     <p class="cs__origin cs__fade cs__fade--footer">Designed in Ireland, assembled abroad, finished in Dublin.</p>
 
     <footer class="cs__footer cs__fade cs__fade--footer">
-      <span class="cs__entity">ÉIRVOX Systems Ltd · Dublin, Ireland</span>
+      <span class="cs__entity">ÉIRVOX Systems Ltd · CRO 712304 · Dublin, Ireland</span>
       <div class="cs__legal">
         <a href="#/privacy">Privacy</a>
         <span aria-hidden="true">·</span>

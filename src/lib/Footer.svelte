@@ -12,7 +12,6 @@
   // ============================================================
   import { navigate } from './router';
   import PaymentIcons from './PaymentIcons.svelte';
-  import FactNeeded from './FactNeeded.svelte';
 
   export let dark = false;
 </script>
@@ -31,11 +30,11 @@
       </p>
 
       <div class="footer__registry">
-        <span>ÉIRVOX SYSTEMS LTD · TRADING AS ÉIRVOX · CRO 712304</span>
+        <span>ÉIRVOX SYSTEMS LTD · TRADING AS ÉIRVOX</span>
         <span class="footer__registry-dim">A VANTANEANT INTERNATIONAL LTD COMPANY</span>
-        <span><FactNeeded label="REGISTERED ADDRESS" {dark} /> · DUBLIN, IRELAND</span>
+        <span>REGISTERED IN IRELAND · <a class="footer__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 712304</a> · DUBLIN, IRELAND</span>
         <span>SUPPORT@EIRVOX.IE</span>
-        <!-- VAT: [BLOCKED ON RENATO: verified VAT] -->
+        <!-- Registered office withheld (private address); no VAT line until verified. -->
       </div>
     </div>
 
@@ -143,6 +142,13 @@
     color: var(--f-soft);
   }
   .footer__registry-dim { opacity: 0.7; }
+  .footer__verify {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: var(--evx-transition);
+  }
+  .footer__verify:hover { color: var(--f-ink); }
 
   /* Nav columns */
   .footer__nav { display: contents; }

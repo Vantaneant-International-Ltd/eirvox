@@ -248,8 +248,9 @@
       <div class="wp-proof__col">
         <span class="evx-label wp-proof__h">03 · The company</span>
         <p class="evx-caption wp-proof__registry">
-          ÉIRVOX SYSTEMS LTD · CRO 712304<br/>
-          DUBLIN, IRELAND<br/>
+          ÉIRVOX SYSTEMS LTD · TRADING AS ÉIRVOX<br/>
+          <span class="wp-proof__dim">A VANTANEANT INTERNATIONAL LTD COMPANY</span><br/>
+          REGISTERED IN IRELAND · <a class="wp-proof__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 712304</a> · DUBLIN, IRELAND<br/>
           <a class="wp-proof__mail" href="mailto:support@eirvox.ie">SUPPORT@EIRVOX.IE</a>
         </p>
       </div>
@@ -493,6 +494,14 @@
     transition: var(--evx-transition);
   }
   .wp-proof__mail:hover { color: var(--evx-ink); }
+  .wp-proof__dim { opacity: 0.7; }
+  .wp-proof__verify {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: var(--evx-transition);
+  }
+  .wp-proof__verify:hover { color: var(--evx-ink); }
 
   /* ── Skeletons / empties ── */
   .wp-skel, .wp-empty {
