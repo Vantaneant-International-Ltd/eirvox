@@ -1,8 +1,17 @@
 <script lang="ts">
+  // ============================================================
+  // /trust — warm paper. Wheel/DRIVE commerce proof only.
+  //
+  // ÉIRVOX sells its own wheels directly: pay ÉIRVOX via Revolut,
+  // deposits hold a wheel from an incoming run, collection in Dublin or
+  // post within Ireland, refunds at our discretion as merchant of
+  // record. No marketplace, no sellers, no cohorts, no commission — that
+  // surface stays gated. Unsupplied facts render as [FACT NEEDED].
+  // ============================================================
   import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
-  import { navigate } from '../lib/router';
+  import FactNeeded from '../lib/FactNeeded.svelte';
   import { applySeo, seo } from '../lib/seo';
 
   onMount(() => applySeo(seo.trust()));
@@ -12,24 +21,24 @@
 
   const faqs = [
     {
-      q: 'Is ÉIRVOX only for high-end items?',
-      a: 'No. The quality bar is on the seller, not the price. A €135 cardigan from a vetted Donegal seller belongs on the same platform as a €13,000 car. What matters is honest condition and a real point of view.',
+      q: 'Can I pay a deposit instead of the full price?',
+      a: 'On wheels from an incoming run, yes. The deposit is shown on the wheel before you pay. It holds your place in the run; the balance is due on collection or before we post it.',
     },
     {
-      q: 'Can I meet in person?',
-      a: 'Collection is available on many listings. Arrange it with the seller through in-app messaging. ÉIRVOX does not require remote-only transactions.',
+      q: 'Where are the wheels made?',
+      a: 'Designed in Ireland, assembled abroad by a specialist carbon manufacturer, and finished in Dublin before they ship.',
     },
     {
-      q: 'How do you protect against scams?',
-      a: 'Sellers are admitted by application, not open signup. Every applicant is reviewed by hand. Buyer and seller communication stays in-app so we can see the conversation if a dispute arises. Phone numbers and email addresses are never published on listings.',
+      q: 'Can I collect in person?',
+      a: 'Yes. Collection is by arrangement in Dublin. Otherwise we post within Ireland.',
     },
     {
-      q: 'Can I sell from Northern Ireland?',
-      a: 'Yes. ÉIRVOX operates across the island of Ireland. Prices show in Euro. Buyers in Northern Ireland can pay in Sterling by direct arrangement.',
+      q: 'How do I know it fits my car?',
+      a: 'The fitment finder confirms your chassis before you buy. You pick your series and model; we match the wheel. You never need a part code.',
     },
     {
-      q: 'What can I not sell?',
-      a: 'No counterfeits. No stolen goods. No items requiring export licences. No live animals. No weapons. Full prohibited list on request.',
+      q: 'Do you ship outside Ireland?',
+      a: 'Not at the moment. ÉIRVOX ships within Ireland only.',
     },
   ];
 </script>
@@ -45,29 +54,29 @@
         Trust earned,<br/>not promised.
       </h1>
       <p class="trust-hero__sub">
-        ÉIRVOX is the venue, not the broker. Payments go direct to sellers.
-        Sellers are admitted by application, not open signup.
-        Refunds where they are due. Nothing fabricated. Nothing oversold.
+        ÉIRVOX designs, finishes and sells its own wheels. You pay ÉIRVOX directly,
+        by card or Apple Pay. A deposit can hold a wheel from an incoming run.
+        Nothing fabricated. Nothing oversold.
       </p>
     </header>
 
-    <!-- 01 How money moves -->
+    <!-- 01 How you pay -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">01 · MONEY</span>
+      <span class="evx-caption trust-section__num">01 · PAYMENT</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">How money moves.</h2>
+          <h2 class="trust-section__heading">How you pay.</h2>
           <p class="trust-section__sub">
-            Marketplace transactions go straight from the buyer to the seller via Revolut.
-            We never sit in the middle. We never hold buyer funds.
+            Every wheel is bought directly from ÉIRVOX through Revolut. There is no cart,
+            and no third party in the middle.
           </p>
         </div>
         <ol class="trust-steps">
           {#each [
-            { n: '01', title: 'Buyer pays the seller direct.', body: 'Card, Apple Pay, or Google Pay on Revolut. ÉIRVOX is the venue, not the merchant of record.' },
-            { n: '02', title: 'Reservation deposits are optional, per listing.', body: 'When a seller configures one, the deposit goes to the seller too. There is no ÉIRVOX escrow.' },
-            { n: '03', title: 'House listings are the exception.', body: 'On items sold directly by ÉIRVOX, we are the merchant of record. Refunds for legitimate issues are at our discretion. See /refund-policy.' },
-            { n: '04', title: 'We never deduct from the transaction.', body: 'Commission is invoiced separately. Current rates are published on /sell.' },
+            { n: '01', title: 'You pay ÉIRVOX directly.', body: 'We design, finish and sell these wheels. We are the merchant of record for every one.' },
+            { n: '02', title: 'Card, Apple Pay or Google Pay.', body: 'Checkout runs through Revolut. The price is resolved on our server at the moment you pay.' },
+            { n: '03', title: 'Pay in full, or place a deposit.', body: 'A deposit holds a wheel from an incoming run; the balance follows before it ships.' },
+            { n: '04', title: 'We never hold funds for anyone else.', body: 'There is no escrow. You are paying ÉIRVOX for an ÉIRVOX wheel.' },
           ] as step}
             <li class="trust-step">
               <span class="evx-label trust-step__num">{step.n}</span>
@@ -81,43 +90,41 @@
       </div>
     </section>
 
-    <!-- 02 Seller admission -->
+    <!-- 02 Deposits -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">02 · SELLERS</span>
+      <span class="evx-caption trust-section__num">02 · DEPOSITS</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">Admission by application.</h2>
+          <h2 class="trust-section__heading">How deposits work.</h2>
           <p class="trust-section__sub">
-            Every application is reviewed by hand. Three tiers.
-            Cohorts open four times a year. No open signup.
+            Some wheels are made to order in a limited run. A deposit holds your place;
+            the balance is due before the wheel ships or on collection.
           </p>
         </div>
         <div class="trust-bullets">
-          <div class="trust-bullet">Applications go through a single five-step form.</div>
-          <div class="trust-bullet">We read your sourcing pitch and consider your category.</div>
-          <div class="trust-bullet">Shortlisted applicants take a 15-minute call.</div>
-          <div class="trust-bullet">If approved, you go live with the next cohort.</div>
-          <div class="trust-bullet">Trading names are locked once issued. Changes require admin approval to prevent impersonation.</div>
+          <div class="trust-bullet">The deposit amount is shown on each wheel, before you pay.</div>
+          <div class="trust-bullet">It holds one wheel from the incoming run for you.</div>
+          <div class="trust-bullet">The balance is due on collection in Dublin, or before we post it.</div>
+          <div class="trust-bullet">If the run is cancelled, the deposit is refunded in full.</div>
         </div>
       </div>
     </section>
 
-    <!-- 03 Communication -->
+    <!-- 03 Collection & delivery -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">03 · COMMUNICATION</span>
+      <span class="evx-caption trust-section__num">03 · DELIVERY</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
-          <h2 class="trust-section__heading">Conversations stay on ÉIRVOX.</h2>
+          <h2 class="trust-section__heading">Collection and delivery.</h2>
           <p class="trust-section__sub">
-            Buyer and seller messaging happens in-app. Phone numbers and email
-            addresses are not published on listings.
+            Collect in Dublin, or have your wheel posted within Ireland.
           </p>
         </div>
         <div class="trust-bullets">
-          <div class="trust-bullet">In-app messaging on every listing, free, no commitment.</div>
-          <div class="trust-bullet">Offers can be sent in one tap and replied to as a normal message.</div>
-          <div class="trust-bullet">If a message looks like a phone or email handover, ÉIRVOX flags it. Off-platform deals are outside our refund policy.</div>
-          <div class="trust-bullet">Disputes that begin on the platform can be reviewed by ÉIRVOX. Disputes that happen off it cannot.</div>
+          <div class="trust-bullet">Collection is by arrangement in Dublin.</div>
+          <div class="trust-bullet">Posted within Ireland via <FactNeeded label="SHIPPING CARRIER" />.</div>
+          <div class="trust-bullet">We do not ship outside Ireland at this time.</div>
+          <div class="trust-bullet">Fitment is confirmed before purchase, so the wheel that arrives is the one for your car.</div>
         </div>
       </div>
     </section>
@@ -129,19 +136,19 @@
         <div class="trust-section__left">
           <h2 class="trust-section__heading">Where refunds apply.</h2>
           <p class="trust-section__sub">
-            On ÉIRVOX-owned listings, we refund for legitimate issues at our discretion.
-            On seller listings, the seller is the merchant of record. Refunds are between buyer and seller.
+            We sell our own wheels, so a refund is between you and ÉIRVOX. We refund
+            legitimate issues at our discretion.
           </p>
         </div>
 
         <div class="coverage">
           <div class="coverage__col coverage__col--covered">
-            <span class="evx-label coverage__head">ÉIRVOX-OWNED</span>
+            <span class="evx-label coverage__head">REFUNDED</span>
             <ul class="coverage__list">
               {#each [
-                { t: 'Item not as described', d: 'Undisclosed damage or material defect. Refund considered case by case.' },
-                { t: 'Item not received', d: 'Lost in transit or never shipped. Refund processed once we confirm with the courier.' },
-                { t: 'Fault on our side', d: 'We sold something we should not have. Full refund.' },
+                { t: 'Not as described', d: 'Undisclosed damage or a material defect. Considered case by case.' },
+                { t: 'Not received', d: 'Lost in transit or never shipped. Refunded once we confirm with the carrier.' },
+                { t: 'Our error', d: 'We shipped the wrong wheel or specification. Full refund.' },
               ] as item}
                 <li class="coverage__item">
                   <span class="coverage__mark coverage__mark--good">+</span>
@@ -155,13 +162,12 @@
           </div>
 
           <div class="coverage__col coverage__col--excluded">
-            <span class="evx-label coverage__head coverage__head--excluded">NOT COVERED</span>
+            <span class="evx-label coverage__head coverage__head--excluded">NOT REFUNDED</span>
             <ul class="coverage__list">
               {#each [
-                { t: 'Buyer remorse', d: 'Item matches the listing and you changed your mind. That is a private resale.' },
-                { t: 'Minor cosmetic differences', d: 'Within the seller stated condition. "Excellent" is not "mint".' },
-                { t: 'Off-platform deals', d: 'If the transaction happened outside ÉIRVOX, we cannot mediate or refund.' },
-                { t: 'Seller listings', d: 'On listings sold by other sellers, refunds are between you and them.' },
+                { t: 'Change of mind', d: 'The wheel matches what you bought. That is a private resale.' },
+                { t: 'Minor cosmetic variation', d: 'Within the finish described. Carbon is a natural-weave material.' },
+                { t: 'Fitment you confirmed', d: 'The finder confirmed your chassis before purchase.' },
               ] as item}
                 <li class="coverage__item">
                   <span class="coverage__mark coverage__mark--bad">−</span>
@@ -181,20 +187,14 @@
       </div>
     </section>
 
-    <!-- 05 What you can not sell -->
-    <section class="trust-section">
-      <span class="evx-caption trust-section__num">05 · PROHIBITED</span>
-      <div class="trust-section__inner">
-        <div class="trust-section__left">
-          <h2 class="trust-section__heading">What does not belong.</h2>
-        </div>
-        <div class="trust-bullets">
-          <div class="trust-bullet">Counterfeit items.</div>
-          <div class="trust-bullet">Stolen goods.</div>
-          <div class="trust-bullet">Items that require export licences we do not facilitate.</div>
-          <div class="trust-bullet">Weapons. Live animals. Anything illegal under Irish law.</div>
-        </div>
-      </div>
+    <!-- Company close -->
+    <section class="trust-close">
+      <span class="evx-caption trust-section__num">THE COMPANY</span>
+      <p class="trust-close__line">
+        ÉIRVOX Systems Ltd · CRO 712304 —
+        <a href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">verifiable at core.cro.ie</a>.
+        Every wheel is finished in Dublin before it ships.
+      </p>
     </section>
 
     <!-- FAQ -->
@@ -230,9 +230,9 @@
 
   .trust-hero {
     padding-top: var(--evx-space-2xl);
-    padding-bottom: var(--evx-space-2xl);
+    padding-bottom: var(--evx-space-3xl);
     border-bottom: 1px solid var(--evx-rule-light);
-    margin-bottom: var(--evx-space-2xl);
+    margin-bottom: var(--evx-space-3xl);
   }
 
   .trust-hero__pre { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-lg); }
@@ -249,7 +249,7 @@
   .trust-hero__sub { font-size: 16px; line-height: 1.7; color: var(--evx-ink-soft); max-width: 560px; }
 
   .trust-section {
-    padding: var(--evx-space-2xl) 0;
+    padding: var(--evx-space-3xl) 0;
     border-bottom: 1px solid var(--evx-rule-light);
   }
 
@@ -264,7 +264,7 @@
 
   .trust-section__heading {
     font-family: var(--evx-font-display);
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 500;
     letter-spacing: -0.015em;
     color: var(--evx-warm-black);
@@ -319,10 +319,10 @@
     border: 1px solid var(--evx-rule-light);
     padding: var(--evx-space-lg);
   }
-  .coverage__col--covered { border-left: 3px solid #4a8c5b; }
+  .coverage__col--covered { border-left: 3px solid var(--evx-fox-orange); }
   .coverage__col--excluded { border-left: 3px solid var(--evx-ink-soft); }
 
-  .coverage__head { color: #4a8c5b; display: block; margin-bottom: var(--evx-space-lg); }
+  .coverage__head { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-lg); }
   .coverage__head--excluded { color: var(--evx-ink-soft); }
 
   .coverage__list {
@@ -350,7 +350,7 @@
     line-height: 1;
     margin-top: 2px;
   }
-  .coverage__mark--good { color: #4a8c5b; border: 1.5px solid #4a8c5b; }
+  .coverage__mark--good { color: var(--evx-fox-orange); border: 1.5px solid var(--evx-fox-orange); }
   .coverage__mark--bad { color: var(--evx-ink-soft); border: 1.5px solid var(--evx-ink-soft); }
 
   .coverage__item strong {
@@ -368,8 +368,23 @@
     display: block;
   }
 
+  /* Company close */
+  .trust-close {
+    padding: var(--evx-space-3xl) 0;
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+  .trust-close__line {
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    line-height: 1.8;
+    color: var(--evx-ink-soft);
+    max-width: 620px;
+  }
+  .trust-close__line a { color: var(--evx-fox-orange); text-decoration: underline; text-underline-offset: 3px; }
+
   .trust-faq {
-    padding-top: var(--evx-space-2xl);
+    padding-top: var(--evx-space-3xl);
     margin-bottom: var(--evx-space-2xl);
   }
 

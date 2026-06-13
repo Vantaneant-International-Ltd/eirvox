@@ -102,9 +102,9 @@
   .about-head {
     max-width: 760px;
     padding-top: var(--evx-space-2xl);
-    padding-bottom: var(--evx-space-xl);
+    padding-bottom: var(--evx-space-2xl);
     border-bottom: 1px solid var(--evx-rule-light);
-    margin-bottom: var(--evx-space-2xl);
+    margin-bottom: var(--evx-space-3xl);
   }
   .about-head__pre { color: var(--evx-fox-orange); display: block; margin-bottom: var(--evx-space-md); }
   .about-head__title {
@@ -141,7 +141,7 @@
 
   /* Process */
   .about-process {
-    padding-top: var(--evx-space-2xl);
+    padding-top: var(--evx-space-3xl);
     border-top: 1px solid var(--evx-rule-light);
     margin-bottom: var(--evx-space-3xl);
   }
@@ -154,7 +154,8 @@
   }
   .about-process__media {
     aspect-ratio: 4 / 5;
-    background: var(--evx-surface-2);
+    background: rgba(26, 26, 26, 0.045);
+    border: 1px solid var(--evx-rule-light);
     display: flex;
     align-items: flex-end;
     padding: var(--evx-space-md);
@@ -164,7 +165,7 @@
     font-family: var(--evx-font-mono);
     font-size: 9.5px;
     letter-spacing: 0.1em;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     line-height: 1.5;
   }
 
@@ -184,7 +185,7 @@
 
   /* Registry colophon */
   .about-registry {
-    padding-top: var(--evx-space-2xl);
+    padding-top: var(--evx-space-3xl);
     border-top: 1px solid var(--evx-rule-light);
   }
   .about-registry__inner {
