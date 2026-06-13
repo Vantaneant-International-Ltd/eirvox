@@ -123,16 +123,16 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    background: #1A1A1A;
+    background: var(--evx-paper);
     padding: 18px 24px;
-    border-bottom: 1px solid rgba(245, 242, 237, 0.08);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
   .legal-gated-top__back {
     justify-self: start;
     font-family: var(--evx-font-mono);
     font-size: 11px;
     letter-spacing: 0.06em;
-    color: #8C8C8C;
+    color: var(--evx-ink-soft);
     text-decoration: none;
     transition: color 200ms ease;
   }
@@ -141,7 +141,6 @@
     justify-self: center;
     height: 20px;
     width: auto;
-    filter: invert(1) brightness(1.05);
   }
   .legal-gated-top__spacer { width: 1px; }
 
@@ -153,9 +152,10 @@
   .legal-page--gated .legal-body { grid-template-columns: 1fr; }
 
   .legal-gated-bot {
-    background: #1A1A1A;
-    color: #F5F2ED;
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     padding: 28px 24px;
+    border-top: 1px solid var(--evx-rule-light);
   }
   .legal-gated-bot__inner {
     max-width: 720px;
@@ -170,7 +170,7 @@
     font-family: var(--evx-font-mono);
     font-size: 10px;
     letter-spacing: 0.04em;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
   }
   .legal-gated-bot__links {
     display: flex;
@@ -180,10 +180,10 @@
     font-family: var(--evx-font-mono);
     font-size: 10px;
     letter-spacing: 0.04em;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
   }
   .legal-gated-bot__links a {
-    color: #F5F2ED;
+    color: var(--evx-ink);
     text-decoration: none;
     transition: color 200ms ease;
   }

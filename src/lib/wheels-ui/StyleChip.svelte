@@ -31,21 +31,21 @@
     font-family: var(--evx-font-display);
     font-size: 13px;
     font-weight: 500;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     white-space: nowrap;
     cursor: pointer;
     transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
   }
   .chip:hover:not(:disabled):not(.chip--disabled) {
-    border-color: var(--evx-rule-strong);
-    color: var(--evx-paper);
+    border-color: var(--evx-ink-soft);
+    color: var(--evx-ink);
   }
   .chip--active {
-    background: var(--evx-paper);
-    color: var(--evx-black);
-    border-color: var(--evx-paper);
+    background: var(--evx-ink);
+    color: var(--evx-paper);
+    border-color: var(--evx-ink);
   }
   .chip--disabled { opacity: 0.4; cursor: not-allowed; }
 
@@ -53,7 +53,7 @@
     width: 10px; height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(0, 0, 0, 0.18);
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.4);
   }
   .chip--active .chip__swatch { border-color: rgba(0, 0, 0, 0.25); }

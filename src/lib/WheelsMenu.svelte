@@ -106,7 +106,7 @@
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: rgba(14, 13, 12, 0.72);
+    background: rgba(26, 26, 26, 0.32);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
@@ -116,8 +116,8 @@
   .wm__panel {
     width: min(86vw, 360px);
     height: 100%;
-    background: var(--evx-black);
-    border-left: 1px solid var(--evx-rule);
+    background: var(--evx-paper);
+    border-left: 1px solid var(--evx-rule-light);
     display: flex;
     flex-direction: column;
     padding: 18px 22px max(22px, env(safe-area-inset-bottom));
@@ -135,15 +135,14 @@
     height: 16px;
     width: auto;
     display: block;
-    /* PNG is dark-on-transparent; invert for the dark drawer. */
-    filter: invert(1) brightness(1.05);
+    /* Dark-on-transparent PNG reads correctly on paper — no invert. */
   }
   .wm__close {
     width: 38px; height: 38px;
     border-radius: 50%;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     font-size: 16px;
     cursor: pointer;
   }
@@ -154,7 +153,7 @@
     font-size: 20px;
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     background: none;
     border: none;
     text-align: left;
@@ -169,7 +168,7 @@
 
   .wm__rule {
     height: 1px;
-    background: var(--evx-rule);
+    background: var(--evx-rule-light);
     margin: 14px 0;
   }
   .wm__nav--account { flex: 0 0 auto; }

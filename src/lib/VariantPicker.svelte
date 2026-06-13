@@ -249,7 +249,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--evx-space-lg);
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     font-family: var(--evx-font-display);
   }
   .vp__loading, .vp__empty {
@@ -281,7 +281,7 @@
   .vp__fit-text {
     font-weight: 500;
     font-size: 13.5px;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     white-space: nowrap;
   }
   .vp__fit-change {
@@ -299,15 +299,15 @@
     gap: 8px;
     padding: 10px 14px;
     border-radius: 2px;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     font-family: var(--evx-font-mono);
     font-size: 12px;
     align-self: flex-start;
     cursor: pointer;
   }
-  .vp__fit-prompt:hover { border-color: var(--evx-rule-strong); color: var(--evx-paper); }
+  .vp__fit-prompt:hover { border-color: var(--evx-ink-soft); color: var(--evx-ink); }
 
   /* Finish picker */
   .vp__finish { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
@@ -329,10 +329,10 @@
     bottom: 0;
     margin: 20px -16px -16px;
     padding: 14px 16px max(20px, env(safe-area-inset-bottom));
-    background: rgba(14, 13, 12, 0.92);
+    background: rgba(245, 242, 237, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid var(--evx-rule);
+    border-top: 1px solid var(--evx-rule-light);
     display: flex;
     align-items: center;
     gap: 14px;
@@ -352,7 +352,7 @@
     width: 100%;
     padding: 14px 18px;
     border-radius: 2px;
-    border: 1px solid var(--evx-rule-strong);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
     color: var(--evx-ink-soft);
     font-family: var(--evx-font-display);
@@ -366,7 +366,7 @@
     position: fixed;
     inset: 0;
     z-index: 200;
-    background: rgba(14, 13, 12, 0.85);
+    background: rgba(26, 26, 26, 0.42);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     display: flex;
@@ -378,8 +378,8 @@
     width: 100%;
     max-width: 520px;
     max-height: 86vh;
-    background: var(--evx-black);
-    border-top: 1px solid var(--evx-rule-strong);
+    background: var(--evx-paper);
+    border-top: 1px solid var(--evx-rule-light);
     border-radius: 8px 8px 0 0;
     padding: 18px 18px max(22px, env(safe-area-inset-bottom));
     overflow-y: auto;
@@ -392,24 +392,24 @@
   .vp__overlay-close {
     width: 36px; height: 36px;
     border-radius: 50%;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     cursor: pointer;
     font-size: 16px;
   }
   .vp__overlay-search {
     width: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    color: var(--evx-paper);
-    border: 1px solid var(--evx-rule);
+    background: rgba(26, 26, 26, 0.04);
+    color: var(--evx-ink);
+    border: 1px solid var(--evx-rule-light);
     padding: 12px 14px;
     font-family: var(--evx-font-display);
     font-size: 14px;
     outline: none;
     margin-bottom: 8px;
   }
-  .vp__overlay-search:focus { border-color: var(--evx-rule-strong); }
+  .vp__overlay-search:focus { border-color: var(--evx-ink-soft); }
   .vp__overlay-list { list-style: none; margin: 0; padding: 0; }
   .vp__overlay-row {
     width: 100%;
@@ -418,13 +418,13 @@
     padding: 14px 4px;
     background: transparent;
     border: none;
-    border-bottom: 1px solid var(--evx-rule-soft);
-    color: var(--evx-paper);
+    border-bottom: 1px solid var(--evx-rule-light);
+    color: var(--evx-ink);
     font-family: var(--evx-font-display);
     font-size: 14px;
     cursor: pointer;
   }
-  .vp__overlay-row:hover { background: rgba(244, 241, 236, 0.035); }
+  .vp__overlay-row:hover { background: rgba(26, 26, 26, 0.035); }
   .vp__overlay-empty {
     padding: 14px;
     font-size: 13px;
@@ -436,7 +436,7 @@
     width: 100%;
     background: transparent;
     color: var(--evx-ink-soft);
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     padding: 10px;
     font-family: var(--evx-font-mono);
     font-size: 11.5px;

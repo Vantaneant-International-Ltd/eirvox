@@ -112,9 +112,9 @@
 <style>
   .cs {
     min-height: 100vh;
-    background: #1A1A1A;
+    background: var(--evx-paper);
     background-image: none;
-    color: #F5F2ED;
+    color: var(--evx-ink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -140,8 +140,6 @@
     height: 72px;            /* glyph height ~52px after the centred-glyph crop */
     width: auto;
     display: block;
-    /* Dark-on-transparent PNG inverted for the ink background. */
-    filter: invert(1) brightness(1.05);
   }
 
   /* ── Tagline ── */
@@ -150,7 +148,7 @@
     font-weight: 400;
     font-size: 15px;
     line-height: 1.5;
-    color: #8C8C8C;
+    color: var(--evx-ink-soft);
     margin: 0 0 32px;
     max-width: 380px;
   }
@@ -167,7 +165,7 @@
   .cs__rule {
     width: 120px;
     height: 1px;
-    background: #2C2C2C;
+    background: var(--evx-rule-light);
     margin-bottom: 24px;
   }
 
@@ -202,9 +200,9 @@
     min-width: 320px;
     background: transparent;
     border: none;
-    border-bottom: 1px solid #5C5C5C;
+    border-bottom: 1px solid var(--evx-ink-soft);
     border-radius: 0;
-    color: #F5F2ED;
+    color: var(--evx-ink);
     font-family: 'Inter Tight', system-ui, sans-serif;
     font-weight: 400;
     font-size: 14px;
@@ -212,8 +210,8 @@
     outline: none;
     transition: border-color 200ms ease;
   }
-  .cs__input::placeholder { color: #5C5C5C; }
-  .cs__input:focus { border-bottom-color: #F5F2ED; }
+  .cs__input::placeholder { color: var(--evx-ink-soft); }
+  .cs__input:focus { border-bottom-color: var(--evx-ink); }
 
   .cs__btn {
     background: #E8742C;
@@ -244,14 +242,14 @@
   .cs__confirm {
     font-family: 'Inter Tight', system-ui, sans-serif;
     font-size: 14px;
-    color: #F5F2ED;
+    color: var(--evx-ink);
     padding: 8px 0;
   }
   .cs__reset {
     background: none; border: none; padding: 0; cursor: pointer;
     font-family: 'JetBrains Mono', Menlo, monospace;
     font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: rgba(245, 242, 237, 0.55);
+    color: var(--evx-ink-soft);
     transition: color 200ms ease;
   }
   .cs__reset:hover { color: #E8742C; }
@@ -268,7 +266,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.04em;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
   }
 
   .cs__social {
@@ -280,7 +278,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
     transition: color 200ms ease;
   }
   .cs__social a:hover { color: #E8742C; }
@@ -291,10 +289,10 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.04em;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
   }
   .cs__legal a {
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
     text-decoration: none;
     transition: color 200ms ease;
   }

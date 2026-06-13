@@ -16,22 +16,22 @@
   $: ledStyle = led ? `--evx-led: ${led};` : '';
 </script>
 
-<div class="frame {lit ? 'evx-carbon evx-carbon--lit' : 'evx-carbon'}"
+<div class="frame" class:frame--lit={lit} class:frame--photo={!!src}
      style="border-radius: {radius}px; aspect-ratio: {aspect}; {ledStyle}">
   {#if src}
     <img class="frame__img" {src} {alt} loading="lazy" />
   {:else if glyph}
     <div class="frame__glyph" aria-hidden="true">
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="9.2" stroke={lit ? 'rgba(201,169,97,0.30)' : 'rgba(244,241,236,0.14)'} stroke-width="1.1" />
+        <circle cx="12" cy="12" r="9.2" stroke={lit ? 'rgba(201,169,97,0.40)' : 'rgba(26,26,26,0.16)'} stroke-width="1.1" />
         <path d="M12 2.8 12 9 M21.2 12 15 12 M12 21.2 12 15 M2.8 12 9 12"
-              stroke={lit ? 'rgba(201,169,97,0.30)' : 'rgba(244,241,236,0.14)'} stroke-width="1.1" stroke-linecap="round"/>
-        <circle cx="12" cy="12" r="3" stroke={lit ? 'rgba(201,169,97,0.30)' : 'rgba(244,241,236,0.14)'} stroke-width="1.1" />
+              stroke={lit ? 'rgba(201,169,97,0.40)' : 'rgba(26,26,26,0.16)'} stroke-width="1.1" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="3" stroke={lit ? 'rgba(201,169,97,0.40)' : 'rgba(26,26,26,0.16)'} stroke-width="1.1" />
       </svg>
     </div>
   {/if}
   {#if caption}
-    <div class="frame__cap" style="color: {lit ? 'rgba(201,169,97,0.85)' : 'rgba(199,194,185,0.7)'};">
+    <div class="frame__cap" style="color: {lit ? 'rgba(156,133,78,0.95)' : 'rgba(26,26,26,0.55)'};">
       {index != null ? String(index).padStart(2, '0') + '  ' : ''}{caption}
     </div>
   {/if}
@@ -39,12 +39,21 @@
 </div>
 
 <style>
-  .frame { position: relative; width: 100%; }
+  /* Empty = designed paper slot (faint ink tint + hairline). With a
+     photo = edge-to-edge, no fill/border so the shot's paper merges
+     with the page paper. */
+  .frame {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: rgba(26, 26, 26, 0.045);
+    border: 1px solid var(--evx-rule-light);
+  }
+  .frame--photo { background: transparent; border: none; }
   .frame__img {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover; display: block;
-    filter: brightness(0.92);
   }
   .frame__glyph {
     position: absolute; inset: 0;

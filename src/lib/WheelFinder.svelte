@@ -125,7 +125,7 @@
   <header class="finder__head">
     <div class="finder__head-row">
       <button class="finder__icon-btn" type="button" on:click={back} aria-label="Back">
-        <Chevron dir="left" size={13} color="var(--evx-paper)" />
+        <Chevron dir="left" size={13} color="var(--evx-ink)" />
       </button>
       <div class="finder__head-meta">
         <img src="/brand/wordmark.png" alt="ÉIRVOX" class="finder__logo" />
@@ -249,8 +249,8 @@
     position: fixed;
     inset: 0;
     z-index: 200;
-    background: var(--evx-black);
-    color: var(--evx-paper);
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     overflow-y: auto;
     overflow-x: hidden;
     animation: evx-fade 220ms ease both;
@@ -262,7 +262,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: var(--evx-black);
+    background: var(--evx-paper);
     padding-top: max(env(safe-area-inset-top), 14px);
   }
   .finder__head-row {
@@ -272,15 +272,15 @@
     padding: 14px 18px 12px;
   }
   .finder__head-meta { display: flex; flex-direction: column; align-items: center; }
-  /* Canonical miniature wordmark (brand PNG), inverted on the dark finder. */
-  .finder__logo { height: 14px; width: auto; display: block; filter: invert(1) brightness(1.05); }
+  /* Canonical miniature wordmark (brand PNG) — reads as-is on paper. */
+  .finder__logo { height: 14px; width: auto; display: block; }
   .finder__icon-btn {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -298,7 +298,7 @@
     flex: 1;
     height: 2.5px;
     border-radius: 2px;
-    background: var(--evx-rule);
+    background: var(--evx-rule-light);
     transition: background 280ms ease;
   }
   .finder__bar--on { background: var(--evx-fox-orange); }
@@ -312,7 +312,7 @@
     font-size: 30px;
     letter-spacing: -0.02em;
     line-height: 1.04;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     margin-top: 12px;
   }
   .finder__sub {
@@ -337,7 +337,7 @@
   }
 
   /* Option rows */
-  .finder__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--evx-rule); }
+  .finder__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--evx-rule-light); }
   .finder__row {
     display: flex;
     align-items: center;
@@ -346,13 +346,13 @@
     width: 100%;
     text-align: left;
     padding: 20px 18px;
-    border-bottom: 1px solid var(--evx-rule-soft);
+    border-bottom: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     cursor: pointer;
     transition: background 140ms ease;
   }
-  .finder__row:hover { background: rgba(244, 241, 236, 0.035); }
+  .finder__row:hover { background: rgba(26, 26, 26, 0.035); }
   .finder__row-main { flex: 1; min-width: 0; }
   .finder__row-title {
     display: block;
@@ -396,18 +396,18 @@
     font-family: var(--evx-font-display);
     font-weight: 500;
     font-size: 16px;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
   }
   .finder__fit-sub {
     font-size: 12.5px;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     padding-left: 27px;
     margin-top: 4px;
     line-height: 1.55;
   }
 
   /* Style list */
-  .finder__styles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--evx-rule); }
+  .finder__styles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--evx-rule-light); }
   .finder__style {
     display: flex;
     align-items: center;
@@ -415,13 +415,13 @@
     width: 100%;
     text-align: left;
     padding: 14px 18px;
-    border-bottom: 1px solid var(--evx-rule-soft);
+    border-bottom: 1px solid var(--evx-rule-light);
     background: transparent;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     cursor: pointer;
     transition: background 140ms ease, opacity 140ms ease;
   }
-  .finder__style:hover:not(:disabled) { background: rgba(244, 241, 236, 0.035); }
+  .finder__style:hover:not(:disabled) { background: rgba(26, 26, 26, 0.035); }
   .finder__style:disabled { opacity: 0.4; cursor: not-allowed; }
   .finder__style-thumb { flex: 0 0 60px; height: 60px; display: block; }
   .finder__style-body { flex: 1; min-width: 0; }
@@ -433,14 +433,14 @@
     font-weight: 500;
     font-size: 15.5px;
     line-height: 1.2;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
   }
   .finder__style-swatch {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(0, 0, 0, 0.18);
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.4);
   }
   .finder__style-note {
@@ -461,6 +461,6 @@
   .finder__style-price {
     font-family: var(--evx-font-mono);
     font-size: 14px;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
   }
 </style>

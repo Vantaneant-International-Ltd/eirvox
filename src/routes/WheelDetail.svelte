@@ -125,12 +125,12 @@
   <!-- ━━ TOP BAR ━━ -->
   <header class="wd-top" class:wd-top--scrolled={scrolled}>
     <button class="wd-top__icon" type="button" on:click={() => navigate('/wheels')} aria-label="Back to wheels">
-      <Chevron dir="left" size={13} color="var(--evx-paper)" />
+      <Chevron dir="left" size={13} color="var(--evx-ink)" />
     </button>
     <button class="wd-top__home" type="button" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX wheels"
             style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
       <img src="/brand/wordmark.png" alt="ÉIRVOX"
-           style="height:16px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
+           style="height:16px;width:auto;display:block;" />
     </button>
     <button class="wd-top__icon wd-top__menu" type="button" on:click={() => (menuOpen = true)} aria-label="Open menu">
       <span></span><span></span>
@@ -158,13 +158,13 @@
         <!-- Static schematic + numbered dimension callouts. Real figures
              arrive via the [FACT NEEDED] legend below; nothing is invented. -->
         <svg class="wd-dim" viewBox="0 0 400 400" fill="none" aria-hidden="true">
-          <circle cx="200" cy="200" r="150" stroke="var(--evx-rule-strong)" stroke-width="1" />
-          <circle cx="200" cy="200" r="92" stroke="var(--evx-rule)" stroke-width="1" />
-          <circle cx="200" cy="200" r="15" fill="var(--evx-rule)" />
+          <circle cx="200" cy="200" r="150" stroke="rgba(26,26,26,0.22)" stroke-width="1" />
+          <circle cx="200" cy="200" r="92" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
+          <circle cx="200" cy="200" r="15" fill="rgba(26,26,26,0.18)" />
           <!-- 3-spoke schematic -->
-          <line x1="200" y1="200" x2="200" y2="108" stroke="var(--evx-rule)" stroke-width="1" />
-          <line x1="200" y1="200" x2="280" y2="246" stroke="var(--evx-rule)" stroke-width="1" />
-          <line x1="200" y1="200" x2="120" y2="246" stroke="var(--evx-rule)" stroke-width="1" />
+          <line x1="200" y1="200" x2="200" y2="108" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
+          <line x1="200" y1="200" x2="280" y2="246" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
+          <line x1="200" y1="200" x2="120" y2="246" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
           <!-- ① overall ⌀ dimension line (below the circle) -->
           <line x1="58" y1="372" x2="342" y2="372" stroke="var(--evx-fox-orange)" stroke-width="1" />
           <line x1="58" y1="365" x2="58" y2="379" stroke="var(--evx-fox-orange)" stroke-width="1" />
@@ -185,9 +185,9 @@
       </div>
 
       <dl class="wd-dim__legend">
-        <div class="wd-dim__item"><dt><span class="wd-dim__no">1</span> Overall ⌀</dt><dd><FactNeeded label="overall diameter" dark /></dd></div>
-        <div class="wd-dim__item"><dt><span class="wd-dim__no">2</span> Grip ⌀</dt><dd><FactNeeded label="grip diameter" dark /></dd></div>
-        <div class="wd-dim__item"><dt><span class="wd-dim__no">3</span> Rim</dt><dd><FactNeeded label="rim thickness" dark /></dd></div>
+        <div class="wd-dim__item"><dt><span class="wd-dim__no">1</span> Overall ⌀</dt><dd><FactNeeded label="overall diameter" /></dd></div>
+        <div class="wd-dim__item"><dt><span class="wd-dim__no">2</span> Grip ⌀</dt><dd><FactNeeded label="grip diameter" /></dd></div>
+        <div class="wd-dim__item"><dt><span class="wd-dim__no">3</span> Rim</dt><dd><FactNeeded label="rim thickness" /></dd></div>
       </dl>
 
       {#if images.length > 1}
@@ -311,7 +311,7 @@
     {:else}
       <section class="wd-pay">
         <Btn variant="ghost" size="md" full on:click={() => navigate('/wheels')}>
-          Find your fit <Chevron size={12} color="var(--evx-paper)" />
+          Find your fit <Chevron size={12} color="var(--evx-ink)" />
         </Btn>
       </section>
     {/if}
@@ -345,8 +345,8 @@
     min-height: 100%;
     height: 100vh;
     overflow-y: auto;
-    background: var(--evx-black);
-    color: var(--evx-paper);
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -364,30 +364,30 @@
     transition: background 240ms ease, border-color 240ms ease;
   }
   .wd-top--scrolled {
-    background: rgba(14, 13, 12, 0.82);
+    background: rgba(245, 242, 237, 0.82);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--evx-rule-soft);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
   .wd-top__icon {
     width: 38px; height: 38px;
     border-radius: 50%;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
     display: inline-flex; align-items: center; justify-content: center;
     cursor: pointer;
   }
   .wd-top__menu { flex-direction: column; gap: 4px; }
-  .wd-top__menu span { width: 16px; height: 1.5px; background: var(--evx-paper); }
+  .wd-top__menu span { width: 16px; height: 1.5px; background: var(--evx-ink); }
 
   /* ── State ── */
   .wd-state {
     display: flex; flex-direction: column; gap: 16px; align-items: flex-start;
     padding: 60px 22px;
     font-family: var(--evx-font-display);
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
   }
-  .wd-state h1 { font-size: 22px; font-weight: 500; color: var(--evx-paper); }
+  .wd-state h1 { font-size: 22px; font-weight: 500; color: var(--evx-ink); }
 
   /* ── Hero (designed slot + dimension layer) ── */
   .wd-hero { padding: 4px 18px 0; }
@@ -406,7 +406,7 @@
     gap: 10px;
     margin: 12px 0 0;
     padding: 14px 0 0;
-    border-top: 1px solid var(--evx-rule-soft);
+    border-top: 1px solid var(--evx-rule-light);
   }
   .wd-dim__item { display: flex; flex-direction: column; gap: 6px; }
   .wd-dim__item dt {
@@ -415,7 +415,7 @@
     font-size: 9.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
   }
   .wd-dim__item dd { margin: 0; }
   .wd-dim__no {
@@ -432,12 +432,12 @@
     flex: 1;
     border-radius: 2px;
     overflow: hidden;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     background: transparent;
     padding: 0;
     cursor: pointer;
   }
-  .wd-thumb--on { border-color: var(--evx-paper); }
+  .wd-thumb--on { border-color: var(--evx-ink); }
 
   /* ── Header ── */
   .wd-head { padding: 24px 18px 0; }
@@ -454,7 +454,7 @@
     font-family: var(--evx-font-editorial);
     font-style: italic;
     font-size: 18px;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     margin: 14px 0 16px;
     max-width: 380px;
     line-height: 1.4;
@@ -465,7 +465,7 @@
     font-size: 10.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--evx-champagne);
+    color: var(--evx-champagne-dim);
   }
 
   /* ── Buy (VariantPicker host) ── */
@@ -475,8 +475,8 @@
   .wd-slot {
     position: relative;
     width: 100%;
-    background: var(--evx-surface-2);
-    border: 1px solid var(--evx-rule);
+    background: rgba(26, 26, 26, 0.045);
+    border: 1px solid var(--evx-rule-light);
     border-radius: 3px;
     overflow: hidden;
   }
@@ -495,8 +495,8 @@
 
   /* ── Accordions (native details, type-only toggle, no icons) ── */
   .wd-acc-list { padding: 30px 18px 0; }
-  .wd-acc { border-top: 1px solid var(--evx-rule-soft); }
-  .wd-acc:last-child { border-bottom: 1px solid var(--evx-rule-soft); }
+  .wd-acc { border-top: 1px solid var(--evx-rule-light); }
+  .wd-acc:last-child { border-bottom: 1px solid var(--evx-rule-light); }
   .wd-acc__sum {
     list-style: none;
     cursor: pointer;
@@ -506,7 +506,7 @@
     padding: 16px 0;
     font-family: var(--evx-font-display);
     font-size: 15px;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
   }
   .wd-acc__sum::-webkit-details-marker { display: none; }
   .wd-acc__sum::after {
@@ -520,7 +520,7 @@
     padding: 0 0 16px;
     font-size: 13.5px;
     line-height: 1.6;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
   }
   .wd-acc__body p { margin: 0 0 8px; }
   .wd-acc__body p:last-child { margin-bottom: 0; }
@@ -531,7 +531,7 @@
   .wd-detail__row {
     display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
     padding: 13px 0;
-    border-bottom: 1px solid var(--evx-rule-soft);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
   .wd-detail__row:last-child { border-bottom: none; }
   .wd-detail__k {
@@ -541,36 +541,36 @@
     text-transform: uppercase;
     color: var(--evx-ink-soft);
   }
-  .wd-detail__v { font-size: 14px; color: var(--evx-paper); text-align: right; }
+  .wd-detail__v { font-size: 14px; color: var(--evx-ink); text-align: right; }
 
   /* ── DRIVE / non-variant pay block ── */
   .wd-pay { padding: 18px 18px 0; display: flex; flex-direction: column; gap: 12px; }
   .wd-pay__seg {
     display: grid; grid-template-columns: 1fr 1fr; gap: 0;
-    border: 1px solid var(--evx-rule); border-radius: 2px; overflow: hidden;
+    border: 1px solid var(--evx-rule-light); border-radius: 2px; overflow: hidden;
   }
   .wd-pay__opt {
     padding: 12px 10px;
     background: transparent;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     border: none;
     font-family: var(--evx-font-display);
     font-size: 13px;
     cursor: pointer;
     transition: background 160ms ease, color 160ms ease;
   }
-  .wd-pay__opt + .wd-pay__opt { border-left: 1px solid var(--evx-rule); }
-  .wd-pay__opt--on { background: var(--evx-paper); color: var(--evx-black); }
+  .wd-pay__opt + .wd-pay__opt { border-left: 1px solid var(--evx-rule-light); }
+  .wd-pay__opt--on { background: var(--evx-ink); color: var(--evx-paper); }
 
   .wd-pay__bar {
     position: sticky;
     bottom: 0;
     margin: 8px -18px 0;
     padding: 14px 18px max(20px, env(safe-area-inset-bottom));
-    background: rgba(14, 13, 12, 0.92);
+    background: rgba(245, 242, 237, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid var(--evx-rule);
+    border-top: 1px solid var(--evx-rule-light);
     display: flex; align-items: center; gap: 14px;
     z-index: 5;
   }
@@ -597,15 +597,15 @@
     border-radius: 2px;
     background: rgba(201, 169, 97, 0.06);
   }
-  .wd-arrive--closed { border-color: var(--evx-rule); background: transparent; }
+  .wd-arrive--closed { border-color: var(--evx-rule-light); background: transparent; }
   .wd-arrive__pre {
     font-family: var(--evx-font-mono);
     font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--evx-champagne);
+    color: var(--evx-champagne-dim);
   }
   .wd-arrive__date {
     font-family: var(--evx-font-display);
-    font-size: 18px; font-weight: 500; color: var(--evx-paper);
+    font-size: 18px; font-weight: 500; color: var(--evx-ink);
   }
   .wd-arrive__note {
     font-family: var(--evx-font-mono); font-size: 11px; color: var(--evx-ink-soft);

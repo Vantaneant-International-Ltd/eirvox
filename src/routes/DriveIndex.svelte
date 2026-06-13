@@ -97,7 +97,7 @@
     <button class="di-top__home" type="button" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX wheels"
             style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
       <img src="/brand/wordmark.png" alt="ÉIRVOX"
-           style="height:16px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
+           style="height:16px;width:auto;display:block;" />
     </button>
     <button class="di-top__menu" type="button" on:click={() => (menuOpen = true)} aria-label="Open menu">
       <span></span><span></span>
@@ -218,15 +218,15 @@
   </div>
   </main>
 
-  <Footer dark={true} />
+  <Footer />
 </div>
 
 <style>
-  /* Dark product surface + chrome (existing tokens only). */
+  /* Warm paper product surface + chrome (existing tokens only). */
   .di-page {
     min-height: 100vh;
-    background: var(--evx-black);
-    color: var(--evx-paper);
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     font-family: var(--evx-font-display);
     display: flex;
     flex-direction: column;
@@ -240,23 +240,23 @@
     justify-content: space-between;
     padding: 14px 22px;
     padding-top: max(env(safe-area-inset-top), 14px);
-    background: rgba(14, 13, 12, 0.92);
+    background: rgba(245, 242, 237, 0.92);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--evx-rule-soft);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
   .di-top__menu {
     display: flex; flex-direction: column; gap: 4px;
     padding: 6px; background: none; border: none; cursor: pointer;
   }
-  .di-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-paper); }
+  .di-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-ink); }
 
   .drive-index { flex: 1; padding-bottom: var(--evx-space-3xl); }
 
   .di-header {
     padding-top: var(--evx-space-2xl);
     padding-bottom: var(--evx-space-2xl);
-    border-bottom: 1px solid var(--evx-rule);
+    border-bottom: 1px solid var(--evx-rule-light);
     margin-bottom: var(--evx-space-2xl);
   }
 
@@ -268,14 +268,14 @@
     font-size: 80px;
     letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     margin-bottom: var(--evx-space-lg);
   }
 
   .di-header__desc {
     font-size: 16px;
     line-height: 1.65;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     max-width: 520px;
   }
 
@@ -289,7 +289,7 @@
   .di-issue {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
     overflow: hidden;
   }
 
@@ -302,25 +302,25 @@
 
   .di-issue__image {
     aspect-ratio: 16 / 9;
-    background: var(--evx-graphite);
+    background: rgba(26, 26, 26, 0.045);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .di-issue--upcoming .di-issue__image { background: var(--evx-graphite-mid); }
-  .di-issue--archived .di-issue__image { background: var(--evx-graphite); opacity: 0.60; }
+  .di-issue--upcoming .di-issue__image { background: rgba(26, 26, 26, 0.03); }
+  .di-issue--archived .di-issue__image { background: rgba(26, 26, 26, 0.045); opacity: 0.60; }
 
   .di-issue__num {
     position: absolute;
     top: var(--evx-space-md);
     left: var(--evx-space-md);
-    color: rgba(245, 242, 237, 0.40);
+    color: rgba(26, 26, 26, 0.40);
   }
 
   .di-issue__img-text {
-    color: rgba(245, 242, 237, 0.25);
+    color: rgba(26, 26, 26, 0.30);
     text-align: center;
   }
 
@@ -334,15 +334,15 @@
   }
 
   .di-issue__status-badge--upcoming {
-    background: var(--evx-graphite-mid);
-    border: 1px solid var(--evx-rule-dark);
+    background: transparent;
+    border: 1px solid var(--evx-rule-light);
     color: var(--evx-ink-soft);
   }
 
   .di-issue__status-badge--archived {
     background: transparent;
-    border: 1px solid var(--evx-rule-dark);
-    color: rgba(245, 242, 237, 0.40);
+    border: 1px solid var(--evx-rule-light);
+    color: rgba(26, 26, 26, 0.40);
   }
 
   .di-issue__body {
@@ -360,14 +360,14 @@
     font-size: 22px;
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
   }
 
   .di-issue__subtitle {
     font-family: var(--evx-font-editorial);
     font-style: italic;
     font-size: 15px;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
   }
 
   .di-issue__desc {
@@ -383,7 +383,7 @@
     align-items: center;
     margin-top: var(--evx-space-md);
     padding-top: var(--evx-space-md);
-    border-top: 1px solid var(--evx-rule);
+    border-top: 1px solid var(--evx-rule-light);
   }
 
   .di-issue__price-block {
@@ -418,7 +418,7 @@
 
   /* About */
   .di-about {
-    border-top: 1px solid var(--evx-rule);
+    border-top: 1px solid var(--evx-rule-light);
     padding-top: var(--evx-space-2xl);
   }
 
@@ -439,7 +439,7 @@
   .di-about__para {
     font-size: 15px;
     line-height: 1.75;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     margin-bottom: var(--evx-space-md);
   }
 
@@ -465,9 +465,9 @@
     align-items: flex-start;
     font-size: 14px;
     line-height: 1.65;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     padding-bottom: var(--evx-space-lg);
-    border-bottom: 1px solid var(--evx-rule);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
 
   .di-about__step-num { color: var(--evx-fox-orange); flex-shrink: 0; }

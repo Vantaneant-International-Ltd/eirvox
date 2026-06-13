@@ -23,9 +23,9 @@
     text-transform: uppercase;
     padding: 4px 8px;
     border-radius: 2px;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     background: transparent;
-    border: 1px solid var(--evx-rule);
+    border: 1px solid var(--evx-rule-light);
   }
   .tier--drive {
     background: var(--evx-champagne);

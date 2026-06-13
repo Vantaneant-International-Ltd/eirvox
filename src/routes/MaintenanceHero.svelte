@@ -48,8 +48,8 @@
 <style>
   .mt {
     min-height: 100vh;
-    background: #1A1A1A;
-    color: #F5F2ED;
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,13 +68,11 @@
     height: 48px;
     width: 48px;
     margin-bottom: 22px;
-    filter: invert(1) brightness(1.05);
   }
   .mt__wordmark {
     height: 48px;
     width: auto;
     margin-bottom: 28px;
-    filter: invert(1) brightness(1.05);
   }
 
   .mt__eyebrow {
@@ -89,7 +87,7 @@
     font-family: 'Inter Tight', system-ui, sans-serif;
     font-size: 17px;
     line-height: 1.55;
-    color: #F5F2ED;
+    color: var(--evx-ink);
     max-width: 420px;
     margin-bottom: 56px;
   }
@@ -97,19 +95,19 @@
   .mt__rule {
     width: 120px;
     height: 1px;
-    background: #2C2C2C;
+    background: var(--evx-rule-light);
     margin-bottom: 20px;
   }
   .mt__support {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     letter-spacing: 0.04em;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
   }
   .mt__support a {
-    color: #F5F2ED;
+    color: var(--evx-ink);
     text-decoration: none;
-    border-bottom: 1px solid #2C2C2C;
+    border-bottom: 1px solid var(--evx-rule-light);
     transition: border-color 200ms ease;
   }
   .mt__support a:hover { border-bottom-color: #E8742C; }
@@ -123,7 +121,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
     transition: color 200ms ease;
   }
   .mt__social a:hover { color: #E8742C; }
@@ -135,10 +133,10 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     letter-spacing: 0.04em;
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
   }
   .mt__legal a {
-    color: #5C5C5C;
+    color: var(--evx-ink-soft);
     text-decoration: none;
     transition: color 200ms ease;
   }

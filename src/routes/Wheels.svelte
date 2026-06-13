@@ -1,6 +1,6 @@
 <script lang="ts">
   // ============================================================
-  // /wheels — wheel-specialist homepage (dark world, lockfile §9).
+  // /wheels — wheel-specialist homepage (warm paper, lockfile §9 amended).
   //
   // Numbered sections, top to bottom:
   //   01 · IGNITION  — signature hero (statement + designed photo slot)
@@ -16,9 +16,9 @@
   //   * DRIVE pulled via getDriveListings, archived filtered out.
   //   * Chassis list pulled via getFitmentChassis (live BMW fitment).
   //
-  // Photography: every image position is a designed slot
-  // (--evx-surface-2 fill + mono SHOT annotation). No carbon-weave
-  // placeholder. No motion beyond the existing evx-rise primitive.
+  // Photography: real product shots render edge-to-edge on paper; image
+  // positions without a photo fall back to a designed paper slot (faint
+  // ink tint + mono SHOT annotation). No motion beyond evx-rise.
   //
   // Origin copy lives in the proof band + footer, not the hero. No
   // "made in Dublin/Ireland", no "by hand", no "finished by hand".
@@ -108,6 +108,15 @@
     if (!state) return 'Upcoming';
     return state.charAt(0).toUpperCase() + state.slice(1);
   }
+
+  // Product shot for a listing, if one has been uploaded. Photos now sit
+  // on warm paper and render edge-to-edge so the shot's ground merges
+  // with the page; slots remain only where no photo exists.
+  function imgOf(l: ListingWithExtras | null): string | null {
+    if (!l) return null;
+    return l.cover_image ?? l.images?.[0]?.public_url ?? null;
+  }
+  $: heroImg = imgOf(consignment);
 </script>
 
 <div class="wp evx-root" on:scroll={onScroll}>
@@ -117,7 +126,7 @@
     <button class="wp-top__home" type="button" on:click={() => navigate('/')} aria-label="ÉIRVOX home"
             style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
       <img src="/brand/wordmark.png" alt="ÉIRVOX"
-           style="height:16px;width:auto;display:block;filter:invert(1) brightness(1.05);" />
+           style="height:16px;width:auto;display:block;" />
     </button>
     <button class="wp-top__menu" type="button"
             on:click={() => (menuOpen = true)} aria-label="Open menu">
@@ -140,8 +149,13 @@
         <Btn variant="ghost" size="md" on:click={() => (finderOpen = true)}>Find your fit</Btn>
       </div>
     </div>
-    <div class="wp-slot wp-ig__photo" style="aspect-ratio:16/9;">
-      <span class="wp-slot__cap">SHOT 01 · ¾ FRONT</span>
+    <div class="wp-slot wp-ig__photo" class:wp-slot--photo={heroImg}
+         style="aspect-ratio:{heroImg ? '1 / 1' : '16 / 9'};">
+      {#if heroImg}
+        <img class="wp-slot__img" src={heroImg} alt={consignment?.title ?? 'ÉIRVOX carbon wheel'} />
+      {:else}
+        <span class="wp-slot__cap">SHOT 01 · ¾ FRONT</span>
+      {/if}
     </div>
   </section>
 
@@ -193,9 +207,14 @@
     {:else if driveItems.length > 0}
       <div class="wp-drive2__rail">
         {#each driveItems as d (d.id)}
+          {@const dImg = imgOf(d)}
           <button class="wp-drive2__card" type="button" on:click={() => openDrive(d.slug ?? d.id)}>
-            <div class="wp-slot wp-drive2__photo" style="aspect-ratio:4/3;">
-              <span class="wp-slot__cap">SHOT · {d.title}</span>
+            <div class="wp-slot wp-drive2__photo" class:wp-slot--photo={dImg} style="aspect-ratio:1 / 1;">
+              {#if dImg}
+                <img class="wp-slot__img" src={dImg} alt={d.title} />
+              {:else}
+                <span class="wp-slot__cap">SHOT · {d.title}</span>
+              {/if}
             </div>
             <div class="wp-drive2__body">
               <h3 class="wp-drive2__title">{d.title}</h3>
@@ -236,8 +255,8 @@
     </div>
   </section>
 
-  <!-- ━━━━━━ FOOTER (shared imprint, dark surface) ━━━━━━ -->
-  <Footer dark={true} />
+  <!-- ━━━━━━ FOOTER (shared imprint, warm paper) ━━━━━━ -->
+  <Footer />
 
   {#if finderOpen}
     <WheelFinder
@@ -252,8 +271,8 @@
 <style>
   .wp {
     min-height: 100vh;
-    background: var(--evx-black);
-    color: var(--evx-paper);
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     font-family: var(--evx-font-display);
   }
 
@@ -272,10 +291,10 @@
     border-bottom: 1px solid transparent;
   }
   .wp-top--scrolled {
-    background: rgba(14, 13, 12, 0.82);
+    background: rgba(245, 242, 237, 0.82);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border-bottom-color: var(--evx-rule-soft);
+    border-bottom-color: var(--evx-rule-light);
   }
   .wp-top__menu {
     display: flex; flex-direction: column; gap: 4px;
@@ -283,16 +302,23 @@
     background: none; border: none;
     cursor: pointer;
   }
-  .wp-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-paper); }
+  .wp-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-ink); }
 
-  /* ── Designed photo slot (shared) ── */
+  /* ── Designed photo slot (shared). Empty = faint ink tint + hairline;
+     with a photo = edge-to-edge, no fill/border (paper merges). ── */
   .wp-slot {
     position: relative;
     width: 100%;
-    background: var(--evx-surface-2);
-    border: 1px solid var(--evx-rule);
+    background: rgba(26, 26, 26, 0.045);
+    border: 1px solid var(--evx-rule-light);
     border-radius: 3px;
     overflow: hidden;
+  }
+  .wp-slot--photo { background: transparent; border: none; }
+  .wp-slot__img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
   }
   .wp-slot__cap {
     position: absolute;
@@ -322,12 +348,12 @@
     font-size: 44px;
     line-height: 0.98;
     letter-spacing: -0.026em;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     margin: 0 0 16px;
   }
   .wp-ig__stand {
     font-size: 17px;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     max-width: 340px;
     margin: 0 0 24px;
     line-height: 1.4;
@@ -348,7 +374,7 @@
     font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     margin-top: 9px;
   }
 
@@ -367,10 +393,10 @@
   .wp-fitment__label { display: block; color: var(--evx-ink-soft); }
   .wp-fitment__select {
     width: 100%;
-    background: var(--evx-surface-2);
-    border: 1px solid var(--evx-rule);
+    background: rgba(26, 26, 26, 0.03);
+    border: 1px solid var(--evx-rule-light);
     border-radius: 3px;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     font-family: var(--evx-font-display);
     font-size: 15px;
     padding: 14px;
@@ -378,12 +404,14 @@
     appearance: none;
     -webkit-appearance: none;
   }
-  .wp-fitment__select:focus { outline: none; border-color: var(--evx-rule-strong); }
+  .wp-fitment__select:focus { outline: none; border-color: var(--evx-ink-soft); }
 
   /* ── 04 · DRIVE ── */
   .wp-drive2 { padding: 44px 0 8px; }
   .wp-drive2__head { padding: 0 22px; margin-bottom: 18px; }
-  .wp-drive2__eyebrow { display: block; color: var(--evx-champagne); margin-bottom: 10px; }
+  /* Champagne is illegible on paper and is reserved for dark DRIVE plate
+     elements; the home DRIVE eyebrow uses the standard ink-soft label. */
+  .wp-drive2__eyebrow { display: block; color: var(--evx-ink-soft); margin-bottom: 10px; }
   .wp-drive2__h {
     font-family: var(--evx-font-display);
     font-weight: 500;
@@ -406,13 +434,13 @@
     flex: 0 0 70%;
     max-width: 300px;
     scroll-snap-align: start;
-    background: var(--evx-surface);
-    border: 1px solid var(--evx-rule);
+    background: transparent;
+    border: 1px solid var(--evx-rule-light);
     border-radius: 3px;
     overflow: hidden;
     text-align: left;
     cursor: pointer;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     padding: 0;
     transition: border-color 200ms ease, transform 200ms ease;
   }
@@ -427,33 +455,33 @@
     line-height: 1.2;
     margin: 0;
   }
-  .wp-drive2__state { display: inline-block; color: var(--evx-champagne); letter-spacing: 0.16em; }
+  .wp-drive2__state { display: inline-block; color: var(--evx-ink-soft); letter-spacing: 0.16em; }
 
   /* ── Proof band ── */
   .wp-proof { padding: 44px 22px 0; margin: 0 0 46px; }
   .wp-proof__inner {
-    border-top: 1px solid var(--evx-rule);
-    border-bottom: 1px solid var(--evx-rule);
+    border-top: 1px solid var(--evx-rule-light);
+    border-bottom: 1px solid var(--evx-rule-light);
     display: grid;
     grid-template-columns: 1fr;
     gap: 0;
   }
   .wp-proof__col {
     padding: 22px 0;
-    border-bottom: 1px solid var(--evx-rule-soft);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
   .wp-proof__col:last-child { border-bottom: none; }
   .wp-proof__h { display: block; margin-bottom: 12px; }
   .wp-proof__body {
     font-size: 16px;
     line-height: 1.5;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     max-width: 320px;
     margin: 0;
   }
-  .wp-proof__em { color: var(--evx-paper); font-weight: 500; }
+  .wp-proof__em { color: var(--evx-ink); font-weight: 500; }
   .wp-proof__registry {
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     line-height: 1.7;
     margin: 0;
   }
@@ -461,10 +489,10 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    color: var(--evx-paper-soft);
+    color: var(--evx-ink-soft);
     transition: var(--evx-transition);
   }
-  .wp-proof__mail:hover { color: var(--evx-paper); }
+  .wp-proof__mail:hover { color: var(--evx-ink); }
 
   /* ── Skeletons / empties ── */
   .wp-skel, .wp-empty {
@@ -473,7 +501,7 @@
     font-size: 11.5px;
     color: var(--evx-ink-soft);
   }
-  .wp-empty a { color: var(--evx-paper); text-decoration: underline; text-underline-offset: 3px; }
+  .wp-empty a { color: var(--evx-ink); text-decoration: underline; text-underline-offset: 3px; }
 
   /* ── Desktop scaling (mobile-first; widen a touch above 600px) ── */
   @media (min-width: 600px) {

@@ -43,7 +43,7 @@
 
   .btn--primary   { background: var(--evx-fox-orange); color: #fff; }
   .btn--champagne { background: var(--evx-champagne); color: #1a150a; }
-  .btn--ghost     { background: transparent; color: var(--evx-paper); border: 1px solid var(--evx-rule-strong); }
-  .btn--solid     { background: var(--evx-paper); color: var(--evx-black); }
-  .btn--quiet     { background: rgba(244,241,236,0.06); color: var(--evx-paper); }
+  .btn--ghost     { background: transparent; color: var(--evx-ink); border: 1px solid var(--evx-ink-soft); }
+  .btn--solid     { background: var(--evx-ink); color: var(--evx-paper); }
+  .btn--quiet     { background: rgba(26,26,26,0.05); color: var(--evx-ink); }
 </style>
