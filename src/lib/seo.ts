@@ -6,7 +6,7 @@
 const SITE = 'ÉIRVOX';
 const SITE_URL = 'https://eirvox.ie';
 const DEFAULT_DESC =
-  "Ireland's premium marketplace for enthusiast objects. Verified sellers, reservation deposits, authenticated items.";
+  "Carbon steering wheels you'll want the moment you see them — and know are real. The DRIVE line and a fitted BMW range. Designed in Ireland, finished in Dublin.";
 const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export interface SeoData {
@@ -76,9 +76,9 @@ export function applySeo({ title, description, path = '/', ogImage = OG_IMAGE, n
 
 export const seo = {
   home: (): SeoData => ({
-    title: "Ireland's Premium Marketplace",
+    title: 'ÉIRVOX — Carbon Steering Wheels',
     description:
-      "Ireland's premium marketplace for enthusiast objects. Verified sellers, reservation deposits, authenticated items. Starting with Automotive.",
+      "Carbon steering wheels you'll want the moment you see them — and know are real. The DRIVE line and a fitted BMW range. Designed in Ireland, finished in Dublin.",
     path: '/',
   }),
 
@@ -88,11 +88,11 @@ export const seo = {
     path: `/${slug}`,
   }),
 
-  listing: (title: string, subtitle: string | undefined, price: string, location: string, slug: string): SeoData => ({
+  listing: (title: string, subtitle: string | undefined, price: string, _location: string, slug: string): SeoData => ({
     title,
     description: subtitle
-      ? `${subtitle}. ${price}. ${location}. Express interest on ÉIRVOX - Ireland's premium marketplace.`
-      : `${price}. ${location}. Express interest on ÉIRVOX - Ireland's premium marketplace.`,
+      ? `${subtitle}. Finished in Dublin, fitted to your car. ${price}.`
+      : `Finished in Dublin, fitted to your car. ${price}.`,
     path: `/listing/${slug}`,
   }),
 
@@ -137,9 +137,9 @@ export const seo = {
   }),
 
   trust: (): SeoData => ({
-    title: 'Trust & Protection',
+    title: 'Trust',
     description:
-      "Buyer protection, authentication, and deposit handling on ÉIRVOX. How money moves, how items are checked, and what happens when something goes wrong.",
+      'How buying an ÉIRVOX wheel works — you pay us directly, and we stand behind what we ship.',
     path: '/trust',
   }),
 
