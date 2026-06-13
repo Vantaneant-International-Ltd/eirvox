@@ -145,8 +145,9 @@
       <div class="wp-ig__cta">
         {#if consignment}
           <Btn variant="primary" size="md" on:click={openConsignment}>Explore the wheel</Btn>
+        {:else}
+          <Btn variant="primary" size="md" on:click={() => (finderOpen = true)}>Find your fit</Btn>
         {/if}
-        <Btn variant="ghost" size="md" on:click={() => (finderOpen = true)}>Find your fit</Btn>
       </div>
     </div>
     <div class="wp-slot wp-ig__photo" class:wp-slot--photo={heroImg}
@@ -331,14 +332,14 @@
     color: var(--evx-ink-soft);
   }
 
-  .wp-section__eyebrow { display: block; margin-bottom: 16px; color: var(--evx-ink-soft); }
+  .wp-section__eyebrow { display: block; margin-bottom: var(--evx-space-lg); color: var(--evx-ink-soft); }
 
   /* ── 01 · Ignition ── */
   .wp-ignition {
-    padding: 30px 22px 8px;
+    padding: var(--evx-space-xl) 22px 8px;
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: var(--evx-space-2xl);
   }
   .wp-ig__inner { animation: evx-rise 700ms ease both; }
   .wp-ig__eyebrow { display: block; color: var(--evx-ink-soft); margin-bottom: 18px; }
@@ -355,17 +356,17 @@
     font-size: 17px;
     color: var(--evx-ink-soft);
     max-width: 340px;
-    margin: 0 0 24px;
+    margin: 0 0 var(--evx-space-xl);
     line-height: 1.4;
   }
   .wp-ig__cta { display: flex; gap: 10px; flex-wrap: wrap; }
 
-  /* ── 02 · Material ── */
-  .wp-material { padding: 42px 22px 8px; }
+  /* ── 02 · Material — fewer, larger tiles, more air ── */
+  .wp-material { padding: var(--evx-space-3xl) 22px 8px; }
   .wp-material__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: var(--evx-space-lg);
   }
   .wp-material__tile { margin: 0; }
   .wp-material__cap {
@@ -379,14 +380,14 @@
   }
 
   /* ── 03 · Fitment ── */
-  .wp-fitment { padding: 44px 22px 8px; }
+  .wp-fitment { padding: var(--evx-space-3xl) 22px 8px; }
   .wp-fitment__h {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: 28px;
+    font-size: 32px;
     letter-spacing: -0.02em;
     line-height: 1.06;
-    margin: 0 0 22px;
+    margin: 0 0 var(--evx-space-xl);
   }
   .wp-fitment__row { display: flex; flex-direction: column; gap: 18px; }
   .wp-fitment__control { display: flex; flex-direction: column; gap: 14px; }
@@ -407,22 +408,22 @@
   .wp-fitment__select:focus { outline: none; border-color: var(--evx-ink-soft); }
 
   /* ── 04 · DRIVE ── */
-  .wp-drive2 { padding: 44px 0 8px; }
-  .wp-drive2__head { padding: 0 22px; margin-bottom: 18px; }
+  .wp-drive2 { padding: var(--evx-space-3xl) 0 8px; }
+  .wp-drive2__head { padding: 0 22px; margin-bottom: var(--evx-space-lg); }
   /* Champagne is illegible on paper and is reserved for dark DRIVE plate
      elements; the home DRIVE eyebrow uses the standard ink-soft label. */
   .wp-drive2__eyebrow { display: block; color: var(--evx-ink-soft); margin-bottom: 10px; }
   .wp-drive2__h {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: 27px;
+    font-size: 30px;
     letter-spacing: -0.02em;
     line-height: 1;
     margin: 0;
   }
   .wp-drive2__rail {
     display: flex;
-    gap: 14px;
+    gap: var(--evx-space-lg);
     overflow-x: auto;
     padding: 0 22px 8px;
     scroll-snap-type: x mandatory;
@@ -430,23 +431,22 @@
   }
   .wp-drive2__rail::-webkit-scrollbar { display: none; }
   .wp-drive2__rail-pad { flex: 0 0 8px; }
+  /* No boxed card — photo slot + name + state, separated by space. */
   .wp-drive2__card {
-    flex: 0 0 70%;
+    flex: 0 0 72%;
     max-width: 300px;
     scroll-snap-align: start;
     background: transparent;
-    border: 1px solid var(--evx-rule-light);
-    border-radius: 3px;
-    overflow: hidden;
+    border: none;
     text-align: left;
     cursor: pointer;
     color: var(--evx-ink);
     padding: 0;
-    transition: border-color 200ms ease, transform 200ms ease;
+    transition: transform 200ms ease;
   }
-  .wp-drive2__card:hover { border-color: rgba(232, 116, 44, 0.45); transform: translateY(-2px); }
-  .wp-drive2__photo { border: none; border-radius: 0; }
-  .wp-drive2__body { padding: 15px 16px 18px; display: flex; flex-direction: column; gap: 9px; }
+  .wp-drive2__card:hover { transform: translateY(-2px); }
+  .wp-drive2__photo { border-radius: 3px; }
+  .wp-drive2__body { padding: 14px 2px 0; display: flex; flex-direction: column; gap: 7px; }
   .wp-drive2__title {
     font-family: var(--evx-font-display);
     font-weight: 500;
@@ -458,7 +458,7 @@
   .wp-drive2__state { display: inline-block; color: var(--evx-ink-soft); letter-spacing: 0.16em; }
 
   /* ── Proof band ── */
-  .wp-proof { padding: 44px 22px 0; margin: 0 0 46px; }
+  .wp-proof { padding: var(--evx-space-3xl) 22px 0; margin: 0 0 var(--evx-space-3xl); }
   .wp-proof__inner {
     border-top: 1px solid var(--evx-rule-light);
     border-bottom: 1px solid var(--evx-rule-light);
@@ -507,14 +507,14 @@
   @media (min-width: 600px) {
     .wp-ig__h { font-size: 60px; }
     .wp-ig__stand { font-size: 19px; max-width: 460px; }
-    .wp-material__grid { grid-template-columns: repeat(4, 1fr); }
-    .wp-fitment__row { flex-direction: row; align-items: stretch; }
+    .wp-material__grid { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-xl); }
+    .wp-fitment__row { flex-direction: row; align-items: stretch; gap: var(--evx-space-2xl); }
     .wp-fitment__photo { flex: 1; }
     .wp-fitment__control { flex: 0 0 280px; justify-content: center; }
-    .wp-fitment__h { font-size: 34px; }
-    .wp-drive2__card { flex: 0 0 320px; }
+    .wp-fitment__h { font-size: 40px; }
+    .wp-drive2__card { flex: 0 0 340px; }
     .wp-proof__inner { grid-template-columns: 1fr 1fr 1fr; gap: var(--evx-space-2xl); }
-    .wp-proof__col { padding: 26px 0; border-bottom: none; }
+    .wp-proof__col { padding: var(--evx-space-lg) 0; border-bottom: none; }
   }
   @media (min-width: 1024px) {
     .wp-ig__h { font-size: 84px; }

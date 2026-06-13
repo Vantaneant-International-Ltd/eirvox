@@ -1,24 +1,17 @@
 <script lang="ts">
   // ============================================================
-  // /wheels/:slug — dark cinematic wheel detail (DRIVE + standard).
+  // /wheels/:slug — warm-paper wheel detail (DRIVE + standard).
   //
-  // The marketplace ListingDetail/DriveIssue pages render the LIGHT
-  // marketplace chrome (Nav + Footer + paper backgrounds). For wheels
-  // that broke the cinematic dark experience: tapping a wheel from the
-  // dark /wheels page or the finder dropped the buyer onto a white page.
+  // Canonical anatomy on the Paper surface: hero (product shot edge-to-
+  // edge on paper + static SVG dimension layer) → one-line statement →
+  // mono spec table → macro strip → single orange CTA → accordions.
+  //   * standard wheels (listing_variants present) -> VariantPicker
+  //     (orange "Fits your <chassis>" tag, live finish chips, PayButton)
+  //   * DRIVE wheels (is_drive, no variants) -> deposit/full pay block;
+  //     champagne survives only on the DRIVE pill/plate.
   //
-  // This page is the dark shell from the approved prototype (pages 6-11):
-  //   * minimal top bar (back · wordmark · home)
-  //   * full-bleed carbon hero + thumbnail strip
-  //   * tier tag (champagne DRIVE / outlined STANDARD), title, blurb
-  //   * standard wheels (listing_variants present) -> VariantPicker, which
-  //     is already dark and carries the orange "Fits your <chassis>" tag,
-  //     the live finish chips with accent swatches, and the real PayButton
-  //   * DRIVE wheels (is_drive, no variants) -> dark deposit/full pay block
-  //   * "The detail" spec rows + shipping line
-  //
-  // Commerce is unchanged: the same VariantPicker + PayButton + server
-  // amount resolution as the marketplace detail. Only the shell is new.
+  // Commerce is unchanged: same VariantPicker + PayButton + server
+  // amount resolution as the marketplace detail. Only the surface is new.
   // ============================================================
   import { onMount } from 'svelte';
   import { navigate } from '../lib/router';
@@ -440,7 +433,7 @@
   .wd-thumb--on { border-color: var(--evx-ink); }
 
   /* ── Header ── */
-  .wd-head { padding: 24px 18px 0; }
+  .wd-head { padding: var(--evx-space-xl) 18px 0; }
   .wd-head__tags { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
   .wd-head__marque { color: var(--evx-ink-soft); }
   .wd-head__title {
@@ -469,7 +462,7 @@
   }
 
   /* ── Buy (VariantPicker host) ── */
-  .wd-buy { padding: 24px 18px 0; }
+  .wd-buy { padding: var(--evx-space-2xl) 18px 0; }
 
   /* ── Designed photo slot (shared) + macro strip ── */
   .wd-slot {
@@ -490,11 +483,11 @@
     text-transform: uppercase;
     color: var(--evx-ink-soft);
   }
-  .wd-macro { padding: 30px 18px 0; }
-  .wd-macro__grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .wd-macro { padding: var(--evx-space-2xl) 18px 0; }
+  .wd-macro__grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--evx-space-md); }
 
   /* ── Accordions (native details, type-only toggle, no icons) ── */
-  .wd-acc-list { padding: 30px 18px 0; }
+  .wd-acc-list { padding: var(--evx-space-2xl) 18px 0; }
   .wd-acc { border-top: 1px solid var(--evx-rule-light); }
   .wd-acc:last-child { border-bottom: 1px solid var(--evx-rule-light); }
   .wd-acc__sum {
@@ -526,7 +519,7 @@
   .wd-acc__body p:last-child { margin-bottom: 0; }
 
   /* ── The detail ── */
-  .wd-detail { padding: 30px 18px 0; }
+  .wd-detail { padding: var(--evx-space-2xl) 18px 0; }
   .wd-detail__pre { color: var(--evx-ink-soft); display: block; margin-bottom: 6px; }
   .wd-detail__row {
     display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
