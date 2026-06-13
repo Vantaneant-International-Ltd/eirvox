@@ -104,9 +104,9 @@ export const seo = {
   }),
 
   driveIssue: (slug: string): SeoData => ({
-    title: 'DRIVE 003 · Mercedes-AMG GT Carbon Steering Wheel',
+    title: 'DRIVE',
     description:
-      'DRIVE Issue 003. Forged carbon shell, Alcantara wrap, champagne stitch. Eight pieces. €4,250. Express interest to confirm your allocation.',
+      'A DRIVE issue from ÉIRVOX — one specification, a limited run, finished in Dublin.',
     path: `/drive/${slug}`,
   }),
 

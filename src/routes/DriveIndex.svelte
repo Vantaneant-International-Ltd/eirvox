@@ -6,8 +6,7 @@
   import { applySeo, seo } from '../lib/seo';
   import { getDriveListings, type ListingWithExtras } from '../lib/api';
 
-  // Render shape used by the card markup below. Both the DB-derived
-  // and hardcoded-fallback paths produce this shape.
+  // Render shape used by the card markup below.
   type DriveCard = {
     num: string;
     slug: string | null;
@@ -20,30 +19,6 @@
     remaining: number | null;
     total: number | null;
   };
-
-  // Hardcoded fallback. Used ONLY when getDriveListings() returns 0
-  // rows, which covers the transition window before the v06 migration
-  // and the v06-drive-seed.sql have been applied. After the seed
-  // applies, the DB path takes over and this array is dead code (still
-  // shipped as a safety net).
-  const HARDCODED_FALLBACK: DriveCard[] = [
-    { num: '003', slug: '003-mercedes-amg-gt',  title: 'Mercedes-AMG GT',
-      subtitle: 'V8 Biturbo · C192',
-      desc: 'Forged carbon steering wheel. Eight pieces, Alcantara wrap, champagne stitch.',
-      date: 'May MMXXVI', status: 'open',     price: 4250, remaining: 5,    total: 8 },
-    { num: '004', slug: null, title: 'Volkswagen Golf R',
-      subtitle: 'Mk8 · 2.0T',
-      desc: 'Issue 004 in preparation. Details to follow on reservation opening.',
-      date: 'Q3 MMXXVI', status: 'upcoming', price: null, remaining: null, total: null },
-    { num: '002', slug: null, title: 'Porsche 911 GT3',
-      subtitle: '992 · 4.0 Naturally Aspirated',
-      desc: 'Forged carbon shift paddle set. Archived - sold out.',
-      date: 'Feb MMXXVI', status: 'archived', price: 1850, remaining: 0,    total: 6 },
-    { num: '001', slug: null, title: 'BMW M3 Competition',
-      subtitle: 'G80 · S58 Biturbo',
-      desc: 'Alcantara handbrake grip and gear surrounds. Archived - sold out.',
-      date: 'Nov MMXXV', status: 'archived', price: 690, remaining: 0,    total: 10 },
-  ];
 
   function toCard(l: ListingWithExtras): DriveCard {
     // drive_issue_state is the editorial state. Fall back to 'archived'
@@ -66,24 +41,20 @@
     };
   }
 
-  let issues: DriveCard[] = HARDCODED_FALLBACK;
+  // Live DB rows only — no fabricated issues, prices, editions, or
+  // serials. Empty until real DRIVE listings exist; the template then
+  // shows an honest "Arriving soon."
+  let issues: DriveCard[] = [];
   let loading = true;
-  let usingFallback = true;
   let menuOpen = false;
 
   onMount(async () => {
     applySeo(seo.drive());
     try {
       const rows = await getDriveListings({ limit: 24 });
-      if (rows.length > 0) {
-        issues = rows.map(toCard);
-        usingFallback = false;
-      }
+      issues = rows.map(toCard);
     } catch (err) {
-      // Defensive: if the DB query fails (e.g. drive_issue_state
-      // column absent pre-migration AND the implicit '*' join also
-      // errored), keep the hardcoded fallback.
-      console.warn('[DriveIndex] getDriveListings failed, using fallback:', err);
+      console.warn('[DriveIndex] getDriveListings failed:', err);
     } finally {
       loading = false;
     }
@@ -111,17 +82,21 @@
 
     <header class="di-header">
       <div class="di-header__top">
-        <span class="evx-caption di-header__pre">DRIVE ← PLATFORM ÉIRVOX</span>
+        <span class="evx-caption di-header__pre">DRIVE</span>
       </div>
       <h1 class="di-header__title">DRIVE</h1>
       <p class="di-header__desc">
         Limited-run OEM+ pieces, one specification per issue.
         Designed in Ireland, assembled abroad, finished in Dublin.
-        Serialised before they leave the house.
         One issue open at a time, no variants, no reprints.
       </p>
     </header>
 
+    {#if loading}
+      <p class="di-empty">Loading.</p>
+    {:else if issues.length === 0}
+      <p class="di-empty">Arriving soon.</p>
+    {:else}
     <div class="di-issues">
       {#each issues as issue}
         <div
@@ -155,10 +130,12 @@
               {#if issue.status === 'open' && issue.price !== null}
                 <div class="di-issue__price-block">
                   <span class="di-issue__price">€{issue.price.toLocaleString('en-IE')}</span>
-                  <span class="evx-caption di-issue__stock">
-                    <span class="di-issue__dot"></span>
-                    {issue.remaining} OF {issue.total} REMAINING
-                  </span>
+                  {#if issue.remaining !== null && issue.total !== null}
+                    <span class="evx-caption di-issue__stock">
+                      <span class="di-issue__dot"></span>
+                      {issue.remaining} OF {issue.total} REMAINING
+                    </span>
+                  {/if}
                 </div>
                 <button
                   class="evx-btn evx-btn--primary evx-btn--sm"
@@ -176,6 +153,7 @@
         </div>
       {/each}
     </div>
+    {/if}
 
     <!-- About DRIVE -->
     <section class="di-about">
@@ -187,8 +165,8 @@
             in a limited run. No variants. No restocks. Once the issue closes, it closes.
           </p>
           <p class="di-about__para">
-            The first issues are automotive - carbon, Alcantara, precision-finished in Dublin.
-            Future issues will extend into watches, fashion, and objects as the platform grows.
+            Carbon, Alcantara, finished in Dublin. One object, made to a single
+            specification, then closed. We do not reprint.
           </p>
         </div>
         <div class="di-about__reserve">
@@ -208,7 +186,7 @@
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">04</span>
-              <span>Each piece is finished in Dublin, serialised, and shipped tracked. We do not reprint.</span>
+              <span>Each piece is finished in Dublin and shipped tracked. We do not reprint.</span>
             </li>
           </ol>
         </div>
@@ -252,6 +230,14 @@
   .di-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-ink); }
 
   .drive-index { flex: 1; padding-bottom: var(--evx-space-3xl); }
+
+  .di-empty {
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--evx-ink-soft);
+    padding: var(--evx-space-2xl) 0 var(--evx-space-3xl);
+  }
 
   .di-header {
     padding-top: var(--evx-space-2xl);
