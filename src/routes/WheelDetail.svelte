@@ -67,7 +67,7 @@
 
   // ── Derived ──
   $: isDrive = listing?.is_drive === true;
-  $: tier = isDrive ? 'DRIVE' : 'STANDARD';
+  $: tier = isDrive ? 'DRIVE' : 'THE RANGE';
   $: blurb = listing?.description ?? listing?.subtitle ?? '';
   $: images = listing?.images ?? [];
   $: activeImageUrl = images[activeImage]?.public_url ?? listing?.cover_image ?? null;

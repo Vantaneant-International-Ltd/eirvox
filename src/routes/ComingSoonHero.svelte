@@ -46,9 +46,8 @@
       <img src="/brand/wordmark.png" alt="ÉIRVOX" class="cs__wordmark-img" />
     </h1>
 
-    <p class="cs__tagline cs__fade cs__fade--tagline">
-      Ireland's premium marketplace for enthusiast objects.
-    </p>
+    <h2 class="cs__headline cs__fade cs__fade--tagline">Carbon steering wheels, finished in Dublin.</h2>
+    <p class="cs__standfirst cs__fade cs__fade--tagline">The wheel you didn't know you wanted.</p>
 
     <div class="cs__group cs__fade cs__fade--group">
       <div class="cs__rule" aria-hidden="true"></div>
@@ -81,6 +80,8 @@
         {/if}
       {/if}
     </div>
+
+    <p class="cs__origin cs__fade cs__fade--footer">Designed in Ireland, assembled abroad, finished in Dublin.</p>
 
     <footer class="cs__footer cs__fade cs__fade--footer">
       <span class="cs__entity">ÉIRVOX Systems Ltd · Dublin, Ireland</span>
@@ -142,14 +143,34 @@
     display: block;
   }
 
-  /* ── Tagline ── */
-  .cs__tagline {
+  /* ── Headline + standfirst (the two beats: trust + desire) ── */
+  .cs__headline {
     font-family: 'Inter Tight', system-ui, sans-serif;
+    font-weight: 500;
+    font-size: 27px;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--evx-ink);
+    margin: 0 0 12px;
+    max-width: 440px;
+  }
+  .cs__standfirst {
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
     font-weight: 400;
-    font-size: 15px;
-    line-height: 1.5;
+    font-size: 18px;
+    line-height: 1.4;
     color: var(--evx-ink-soft);
     margin: 0 0 32px;
+    max-width: 380px;
+  }
+  .cs__origin {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--evx-ink-soft);
+    margin: 0 0 28px;
     max-width: 380px;
   }
 
@@ -319,7 +340,8 @@
     .cs { padding: 48px 20px; }
     .cs__wordmark-h { margin-bottom: 14px; }
     .cs__wordmark-img { height: 52px; }
-    .cs__tagline { font-size: 14px; margin-bottom: 28px; max-width: 320px; }
+    .cs__headline { font-size: 23px; max-width: 320px; }
+    .cs__standfirst { font-size: 16px; margin-bottom: 28px; max-width: 320px; }
     .cs__group { margin-bottom: 44px; }
     .cs__rule { margin-bottom: 20px; }
     .cs__eyebrow { margin-bottom: 18px; }

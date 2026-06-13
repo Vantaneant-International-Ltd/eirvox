@@ -1,8 +1,8 @@
 <script lang="ts">
   // Compact tier tag used on the detail header. DRIVE = champagne pill;
-  // STANDARD = quiet outlined chip. Single source of the only champagne
-  // chrome on the site.
-  export let tier: 'DRIVE' | 'STANDARD' | string = 'STANDARD';
+  // the fitted line = a quiet outlined chip ("THE RANGE", never the flat
+  // "STANDARD"). Single source of the only champagne chrome on the site.
+  export let tier: 'DRIVE' | 'THE RANGE' | string = 'THE RANGE';
   $: drive = tier === 'DRIVE';
 </script>
 

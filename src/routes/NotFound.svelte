@@ -53,7 +53,7 @@
       {:else}
         <h1 class="nf-title">
           This page doesn't exist.
-          <em class="nf-title__italic">The marketplace is waiting.</em>
+          <em class="nf-title__italic">Back to the wheels.</em>
         </h1>
         <p class="nf-sub">
           We couldn't find anything at <span class="nf-path"><span class="nf-path__hash">#</span>{attempted}</span>.
@@ -93,7 +93,7 @@
       <!-- Suggested listings -->
       <section class="nf-suggested">
         <div class="nf-shortcuts__head">
-          <span class="evx-label">OR DROP INTO A LISTING</span>
+          <span class="evx-label">Or open a wheel.</span>
         </div>
         {#if featured.length === 0}
           <p style="color: var(--evx-ink-soft); font-size: 14px; padding: var(--evx-space-md) 0;">
