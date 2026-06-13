@@ -33,7 +33,49 @@ marketplace, it failed.
 
 ---
 
-## 2. The villain
+<!--
+  ADD THIS as a new section in eirvox-emotional-bible.md.
+  Insert it immediately AFTER section 1 (The two feelings) and renumber the
+  following sections (old §2 becomes §3, etc.). Placing it this high is deliberate:
+  every reader must hit the phasing before they judge any copy.
+-->
+
+## 2. Launch vs destination , read this before judging any copy
+
+ÉIRVOX has a permanent **feeling** and a phased **surface**. Do not confuse them.
+
+**Permanent (never changes):** the feeling. Trust + desire arriving together, the
+invisible curator, the object as sacred, the broken-middle villain. Everything in
+this bible about *how ÉIRVOX feels* is locked across every phase.
+
+**Phased (changes over time):** the surface , what ÉIRVOX visibly sells and how
+broad it appears.
+
+- **Phase one (launch, now):** ÉIRVOX ships as a **focused specialist**, presented
+  through a narrow, deeply curated lane (e.g. wheels / a single object world). The
+  wider marketplace exists but is **deliberately hidden**. The narrowness is a
+  strategic choice, not a limitation. A tight, sacred, trustworthy specialist beats
+  a broad, shallow "marketplace for everything" at launch.
+- **Phase two (later):** the broader enthusiast marketplace (cars, watches, vinyl,
+  art, more) is progressively revealed, on ÉIRVOX's timing.
+
+**Consequence for anyone judging ÉIRVOX content (human or AI):**
+
+- Do **NOT** flag launch copy for being "too narrow," "too wheel-specific," "not
+  marketplace enough," or "you should expose more categories." At launch, focus is
+  correct. Pushing toward the broad marketplace is judging phase-one copy against
+  phase-two strategy , it is an OVER-READ and acting on it causes strategic damage.
+- The hidden marketplace stays hidden until ÉIRVOX chooses to reveal it. Treat any
+  "surface the full catalogue / show you're bigger than this" suggestion as wrong
+  at launch, regardless of how reasonable it sounds.
+- What you SHOULD still judge at every phase: the feeling. Trust, desire, curator
+  presence, object reverence, and all guardrails apply identically in phase one and
+  phase two. A narrow surface is fine; a feeling that betrays the bible is not.
+
+In one line: **the lane is allowed to be narrow; the feeling is never allowed to be
+wrong.**
+
+## 3. The villain
 
 **The broken middle of enthusiast commerce.** All the ego, friction, and distrust
 standing between a person and the object they love:
@@ -50,7 +92,7 @@ solves it. That is the promise and the fight.
 
 ---
 
-## 3. The hero , the invisible curator
+## 4. The hero , the invisible curator
 
 ÉIRVOX is anonymous, but NOT in the way Vendr is.
 
@@ -68,7 +110,7 @@ trust real and the desire safe.
 
 ---
 
-## 4. The Spielberg moment
+## 5. The Spielberg moment
 
 Never sell the object. Sell the moment of recognition and want, and never state it
 out loud.
@@ -86,7 +128,7 @@ both, at once.
 
 ---
 
-## 5. Visual & tonal grammar
+## 6. Visual & tonal grammar
 
 **Energy:** alive, charged, a lean-in, NOT Vendr's stillness. There is a pulse. A
 held breath before the want lands.
@@ -111,7 +153,7 @@ ad.
 
 ---
 
-## 6. Guardrails , what ÉIRVOX is NOT
+## 7. Guardrails , what ÉIRVOX is NOT
 
 - NOT a junk marketplace. NOT Facebook Marketplace energy. No chaos, no chancer
   tone, no ego.
@@ -130,7 +172,7 @@ ad.
 
 ---
 
-## 7. The audience
+## 8. The audience
 
 People who *think*. Who care about the small details others miss. Who have been
 burned by the swamp, fakes, scammers, ego, cold escrow, and want somewhere real.
@@ -143,7 +185,7 @@ want, and want hard once they trust.
 
 ---
 
-## 8. How to use this document
+## 9. How to use this document
 
 Before any ÉIRVOX content, page, listing template, caption, video, prompt, re-read
 sections 1, 4, and 6. Ask:
