@@ -1,3 +1,31 @@
+<!--
+  Paste this block into the TOP of the ÉIRVOX brand/site repo's README.md
+  (or docs/brand/README.md), above existing brand contents.
+  It makes the emotional bible authoritative rather than just-a-file.
+-->
+
+## Brand source of truth
+
+ÉIRVOX is governed by its emotional direction as much as its visual one. Read the
+emotional bible before making anything for ÉIRVOX.
+
+| Document | Governs | Question it answers |
+|---|---|---|
+| **Brand / visual guidelines** | How ÉIRVOX **looks** | typography, colour, layout, listing design |
+| **Emotional bible** (`eirvox-emotional-bible.md`) | How ÉIRVOX **feels** | trust, desire, tone, what it stands against |
+
+**Rule of precedence:** when visual guidelines and emotional direction conflict,
+resolve in favour of the **feeling**. A page can be visually clean and still be
+wrong if it reads as a junk marketplace, performs trust with loud badges, or
+pushes desire instead of awakening it.
+
+**Core distinction from Vendr:** Vendr is subtractive calm (away from junk).
+ÉIRVOX is trustworthy desire (toward a beautiful object, safely). ÉIRVOX has a
+pulse, do not let it inherit Vendr's stillness.
+
+The emotional bible is authoritative for all ÉIRVOX content: site, listings,
+captions, video (Higgsfield or otherwise), and any brief given to a human or an AI.
+
 # ÉIRVOX
 
 Ireland's premium marketplace for enthusiast objects.
