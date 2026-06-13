@@ -297,7 +297,7 @@
           {:else}
             <span class="wd-arrive__pre">Arriving</span>
             <span class="wd-arrive__date">{listing.drive_issue_date ?? 'soon'}</span>
-            <span class="wd-arrive__note">Reservations open when the run begins.</span>
+            <span class="wd-arrive__note">On sale when the run begins.</span>
           {/if}
         </div>
       </section>
@@ -323,7 +323,7 @@
           <p>Shipped via An Post, Ireland.</p>
           {#if hasCollection}<p>Collection available in Dublin.</p>{/if}
           {#if isDrive && payable}
-            <p>Made to order. Reserve now; ships when the run is finished{listing.drive_issue_date ? ` in ${listing.drive_issue_date}` : ''}.</p>
+            <p>Made to order; ships when the run is finished{listing.drive_issue_date ? ` in ${listing.drive_issue_date}` : ''}.</p>
           {/if}
         </div>
       </details>

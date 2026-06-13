@@ -141,7 +141,7 @@
                   class="evx-btn evx-btn--primary evx-btn--sm"
                   on:click|stopPropagation={() => navigate(`/wheels/${issue.slug}`)}
                 >
-                  Read issue →
+                  Buy →
                 </button>
               {:else if issue.status === 'upcoming'}
                 <span class="evx-caption di-issue__upcoming-note">Announcement to follow</span>
@@ -182,7 +182,7 @@
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">03</span>
-              <span>Upcoming issues are announced ahead of opening. Express interest to be notified.</span>
+              <span>Upcoming issues are announced ahead of opening.</span>
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">04</span>
