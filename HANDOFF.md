@@ -6,7 +6,8 @@ Context for anyone (human or AI) picking up this project. Read before changing c
 
 1. **This file** — architecture, database, security, open issues.
 2. **`CLAUDE.md`** (repo root) — standing instructions for AI contributors. Auto-read by Claude Code.
-3. **`design/DIRECTION-LOCKFILE.md`** — the design constitution. Read before touching ANY UI, route, style, or user-facing copy. Locked direction, banned phrases, world boundaries, per-surface rules, drift check.
+3. **`docs/brand/EMOTIONAL-BIBLE.md`** — the source of feeling. Trust + desire fused; object sacred; curator invisible but present. Read before any copy or content work.
+4. **`docs/brand/DIRECTION-LOCKFILE.md`** — the design constitution. Read before touching ANY UI, route, style, or user-facing copy. Locked direction, banned phrases, world boundaries, per-surface rules, drift check.
 
 If this file and the lockfile conflict on a design/copy matter, the lockfile wins. If they conflict on database/architecture, this file wins.
 
