@@ -178,7 +178,7 @@
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">02</span>
-              <span>Open issues are purchasable direct from ÉIRVOX. Collection in Dublin, or post nationwide.</span>
+              <span>Open issues are purchasable direct from ÉIRVOX. Collection by arrangement in Dublin, or post nationwide.</span>
             </li>
             <li class="di-about__step">
               <span class="evx-label di-about__step-num">03</span>

@@ -68,7 +68,7 @@
             <span class="evx-label about-step__num">04</span>
             <div>
               <strong class="about-step__title">Fitted &amp; shipped</strong>
-              <span class="about-step__body"> Collected in Dublin, or shipped within Ireland. </span>
+              <span class="about-step__body"> Collected by arrangement in Dublin, or shipped within Ireland. </span>
               <FactNeeded label="SHIPPING CARRIER · FITTING OFFERED / PRICE" />
             </div>
           </li>

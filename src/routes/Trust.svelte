@@ -117,7 +117,7 @@
         <div class="trust-section__left">
           <h2 class="trust-section__heading">Collection and delivery.</h2>
           <p class="trust-section__sub">
-            Collect in Dublin, or have your wheel posted within Ireland.
+            Collect by arrangement in Dublin, or have your wheel posted within Ireland.
           </p>
         </div>
         <div class="trust-bullets">
