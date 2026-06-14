@@ -8,6 +8,11 @@
 
   export let listing: ListingWithExtras;
   export let showBookmark: boolean = true;
+  // Single-seller wheels grid reskin (defaults preserve marketplace use):
+  export let showSeller: boolean = true;   // false → no SellerPill/VERIFIED
+  export let showFeatured: boolean = true; // false → no FEATURED badge
+  export let detailBase: string = '/listing'; // '/wheels' → WheelDetail
+  export let cta: string | null = null;    // e.g. 'Buy' → quiet orange action
 
   // Local saved state, kept in sync with the user's saved_items
   let saved = false;
@@ -61,8 +66,8 @@
 
 <div
   class="card"
-  on:click={() => navigate(`/listing/${slug}`)}
-  on:keydown={(e) => e.key === 'Enter' && navigate(`/listing/${slug}`)}
+  on:click={() => navigate(`${detailBase}/${slug}`)}
+  on:keydown={(e) => e.key === 'Enter' && navigate(`${detailBase}/${slug}`)}
   tabindex="0"
   role="link"
   aria-label="{listing.title} - {formatPrice(listing.price)}"
@@ -73,7 +78,7 @@
       <img class="card__img" src={cover} alt={listing.title} loading="lazy" />
     {/if}
 
-    {#if listing.featured}
+    {#if listing.featured && showFeatured}
       <span class="evx-caption card__badge">FEATURED</span>
     {/if}
 
@@ -124,9 +129,13 @@
     <div class="card__meta">
       <div class="card__price-row">
         <span class="card__price">{formatPrice(listing.price)}</span>
-        <span class="evx-caption card__location">{listing.city ?? ''}</span>
+        {#if showSeller}
+          <span class="evx-caption card__location">{listing.city ?? ''}</span>
+        {:else if cta}
+          <span class="card__cta">{cta} →</span>
+        {/if}
       </div>
-      {#if listing.seller}
+      {#if listing.seller && showSeller}
         <SellerPill tier={tier} name={listing.seller.trading_name} rating={listing.seller.rating ?? null} compact={false} />
       {/if}
     </div>
@@ -196,4 +205,11 @@
   .card__price-row { display: flex; justify-content: space-between; align-items: baseline; }
   .card__price { font-family: var(--evx-font-display); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; color: var(--evx-warm-black); }
   .card__location { color: var(--evx-ink-soft); }
+  .card__cta {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--evx-fox-orange);
+  }
 </style>

@@ -8,7 +8,7 @@
   import MaintenanceHero from './routes/MaintenanceHero.svelte';
   import PaymentReturn from './routes/PaymentReturn.svelte';
   import Home from './routes/Home.svelte';
-  import Wheels from './routes/Wheels.svelte';
+  import WheelsBrowse from './routes/WheelsBrowse.svelte';
   import WheelDetail from './routes/WheelDetail.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
@@ -169,7 +169,7 @@
 {:else if path === '/'}
   <Home />
 {:else if path === '/wheels'}
-  <Wheels />
+  <WheelsBrowse />
 {:else if wheelDetailParams}
   <WheelDetail slug={wheelDetailParams.slug} />
 {:else if categoryMatch}
