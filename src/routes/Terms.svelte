@@ -299,7 +299,7 @@
     <span class="legal-section__num">18 · CONTACT</span>
     <h2 id="s-contact" class="legal-section__h">Contact.</h2>
     <p>
-      <strong>ÉIRVOX Systems Ltd</strong> · Dublin, Ireland · CRO 712304 · VAT IE 3987654 N
+      <strong>ÉIRVOX Systems Ltd</strong> · Dublin, Ireland · CRO 712304
     </p>
     <p>
       Trading as ÉIRVOX. Part of Vantaneant International Ltd.

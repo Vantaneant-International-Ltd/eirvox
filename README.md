@@ -169,6 +169,6 @@ Wordmark and symbol live at `public/brand/`.
 
 ÉIRVOX Systems Ltd · Trading as ÉIRVOX
 A Vantaneant International Ltd company
-Dublin, Ireland · CRO 712304 · VAT IE 3987654 N
+Dublin, Ireland · CRO 712304
 
 renato@eirvox.ie · eirvox.ie
