@@ -81,7 +81,10 @@
   });
 
   function onScroll(e: Event) {
-    scrolled = (e.currentTarget as HTMLElement).scrollTop > 14;
+    // Stay transparent (light chrome) over the full-viewport dark hero;
+    // flip to paper chrome only once the paper sections come up.
+    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
+    scrolled = (e.currentTarget as HTMLElement).scrollTop > vh * 0.78;
   }
 
   function openDrive(slugOrId: string) {
@@ -116,7 +119,6 @@
     if (!l) return null;
     return l.cover_image ?? l.images?.[0]?.public_url ?? null;
   }
-  $: heroImg = imgOf(consignment);
 </script>
 
 <div class="wp evx-root" on:scroll={onScroll}>
@@ -125,7 +127,7 @@
   <header class="wp-top" class:wp-top--scrolled={scrolled}>
     <button class="wp-top__home" type="button" on:click={() => navigate('/')} aria-label="ÉIRVOX home"
             style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
-      <img src="/brand/wordmark.png" alt="ÉIRVOX"
+      <img src="/brand/wordmark.png" alt="ÉIRVOX" class="wp-top__wm" class:wp-top__wm--light={!scrolled}
            style="height:16px;width:auto;display:block;" />
     </button>
     <button class="wp-top__menu" type="button"
@@ -136,7 +138,7 @@
 
   <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
 
-  <!-- ━━━━━━ 01 · IGNITION ━━━━━━ -->
+  <!-- ━━━━━━ 01 · IGNITION — dark cinematic hero (only this band is dark) ━━━━━━ -->
   <section class="wp-ignition">
     <div class="wp-ig__inner">
       <span class="evx-label wp-ig__eyebrow">01 · Ignition</span>
@@ -150,13 +152,9 @@
         {/if}
       </div>
     </div>
-    <div class="wp-slot wp-ig__photo" class:wp-slot--photo={heroImg}
-         style="aspect-ratio:{heroImg ? '1 / 1' : '16 / 9'};">
-      {#if heroImg}
-        <img class="wp-slot__img" src={heroImg} alt={consignment?.title ?? 'ÉIRVOX carbon wheel'} />
-      {:else}
-        <span class="wp-slot__cap">SHOT 01 · ¾ FRONT</span>
-      {/if}
+    <div class="wp-ig__photo">
+      <img class="wp-ig__img" src="/hero/wheel-dark.jpg"
+           alt={consignment?.title ?? 'ÉIRVOX carbon steering wheel'} />
     </div>
   </section>
 
@@ -305,6 +303,11 @@
     cursor: pointer;
   }
   .wp-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-ink); }
+  /* Over the dark hero (not scrolled) the chrome is light; on scroll into
+     the paper sections it flips to ink. */
+  .wp-top__wm { transition: filter 240ms ease; }
+  .wp-top__wm--light { filter: invert(1) brightness(1.05); }
+  .wp-top:not(.wp-top--scrolled) .wp-top__menu span { background: var(--evx-paper); }
 
   /* ── Designed photo slot (shared). Empty = faint ink tint + hairline;
      with a photo = edge-to-edge, no fill/border (paper merges). ── */
@@ -335,32 +338,61 @@
 
   .wp-section__eyebrow { display: block; margin-bottom: var(--evx-space-lg); color: var(--evx-ink-soft); }
 
-  /* ── 01 · Ignition ── */
+  /* ── 01 · Ignition — dark cinematic hero (the only dark band). The
+     sticky bar overlaps it; pull the section up under the bar, pad
+     content below it, and let the wheel fill the rest of the first
+     viewport (object-fit: contain = large + fully visible, no crop). ── */
   .wp-ignition {
-    padding: var(--evx-space-xl) 22px 8px;
+    background: var(--evx-black);
+    color: var(--evx-paper);
+    min-height: 100svh;
+    margin-top: calc(-46px - env(safe-area-inset-top));
+    padding: calc(62px + env(safe-area-inset-top)) 22px var(--evx-space-xl);
     display: flex;
     flex-direction: column;
-    gap: var(--evx-space-2xl);
+    gap: var(--evx-space-lg);
   }
-  .wp-ig__inner { animation: evx-rise 700ms ease both; }
-  .wp-ig__eyebrow { display: block; color: var(--evx-ink-soft); margin-bottom: 18px; }
+  .wp-ig__inner { animation: evx-rise 700ms ease both; flex: 0 0 auto; }
+  .wp-ig__eyebrow { display: block; color: var(--evx-paper-soft); margin-bottom: 18px; }
   .wp-ig__h {
     font-family: var(--evx-font-display);
     font-weight: 600;
     font-size: 44px;
     line-height: 0.98;
     letter-spacing: -0.026em;
-    color: var(--evx-ink);
+    color: var(--evx-paper);
     margin: 0 0 16px;
   }
   .wp-ig__stand {
     font-size: 17px;
-    color: var(--evx-ink-soft);
+    color: var(--evx-paper-soft);
     max-width: 340px;
     margin: 0 0 var(--evx-space-xl);
     line-height: 1.4;
   }
   .wp-ig__cta { display: flex; gap: 10px; flex-wrap: wrap; }
+  .wp-ig__photo {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--evx-space-md);
+  }
+  .wp-ig__img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+  /* Desktop: headline left, wheel right (reference layout). */
+  @media (min-width: 768px) {
+    .wp-ignition { flex-direction: row; align-items: center; gap: var(--evx-space-2xl); }
+    .wp-ig__inner { flex: 0 0 44%; }
+    .wp-ig__photo { flex: 1 1 56%; align-self: stretch; padding-top: 0; }
+  }
 
   /* ── 02 · Material — fewer, larger tiles, more air ── */
   .wp-material { padding: var(--evx-space-3xl) 22px 8px; }
