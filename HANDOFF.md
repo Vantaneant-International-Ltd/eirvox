@@ -117,6 +117,7 @@ Unknown facts render as visible `[FACT NEEDED: …]` tokens — never invented, 
 - **LOW.** `{@html item}` in `src/routes/Trust.svelte` — safe today (hardcoded array), XSS-prone if dynamic. Replace when Trust is next touched.
 - **DEFERRED.** Single ~838KB bundle, all routes eager in `App.svelte`; Google Fonts via CSS `@import`; `ListingCard` per-card saved-items fetch (N+1, logged-in only). Post-launch.
 - Mock data residue: `src/data/user.ts` backs Account/Messages — these routes are gated out of wheel-mode nav; wire or remove before any account features ship.
+- `DriveIssue.svelte` (`/drive/:slug`) is **gated in wheel mode** (added to `hiddenByWheelMode` in `App.svelte`) — it's orphaned (DRIVE detail is served by `WheelDetail` at `/wheels/:slug`) and still carries **pre-BUY-verb copy** ("Express interest", deposit/reservation language) plus possibly un-flipped styling. Do NOT expose it: it must get the copy/paper pass (BUY verb, no reserve/deposit/express-interest) before the route is ever un-gated. `/drive` (the index) stays visible.
 
 Architecture follow-ups (tracked, not bugs):
 - Browser-side direct Supabase writes remain in `src/lib/api.ts`, `listings.ts`, `sellers.ts`, most of `admin.ts`. v1 grandfathers admin ones (defended at DB layer by `is_admin()` RLS + the privilege trigger). Move to Edge Functions whenever each surface gets touched.

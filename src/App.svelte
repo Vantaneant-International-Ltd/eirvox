@@ -140,6 +140,11 @@
     path === '/search' ||
     path === '/account' || path.startsWith('/account/') ||
     path === '/messages' || path.startsWith('/messages/') ||
+    // /drive (index) stays visible; /drive/:slug (DriveIssue) is gated —
+    // it's orphaned in wheel mode (DRIVE detail is served by WheelDetail
+    // at /wheels/:slug) and still carries pre-BUY-verb copy. Closes the
+    // direct-URL exposure until it gets the copy/paper pass.
+    path.startsWith('/drive/') ||
     (categoryMatch !== null && !allowedCats.includes(categoryMatch))
   );
 </script>
