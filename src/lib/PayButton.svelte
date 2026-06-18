@@ -139,7 +139,7 @@
       if (payTarget && instance.revolutPay) {
         instance.revolutPay(payTarget, {
           // Sensible defaults; Revolut renders the branded button with its R icon.
-          buttonStyle: { size: 'large', radius: 'small' },
+          buttonStyle: { size: 'large', radius: 'none' },
         });
       }
     } catch (err) {
@@ -224,7 +224,7 @@
     color: #FFFFFF;
     background: var(--evx-fox-orange);
     border: none;
-    border-radius: 6px;
+    border-radius: 0;
     padding: 14px 18px;
     cursor: pointer;
     transition: opacity 200ms ease;
@@ -270,7 +270,7 @@
     color: #C9665A;
     padding: 12px;
     border: 1px solid #C9665A;
-    border-radius: 2px;
+    border-radius: 0;
   }
   .paybtn__retry {
     font-family: var(--evx-font-display);
@@ -278,7 +278,7 @@
     background: var(--evx-warm-black);
     color: var(--evx-paper);
     border: none;
-    border-radius: 2px;
+    border-radius: 0;
     padding: 10px 16px;
     cursor: pointer;
     align-self: flex-start;
@@ -291,7 +291,7 @@
     padding: 16px;
     border: 1px solid rgba(232, 116, 44, 0.3);
     background: rgba(232, 116, 44, 0.04);
-    border-radius: 2px;
+    border-radius: 0;
   }
   .paybtn__ok-label {
     font-family: var(--evx-font-mono);

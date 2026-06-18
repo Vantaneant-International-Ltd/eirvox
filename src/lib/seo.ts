@@ -120,7 +120,7 @@ export const seo = {
   sellApply: (): SeoData => ({
     title: 'Apply to sell',
     description:
-      'Apply to sell on ÉIRVOX. Five steps, three minutes. Every applicant is reviewed by hand.',
+      'Apply to sell on ÉIRVOX. Five steps, three minutes. Every applicant is reviewed individually.',
     path: '/sell/apply',
   }),
 

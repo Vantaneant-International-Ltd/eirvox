@@ -105,7 +105,7 @@
 <svelte:window on:click={handleClickOutside} />
 
 <header class="nav">
-  <div class="nav__inner page-container">
+  <div class="nav__inner page-container" class:nav__inner--wheel={wheelMode}>
     <!-- Wordmark -->
     <div class="nav__left">
       <button class="nav__wordmark" on:click={() => handleNav('/')} aria-label="ÉIRVOX home">
@@ -135,9 +135,9 @@
       </div>
     {/if}
 
-    <!-- Nav links + actions -->
-    <nav class="nav__right" aria-label="Main navigation">
-      {#if wheelMode}
+    <!-- Centered wheel-mode tabs -->
+    {#if wheelMode}
+      <nav class="nav__wheelnav" aria-label="Primary">
         <ul class="nav__links">
           {#each wheelNav as cat}
             <li>
@@ -151,7 +151,12 @@
             </li>
           {/each}
         </ul>
-      {:else}
+      </nav>
+    {/if}
+
+    <!-- Nav links + actions -->
+    <nav class="nav__right" aria-label="Main navigation">
+      {#if !wheelMode}
         <ul class="nav__links">
           {#each categories as cat}
             <li>
@@ -316,8 +321,16 @@
     display: flex;
     align-items: center;
     gap: var(--evx-space-xl);
-    height: 60px;
+    height: 64px;
   }
+  /* Wheel-specialist: centered tabs — wordmark left, tabs centre, account right */
+  .nav__inner--wheel {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+  .nav__inner--wheel .nav__left { justify-self: start; }
+  .nav__wheelnav { justify-self: center; }
+  .nav__inner--wheel .nav__right { justify-self: end; margin-left: 0; }
 
   .nav__left { flex-shrink: 0; }
 
@@ -332,7 +345,7 @@
   }
 
   .nav__wordmark-img {
-    height: 26px;
+    height: 32px;
     width: auto;
     display: block;
   }
@@ -507,7 +520,6 @@
     min-width: 220px;
     background: var(--evx-paper);
     border: 1px solid var(--evx-rule-light);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
     z-index: 200;
     padding: var(--evx-space-xs);
     display: flex;

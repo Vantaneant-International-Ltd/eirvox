@@ -1,7 +1,7 @@
 /* ============================================================
    ÉIRVOX - Design Token System & Base Styles
    Inter Tight + Newsreader Italic + JetBrains Mono
-   Paper #F5F2ED · Ink #1A1A1A · Fox Orange #E8742C
+   Paper #F7F6F3 · Ink #1A1A1A · Fox Orange #E8742C
    ============================================================ */
 
 /* Fonts are loaded via <link> in index.html (parallel fetch), not an
@@ -9,18 +9,20 @@
 
 /* ── Tokens ── */
 :root {
-  /* Colour */
-  --evx-paper:          #F5F2ED;
-  --evx-ink:            #1A1A1A;
-  --evx-warm-black:     #1A1A1A;
+  /* Colour — palette freed from lockfile §3 (Renato, 18 Jun 2026): warm
+     cream retired for a clean white + neutral-grey system (mock direction). */
+  --evx-paper:          #FFFFFF; /* was #F5F2ED cream → pure white page/cards */
+  --evx-paper-panel:    #F4F3F1; /* light recessed panel/band (replaces cream-on-cream) */
+  --evx-ink:            #161616; /* near-black, neutral (was warm #1A1A1A) */
+  --evx-warm-black:     #161616; /* kept name for compatibility; now neutral */
   --evx-white:          #FFFFFF;
-  --evx-graphite:       #2A2825;
-  --evx-graphite-mid:   #3D3A36;
+  --evx-graphite:       #232323; /* neutral charcoal (was warm #2A2825) */
+  --evx-graphite-mid:   #383838; /* neutral mid (was warm #3D3A36) */
   --evx-fox-orange:     #E8742C;
   --evx-champagne:      #C9A961;
-  --evx-ink-soft:       #8A8680;
-  --evx-rule-light:     rgba(26, 26, 26, 0.12);
-  --evx-rule-dark:      rgba(245, 242, 237, 0.12);
+  --evx-ink-soft:       #8A8A88; /* neutral grey (was warm #8A8680) */
+  --evx-rule-light:     rgba(22, 22, 22, 0.12);
+  --evx-rule-dark:      rgba(255, 255, 255, 0.12);
 
   /* Spacing */
   --evx-space-xs:   4px;

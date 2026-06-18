@@ -80,7 +80,6 @@
     border-top: 2px solid var(--evx-fox-orange);
     padding: var(--evx-space-md);
     padding-bottom: calc(var(--evx-space-md) + env(safe-area-inset-bottom, 0px));
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.18);
   }
 
   .banner__inner {

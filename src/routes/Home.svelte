@@ -203,7 +203,7 @@
         <span class="evx-label empty-state__pre">COMING SOON</span>
         <h3 class="empty-state__h">Empty by intention.</h3>
         <p class="empty-state__sub">
-          Sellers are vetted by hand. This space fills as they're admitted.
+          Sellers are vetted individually. This space fills as they're admitted.
         </p>
         <div class="empty-state__actions">
           <button class="evx-btn evx-btn--primary evx-btn--sm" on:click={() => navigate('/sell/apply')}>
@@ -302,7 +302,7 @@
         <span class="evx-label trust__num">02</span>
         <h3 class="trust__title">Sellers admitted by application.</h3>
         <p class="trust__desc">
-          Every application is reviewed by hand. Three tiers.
+          Every application is reviewed individually. Three tiers.
           No open signup. No anonymous accounts. Cohorts four times a year.
         </p>
       </div>

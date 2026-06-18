@@ -34,9 +34,9 @@
     type FitmentChassis,
   } from '../lib/api';
   import WheelFinder from '../lib/WheelFinder.svelte';
-  import WheelsMenu from '../lib/WheelsMenu.svelte';
   import Footer from '../lib/Footer.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
+  import Nav from '../lib/Nav.svelte';
 
   const CONSIGNMENT_SLUG = 'bmw-m-sport-carbon-consignment';
 
@@ -48,13 +48,28 @@
   ];
 
   let consignment: ListingWithExtras | null = null;
+  let rangeItems: ListingWithExtras[] = [];
   let driveItems: ListingWithExtras[] = [];
   let chassisList: FitmentChassis[] = [];
   let selectedChassisId = '';
   let loading = true;
   let finderOpen = false;
-  let menuOpen = false;
   let scrolled = false;
+
+  // Jump to an in-page anchor (e.g. "/wheels#fitment") from the hero link.
+  function goNav(path: string) {
+    const hashIdx = path.indexOf('#');
+    if (hashIdx > 0) {
+      const route = path.slice(0, hashIdx);
+      const anchor = path.slice(hashIdx + 1);
+      navigate(route);
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 90);
+      return;
+    }
+    navigate(path);
+  }
 
   onMount(async () => {
     applySeo({
@@ -63,28 +78,37 @@
       path: '/wheels',
     });
 
-    const [{ data: con }, drives, chassis] = await Promise.all([
+    const [{ data: con }, { data: range }, drives, chassis] = await Promise.all([
       supabase
         .from('listings')
         .select('*, seller:sellers(id,trading_name,handle,tier,is_house), images:listing_images(id,public_url,sort_order)')
         .eq('slug', CONSIGNMENT_SLUG)
         .eq('status', 'active')
         .maybeSingle(),
+      supabase
+        .from('listings')
+        .select('*, images:listing_images(id,public_url,sort_order)')
+        .eq('status', 'active')
+        .eq('is_drive', false)
+        .like('slug', 'bmw-m-sport-carbon-%')
+        .neq('slug', CONSIGNMENT_SLUG)
+        .order('created_at', { ascending: true }),
       getDriveListings({ limit: 6 }),
       getFitmentChassis(),
     ]);
 
     consignment = (con as ListingWithExtras | null) ?? null;
+    rangeItems = (range as ListingWithExtras[] | null) ?? [];
     driveItems = (drives ?? []).filter(d => d.drive_issue_state !== 'archived');
     chassisList = chassis ?? [];
     loading = false;
   });
 
   function onScroll(e: Event) {
-    // Stay transparent (light chrome) over the full-viewport dark hero;
-    // flip to paper chrome only once the paper sections come up.
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
-    scrolled = (e.currentTarget as HTMLElement).scrollTop > vh * 0.78;
+    // Light editorial hero: the bar is ink-on-white throughout. Add the
+    // frosted white background as soon as the page moves so the tabs stay
+    // legible over imagery.
+    scrolled = (e.currentTarget as HTMLElement).scrollTop > 8;
   }
 
   function openDrive(slugOrId: string) {
@@ -123,39 +147,53 @@
 
 <div class="wp evx-root" on:scroll={onScroll}>
 
-  <!-- ━━━━━━ TOP BAR (sticky over hero, blurs on scroll) ━━━━━━ -->
-  <header class="wp-top" class:wp-top--scrolled={scrolled}>
-    <button class="wp-top__home" type="button" on:click={() => navigate('/')} aria-label="ÉIRVOX home"
-            style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
-      <img src="/brand/wordmark.png" alt="ÉIRVOX" class="wp-top__wm" class:wp-top__wm--light={!scrolled}
-           style="height:16px;width:auto;display:block;" />
-    </button>
-    <button class="wp-top__menu" type="button"
-            on:click={() => (menuOpen = true)} aria-label="Open menu">
-      <span></span><span></span>
-    </button>
-  </header>
+  <Nav />
 
-  <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
-
-  <!-- ━━━━━━ 01 · IGNITION — dark cinematic hero (only this band is dark) ━━━━━━ -->
-  <section class="wp-ignition">
-    <div class="wp-ig__inner">
-      <span class="evx-label wp-ig__eyebrow">01 · Ignition</span>
-      <h1 class="wp-ig__h">The two seconds<br/>before ignition.</h1>
-      <p class="evx-editorial wp-ig__stand">Engineered to be felt before it's seen.</p>
-      <div class="wp-ig__cta">
+  <!-- ━━━━━━ HERO — light editorial (newsroom split) ━━━━━━ -->
+  <section class="wp-hero">
+    <div class="wp-hero__text">
+      <span class="evx-label wp-hero__eyebrow">Ireland's carbon wheel specialist</span>
+      <h1 class="wp-hero__h">The two seconds<br/>before ignition.</h1>
+      <p class="evx-editorial wp-hero__stand">Engineered to be felt before it's seen.</p>
+      <div class="wp-hero__cta">
         {#if consignment}
           <Btn variant="primary" size="md" on:click={openConsignment}>Explore the wheel</Btn>
         {:else}
           <Btn variant="primary" size="md" on:click={() => (finderOpen = true)}>Find your fit</Btn>
         {/if}
+        <button class="wp-hero__link" type="button" on:click={() => goNav('/wheels#fitment')}>Find your fit →</button>
       </div>
     </div>
-    <div class="wp-ig__photo">
-      <img class="wp-ig__img" src="/hero/wheel-dark.jpg"
-           alt={consignment?.title ?? 'ÉIRVOX carbon steering wheel'} />
+    <!-- Horizon banner image goes here later (wide full-bleed hero band). -->
+  </section>
+
+  <!-- ━━━━━━ THE RANGE — BMW wheel listings (marketplace grid) ━━━━━━ -->
+  <section class="wp-range">
+    <div class="wp-range__head">
+      <span class="evx-label wp-section__eyebrow">The range</span>
+      <h2 class="wp-range__h">BMW M Sport. Seven styles.</h2>
     </div>
+    {#if loading}
+      <p class="wp-skel">Loading the range.</p>
+    {:else if rangeItems.length > 0}
+      <div class="wp-range__grid">
+        {#each rangeItems as l (l.id)}
+          {@const im = imgOf(l)}
+          <button class="wp-card" type="button" on:click={() => navigate(`/wheels/${l.slug}`)}>
+            <div class="wp-card__photo" class:wp-card__photo--img={im}>
+              {#if im}<img class="wp-card__img" src={im} alt={l.title} />{:else}<span class="wp-slot__cap">SHOT</span>{/if}
+            </div>
+            <div class="wp-card__body">
+              <span class="evx-label wp-card__tag">BMW M Sport</span>
+              <h3 class="wp-card__title">{l.title.split('·')[1]?.trim() ?? l.title}</h3>
+              <span class="wp-card__price">€{l.price}</span>
+            </div>
+          </button>
+        {/each}
+      </div>
+    {:else}
+      <p class="wp-empty">The range is being prepared.</p>
+    {/if}
   </section>
 
   <!-- ━━━━━━ 02 · MATERIAL ━━━━━━ -->
@@ -281,45 +319,61 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    padding: 18px 22px 12px;
+    padding: 18px 30px 12px;
     padding-top: max(env(safe-area-inset-top), 18px);
     background: transparent;
     transition: background 240ms ease, border-color 240ms ease, backdrop-filter 240ms ease;
     border-bottom: 1px solid transparent;
   }
+  .wp-top__home { justify-self: start; }
   .wp-top--scrolled {
-    background: rgba(245, 242, 237, 0.82);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border-bottom-color: var(--evx-rule-light);
   }
-  .wp-top__menu {
-    display: flex; flex-direction: column; gap: 4px;
-    padding: 6px;
+  /* Centered, always-visible nav tabs (replaces the drawer). */
+  .wp-top__nav { justify-self: center; display: flex; align-items: center; gap: clamp(20px, 3vw, 46px); }
+  .wp-top__tab,
+  .wp-top__act {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--evx-ink);
     background: none; border: none;
     cursor: pointer;
+    padding: 4px 0;
+    white-space: nowrap;
+    transition: opacity 160ms ease, color 240ms ease;
   }
-  .wp-top__menu span { display: block; width: 19px; height: 1.5px; background: var(--evx-ink); }
-  /* Over the dark hero (not scrolled) the chrome is light; on scroll into
-     the paper sections it flips to ink. */
+  .wp-top__tab:hover,
+  .wp-top__act:hover { opacity: 0.6; }
+  .wp-top__right { justify-self: end; display: flex; align-items: center; gap: 20px; }
+  .wp-top__act--accent { color: var(--evx-fox-orange); }
   .wp-top__wm { transition: filter 240ms ease; }
-  .wp-top__wm--light { filter: invert(1) brightness(1.05); }
-  .wp-top:not(.wp-top--scrolled) .wp-top__menu span { background: var(--evx-paper); }
+  @media (max-width: 767px) {
+    .wp-top { grid-template-columns: auto 1fr; padding-left: 20px; padding-right: 20px; }
+    .wp-top__nav { justify-self: end; gap: 16px; overflow-x: auto; }
+    .wp-top__tab, .wp-top__act { font-size: 10px; letter-spacing: 0.1em; }
+    .wp-top__right { display: none; }
+  }
 
   /* ── Designed photo slot (shared). Empty = faint ink tint + hairline;
      with a photo = edge-to-edge, no fill/border (paper merges). ── */
   .wp-slot {
     position: relative;
     width: 100%;
-    background: rgba(26, 26, 26, 0.045);
-    border: 1px solid var(--evx-rule-light);
-    border-radius: 3px;
+    background: var(--evx-ink);   /* two-tone: black product blocks on white */
+    border: none;
+    border-radius: 0;
     overflow: hidden;
   }
-  .wp-slot--photo { background: transparent; border: none; }
+  .wp-slot--photo { background: transparent; }
   .wp-slot__img {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
@@ -333,66 +387,86 @@
     font-size: 9.5px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--evx-ink-soft);
+    color: rgba(255, 255, 255, 0.55);
   }
 
-  .wp-section__eyebrow { display: block; margin-bottom: var(--evx-space-lg); color: var(--evx-ink-soft); }
+  .wp-section__eyebrow { display: block; margin-bottom: var(--evx-space-lg); color: var(--evx-ink); }
 
-  /* ── 01 · Ignition — dark cinematic hero (the only dark band). The
-     sticky bar overlaps it; pull the section up under the bar, pad
-     content below it, and let the wheel fill the rest of the first
-     viewport (object-fit: contain = large + fully visible, no crop). ── */
-  .wp-ignition {
-    background: var(--evx-black);
-    color: var(--evx-paper);
-    min-height: 100svh;
-    margin-top: calc(-46px - env(safe-area-inset-top));
-    padding: calc(62px + env(safe-area-inset-top)) 22px var(--evx-space-xl);
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-lg);
-  }
-  .wp-ig__inner { animation: evx-rise 700ms ease both; flex: 0 0 auto; }
-  .wp-ig__eyebrow { display: block; color: var(--evx-paper-soft); margin-bottom: 18px; }
-  .wp-ig__h {
+  /* ── THE RANGE — marketplace grid (white cards, black type, image) ── */
+  .wp-range { padding: var(--evx-space-3xl) 22px 8px; max-width: 1440px; margin: 0 auto; }
+  .wp-range__head { margin-bottom: var(--evx-space-xl); }
+  .wp-range__h {
     font-family: var(--evx-font-display);
-    font-weight: 600;
-    font-size: 44px;
-    line-height: 0.98;
-    letter-spacing: -0.026em;
-    color: var(--evx-paper);
-    margin: 0 0 16px;
+    font-weight: 500;
+    font-size: clamp(28px, 4vw, 44px);
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin: 8px 0 0;
+    color: var(--evx-ink);
   }
-  .wp-ig__stand {
-    font-size: 17px;
-    color: var(--evx-paper-soft);
-    max-width: 340px;
+  .wp-range__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-lg) var(--evx-space-md); }
+  .wp-card { text-align: left; background: none; border: none; padding: 0; cursor: pointer; color: var(--evx-ink); transition: transform 200ms ease; }
+  .wp-card:hover { transform: translateY(-3px); }
+  .wp-card__photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--evx-paper-panel);
+    overflow: hidden;
+  }
+  .wp-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .wp-card__body { padding: 14px 2px 0; display: flex; flex-direction: column; gap: 6px; }
+  .wp-card__tag { color: var(--evx-ink-soft); }
+  .wp-card__title { font-family: var(--evx-font-display); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; line-height: 1.15; margin: 0; }
+  .wp-card__price { font-family: var(--evx-font-display); font-weight: 500; font-size: 15px; color: var(--evx-ink); }
+  @media (min-width: 600px) { .wp-range__grid { grid-template-columns: repeat(3, 1fr); gap: var(--evx-space-xl); } }
+  @media (min-width: 1024px) {
+    .wp-range { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }
+    .wp-range__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* ── HERO — light editorial split (newsroom). Confident headline +
+     standfirst left, large image right, generous air. The sticky bar
+     sits ink-on-white above it. ── */
+  .wp-hero {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: clamp(72px, 17vh, 220px) 30px clamp(56px, 11vh, 130px);
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+  .wp-hero__text { animation: evx-rise 700ms ease both; }
+  .wp-hero__eyebrow { display: block; color: var(--evx-fox-orange); margin-bottom: 26px; }
+  .wp-hero__h {
+    font-family: var(--evx-font-display);
+    font-weight: 500;
+    font-size: clamp(48px, 9vw, 116px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    color: var(--evx-ink);
+    margin: 0 0 26px;
+  }
+  .wp-hero__stand {
+    font-size: clamp(18px, 2.2vw, 24px);
+    color: var(--evx-ink-soft);
+    max-width: 460px;
     margin: 0 0 var(--evx-space-xl);
     line-height: 1.4;
   }
-  .wp-ig__cta { display: flex; gap: 10px; flex-wrap: wrap; }
-  .wp-ig__photo {
-    flex: 1 1 auto;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: var(--evx-space-md);
+  .wp-hero__cta { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .wp-hero__link {
+    font-family: var(--evx-font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--evx-ink);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--evx-ink);
+    padding: 0 0 4px;
+    cursor: pointer;
+    transition: opacity 160ms ease;
   }
-  .wp-ig__img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-  }
-  /* Desktop: headline left, wheel right (reference layout). */
-  @media (min-width: 768px) {
-    .wp-ignition { flex-direction: row; align-items: center; gap: var(--evx-space-2xl); }
-    .wp-ig__inner { flex: 0 0 44%; }
-    .wp-ig__photo { flex: 1 1 56%; align-self: stretch; padding-top: 0; }
-  }
+  .wp-hero__link:hover { opacity: 0.55; }
 
   /* ── 02 · Material — fewer, larger tiles, more air ── */
   .wp-material { padding: var(--evx-space-3xl) 22px 8px; }
@@ -546,8 +620,6 @@
 
   /* ── Desktop scaling (mobile-first; widen a touch above 600px) ── */
   @media (min-width: 600px) {
-    .wp-ig__h { font-size: 60px; }
-    .wp-ig__stand { font-size: 19px; max-width: 460px; }
     .wp-material__grid { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-xl); }
     .wp-fitment__row { flex-direction: row; align-items: stretch; gap: var(--evx-space-2xl); }
     .wp-fitment__photo { flex: 1; }
@@ -558,9 +630,7 @@
     .wp-proof__col { padding: var(--evx-space-lg) 0; border-bottom: none; }
   }
   @media (min-width: 1024px) {
-    .wp-ig__h { font-size: 84px; }
-    .wp-ig__stand { font-size: 21px; }
-    .wp-ignition, .wp-material, .wp-fitment, .wp-drive2__head, .wp-proof {
+    .wp-material, .wp-fitment, .wp-drive2__head, .wp-proof {
       padding-left: max(48px, 6vw); padding-right: max(48px, 6vw);
     }
     .wp-drive2__rail { padding-left: max(48px, 6vw); padding-right: max(48px, 6vw); }

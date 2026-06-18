@@ -329,7 +329,7 @@
             <h3 class="tier-pick__name">Verified</h3>
             <p class="tier-pick__price">€0/mo · 7% commission</p>
             <ul class="tier-pick__features">
-              <li>+ Application reviewed by hand</li>
+              <li>+ Application reviewed individually</li>
               <li>+ Up to 10 active listings</li>
               <li>+ Reservation deposits on every sale</li>
               <li>+ Standard listing tools</li>

@@ -22,7 +22,7 @@
   } from '../lib/api';
   import PayButton from '../lib/PayButton.svelte';
   import VariantPicker from '../lib/VariantPicker.svelte';
-  import WheelsMenu from '../lib/WheelsMenu.svelte';
+  import Nav from '../lib/Nav.svelte';
   import PhotoFrame from '../lib/wheels-ui/PhotoFrame.svelte';
   import FactNeeded from '../lib/FactNeeded.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
@@ -115,22 +115,7 @@
 
 <div class="wd evx-root" on:scroll={onScroll}>
 
-  <!-- ━━ TOP BAR ━━ -->
-  <header class="wd-top" class:wd-top--scrolled={scrolled}>
-    <button class="wd-top__icon" type="button" on:click={() => navigate('/wheels')} aria-label="Back to wheels">
-      <Chevron dir="left" size={13} color="var(--evx-ink)" />
-    </button>
-    <button class="wd-top__home" type="button" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX wheels"
-            style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
-      <img src="/brand/wordmark.png" alt="ÉIRVOX"
-           style="height:16px;width:auto;display:block;" />
-    </button>
-    <button class="wd-top__icon wd-top__menu" type="button" on:click={() => (menuOpen = true)} aria-label="Open menu">
-      <span></span><span></span>
-    </button>
-  </header>
-
-  <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
+  <Nav />
 
   {#if loading}
     <div class="wd-state">Loading.</div>

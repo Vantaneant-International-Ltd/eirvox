@@ -137,7 +137,7 @@
   .enq input, .enq textarea {
     background: transparent;
     border: 1px solid var(--evx-rule-light);
-    border-radius: 2px;
+    border-radius: 0;
     color: var(--evx-warm-black);
     font-family: var(--evx-font-display);
     font-size: 14px;

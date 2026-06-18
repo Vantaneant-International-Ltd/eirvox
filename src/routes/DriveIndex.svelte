@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import Footer from '../lib/Footer.svelte';
-  import WheelsMenu from '../lib/WheelsMenu.svelte';
+  import Nav from '../lib/Nav.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
   import { getDriveListings, type ListingWithExtras } from '../lib/api';
@@ -63,19 +63,7 @@
 
 <div class="di-page">
 
-  <!-- Dark product chrome, consistent with /wheels -->
-  <header class="di-top">
-    <button class="di-top__home" type="button" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX wheels"
-            style="background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;">
-      <img src="/brand/wordmark.png" alt="ÉIRVOX"
-           style="height:16px;width:auto;display:block;" />
-    </button>
-    <button class="di-top__menu" type="button" on:click={() => (menuOpen = true)} aria-label="Open menu">
-      <span></span><span></span>
-    </button>
-  </header>
-
-  <WheelsMenu open={menuOpen} on:close={() => (menuOpen = false)} />
+  <Nav />
 
   <main id="main-content" class="drive-index">
     <div class="page-container">

@@ -277,7 +277,7 @@
   .finder__icon-btn {
     width: 38px;
     height: 38px;
-    border-radius: 50%;
+    border-radius: 0;
     border: 1px solid var(--evx-rule-light);
     background: transparent;
     color: var(--evx-ink);
@@ -297,7 +297,7 @@
   .finder__bar {
     flex: 1;
     height: 2.5px;
-    border-radius: 2px;
+    border-radius: 0;
     background: var(--evx-rule-light);
     transition: background 280ms ease;
   }
@@ -377,7 +377,7 @@
   .finder__fit {
     margin: 20px 18px 8px;
     border: 1px solid rgba(232, 116, 44, 0.35);
-    border-radius: 3px;
+    border-radius: 0;
     padding: 16px 18px;
     background: rgba(232, 116, 44, 0.06);
   }
@@ -385,7 +385,7 @@
   .finder__fit-check {
     width: 18px;
     height: 18px;
-    border-radius: 50%;
+    border-radius: 0;
     background: var(--evx-fox-orange);
     display: inline-flex;
     align-items: center;
@@ -438,7 +438,7 @@
   .finder__style-swatch {
     width: 10px;
     height: 10px;
-    border-radius: 50%;
+    border-radius: 0;
     flex-shrink: 0;
     border: 1px solid rgba(0, 0, 0, 0.18);
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.4);
