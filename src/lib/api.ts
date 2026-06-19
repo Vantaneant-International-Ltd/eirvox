@@ -205,19 +205,53 @@ export interface TradeCategory {
 }
 
 // Site settings shape - mirrors lib/admin.ts
+//
+// `fees` matches the LIVE site_settings.fees row schema exactly. Earlier
+// this carried invented `*_pct` / `*_monthly_eur` keys that never existed
+// in the DB, so getSiteSettings() merged stale defaults (12/10/8, €0/€49)
+// OVER the real row and every consumer read the wrong number. The keys
+// below are the real ones; commissions are integer percent, all monthly /
+// one-off fees are stored in CENTS (1900 = €19). Use getMarketplaceFees()
+// for display — it does the cents→euro conversion in one place.
 export interface SiteSettings {
   cohort: { number: number; status: 'open' | 'closed'; closes_at: string; tagline: string };
   drive:  { issue_number: number; issue_title: string; total_allocation: number; remaining: number; price_eur: number };
-  fees:   { verified_commission_pct: number; atelier_commission_pct: number; house_commission_pct: number; trade_listed_monthly_eur: number; trade_pro_monthly_eur: number };
+  fees:   { verified_commission: number; atelier_commission: number; atelier_monthly: number; trade_listed: number; trade_pro: number; authentication: number };
   deposit:{ amount_eur: number; refundable: boolean };
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
   cohort:  { number: 3, status: 'open', closes_at: '2026-06-14', tagline: 'COHORT 03 · CLOSES 14 JUN' },
   drive:   { issue_number: 12, issue_title: 'PORSCHE 911 992 GT3', total_allocation: 200, remaining: 47, price_eur: 149 },
-  fees:    { verified_commission_pct: 12, atelier_commission_pct: 10, house_commission_pct: 8, trade_listed_monthly_eur: 0, trade_pro_monthly_eur: 49 },
+  // Defaults mirror the live row (verified 7%, atelier 5% · €19/mo,
+  // TRADE €9/€29/mo, authentication €25) so a missing row still renders
+  // the truth, not a stale placeholder.
+  fees:    { verified_commission: 7, atelier_commission: 5, atelier_monthly: 1900, trade_listed: 900, trade_pro: 2900, authentication: 2500 },
   deposit: { amount_eur: 49, refundable: true },
 };
+
+/** Display-ready marketplace fees, cents converted to whole euros. The
+ *  single source the public site (Home tiers, Sell) reads — never the
+ *  raw cents row, never a hardcoded number. House tier is invite /
+ *  by-arrangement, so it carries no commission figure. */
+export interface MarketplaceFees {
+  verifiedCommissionPct: number;
+  atelierCommissionPct: number;
+  atelierMonthlyEur: number;
+  tradeListedMonthlyEur: number;
+  tradeProMonthlyEur: number;
+}
+
+export async function getMarketplaceFees(): Promise<MarketplaceFees> {
+  const f = (await getSiteSettings()).fees;
+  return {
+    verifiedCommissionPct: f.verified_commission,
+    atelierCommissionPct:  f.atelier_commission,
+    atelierMonthlyEur:     Math.round((f.atelier_monthly ?? 0) / 100),
+    tradeListedMonthlyEur: Math.round((f.trade_listed ?? 0) / 100),
+    tradeProMonthlyEur:    Math.round((f.trade_pro ?? 0) / 100),
+  };
+}
 
 // ── Helpers ──────────────────────────────────────────────────
 

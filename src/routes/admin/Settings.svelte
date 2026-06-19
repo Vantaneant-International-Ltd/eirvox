@@ -21,15 +21,31 @@
   let flagsDraft: SiteFlags = $siteFlags;
   const unsubFlags = siteFlags.subscribe(v => { flagsDraft = { ...v }; });
 
+  // Monthly / one-off fees are stored in CENTS in the DB. The admin form
+  // edits in whole euros via these mirrors; save() converts back to cents.
+  let atelierMonthlyEur = 0;
+  let tradeListedEur = 0;
+  let tradeProEur = 0;
+
   onMount(async () => {
     applySeo({ title: 'Admin · Settings', description: 'Site-wide configuration.', path: '/admin/settings' });
     settings = await getSiteSettings();
+    atelierMonthlyEur = Math.round((settings.fees.atelier_monthly ?? 0) / 100);
+    tradeListedEur    = Math.round((settings.fees.trade_listed ?? 0) / 100);
+    tradeProEur       = Math.round((settings.fees.trade_pro ?? 0) / 100);
     loading = false;
     return () => unsubFlags();
   });
 
   async function save(key: 'cohort' | 'drive' | 'fees' | 'deposit') {
     if (!settings) return;
+    // Fold the euro mirrors back into cents before persisting. `authentication`
+    // is preserved untouched (round-trips via settings.fees).
+    if (key === 'fees') {
+      settings.fees.atelier_monthly = Math.round(atelierMonthlyEur * 100);
+      settings.fees.trade_listed    = Math.round(tradeListedEur * 100);
+      settings.fees.trade_pro       = Math.round(tradeProEur * 100);
+    }
     actionError = '';
     saving = key;
     const r = await updateSiteSetting(key, settings[key]);
@@ -250,28 +266,29 @@
         <div class="adm-field--row">
           <div class="adm-field">
             <span class="adm-field__label">Verified seller commission (%)</span>
-            <input type="number" class="adm-field__input" bind:value={settings.fees.verified_commission_pct} step="0.5" />
+            <input type="number" class="adm-field__input" bind:value={settings.fees.verified_commission} step="0.5" />
           </div>
           <div class="adm-field">
             <span class="adm-field__label">Atelier commission (%)</span>
-            <input type="number" class="adm-field__input" bind:value={settings.fees.atelier_commission_pct} step="0.5" />
+            <input type="number" class="adm-field__input" bind:value={settings.fees.atelier_commission} step="0.5" />
           </div>
         </div>
+        <!-- House tier is invite / by-arrangement and carries no commission figure. -->
         <div class="adm-field--row">
           <div class="adm-field">
-            <span class="adm-field__label">House commission (%)</span>
-            <input type="number" class="adm-field__input" bind:value={settings.fees.house_commission_pct} step="0.5" />
+            <span class="adm-field__label">Atelier monthly (€)</span>
+            <input type="number" class="adm-field__input" bind:value={atelierMonthlyEur} />
           </div>
           <div class="adm-field"><!-- spacer --></div>
         </div>
         <div class="adm-field--row">
           <div class="adm-field">
             <span class="adm-field__label">TRADE Listed monthly (€)</span>
-            <input type="number" class="adm-field__input" bind:value={settings.fees.trade_listed_monthly_eur} />
+            <input type="number" class="adm-field__input" bind:value={tradeListedEur} />
           </div>
           <div class="adm-field">
             <span class="adm-field__label">TRADE Pro monthly (€)</span>
-            <input type="number" class="adm-field__input" bind:value={settings.fees.trade_pro_monthly_eur} />
+            <input type="number" class="adm-field__input" bind:value={tradeProEur} />
           </div>
         </div>
         <div class="adm-actions">

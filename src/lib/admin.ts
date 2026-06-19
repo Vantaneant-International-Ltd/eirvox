@@ -608,12 +608,18 @@ export interface DriveSettings {
   price_eur: number;
 }
 
+// Matches the LIVE site_settings.fees row schema. Commissions are integer
+// percent; atelier_monthly / trade_listed / trade_pro / authentication are
+// stored in CENTS (1900 = €19). The admin Settings form converts cents↔euro
+// for the monthly fields on load/save. (Previous *_pct / *_monthly_eur keys
+// never existed in the DB and shadowed the real row — removed.)
 export interface FeesSettings {
-  verified_commission_pct: number;
-  atelier_commission_pct: number;
-  house_commission_pct: number;
-  trade_listed_monthly_eur: number;
-  trade_pro_monthly_eur: number;
+  verified_commission: number;
+  atelier_commission: number;
+  atelier_monthly: number;
+  trade_listed: number;
+  trade_pro: number;
+  authentication: number;
 }
 
 export interface DepositSettings {
@@ -631,7 +637,9 @@ export interface SiteSettingsBundle {
 const DEFAULT_SETTINGS: SiteSettingsBundle = {
   cohort:  { number: 3, status: 'open', closes_at: '2026-06-14', tagline: 'COHORT 03 · CLOSES 14 JUN' },
   drive:   { issue_number: 12, issue_title: 'PORSCHE 911 992 GT3', total_allocation: 200, remaining: 47, price_eur: 149 },
-  fees:    { verified_commission_pct: 12, atelier_commission_pct: 10, house_commission_pct: 8, trade_listed_monthly_eur: 0, trade_pro_monthly_eur: 49 },
+  // Mirrors the live row (verified 7%, atelier 5% · €19/mo, TRADE €9/€29/mo,
+  // authentication €25) so a missing row still renders the truth.
+  fees:    { verified_commission: 7, atelier_commission: 5, atelier_monthly: 1900, trade_listed: 900, trade_pro: 2900, authentication: 2500 },
   deposit: { amount_eur: 49, refundable: true },
 };
 
