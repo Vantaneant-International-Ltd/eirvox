@@ -125,7 +125,7 @@
   <header class="finder__head">
     <div class="finder__head-row">
       <button class="finder__icon-btn" type="button" on:click={back} aria-label="Back">
-        <Chevron dir="left" size={13} color="var(--evx-ink)" />
+        <Chevron dir="left" size={13} color="var(--evx-paper)" />
       </button>
       <div class="finder__head-meta">
         <img src="/brand/wordmark.png" alt="ÉIRVOX" class="finder__logo" />
@@ -463,4 +463,27 @@
     font-size: 14px;
     color: var(--evx-ink);
   }
+
+  /* ── Dark reskin (matches Fitment_Finder_dc) ─────────────────────────
+     Rules above were authored light-page; these win by order and flip the
+     finder to the locked dark world. Orange stays the fit-stamp accent. */
+  .finder, .finder__head { background: var(--evx-black); }
+  .finder { color: var(--evx-paper); }
+  .finder__h,
+  .finder__fit-text,
+  .finder__row,
+  .finder__style,
+  .finder__style-title,
+  .finder__style-price { color: var(--evx-paper); }
+  .finder__icon-btn { border-color: var(--evx-rule); color: var(--evx-paper); }
+  .finder__logo { filter: invert(1) brightness(1.05); }
+  .finder__bar { background: var(--evx-rule); }
+  .finder__bar--on { background: var(--evx-fox-orange); }
+  .finder__list,
+  .finder__row,
+  .finder__styles,
+  .finder__style { border-color: var(--evx-rule); }
+  .finder__row:hover { background: rgba(244, 241, 236, 0.04); }
+  .finder__style:hover:not(:disabled) { background: rgba(244, 241, 236, 0.04); }
+  .finder__fit { border-color: rgba(232, 116, 44, 0.42); background: rgba(232, 116, 44, 0.10); }
 </style>
