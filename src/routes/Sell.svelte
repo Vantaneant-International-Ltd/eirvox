@@ -4,8 +4,18 @@
   import Footer from '../lib/Footer.svelte';
   import { navigate } from '../lib/router';
   import { applySeo, seo } from '../lib/seo';
+  import { getMarketplaceFees, type MarketplaceFees } from '../lib/api';
 
-  onMount(() => applySeo(seo.sell()));
+  // Tier pricing is read live from site_settings.fees (single source of
+  // truth) — never hardcoded. Falls back to the live-mirroring defaults in
+  // getMarketplaceFees if the row is missing. Verified carries no monthly
+  // fee (free tier); House is invite / by-arrangement, no figure.
+  let fees: MarketplaceFees | null = null;
+
+  onMount(async () => {
+    applySeo(seo.sell());
+    fees = await getMarketplaceFees();
+  });
 </script>
 
 <Nav />
@@ -44,7 +54,7 @@
         <div class="tier-card">
           <span class="evx-caption tier-card__num">TIER 03</span>
           <h3 class="tier-card__name">Verified</h3>
-          <p class="tier-card__price">7% commission · €0/mo</p>
+          <p class="tier-card__price">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : '—'}</p>
           <ul class="tier-card__features">
             <li>+ Up to 10 active listings</li>
             <li>+ Standard listing tools</li>
@@ -62,7 +72,7 @@
           <span class="tier-card__rec-badge evx-caption">RECOMMENDED</span>
           <span class="evx-caption tier-card__num">TIER 02</span>
           <h3 class="tier-card__name tier-card__name--light">Atelier</h3>
-          <p class="tier-card__price tier-card__price--light">5% commission · €19/mo</p>
+          <p class="tier-card__price tier-card__price--light">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : '—'}</p>
           <ul class="tier-card__features tier-card__features--light">
             <li>+ Everything in Verified</li>
             <li>+ Custom shop page</li>
