@@ -196,7 +196,9 @@
              until a DB-backed serial exists; lockfile §8). -->
         <span class="wd-head__edition">Limited to {listing.drive_made_count ?? 10} · Made once. Not reprinted.</span>
       {/if}
-      {#if isDrive && arriving}<span class="wd-head__arriving">Arriving {arriving}</span>{/if}
+      <!-- 'Arriving' only for not-yet-open issues; an OPEN issue is buyable
+           now, so 'Arriving' there reads as a contradiction. -->
+      {#if isDrive && !driveOpen && arriving}<span class="wd-head__arriving">Arriving {arriving}</span>{/if}
     </section>
 
     <!-- ━━ SPECIFICATION — mono table ━━ -->

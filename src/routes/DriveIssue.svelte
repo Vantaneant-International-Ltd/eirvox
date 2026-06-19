@@ -415,14 +415,14 @@
     <button class="di-bar__drive evx-caption" on:click={() => navigate('/drive')}>
       DRIVE ← INDEX OF ISSUES
     </button>
-    <span class="evx-caption di-bar__issue">ISSUE 003 · MAY MMXXVI · DRV-003</span>
+    <span class="evx-caption di-bar__issue">ISSUE 003 · MAY 2026 · DRV-003</span>
     <span class="evx-caption di-bar__next">NEXT: 004 · VOLKSWAGEN GOLF R · Q3</span>
   </div>
 
   <div class="di-hero page-container">
     <!-- LEFT: Editorial text -->
     <div class="di-hero__left">
-      <span class="evx-caption di-hero__eyebrow">ISSUE 003 · MMXXVI</span>
+      <span class="evx-caption di-hero__eyebrow">ISSUE 003 · 2026</span>
 
       <h1 class="di-hero__title">
         Mercedes-AMG GT.

@@ -481,7 +481,7 @@
               </div>
               <div class="field">
                 <label class="field-label" for="d-date">Issue date (display)</label>
-                <input id="d-date" type="text" class="field-input" placeholder="May MMXXVI"
+                <input id="d-date" type="text" class="field-input" placeholder="June 2026"
                        bind:value={driveIssueDate}
                        on:blur={() => saveDrivePatch({ drive_issue_date: driveIssueDate || null })} />
               </div>

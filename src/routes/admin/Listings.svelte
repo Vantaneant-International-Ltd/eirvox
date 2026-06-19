@@ -528,7 +528,7 @@
                   <span class="adm-field__label">Issue date (editorial)</span>
                   <input class="adm-field__input"
                          bind:value={detail.listing.drive_issue_date}
-                         placeholder="May MMXXVI"
+                         placeholder="June 2026"
                          on:blur={() => saveDetail({ drive_issue_date: detail!.listing.drive_issue_date })} />
                   <span class="adm-field__hint">Free text; preserves editorial formatting (e.g. Roman numeral years).</span>
                 </div>
