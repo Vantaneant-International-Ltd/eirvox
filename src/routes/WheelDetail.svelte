@@ -23,6 +23,7 @@
   import PayButton from '../lib/PayButton.svelte';
   import VariantPicker from '../lib/VariantPicker.svelte';
   import Nav from '../lib/Nav.svelte';
+  import Footer from '../lib/Footer.svelte';
   import PhotoFrame from '../lib/wheels-ui/PhotoFrame.svelte';
   import FactNeeded from '../lib/FactNeeded.svelte';
   import Btn from '../lib/wheels-ui/Btn.svelte';
@@ -115,7 +116,7 @@
 
 <div class="wd evx-root" on:scroll={onScroll}>
 
-  <Nav />
+  <Nav dark />
 
   {#if loading}
     <div class="wd-state">Loading.</div>
@@ -136,13 +137,13 @@
         <!-- Static schematic + numbered dimension callouts. Real figures
              arrive via the [FACT NEEDED] legend below; nothing is invented. -->
         <svg class="wd-dim" viewBox="0 0 400 400" fill="none" aria-hidden="true">
-          <circle cx="200" cy="200" r="150" stroke="rgba(26,26,26,0.22)" stroke-width="1" />
-          <circle cx="200" cy="200" r="92" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
-          <circle cx="200" cy="200" r="15" fill="rgba(26,26,26,0.18)" />
+          <circle cx="200" cy="200" r="150" stroke="rgba(244,241,236,0.22)" stroke-width="1" />
+          <circle cx="200" cy="200" r="92" stroke="rgba(244,241,236,0.14)" stroke-width="1" />
+          <circle cx="200" cy="200" r="15" fill="rgba(244,241,236,0.18)" />
           <!-- 3-spoke schematic -->
-          <line x1="200" y1="200" x2="200" y2="108" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
-          <line x1="200" y1="200" x2="280" y2="246" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
-          <line x1="200" y1="200" x2="120" y2="246" stroke="rgba(26,26,26,0.14)" stroke-width="1" />
+          <line x1="200" y1="200" x2="200" y2="108" stroke="rgba(244,241,236,0.14)" stroke-width="1" />
+          <line x1="200" y1="200" x2="280" y2="246" stroke="rgba(244,241,236,0.14)" stroke-width="1" />
+          <line x1="200" y1="200" x2="120" y2="246" stroke="rgba(244,241,236,0.14)" stroke-width="1" />
           <!-- ① overall ⌀ dimension line (below the circle) -->
           <line x1="58" y1="372" x2="342" y2="372" stroke="var(--evx-fox-orange)" stroke-width="1" />
           <line x1="58" y1="365" x2="58" y2="379" stroke="var(--evx-fox-orange)" stroke-width="1" />
@@ -246,9 +247,9 @@
         {#if canDeposit}
           <div class="wd-pay__seg" role="group" aria-label="Payment">
             <button class="wd-pay__opt" class:wd-pay__opt--on={!isDeposit}
-                    type="button" on:click={() => (isDeposit = false)}>Pay full · {formatPrice(listing.price)}</button>
+                    type="button" on:click={() => (isDeposit = false)}>Pay in full · {formatPrice(listing.price)}</button>
             <button class="wd-pay__opt" class:wd-pay__opt--on={isDeposit}
-                    type="button" on:click={() => (isDeposit = true)}>Reserve · {formatPrice(listing.deposit_amount ?? 0)}</button>
+                    type="button" on:click={() => (isDeposit = true)}>Pay deposit · {formatPrice(listing.deposit_amount ?? 0)}</button>
           </div>
         {/if}
         <div class="wd-pay__bar" class:wd-pay__bar--drive={isDrive}>
@@ -289,7 +290,7 @@
     {:else}
       <section class="wd-pay">
         <Btn variant="ghost" size="md" full on:click={() => navigate('/wheels')}>
-          Find your fit <Chevron size={12} color="var(--evx-ink)" />
+          Find your fit <Chevron size={12} color="var(--evx-paper)" />
         </Btn>
       </section>
     {/if}
@@ -315,6 +316,8 @@
     </section>
 
     <div class="wd-foot-pad" aria-hidden="true"></div>
+
+    <Footer dark />
   {/if}
 </div>
 
@@ -596,4 +599,32 @@
       max-width: 560px; margin-left: auto; margin-right: auto;
     }
   }
+
+  /* ── Dark reskin (matches Wheel_Detail_dc / DRIVE_Detail_dc) ──────────
+     The rules above were authored for the white-rework page; these win by
+     order and flip surfaces/text/borders to the locked dark world. Fox
+     orange stays the only UI accent; champagne stays DRIVE-only. */
+  .wd { background: var(--evx-black); color: var(--evx-paper); }
+  .wd-state h1,
+  .wd-head__title,
+  .wd-detail__v,
+  .wd-acc__sum,
+  .wd-arrive__date { color: var(--evx-paper); }
+  .wd-head__title { font-weight: 500; }
+  .wd-slot { background: var(--evx-surface-2); border-color: var(--evx-rule); }
+  .wd-top__icon,
+  .wd-thumb,
+  .wd-dim__legend,
+  .wd-acc,
+  .wd-detail__row,
+  .wd-pay__seg,
+  .wd-pay__opt + .wd-pay__opt { border-color: var(--evx-rule); }
+  .wd-acc:last-child { border-bottom-color: var(--evx-rule); }
+  .wd-arrive--closed { border-color: var(--evx-rule); }
+  .wd-thumb--on { border-color: var(--evx-paper); }
+  .wd-top__menu span { background: var(--evx-paper); }
+  .wd-top--scrolled { background: rgba(14, 13, 12, 0.82); border-bottom-color: var(--evx-rule); }
+  .wd-pay__opt--on { background: var(--evx-paper); color: var(--evx-black); }
+  .wd-pay__bar { background: rgba(14, 13, 12, 0.92); border-top-color: var(--evx-rule); }
+  .wd-pay__bar--drive { border-top-color: var(--evx-champagne); }
 </style>
