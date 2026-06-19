@@ -612,6 +612,18 @@ export async function getListingVariants(listingId: string): Promise<ListingVari
   return (((r.value as any).data ?? []) as ListingVariant[]);
 }
 
+export async function getFitmentFamilies(): Promise<FitmentFamily[]> {
+  const r = await withTimeout(
+    supabase
+      .from('fitment_families')
+      .select('key, internal_name, sort_order')
+      .order('sort_order', { ascending: true }),
+    10_000, 'fitment_families',
+  );
+  if (!r.ok) return [];
+  return (((r.value as any).data ?? []) as FitmentFamily[]);
+}
+
 export async function getFitmentChassis(): Promise<FitmentChassis[]> {
   const r = await withTimeout(
     supabase
