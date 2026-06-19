@@ -79,9 +79,9 @@
     <!-- Registry colophon -->
     <section class="about-registry">
       <div class="about-registry__inner">
-        <span class="about-registry__line">ÉIRVOX SYSTEMS LTD · TRADING AS ÉIRVOX</span>
-        <span class="about-registry__line about-registry__line--dim">A VANTANEANT INTERNATIONAL LTD COMPANY</span>
-        <span class="about-registry__line">REGISTERED IN IRELAND · <a class="about-registry__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 712304</a> · DUBLIN, IRELAND</span>
+        <span class="about-registry__line">EIRVOX LIMITED</span>
+        <span class="about-registry__line about-registry__line--dim">A VANTANÉANT INTERNATIONAL LTD COMPANY</span>
+        <span class="about-registry__line">REGISTERED IN IRELAND · <a class="about-registry__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 806648</a> · DUBLIN, IRELAND</span>
         <span class="about-registry__line">SUPPORT@EIRVOX.IE</span>
         <!-- Registered office withheld (private address); no VAT line until verified. -->
       </div>

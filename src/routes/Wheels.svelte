@@ -284,9 +284,9 @@
       <div class="wp-proof__col">
         <span class="evx-label wp-proof__h">03 · The company</span>
         <p class="evx-caption wp-proof__registry">
-          ÉIRVOX SYSTEMS LTD · TRADING AS ÉIRVOX<br/>
-          <span class="wp-proof__dim">A VANTANEANT INTERNATIONAL LTD COMPANY</span><br/>
-          REGISTERED IN IRELAND · <a class="wp-proof__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 712304</a> · DUBLIN, IRELAND<br/>
+          EIRVOX LIMITED<br/>
+          <span class="wp-proof__dim">A VANTANÉANT INTERNATIONAL LTD COMPANY</span><br/>
+          REGISTERED IN IRELAND · <a class="wp-proof__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 806648</a> · DUBLIN, IRELAND<br/>
           <a class="wp-proof__mail" href="mailto:support@eirvox.ie">SUPPORT@EIRVOX.IE</a>
         </p>
       </div>
@@ -312,55 +312,6 @@
     background: var(--evx-paper);
     color: var(--evx-ink);
     font-family: var(--evx-font-display);
-  }
-
-  /* ── Top bar ── */
-  .wp-top {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    padding: 18px 30px 12px;
-    padding-top: max(env(safe-area-inset-top), 18px);
-    background: transparent;
-    transition: background 240ms ease, border-color 240ms ease, backdrop-filter 240ms ease;
-    border-bottom: 1px solid transparent;
-  }
-  .wp-top__home { justify-self: start; }
-  .wp-top--scrolled {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom-color: var(--evx-rule-light);
-  }
-  /* Centered, always-visible nav tabs (replaces the drawer). */
-  .wp-top__nav { justify-self: center; display: flex; align-items: center; gap: clamp(20px, 3vw, 46px); }
-  .wp-top__tab,
-  .wp-top__act {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--evx-ink);
-    background: none; border: none;
-    cursor: pointer;
-    padding: 4px 0;
-    white-space: nowrap;
-    transition: opacity 160ms ease, color 240ms ease;
-  }
-  .wp-top__tab:hover,
-  .wp-top__act:hover { opacity: 0.6; }
-  .wp-top__right { justify-self: end; display: flex; align-items: center; gap: 20px; }
-  .wp-top__act--accent { color: var(--evx-fox-orange); }
-  .wp-top__wm { transition: filter 240ms ease; }
-  @media (max-width: 767px) {
-    .wp-top { grid-template-columns: auto 1fr; padding-left: 20px; padding-right: 20px; }
-    .wp-top__nav { justify-self: end; gap: 16px; overflow-x: auto; }
-    .wp-top__tab, .wp-top__act { font-size: 10px; letter-spacing: 0.1em; }
-    .wp-top__right { display: none; }
   }
 
   /* ── Designed photo slot (shared). Empty = faint ink tint + hairline;

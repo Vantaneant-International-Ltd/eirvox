@@ -27,7 +27,7 @@
   <div class="page-container">
 
     <header class="legal-header">
-      <span class="evx-caption legal-header__pre">LEGAL · ÉIRVOX SYSTEMS LTD</span>
+      <span class="evx-caption legal-header__pre">LEGAL · EIRVOX LIMITED</span>
       <h1 class="legal-title">{title}</h1>
       {#if intro}
         <p class="legal-intro">{intro}</p>
@@ -59,13 +59,13 @@
         <div class="legal-corporate">
           <span class="evx-label legal-corporate__label">CORPORATE STRUCTURE</span>
           <p class="legal-corporate__body">
-            ÉIRVOX is operated by <strong>ÉIRVOX Systems Ltd</strong>, trading as ÉIRVOX.
-            ÉIRVOX Systems Ltd is a wholly owned subsidiary of
+            ÉIRVOX is operated by <strong>EIRVOX LIMITED</strong>, trading as ÉIRVOX.
+            EIRVOX LIMITED is a wholly owned subsidiary of
             <strong>Vantaneant International Ltd</strong>
             (<a href="https://vnta.xyz" class="legal-link" target="_blank" rel="noopener noreferrer">vnta.xyz</a>),
             which also operates <strong>Vendr</strong>
             (<a href="https://vendr.ie" class="legal-link" target="_blank" rel="noopener noreferrer">vendr.ie</a>).
-            References to "we" or "us" in this document mean ÉIRVOX Systems Ltd unless otherwise stated.
+            References to "we" or "us" in this document mean EIRVOX LIMITED unless otherwise stated.
           </p>
         </div>
 
@@ -99,7 +99,7 @@
 {:else}
   <footer class="legal-gated-bot">
     <div class="legal-gated-bot__inner">
-      <span class="legal-gated-bot__entity">ÉIRVOX Systems Ltd · Dublin, Ireland</span>
+      <span class="legal-gated-bot__entity">EIRVOX LIMITED · Dublin, Ireland</span>
       <div class="legal-gated-bot__links">
         <a href="#/privacy">Privacy</a>
         <span aria-hidden="true">·</span>

@@ -30,11 +30,13 @@
       </p>
 
       <div class="footer__registry">
-        <span>ÉIRVOX SYSTEMS LTD · TRADING AS ÉIRVOX</span>
-        <span class="footer__registry-dim">A VANTANEANT INTERNATIONAL LTD COMPANY</span>
-        <span>REGISTERED IN IRELAND · <a class="footer__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 712304</a> · DUBLIN, IRELAND</span>
+        <span>EIRVOX LIMITED</span>
+        <span class="footer__registry-dim">A VANTANÉANT INTERNATIONAL LTD COMPANY</span>
+        <span>REGISTERED IN IRELAND · <a class="footer__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 806648</a> · DUBLIN, IRELAND</span>
         <span>SUPPORT@EIRVOX.IE</span>
-        <!-- Registered office withheld (private address); no VAT line until verified. -->
+        <!-- Legal name EIRVOX LIMITED (no accent); brand wordmark stays ÉIRVOX
+             (acute). Registered office withheld (private address); no VAT line
+             until verified. -->
       </div>
     </div>
 
@@ -78,7 +80,7 @@
   </div>
 
   <div class="footer__bar page-container">
-    <span class="footer__bar-text">© 2026 ÉIRVOX SYSTEMS LTD</span>
+    <span class="footer__bar-text">© 2026 EIRVOX LIMITED</span>
     <span class="footer__bar-text">DUBLIN, IRELAND</span>
   </div>
 </footer>

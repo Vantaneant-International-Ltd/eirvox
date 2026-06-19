@@ -35,7 +35,7 @@
     <span class="legal-section__num">01 · WHO WE ARE</span>
     <h2 id="p-who" class="legal-section__h">Who we are.</h2>
     <p>
-      <strong>ÉIRVOX Systems Ltd</strong> (CRO 712304), registered in Dublin, Ireland, is the
+      <strong>EIRVOX LIMITED</strong> (CRO 806648), registered in Dublin, Ireland, is the
       <strong>data controller</strong> for personal information collected through eirvox.ie and associated services.
       We're part of the Vantaneant International Ltd group.
     </p>

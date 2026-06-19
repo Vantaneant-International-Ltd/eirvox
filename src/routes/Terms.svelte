@@ -40,7 +40,7 @@
     <span class="legal-section__num">01 · INTRODUCTION</span>
     <h2 id="s-intro" class="legal-section__h">Introduction and acceptance.</h2>
     <p>
-      ÉIRVOX is operated by <strong>ÉIRVOX Systems Ltd</strong>. A company registered in Ireland, CRO 712304,
+      ÉIRVOX is operated by <strong>EIRVOX LIMITED</strong>. A company registered in Ireland, CRO 806648,
       registered office in Dublin. Part of the Vantaneant International Ltd group.
       Referred to here as "ÉIRVOX", "we", "us", "our".
     </p>
@@ -135,7 +135,7 @@
     </p>
     <p>
       <strong>Funds go directly to the seller.</strong> The merchant of record on your card statement
-      is the seller's Revolut Business entity, not ÉIRVOX Systems Ltd. We are the venue. We never hold
+      is the seller's Revolut Business entity, not EIRVOX LIMITED. We are the venue. We never hold
       buyer money for marketplace transactions.
     </p>
     <p>
@@ -243,7 +243,7 @@
     </p>
     <p>
       The ÉIRVOX brand, the DRIVE and TRADE imprints, and the platform design are the property of
-      ÉIRVOX Systems Ltd. You may not use them without written permission.
+      EIRVOX LIMITED. You may not use them without written permission.
     </p>
   </section>
 
@@ -299,7 +299,7 @@
     <span class="legal-section__num">18 · CONTACT</span>
     <h2 id="s-contact" class="legal-section__h">Contact.</h2>
     <p>
-      <strong>ÉIRVOX Systems Ltd</strong> · Dublin, Ireland · CRO 712304
+      <strong>EIRVOX LIMITED</strong> · Dublin, Ireland · CRO 806648
     </p>
     <p>
       Trading as ÉIRVOX. Part of Vantaneant International Ltd.
