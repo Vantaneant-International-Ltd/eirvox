@@ -168,11 +168,11 @@
         {#if dbListing.drive_issue_state === 'archived'}
           Archived. This issue is closed.
         {:else if dbListing.drive_issue_state === 'upcoming'}
-          Upcoming. Express interest below to be notified when this issue opens.
+          Upcoming. Enquire below to be notified when this issue opens.
         {:else if dbPayable}
           Purchasable direct from ÉIRVOX. Collection in Dublin or post nationwide.
         {:else}
-          Express interest below.
+          Enquire below.
         {/if}
       </p>
 
@@ -181,7 +181,7 @@
           <!-- archived: no Pay, no Express Interest (per brief) -->
         {:else if dbListing.drive_issue_state === 'upcoming'}
           <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
-            Express interest
+            Enquire
           </button>
         {:else if dbPayable}
           <!-- open + payable: PayButton primary, Express Interest secondary -->
@@ -242,13 +242,13 @@
             {/if}
 
             <button class="di-pay__secondary" type="button" on:click={scrollToEnquiry}>
-              Questions, or not in stock? Express interest →
+              Questions, or not in stock? Enquire →
             </button>
           </div>
         {:else}
           <!-- House listing but not active, or non-house: keep Express Interest -->
           <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
-            Express interest
+            Enquire
           </button>
         {/if}
       </div>
@@ -357,9 +357,9 @@
             {:else}
               <!-- Upcoming (and non-payable fallback): Express Interest
                    is the only path; lead with it. -->
-              <span class="evx-caption di-reserve__pre">TO EXPRESS INTEREST</span>
+              <span class="evx-caption di-reserve__pre">TO ENQUIRE</span>
               <h2 class="di-reserve__heading">
-                {#if dbListing.drive_made_count}{dbListing.drive_made_count} will be made.<br/>One could be yours.{:else}Express interest in this issue.{/if}
+                {#if dbListing.drive_made_count}{dbListing.drive_made_count} will be made.<br/>One could be yours.{:else}Enquire about this issue.{/if}
               </h2>
               <div class="di-reserve__how">
                 <p class="di-reserve__how-body">
@@ -438,12 +438,12 @@
       </div>
 
       <p class="di-hero__deposit evx-caption">
-        Express interest below · we confirm allocation by email
+        Enquire below · we confirm allocation by email
       </p>
 
       <div class="di-hero__ctas">
         <button class="evx-btn evx-btn--primary" on:click={scrollToEnquiry}>
-          Express interest
+          Enquire
         </button>
       </div>
     </div>
@@ -538,7 +538,7 @@
     <section class="di-reserve" id="enquiry">
       <div class="di-reserve__inner">
         <div class="di-reserve__left">
-          <span class="evx-caption di-reserve__pre">TO EXPRESS INTEREST</span>
+          <span class="evx-caption di-reserve__pre">TO ENQUIRE</span>
           <h2 class="di-reserve__heading">Eight will be made.<br/>One could be yours.</h2>
 
           <div class="di-reserve__how">
