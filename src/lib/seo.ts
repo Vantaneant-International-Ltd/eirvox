@@ -6,7 +6,7 @@
 const SITE = 'ÉIRVOX';
 const SITE_URL = 'https://eirvox.ie';
 const DEFAULT_DESC =
-  "Carbon steering wheels you'll want the moment you see them — and know are real. The DRIVE line and a fitted BMW range. Designed in Ireland, finished in Dublin.";
+  "Carbon steering wheels you'll want the moment you see them, and know are real. The DRIVE line and a fitted BMW range. Designed in Ireland, finished in Dublin.";
 const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 export interface SeoData {
@@ -76,15 +76,15 @@ export function applySeo({ title, description, path = '/', ogImage = OG_IMAGE, n
 
 export const seo = {
   home: (): SeoData => ({
-    title: 'ÉIRVOX — Carbon Steering Wheels',
+    title: 'ÉIRVOX · Carbon Steering Wheels',
     description:
-      "Carbon steering wheels you'll want the moment you see them — and know are real. The DRIVE line and a fitted BMW range. Designed in Ireland, finished in Dublin.",
+      "Carbon steering wheels you'll want the moment you see them, and know are real. The DRIVE line and a fitted BMW range. Designed in Ireland, finished in Dublin.",
     path: '/',
   }),
 
   category: (slug: string, label: string, count: number): SeoData => ({
     title: label,
-    description: `${label} on ÉIRVOX - ${count} listings from verified Irish sellers. Express interest, no commitment until you've spoken with the seller.`,
+    description: `${label} on ÉIRVOX. ${count} listings from verified Irish sellers, vetted before listing.`,
     path: `/${slug}`,
   }),
 
@@ -106,14 +106,14 @@ export const seo = {
   driveIssue: (slug: string): SeoData => ({
     title: 'DRIVE',
     description:
-      'A DRIVE issue from ÉIRVOX — one specification, a limited run, finished in Dublin.',
+      'A DRIVE issue from ÉIRVOX. One specification, a limited run, finished in Dublin.',
     path: `/drive/${slug}`,
   }),
 
   sell: (): SeoData => ({
     title: 'Sell on ÉIRVOX',
     description:
-      'Sell on Ireland\'s premium marketplace. Three tiers - Verified, Atelier, House. Admission by application.',
+      'Sell on Ireland\'s premium marketplace. Three tiers: Verified, Atelier, House. Admission by application.',
     path: '/sell',
   }),
 
@@ -126,7 +126,7 @@ export const seo = {
 
   sellCreate: (): SeoData => ({
     title: 'Create listing',
-    description: 'Draft a new listing on ÉIRVOX - six steps from category to review.',
+    description: 'Draft a new listing on ÉIRVOX. Six steps from category to review.',
     path: '/sell/create',
   }),
 
@@ -139,7 +139,7 @@ export const seo = {
   trust: (): SeoData => ({
     title: 'Trust',
     description:
-      'How buying an ÉIRVOX wheel works — you pay us directly, and we stand behind what we ship.',
+      'How buying an ÉIRVOX wheel works. You pay us directly, and we stand behind what we ship.',
     path: '/trust',
   }),
 
@@ -152,7 +152,7 @@ export const seo = {
 
   login: (): SeoData => ({
     title: 'Sign in',
-    description: 'Sign in to ÉIRVOX. Magic-link sign-in - no password required.',
+    description: 'Sign in to ÉIRVOX. Magic-link sign-in, no password required.',
     path: '/login',
   }),
 
@@ -165,14 +165,14 @@ export const seo = {
     };
     return {
       title: titles[tab] ?? 'Account',
-      description: 'Your ÉIRVOX account - reservations, saved items, settings.',
+      description: 'Your ÉIRVOX account: reservations, saved items, settings.',
       path: tab === 'overview' ? '/account' : `/account/${tab}`,
     };
   },
 
   sitemap: (): SeoData => ({
     title: 'Sitemap',
-    description: 'Every page on ÉIRVOX - quick navigation for buyers, sellers, and crawlers.',
+    description: 'Every page on ÉIRVOX. Quick navigation for buyers, sellers, and crawlers.',
     path: '/sitemap',
   }),
 

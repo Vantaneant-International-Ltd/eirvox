@@ -278,7 +278,7 @@
       <div class="wp-proof__col">
         <span class="evx-label wp-proof__h">02 · Buying</span>
         <p class="wp-proof__body">
-          Paid direct via Revolut — card, Apple Pay or Google Pay. A deposit holds incoming stock.
+          Paid direct via Revolut: card, Apple Pay or Google Pay. A deposit holds incoming stock.
         </p>
       </div>
       <div class="wp-proof__col">

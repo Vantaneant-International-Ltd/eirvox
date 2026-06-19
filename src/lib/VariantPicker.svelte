@@ -190,7 +190,7 @@
             amountEur={resolvedPriceEur}
             fulfilment={fulfilment}
             isDeposit={false}
-            description={`ÉIRVOX — ${listingTitle} · ${selectedVariant?.style_label ?? ''}`}
+            description={`ÉIRVOX · ${listingTitle} · ${selectedVariant?.style_label ?? ''}`}
             variantStyleKey={selectedVariant?.style_key ?? null}
             variantFamilyKey={selectedVariant?.family_key ?? null}
             showRefundLink={true}

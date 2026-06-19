@@ -17,13 +17,13 @@
     <header class="about-head">
       <span class="evx-caption about-head__pre">ABOUT · DUBLIN</span>
       <h1 class="about-head__title">A carbon steering-wheel specialist in Dublin.</h1>
-      <p class="about-head__line">Fewer, better things — and the truth about all of them.</p>
+      <p class="about-head__line">Fewer, better things, and the truth about all of them.</p>
     </header>
 
     <!-- What ÉIRVOX is -->
     <section class="about-intro">
       <p>
-        ÉIRVOX makes limited-run carbon steering wheels for BMW drivers in Ireland — a fitted
+        ÉIRVOX makes limited-run carbon steering wheels for BMW drivers in Ireland. A fitted
         range, and a numbered edition line called DRIVE. Each DRIVE issue is made once and not
         reprinted.
       </p>
@@ -34,7 +34,7 @@
       <p>
         The site changes mood on purpose. Where a wheel is shown and sold, the room goes dark and
         the light falls on the object. Where you browse the wider marketplace or read the detail,
-        it opens into daylight. One company, two rooms — the change in light tells you which you're in.
+        it opens into daylight. One company, two rooms. The change in light tells you which you're in.
       </p>
     </section>
 
@@ -44,7 +44,7 @@
       <div class="about-process__grid">
         <div class="about-process__media" role="img"
              aria-label="Workbench photograph, to be added">
-          <span class="about-process__slot">SHOT 10 · BENCH ENVIRONMENTAL — NO PERSON REQUIRED</span>
+          <span class="about-process__slot">SHOT 10 · BENCH ENVIRONMENTAL · NO PERSON REQUIRED</span>
         </div>
         <ol class="about-steps">
           <li class="about-step">

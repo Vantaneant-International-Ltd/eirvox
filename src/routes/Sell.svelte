@@ -40,7 +40,7 @@
       <h1 class="sx-h1">Three doors<br />into the house.</h1>
       <p class="sx-stand">
         <span class="sx-italic">A curated marketplace, not a feed.</span>
-        Selling is by application — we admit sellers who clear the same bar as everything else here, then hand them the right door.
+        Selling is by application. We admit sellers who clear the same bar as everything else here, then hand them the right door.
       </p>
     </section>
 
@@ -49,8 +49,8 @@
       <div class="sx-tier">
         <div class="sx-tnum">Tier 03 · The threshold</div>
         <div class="sx-tname">Verified</div>
-        <div class="sx-tprice">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : '—'}</div>
-        <p class="sx-tdesc">The way in. Verified status, list and sell — no monthly cost.</p>
+        <div class="sx-tprice">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : ''}</div>
+        <p class="sx-tdesc">The way in. Verified status, list and sell, no monthly cost.</p>
         <ul class="sx-tlist">
           <li>Verified seller status</li>
           <li>List in any open category</li>
@@ -64,7 +64,7 @@
         <span class="sx-rec">Recommended</span>
         <div class="sx-tnum">Tier 02 · The room</div>
         <div class="sx-tname">Atelier</div>
-        <div class="sx-tprice">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : '—'}</div>
+        <div class="sx-tprice">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : ''}</div>
         <p class="sx-tdesc">For sellers building a name. Your own shop page, lower commission.</p>
         <ul class="sx-tlist">
           <li>Everything in Verified</li>

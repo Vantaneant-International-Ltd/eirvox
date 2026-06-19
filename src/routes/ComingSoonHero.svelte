@@ -54,7 +54,7 @@
 
       <h1 class="cs__headline cs__fade cs__fade--tagline">Carbon steering wheels,<br />finished in Dublin.</h1>
       <p class="cs__standfirst cs__fade cs__fade--tagline">
-        <span class="cs__italic">A small line, made once</span> — designed in Ireland, finished in Dublin, almost ready.
+        <span class="cs__italic">A small line, made once.</span> Designed in Ireland, finished in Dublin, almost ready.
       </p>
 
       <div class="cs__group cs__fade cs__fade--group">

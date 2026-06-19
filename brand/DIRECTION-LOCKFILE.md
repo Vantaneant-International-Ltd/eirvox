@@ -139,7 +139,7 @@ Approved signature lines (use, don't paraphrase):
 - "Made once. Not reprinted." (DRIVE only)
 - "Trust is engineered. Every wheel is registered." (only while registry is live per §8)
 - "If it isn't right, it doesn't ship."
-- "Fewer, better things — and the truth about all of them."
+- "Fewer, better things, and the truth about all of them."
 
 ### The [FACT NEEDED] protocol
 Unknown facts are rendered as visible `[FACT NEEDED: …]` tokens — mono, distinct, impossible to mistake for final copy. Inventing a fact to fill a layout is a failed deliverable. Current open tokens: registered address · verified VAT · exact finishing steps · shipping carrier · fitting offer/price · response commitment.

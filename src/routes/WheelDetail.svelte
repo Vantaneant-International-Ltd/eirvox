@@ -246,7 +246,7 @@
                token rather than a dead input that captures nothing. -->
           <div class="wd-confirm">
             <span class="wd-confirm__label">Confirm your car</span>
-            <p class="wd-confirm__note">DRIVE fits a range of cars — we match the fit to yours before it ships. <FactNeeded label="FITMENT CAPTURE MODEL" dark /></p>
+            <p class="wd-confirm__note">DRIVE fits a range of cars. We match the fit to yours before it ships. <FactNeeded label="FITMENT CAPTURE MODEL" dark /></p>
           </div>
         {/if}
         {#if listing.original_price && listing.original_price > listing.price}
@@ -280,7 +280,7 @@
                 amountEur={payAmount}
                 fulfilment={fulfilment}
                 isDeposit={isDeposit}
-                description={`ÉIRVOX — ${listing.title}`}
+                description={`ÉIRVOX · ${listing.title}`}
                 showRefundLink={true}
               />
             {:else}

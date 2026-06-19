@@ -147,7 +147,7 @@
             <span class="hx-anno">5:6 · LED LIT · RAKING KEY</span>
           </div>
           <div class="hx-card__body">
-            <div class="hx-card__num">DRIVE {d.drive_issue ?? '—'} · LIMITED TO 10</div>
+            <div class="hx-card__num">DRIVE {d.drive_issue ?? ''} · LIMITED TO 10</div>
             <div class="hx-card__title">{d.title}</div>
             <div class="hx-card__price">
               {#if d.price > 0}
@@ -228,7 +228,7 @@
       <div class="hx-tier">
         <div class="hx-tnum">Tier 03</div>
         <div class="hx-tname">Verified</div>
-        <div class="hx-tprice">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : '—'}</div>
+        <div class="hx-tprice">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : ''}</div>
         <ul class="hx-tlist">
           <li>Verified seller status</li>
           <li>List in any open category</li>
@@ -241,7 +241,7 @@
         <span class="hx-rec">Recommended</span>
         <div class="hx-tnum">Tier 02</div>
         <div class="hx-tname">Atelier</div>
-        <div class="hx-tprice">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : '—'}</div>
+        <div class="hx-tprice">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : ''}</div>
         <ul class="hx-tlist">
           <li>Everything in Verified</li>
           <li>Custom shop page</li>

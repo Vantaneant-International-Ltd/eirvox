@@ -22,8 +22,8 @@
 
   onMount(async () => {
     applySeo({
-      title: 'Wheels — ÉIRVOX',
-      description: 'The ÉIRVOX wheel catalogue — carbon steering wheels, finished in Dublin. Buy direct.',
+      title: 'Wheels',
+      description: 'The ÉIRVOX wheel catalogue. Carbon steering wheels, finished in Dublin. Buy direct.',
       path: '/wheels',
     });
     const rows = await getListings({ sort: 'recent', limit: 48 });

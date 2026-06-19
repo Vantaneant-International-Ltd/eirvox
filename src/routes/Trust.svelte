@@ -191,7 +191,7 @@
     <section class="trust-close">
       <span class="evx-caption trust-section__num">THE COMPANY</span>
       <p class="trust-close__line">
-        EIRVOX LIMITED · CRO 806648 —
+        EIRVOX LIMITED · CRO 806648,
         <a href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">verifiable at core.cro.ie</a>.
         Every wheel is finished in Dublin before it ships.
       </p>

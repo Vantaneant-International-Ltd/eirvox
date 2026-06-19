@@ -134,7 +134,7 @@
           <input
             type="search"
             class="nav__search evx-caption"
-            placeholder="Find your fit — enter your model, e.g. F80 M3"
+            placeholder="Find your fit. Enter your model, e.g. F80 M3"
             aria-label="Search listings"
             bind:value={navSearch}
           />
