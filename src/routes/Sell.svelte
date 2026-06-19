@@ -7,352 +7,208 @@
   import { getMarketplaceFees, type MarketplaceFees } from '../lib/api';
 
   // Tier pricing is read live from site_settings.fees (single source of
-  // truth) — never hardcoded. Falls back to the live-mirroring defaults in
-  // getMarketplaceFees if the row is missing. Verified carries no monthly
-  // fee (free tier); House is invite / by-arrangement, no figure.
+  // truth) — never hardcoded. Verified carries no monthly fee (free
+  // tier); House is invite / by-arrangement, no figure.
   let fees: MarketplaceFees | null = null;
 
   onMount(async () => {
     applySeo(seo.sell());
     fees = await getMarketplaceFees();
   });
+
+  const lookFor = [
+    { n: '01', h: 'Genuine stock', p: 'Real items you hold, accurately described. No drop-ship, no stock photos.' },
+    { n: '02', h: 'Honest condition', p: 'Condition stated plainly. Faults shown, not hidden.' },
+    { n: '03', h: 'Fast dispatch', p: 'Orders out quickly, tracked, and packed properly.' },
+    { n: '04', h: 'Responsive', p: 'You answer buyers. Slow sellers don’t stay.' },
+  ];
+  const applySteps = [
+    { n: '01', h: 'Apply', p: 'Tell us what you sell and the door you want.' },
+    { n: '02', h: 'Review & call', p: 'We review and have a short call, usually within five working days.' },
+    { n: '03', h: 'Onboard & list', p: 'Approved sellers are set up and listing the same week.' },
+  ];
 </script>
 
-<Nav />
+<Nav dark />
 
-<main id="main-content" class="sell-page">
+<main class="sx">
   <div class="page-container">
 
-    <!-- Hero -->
-    <header class="sell-hero">
-      <div class="sell-hero__badge evx-caption">FOR SELLERS</div>
-      <div class="sell-hero__inner">
-        <div>
-          <h1 class="sell-hero__title">Sell on ÉIRVOX.</h1>
-          <p class="sell-hero__desc">
-            A curated marketplace, not a feed. Lower fees than you'd pay elsewhere.
-            Admission by application, considered listings, a quality bar that earns you better buyers.
-          </p>
-          <div class="sell-hero__actions">
-            <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
-              Apply to sell →
-            </button>
-            <button class="evx-btn evx-btn--ghost" on:click={() => document.getElementById('tiers')?.scrollIntoView({ behavior: 'smooth' })}>
-              How the tiers work
-            </button>
+    <!-- HERO -->
+    <section class="sx-hero">
+      <div class="sx-kick">Sell on ÉIRVOX</div>
+      <h1 class="sx-h1">Three doors<br />into the house.</h1>
+      <p class="sx-stand">
+        <span class="sx-italic">A curated marketplace, not a feed.</span>
+        Selling is by application — we admit sellers who clear the same bar as everything else here, then hand them the right door.
+      </p>
+    </section>
+
+    <!-- TIERS -->
+    <section class="sx-tiers" id="tiers">
+      <div class="sx-tier">
+        <div class="sx-tnum">Tier 03 · The threshold</div>
+        <div class="sx-tname">Verified</div>
+        <div class="sx-tprice">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : '—'}</div>
+        <p class="sx-tdesc">The way in. Verified status, list and sell — no monthly cost.</p>
+        <ul class="sx-tlist">
+          <li>Verified seller status</li>
+          <li>List in any open category</li>
+          <li>Direct payouts, no held funds</li>
+          <li class="sx-neg">No shop page</li>
+        </ul>
+        <button class="sx-tcta" type="button" on:click={() => navigate('/sell/apply')}>Apply as Verified</button>
+      </div>
+
+      <div class="sx-tier sx-tier--rec">
+        <span class="sx-rec">Recommended</span>
+        <div class="sx-tnum">Tier 02 · The room</div>
+        <div class="sx-tname">Atelier</div>
+        <div class="sx-tprice">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : '—'}</div>
+        <p class="sx-tdesc">For sellers building a name. Your own shop page, lower commission.</p>
+        <ul class="sx-tlist">
+          <li>Everything in Verified</li>
+          <li>Custom shop page</li>
+          <li>Unlimited listings</li>
+          <li>Sales analytics</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="sx-tcta sx-tcta--rec" type="button" on:click={() => navigate('/sell/apply')}>Apply as Atelier</button>
+      </div>
+
+      <div class="sx-tier">
+        <div class="sx-tnum">Tier 01 · Invite</div>
+        <div class="sx-tname">House</div>
+        <div class="sx-tprice">By arrangement · invite only</div>
+        <p class="sx-tdesc">The front of house. Editorial features, ÉIRVOX photography and copy.</p>
+        <ul class="sx-tlist">
+          <li>Homepage editorial features</li>
+          <li>DRIVE issue scheduling</li>
+          <li>ÉIRVOX photography &amp; copy</li>
+          <li class="sx-neg">By invitation only</li>
+        </ul>
+        <span class="sx-tcta sx-tcta--dis">By invitation</span>
+      </div>
+    </section>
+    <p class="sx-note">Applications open · every applicant gets a reply within five working days, and a short call.</p>
+
+    <!-- WHAT WE LOOK FOR -->
+    <section class="sx-look">
+      <div class="sx-look__head">
+        <div class="sx-eyebrow">What we look for</div>
+        <h2 class="sx-h2">The same bar as everything else here.</h2>
+      </div>
+      <div class="sx-look__grid">
+        {#each lookFor as item}
+          <div class="sx-look__item">
+            <div class="sx-rulenum">{item.n}<span class="sx-rule"></span></div>
+            <h4 class="sx-ih">{item.h}</h4>
+            <p class="sx-ip">{item.p}</p>
           </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Tiers -->
-    <section class="sell-tiers" id="tiers">
-      <h2 class="sell-tiers__heading">Three doors into the house.</h2>
-
-      <div class="tiers-grid">
-        <!-- Verified -->
-        <div class="tier-card">
-          <span class="evx-caption tier-card__num">TIER 03</span>
-          <h3 class="tier-card__name">Verified</h3>
-          <p class="tier-card__price">{fees ? `${fees.verifiedCommissionPct}% commission · €0/mo` : '—'}</p>
-          <ul class="tier-card__features">
-            <li>+ Up to 10 active listings</li>
-            <li>+ Standard listing tools</li>
-            <li>+ Optional reservation deposits</li>
-            <li>+ In-app buyer messaging</li>
-            <li class="tier-card__neg">- No shop page</li>
-          </ul>
-          <button class="evx-btn evx-btn--ghost tier-card__cta" on:click={() => navigate('/sell/apply')}>
-            Apply as Verified
-          </button>
-        </div>
-
-        <!-- Atelier (recommended) -->
-        <div class="tier-card tier-card--recommended">
-          <span class="tier-card__rec-badge evx-caption">RECOMMENDED</span>
-          <span class="evx-caption tier-card__num">TIER 02</span>
-          <h3 class="tier-card__name tier-card__name--light">Atelier</h3>
-          <p class="tier-card__price tier-card__price--light">{fees ? `${fees.atelierCommissionPct}% commission · €${fees.atelierMonthlyEur}/mo` : '—'}</p>
-          <ul class="tier-card__features tier-card__features--light">
-            <li>+ Everything in Verified</li>
-            <li>+ Custom shop page</li>
-            <li>+ Unlimited listings</li>
-            <li>+ Sales analytics</li>
-            <li>+ Priority support</li>
-          </ul>
-          <button class="evx-btn evx-btn--primary tier-card__cta" on:click={() => navigate('/sell/apply')}>
-            Apply as Atelier
-          </button>
-        </div>
-
-        <!-- House -->
-        <div class="tier-card tier-card--house">
-          <span class="evx-caption tier-card__num">TIER 01 · INVITE</span>
-          <h3 class="tier-card__name">House</h3>
-          <p class="tier-card__price">By arrangement · invite only</p>
-          <ul class="tier-card__features">
-            <li>+ Homepage editorial features</li>
-            <li>+ DRIVE issue scheduling</li>
-            <li>+ ÉIRVOX photography &amp; copy</li>
-            <li class="tier-card__neg">- By invitation only</li>
-          </ul>
-          <button class="evx-btn evx-btn--ghost tier-card__cta" disabled>
-            By invitation
-          </button>
-        </div>
+        {/each}
       </div>
     </section>
 
-    <!-- What we look for -->
-    <section class="sell-criteria">
-      <div class="sell-criteria__inner">
+    <!-- HOW APPLYING WORKS -->
+    <section class="sx-how">
+      <div class="sx-how__head"><div class="sx-eyebrow">How applying works</div></div>
+      <div class="sx-how__grid">
+        {#each applySteps as s}
+          <div class="sx-how__cell">
+            <div class="sx-stepn">{s.n}</div>
+            <h4 class="sx-ih">{s.h}</h4>
+            <p class="sx-ip">{s.p}</p>
+          </div>
+        {/each}
+      </div>
+    </section>
+
+    <!-- APPLY BAND -->
+    <section class="sx-band" id="apply">
+      <div class="sx-band__inner">
         <div>
-          <span class="evx-caption sell-criteria__pre">WHAT WE LOOK FOR</span>
-          <h2 class="sell-criteria__heading">Four things.</h2>
-          <p class="sell-criteria__sub">
-            We respond to every applicant. Usually within five working days.
-            Approval includes a short call.
-          </p>
+          <h3 class="sx-h3">Apply to sell.</h3>
+          <p class="sx-band__p">Tell us what you sell and the door you want. We reply within five working days, with a short call before anything goes live.</p>
         </div>
-        <ol class="sell-criteria__list">
-          {#each [
-            'A clear category and a strong point of view.',
-            'Honest condition descriptions. No exaggeration.',
-            'Decent photography. We can help if you are close.',
-            'Reliable shipping or a real collection point.',
-          ] as item, i}
-            <li class="sell-criteria__item">
-              <span class="evx-label sell-criteria__num">{String(i + 1).padStart(2, '0')}</span>
-              <span class="sell-criteria__text">{item}</span>
-            </li>
-          {/each}
-        </ol>
+        <div class="sx-band__cta">
+          <button class="sx-btn-primary" type="button" on:click={() => navigate('/sell/apply')}>Apply to sell →</button>
+          <span class="sx-band__note">Reply in five working days · a call before live</span>
+        </div>
       </div>
     </section>
-
-    <!-- CTA strip -->
-    <div class="sell-bottom">
-      <button class="evx-btn evx-btn--primary" on:click={() => navigate('/sell/apply')}>
-        Apply to sell →
-      </button>
-      <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/dashboard')}>
-        Preview the dashboard
-      </button>
-      <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/sell/create')}>
-        Try the listing flow
-      </button>
-    </div>
 
   </div>
 </main>
 
-<Footer />
+<Footer dark />
 
 <style>
-  .sell-page { flex: 1; padding-bottom: var(--evx-space-3xl); }
+  .sx { flex: 1; background: var(--evx-black); color: var(--evx-paper); padding-bottom: 58px; }
 
-  .sell-hero {
-    padding-top: var(--evx-space-2xl);
-    padding-bottom: var(--evx-space-2xl);
-    border-bottom: 1px solid var(--evx-rule-light);
-    margin-bottom: var(--evx-space-2xl);
+  .sx-italic { font-family: var(--evx-font-editorial); font-style: italic; color: var(--evx-paper); }
+  .sx-eyebrow { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--evx-ink-faint); margin-bottom: 16px; }
+  .sx-kick { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--evx-ink-soft); margin-bottom: 18px; }
+
+  /* hero */
+  .sx-hero { padding: 58px 0 38px; max-width: 50em; }
+  .sx-h1 { font-family: var(--evx-font-display); font-weight: 500; font-size: clamp(36px, 4.8vw, 58px); line-height: 1.02; letter-spacing: -0.03em; margin-bottom: 18px; }
+  .sx-stand { font-size: 17px; color: var(--evx-ink-soft); line-height: 1.55; max-width: 38em; }
+
+  /* tiers */
+  .sx-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+  .sx-tier { position: relative; border: 1px solid var(--evx-rule); background: var(--evx-surface); padding: 32px 28px; display: flex; flex-direction: column; }
+  .sx-tier--rec { border-color: rgba(232,116,44,0.42); }
+  .sx-rec { position: absolute; top: -1px; right: -1px; font-family: var(--evx-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: var(--evx-fox-orange); padding: 6px 11px; }
+  .sx-tnum { font-family: var(--evx-font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--evx-ink-faint); margin-bottom: 16px; }
+  .sx-tname { font-family: var(--evx-font-display); font-weight: 500; font-size: 26px; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .sx-tprice { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--evx-paper); margin-bottom: 6px; }
+  .sx-tdesc { font-size: 13px; color: var(--evx-ink-soft); line-height: 1.55; margin-bottom: 24px; }
+  .sx-tlist { list-style: none; margin: 0 0 28px; padding: 0; flex: 1; }
+  .sx-tlist li { font-size: 13.5px; color: var(--evx-ink-soft); padding: 9px 0; border-top: 1px solid var(--evx-rule); line-height: 1.4; }
+  .sx-tlist li:first-child { border-top: none; }
+  .sx-tlist li.sx-neg { color: var(--evx-ink-faint); }
+  .sx-tcta { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--evx-paper); border: 1px solid var(--evx-rule-strong); padding: 13px 0; text-align: center; background: none; cursor: pointer; transition: border-color 0.18s; }
+  .sx-tcta:hover { border-color: var(--evx-ink-soft); }
+  .sx-tcta--rec { background: var(--evx-fox-orange); color: #fff; border-color: var(--evx-fox-orange); }
+  .sx-tcta--rec:hover { filter: brightness(1.08); }
+  .sx-tcta--dis { color: var(--evx-ink-faint); border-color: var(--evx-rule); cursor: default; }
+  .sx-note { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--evx-ink-faint); margin-top: 22px; }
+
+  /* what we look for */
+  .sx-look { padding: 54px 0; border-top: 1px solid var(--evx-rule); margin-top: 36px; display: grid; grid-template-columns: 0.9fr 2.1fr; gap: 56px; align-items: start; }
+  .sx-h2 { font-family: var(--evx-font-display); font-weight: 500; font-size: 26px; letter-spacing: -0.02em; line-height: 1.12; }
+  .sx-look__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px 48px; }
+  .sx-rulenum { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.1em; color: var(--evx-fox-orange); margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
+  .sx-rule { flex: 1; height: 1px; background: var(--evx-rule); }
+  .sx-ih { font-family: var(--evx-font-display); font-weight: 500; font-size: 16px; margin-bottom: 9px; }
+  .sx-ip { font-size: 13.5px; color: var(--evx-ink-soft); line-height: 1.6; }
+
+  /* how applying works */
+  .sx-how { padding: 0 0 54px; }
+  .sx-how__head { padding: 0 0 22px; }
+  .sx-how__grid { border: 1px solid var(--evx-rule); background: var(--evx-surface); display: grid; grid-template-columns: repeat(3, 1fr); }
+  .sx-how__cell { padding: 30px 28px 32px; border-right: 1px solid var(--evx-rule); }
+  .sx-how__cell:last-child { border-right: none; }
+  .sx-stepn { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--evx-fox-orange); margin-bottom: 16px; }
+
+  /* apply band */
+  .sx-band { padding: 0 0 8px; }
+  .sx-band__inner { border: 1px solid var(--evx-rule-strong); background: radial-gradient(120% 160% at 88% 10%, rgba(232,116,44,0.14), transparent 50%), var(--evx-surface); padding: 46px 48px; display: flex; align-items: center; justify-content: space-between; gap: 40px; flex-wrap: wrap; }
+  .sx-h3 { font-family: var(--evx-font-display); font-weight: 500; font-size: 30px; letter-spacing: -0.02em; margin-bottom: 11px; line-height: 1.1; }
+  .sx-band__p { font-size: 15px; color: var(--evx-ink-soft); max-width: 40em; }
+  .sx-band__cta { display: flex; flex-direction: column; gap: 11px; flex: none; }
+  .sx-band__note { font-family: var(--evx-font-mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--evx-ink-faint); text-align: center; }
+  .sx-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background: var(--evx-fox-orange); color: #fff; border: none; font-family: var(--evx-font-display); font-weight: 500; font-size: 15px; height: 52px; padding: 0 34px; cursor: pointer; transition: filter 0.18s; border-radius: 2px; }
+  .sx-btn-primary:hover { filter: brightness(1.08); }
+
+  @media (max-width: 1080px) {
+    .sx-tiers { grid-template-columns: 1fr; }
+    .sx-look { grid-template-columns: 1fr; gap: 28px; }
+    .sx-how__grid { grid-template-columns: 1fr; }
+    .sx-how__cell { border-right: none; border-bottom: 1px solid var(--evx-rule); }
+    .sx-how__cell:last-child { border-bottom: none; }
   }
-
-  .sell-hero__badge {
-    color: var(--evx-fox-orange);
-    display: block;
-    margin-bottom: var(--evx-space-xl);
-  }
-
-  .sell-hero__inner {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--evx-space-3xl);
-    align-items: start;
-  }
-
-  .sell-hero__title {
-    font-family: var(--evx-font-display);
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 500;
-    letter-spacing: -0.025em;
-    color: var(--evx-warm-black);
-    margin-bottom: var(--evx-space-md);
-  }
-
-  .sell-hero__desc {
-    font-size: 16px;
-    line-height: 1.65;
-    color: var(--evx-ink-soft);
-    max-width: 480px;
-    margin-bottom: var(--evx-space-xl);
-  }
-
-  .sell-hero__actions { display: flex; gap: var(--evx-space-md); }
-
-  /* Tiers */
-  .sell-tiers { margin-bottom: var(--evx-space-2xl); }
-
-  .sell-tiers__heading {
-    font-family: var(--evx-font-display);
-    font-size: 36px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--evx-space-2xl);
-  }
-
-  .tiers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--evx-space-md);
-    margin-bottom: var(--evx-space-2xl);
-  }
-
-  .tier-card {
-    border: 1px solid var(--evx-rule-light);
-    padding: var(--evx-space-xl);
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-md);
-    position: relative;
-  }
-
-  .tier-card--recommended {
-    background: var(--evx-warm-black);
-    color: var(--evx-paper);
-    border-color: var(--evx-warm-black);
-  }
-
-  .tier-card__rec-badge {
-    position: absolute;
-    top: var(--evx-space-md);
-    right: var(--evx-space-md);
-    background: var(--evx-fox-orange);
-    color: var(--evx-white);
-    padding: 2px 8px;
-  }
-
-  .tier-card__num { color: var(--evx-ink-soft); }
-  .tier-card--recommended .tier-card__num { color: rgba(245,242,237,0.5); }
-
-  .tier-card__name {
-    font-family: var(--evx-font-display);
-    font-size: 28px;
-    font-weight: 500;
-    letter-spacing: -0.015em;
-    color: var(--evx-warm-black);
-  }
-
-  .tier-card__name--light { color: var(--evx-paper); }
-
-  .tier-card__price { font-size: 14px; color: var(--evx-ink-soft); }
-  .tier-card__price--light { color: rgba(245,242,237,0.6); }
-
-  .tier-card__features {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-sm);
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--evx-warm-black);
-    padding: var(--evx-space-md) 0;
-    border-top: 1px solid var(--evx-rule-light);
-    border-bottom: 1px solid var(--evx-rule-light);
-  }
-
-  .tier-card--recommended .tier-card__features {
-    color: var(--evx-paper);
-    border-color: var(--evx-rule-dark);
-  }
-
-  .tier-card__neg { opacity: 0.50; }
-
-  .tier-card__cta { margin-top: var(--evx-space-sm); }
-
-  /* Addon */
-  .sell-addon {
-    display: grid;
-    grid-template-columns: 180px 1fr 1fr;
-    gap: var(--evx-space-xl);
-    padding: var(--evx-space-xl) 0;
-    border-top: 1px solid var(--evx-rule-light);
-    border-bottom: 1px solid var(--evx-rule-light);
-    margin-bottom: var(--evx-space-2xl);
-    align-items: center;
-  }
-
-  .sell-addon__label { color: var(--evx-ink-soft); display: block; }
-
-  .sell-addon__title {
-    font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: 18px;
-  }
-
-  .sell-addon__price { color: var(--evx-ink-soft); }
-
-  .sell-addon__mid,
-  .sell-addon__right { font-size: 14px; line-height: 1.65; color: var(--evx-ink-soft); }
-
-  /* Criteria */
-  .sell-criteria {
-    padding: var(--evx-space-2xl) 0;
-    border-top: 1px solid var(--evx-rule-light);
-    margin-bottom: var(--evx-space-2xl);
-  }
-
-  .sell-criteria__inner {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--evx-space-3xl);
-    align-items: start;
-  }
-
-  .sell-criteria__pre { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-md); }
-
-  .sell-criteria__heading {
-    font-family: var(--evx-font-display);
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    color: var(--evx-warm-black);
-    margin-bottom: var(--evx-space-md);
-  }
-
-  .sell-criteria__sub { font-size: 14px; line-height: 1.65; color: var(--evx-ink-soft); }
-
-  .sell-criteria__list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    list-style: none;
-  }
-
-  .sell-criteria__item {
-    display: flex;
-    gap: var(--evx-space-xl);
-    align-items: flex-start;
-    padding: var(--evx-space-lg) 0;
-    border-bottom: 1px solid var(--evx-rule-light);
-    font-size: 15px;
-    color: var(--evx-warm-black);
-    line-height: 1.5;
-  }
-
-  .sell-criteria__num { color: var(--evx-fox-orange); flex-shrink: 0; margin-top: 2px; }
-
-  .sell-bottom {
-    display: flex;
-    gap: var(--evx-space-md);
-    padding-top: var(--evx-space-xl);
-    border-top: 1px solid var(--evx-rule-light);
-  }
-
-  @media (max-width: 1023px) {
-    .sell-hero__inner { grid-template-columns: 1fr; }
-    .tiers-grid { grid-template-columns: 1fr; }
-    .sell-criteria__inner { grid-template-columns: 1fr; }
-    .sell-addon { grid-template-columns: 1fr; }
+  @media (max-width: 600px) {
+    .sx-look__grid { grid-template-columns: 1fr; }
   }
 </style>
