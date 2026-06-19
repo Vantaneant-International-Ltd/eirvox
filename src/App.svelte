@@ -134,6 +134,25 @@
   // returns null (RLS + api guard) and ListingDetail shows not-found.
   $: wheelMode = $siteFlags.wheel_specialist_mode;
   $: allowedCats = Array.isArray($siteFlags.public_category_allowlist) ? $siteFlags.public_category_allowlist : [];
+
+  // ── Not-ready gate (flag-INDEPENDENT) ──────────────────────
+  // Three surfaces must stay hidden even once wheel_specialist_mode is
+  // flipped off, because flipping the flag un-gates the whole
+  // hiddenByWheelMode block at once:
+  //   /account/*  · /messages/* — backed by mock data (src/data/user.ts),
+  //                 not real Supabase data; must not ship mock account data.
+  //   /drive/:slug — DriveIssue still carries pre-BUY-verb copy
+  //                  (Express interest / reserve / deposit). Orphaned in
+  //                  wheel mode; DRIVE detail is served by WheelDetail.
+  // This is deliberately separate from hiddenByWheelMode so the wheel-mode
+  // off-ramp stays intact and reversible. Remove a clause here only when
+  // that surface is real / re-papered. /drive (index) stays visible.
+  $: notReady = (
+    path === '/account' || path.startsWith('/account/') ||
+    path === '/messages' || path.startsWith('/messages/') ||
+    driveParams !== null
+  );
+
   $: hiddenByWheelMode = wheelMode && (
     path === '/sell' || path.startsWith('/sell/') ||
     path === '/trade' || path.startsWith('/trade/') ||
@@ -164,7 +183,7 @@
     DEV MODE - {$siteFlags.maintenance ? 'Maintenance' : 'Coming soon'} is active for visitors
   </div>
 {/if}
-{#if hiddenByWheelMode}
+{#if hiddenByWheelMode || notReady}
   <NotFound />
 {:else if path === '/'}
   <Home />
