@@ -191,6 +191,11 @@
 
       <h1 class="wd-head__title">{listing.title}</h1>
       {#if listing.subtitle}<p class="wd-head__statement">{listing.subtitle}</p>{/if}
+      {#if isDrive}
+        <!-- Edition SIZE only — never a per-unit serial (registry is gated
+             until a DB-backed serial exists; lockfile §8). -->
+        <span class="wd-head__edition">Limited to {listing.drive_made_count ?? 10} · Made once. Not reprinted.</span>
+      {/if}
       {#if isDrive && arriving}<span class="wd-head__arriving">Arriving {arriving}</span>{/if}
     </section>
 
@@ -233,6 +238,15 @@
       </section>
     {:else if payable}
       <section class="wd-pay">
+        {#if isDrive}
+          <!-- DRIVE confirm-your-car capture (NOT a fitment plate). The
+               capture model is not wired yet, so it renders as a visible
+               token rather than a dead input that captures nothing. -->
+          <div class="wd-confirm">
+            <span class="wd-confirm__label">Confirm your car</span>
+            <p class="wd-confirm__note">DRIVE fits a range of cars — we match the fit to yours before it ships. <FactNeeded label="FITMENT CAPTURE MODEL" dark /></p>
+          </div>
+        {/if}
         {#if listing.original_price && listing.original_price > listing.price}
           <Money price={listing.price} was={listing.original_price} size={20} />
         {/if}
@@ -627,4 +641,35 @@
   .wd-pay__opt--on { background: var(--evx-paper); color: var(--evx-black); }
   .wd-pay__bar { background: rgba(14, 13, 12, 0.92); border-top-color: var(--evx-rule); }
   .wd-pay__bar--drive { border-top-color: var(--evx-champagne); }
+
+  /* DRIVE edition line — champagne (DRIVE-only chrome), edition SIZE only. */
+  .wd-head__edition {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: var(--evx-font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-champagne);
+    border: 1px solid var(--evx-champagne-dim);
+    padding: 6px 11px;
+    border-radius: 2px;
+  }
+  /* DRIVE confirm-your-car capture (honest note, no dead input). */
+  .wd-confirm {
+    border: 1px solid var(--evx-rule);
+    background: var(--evx-surface);
+    padding: 14px 16px;
+    border-radius: 2px;
+  }
+  .wd-confirm__label {
+    display: block;
+    font-family: var(--evx-font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--evx-ink-faint);
+    margin-bottom: 8px;
+  }
+  .wd-confirm__note { font-size: 13px; color: var(--evx-paper-soft); line-height: 1.5; }
 </style>
