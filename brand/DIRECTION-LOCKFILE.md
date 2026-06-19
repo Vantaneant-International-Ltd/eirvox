@@ -223,6 +223,7 @@ HARD CONSTRAINTS — violating any of these makes the output unusable:
 | 11 Jun 2026 | About is company-led; founder content optional, never required | LOCKED |
 | 11 Jun 2026 | Registry ships only with DB-backed serials | LOCKED |
 | 11 Jun 2026 | Proof band Treatment A (dark) · Registry Treatment A (colophon) | LOCKED |
+| 19 Jun 2026 | Homepage may render in the Dark World as a house-led commercial front door, incl. marketplace + TRADE teaser sections. Marketplace and TRADE *detail* surfaces (browse / category / listing / seller / directory / profile) remain Paper World — §2 and §9 otherwise unchanged. NOT a blanket dark conversion. Authorised by Renato. | LOCKED |
 | — | (changelog continues here; one line per change, with reason) | |
 
 **Drift check, run on every new design output:** banned phrases? · cart? · icons in trust strips? · mono headline? · upright serif? · orange decorating? · champagne off-DRIVE? · invented claims? · invented nav? · worlds blended? — any YES = reject before evaluating aesthetics.
