@@ -208,7 +208,17 @@
     .sx-how__cell { border-right: none; border-bottom: 1px solid var(--evx-rule); }
     .sx-how__cell:last-child { border-bottom: none; }
   }
+  /* Cosy mobile: trim desktop padding so phones don't feel dense. */
+  @media (max-width: 767px) {
+    .sx-hero { padding: 38px 0 26px; }
+    .sx-look { padding: 40px 0; margin-top: 28px; }
+    .sx-how { padding: 0 0 40px; }
+    .sx-how__cell { padding: 24px 22px; }
+    .sx-tier { padding: 26px 22px; }
+    .sx-band__inner { padding: 30px 24px; }
+  }
   @media (max-width: 600px) {
     .sx-look__grid { grid-template-columns: 1fr; }
+    .sx-band__inner { flex-direction: column; align-items: flex-start; gap: 20px; }
   }
 </style>

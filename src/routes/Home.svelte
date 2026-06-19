@@ -497,8 +497,21 @@
   @media (max-width: 860px) {
     .hx-hero { grid-template-columns: 1fr; gap: 26px; }
   }
+  /* Cosy mobile: trim the desktop section padding + band insets so phones
+     never feel dense (standing preference). Layout/type unchanged. */
+  @media (max-width: 767px) {
+    .hx-section { padding: 38px 0; }
+    .hx-hero { padding-top: 30px; }
+    .hx-band { padding-top: 38px; padding-bottom: 38px; }
+    .hx-band__inner { padding: 28px 24px; }
+    .hx-feature { padding: 24px; }
+    .hx-trade__inner, .hx-why__grid { padding-top: 40px; padding-bottom: 40px; }
+    .hx-tier { padding: 26px 22px; }
+  }
   @media (max-width: 600px) {
     .hx-grid4 { grid-template-columns: 1fr 1fr; gap: 12px; }
     .hx-why__grid { grid-template-columns: 1fr; }
+    .hx-band__inner { flex-direction: column; align-items: flex-start; gap: 22px; }
+    .hx-band__cta { align-items: flex-start; }
   }
 </style>
