@@ -157,8 +157,8 @@
   /* tiers */
   .sx-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
   .sx-tier { position: relative; border: 1px solid var(--evx-rule); background: var(--evx-surface); padding: 32px 28px; display: flex; flex-direction: column; }
-  .sx-tier--rec { border-color: rgba(232,116,44,0.42); }
-  .sx-rec { position: absolute; top: -1px; right: -1px; font-family: var(--evx-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: var(--evx-fox-orange); padding: 6px 11px; }
+  .sx-tier--rec { border-color: var(--evx-rule-strong); }
+  .sx-rec { position: absolute; top: -1px; right: -1px; font-family: var(--evx-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--evx-paper-soft); background: rgba(244,241,236,0.08); border: 1px solid var(--evx-rule); padding: 6px 11px; }
   .sx-tnum { font-family: var(--evx-font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--evx-ink-faint); margin-bottom: 16px; }
   .sx-tname { font-family: var(--evx-font-display); font-weight: 500; font-size: 26px; letter-spacing: -0.01em; margin-bottom: 8px; }
   .sx-tprice { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--evx-paper); margin-bottom: 6px; }
@@ -178,7 +178,7 @@
   .sx-look { padding: 54px 0; border-top: 1px solid var(--evx-rule); margin-top: 36px; display: grid; grid-template-columns: 0.9fr 2.1fr; gap: 56px; align-items: start; }
   .sx-h2 { font-family: var(--evx-font-display); font-weight: 500; font-size: 26px; letter-spacing: -0.02em; line-height: 1.12; }
   .sx-look__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px 48px; }
-  .sx-rulenum { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.1em; color: var(--evx-fox-orange); margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
+  .sx-rulenum { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.1em; color: var(--evx-ink-soft); margin-bottom: 14px; display: flex; align-items: center; gap: 11px; }
   .sx-rule { flex: 1; height: 1px; background: var(--evx-rule); }
   .sx-ih { font-family: var(--evx-font-display); font-weight: 500; font-size: 16px; margin-bottom: 9px; }
   .sx-ip { font-size: 13.5px; color: var(--evx-ink-soft); line-height: 1.6; }
@@ -189,7 +189,7 @@
   .sx-how__grid { border: 1px solid var(--evx-rule); background: var(--evx-surface); display: grid; grid-template-columns: repeat(3, 1fr); }
   .sx-how__cell { padding: 30px 28px 32px; border-right: 1px solid var(--evx-rule); }
   .sx-how__cell:last-child { border-right: none; }
-  .sx-stepn { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--evx-fox-orange); margin-bottom: 16px; }
+  .sx-stepn { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--evx-ink-soft); margin-bottom: 16px; }
 
   /* apply band */
   .sx-band { padding: 0 0 8px; }

@@ -356,10 +356,10 @@
   /* Shared bits */
   .hx-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--evx-font-mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; padding: 4px 8px; border-radius: 2px; }
   .hx-badge--champ { color: var(--evx-champagne); background: rgba(201,169,97,0.12); border: 1px solid rgba(201,169,97,0.40); }
-  .hx-badge--fox { color: #F0B49E; background: rgba(232,116,44,0.12); border: 1px solid rgba(232,116,44,0.42); }
+  .hx-badge--fox { color: var(--evx-paper-soft); background: rgba(244,241,236,0.06); border: 1px solid var(--evx-rule); }
   .hx-dot { width: 6px; height: 6px; flex: none; }
   .hx-dot--champ { background: var(--evx-champagne); }
-  .hx-dot--fox { background: var(--evx-fox-orange); }
+  .hx-dot--fox { background: var(--evx-paper-soft); }
 
   .hx-slot { position: relative; overflow: hidden; background: var(--evx-surface-2); border: 1px solid var(--evx-rule); }
   .hx-slot::before { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 80% at 30% 18%, rgba(255,255,255,0.10), transparent 55%); pointer-events: none; }
@@ -415,7 +415,7 @@
   /* BMW feature */
   .hx-feature { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; background: var(--evx-surface); border: 1px solid var(--evx-rule); padding: 32px; }
   .hx-feature__img { aspect-ratio: 4 / 3; }
-  .hx-kick { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--evx-fox-orange); margin-bottom: 16px; }
+  .hx-kick { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--evx-ink-soft); margin-bottom: 16px; }
   .hx-h3 { font-family: var(--evx-font-display); font-weight: 500; font-size: 30px; letter-spacing: -0.02em; margin-bottom: 8px; }
   .hx-feature__line { font-size: 17px; color: var(--evx-ink-soft); margin-bottom: 20px; }
   .hx-matrix { display: flex; gap: 22px; font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--evx-ink-soft); margin-bottom: 22px; flex-wrap: wrap; }
@@ -436,8 +436,8 @@
   /* tiers */
   .hx-tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .hx-tier { position: relative; border: 1px solid var(--evx-rule); background: var(--evx-surface); padding: 30px 26px; display: flex; flex-direction: column; }
-  .hx-tier--rec { border-color: rgba(232,116,44,0.42); }
-  .hx-rec { position: absolute; top: -1px; right: -1px; font-family: var(--evx-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: var(--evx-fox-orange); padding: 5px 10px; }
+  .hx-tier--rec { border-color: var(--evx-rule-strong); }
+  .hx-rec { position: absolute; top: -1px; right: -1px; font-family: var(--evx-font-mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--evx-paper-soft); background: rgba(244,241,236,0.08); border: 1px solid var(--evx-rule); padding: 5px 10px; }
   .hx-tnum { font-family: var(--evx-font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--evx-ink-faint); margin-bottom: 14px; }
   .hx-tname { font-family: var(--evx-font-display); font-weight: 500; font-size: 23px; letter-spacing: -0.01em; margin-bottom: 6px; }
   .hx-tprice { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.04em; color: var(--evx-paper); margin-bottom: 22px; }
@@ -460,7 +460,7 @@
   .hx-trade__cta { display: flex; gap: 24px; align-items: center; }
   .hx-trade__points { display: grid; gap: 1px; background: var(--evx-rule); border: 1px solid var(--evx-rule); }
   .hx-tp { background: var(--evx-black); padding: 24px 26px; }
-  .hx-tp__n { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--evx-fox-orange); margin-bottom: 10px; }
+  .hx-tp__n { font-family: var(--evx-font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--evx-ink-soft); margin-bottom: 10px; }
   .hx-tp__h { font-family: var(--evx-font-display); font-weight: 500; font-size: 16px; margin-bottom: 7px; }
   .hx-tp__p { font-size: 13px; color: var(--evx-ink-soft); line-height: 1.55; }
 
@@ -469,7 +469,7 @@
   .hx-why__grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr; gap: 40px; align-items: start; padding-top: 52px; padding-bottom: 52px; }
   .hx-h3-sm { font-family: var(--evx-font-display); font-weight: 500; font-size: 22px; letter-spacing: -0.015em; margin-bottom: 12px; line-height: 1.15; }
   .hx-why__p { font-size: 14px; color: var(--evx-ink-soft); line-height: 1.6; max-width: 24em; }
-  .hx-wi-n { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.1em; color: var(--evx-fox-orange); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .hx-wi-n { font-family: var(--evx-font-mono); font-size: 12px; letter-spacing: 0.1em; color: var(--evx-ink-soft); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
   .hx-wi-n::after { content: ""; flex: 1; height: 1px; background: var(--evx-rule-strong); }
   .hx-wi-h { font-family: var(--evx-font-display); font-weight: 500; font-size: 16px; margin-bottom: 9px; }
   .hx-wi-p { font-size: 13.5px; color: var(--evx-ink-soft); line-height: 1.6; }

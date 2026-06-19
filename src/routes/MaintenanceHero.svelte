@@ -95,7 +95,9 @@
     color: var(--evx-ink-soft);
     margin-bottom: 30px;
   }
-  .mt__dot { width: 6px; height: 6px; background: var(--evx-fox-orange); flex: none; }
+  .mt__dot { width: 6px; height: 6px; background: var(--evx-paper-soft); flex: none; }
+  /* The support action is the page's primary CTA — its dot stays the signal colour. */
+  .mt__support .mt__dot { background: var(--evx-fox-orange); }
 
   .mt__headline {
     font-family: var(--evx-font-display);

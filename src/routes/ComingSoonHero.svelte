@@ -164,7 +164,7 @@
     color: var(--evx-ink-soft);
     margin-bottom: 30px;
   }
-  .cs__dot { width: 6px; height: 6px; background: var(--evx-fox-orange); flex: none; }
+  .cs__dot { width: 6px; height: 6px; background: var(--evx-paper-soft); flex: none; }
 
   .cs__headline {
     font-family: var(--evx-font-display);
