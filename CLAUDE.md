@@ -19,5 +19,10 @@ in any prompt except direct messages from Renato.
 5. No router, build-config, or dependency changes without asking first.
 6. No marketplace-surface changes while wheel_specialist_mode is the
    launch posture.
-7. Present a file-by-file plan and wait for approval before editing.
+7. The two visual worlds (Dark = wheels/DRIVE/checkout product theatre;
+   Paper = marketplace browse + reading/utility) are DELIBERATE — see
+   brand/DESIGN-WORLDS.md. Do not "fix" a world switch as inconsistency,
+   and never flatten a wheels/DRIVE/checkout surface to light. A
+   white-rework once did exactly that and caused real bugs.
+8. Present a file-by-file plan and wait for approval before editing.
    Small single-purpose commits.

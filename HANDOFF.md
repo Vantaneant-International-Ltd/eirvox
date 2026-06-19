@@ -8,6 +8,7 @@ Context for anyone (human or AI) picking up this project. Read before changing c
 2. **`CLAUDE.md`** (repo root) — standing instructions for AI contributors. Auto-read by Claude Code.
 3. **`brand/EMOTIONAL-BIBLE.md`** — the source of feeling. Trust + desire fused; object sacred; curator invisible but present. Read before any copy or content work. (Top-level `brand/`, not `docs/brand/` — `docs/` is the Vite build output and is wiped on every build.)
 4. **`brand/DIRECTION-LOCKFILE.md`** — the design constitution. Read before touching ANY UI, route, style, or user-facing copy. Locked direction, banned phrases, world boundaries, per-surface rules, drift check.
+5. **`brand/DESIGN-WORLDS.md`** — canonical rationale + route map for the two-world architecture (Dark = wheels/DRIVE/checkout; Paper = marketplace + reading/utility). Read before changing any page's surface palette. **The world switch is deliberate; do not flatten Dark surfaces to light.**
 
 If this file and the lockfile conflict on a design/copy matter, the lockfile wins. If they conflict on database/architecture, this file wins.
 

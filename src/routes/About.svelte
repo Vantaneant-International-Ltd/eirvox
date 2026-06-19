@@ -31,6 +31,11 @@
         Every wheel is designed in Ireland, assembled abroad by a specialist carbon manufacturer,
         and finished in Dublin before it ships. If it isn't right, it doesn't ship.
       </p>
+      <p>
+        The site changes mood on purpose. Where a wheel is shown and sold, the room goes dark and
+        the light falls on the object. Where you browse the wider marketplace or read the detail,
+        it opens into daylight. One company, two rooms — the change in light tells you which you're in.
+      </p>
     </section>
 
     <!-- Process -->

@@ -19,6 +19,13 @@ Anti-references: DoneDeal, Adverts, Facebook Marketplace, generic Shopify premiu
 
 ## 2 · World boundaries
 
+> **⚠️ DELIBERATE — do not flatten.** The two worlds are the *trust* and *desire*
+> beats made visual; collapsing them into one palette is a brand regression, not a
+> cleanup. A white-rework once flattened the Dark surfaces and caused the
+> black→white→black journey + a white `/wheels` (fixed 20 Jun 2026). If a
+> wheels/DRIVE/checkout surface renders light, restore it to Dark — don't whiten
+> the rest to match. **Canonical rationale + route map: `brand/DESIGN-WORLDS.md`.**
+
 The brand has exactly two worlds plus one shared thread. Every surface belongs to one world. No surface mixes worlds.
 
 ### The Dark World — product theatre
@@ -225,6 +232,7 @@ HARD CONSTRAINTS — violating any of these makes the output unusable:
 | 11 Jun 2026 | Proof band Treatment A (dark) · Registry Treatment A (colophon) | LOCKED |
 | 19 Jun 2026 | Homepage may render in the Dark World as a house-led commercial front door, incl. marketplace + TRADE teaser sections. Marketplace and TRADE *detail* surfaces (browse / category / listing / seller / directory / profile) remain Paper World — §2 and §9 otherwise unchanged. NOT a blanket dark conversion. Authorised by Renato. | LOCKED |
 | 19 Jun 2026 | Dark exception extended to house-front *recruitment* surfaces — Sell (seller tiers / recruitment) renders Dark alongside the wheel surfaces. The browse/transact marketplace (category / listing / seller shop / search) stays Paper. Authorised by Renato. | LOCKED |
+| 20 Jun 2026 | Two-world architecture documented as deliberate (not a bug to flatten) with the *why* + route map in canonical `brand/DESIGN-WORLDS.md`; referenced from CLAUDE.md + HANDOFF.md; one plain-language line added to /about. Prompted by the white-rework flatten regression. | LOCKED |
 | — | (changelog continues here; one line per change, with reason) | |
 
 **Drift check, run on every new design output:** banned phrases? · cart? · icons in trust strips? · mono headline? · upright serif? · orange decorating? · champagne off-DRIVE? · invented claims? · invented nav? · worlds blended? — any YES = reject before evaluating aesthetics.
