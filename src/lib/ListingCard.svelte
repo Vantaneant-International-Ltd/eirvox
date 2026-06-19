@@ -13,6 +13,7 @@
   export let showFeatured: boolean = true; // false → no FEATURED badge
   export let detailBase: string = '/listing'; // '/wheels' → WheelDetail
   export let cta: string | null = null;    // e.g. 'Buy' → quiet orange action
+  export let dark: boolean = false;        // dark-world surfaces (e.g. /wheels)
 
   // Local saved state, kept in sync with the user's saved_items
   let saved = false;
@@ -66,6 +67,7 @@
 
 <div
   class="card"
+  class:card--dark={dark}
   on:click={() => navigate(`${detailBase}/${slug}`)}
   on:keydown={(e) => e.key === 'Enter' && navigate(`${detailBase}/${slug}`)}
   tabindex="0"
@@ -73,7 +75,7 @@
   aria-label="{listing.title} - {formatPrice(listing.price)}"
 >
   <!-- Image area 5:6 ratio -->
-  <div class="card__image" style={cover ? '' : `background: ${cardBg}`}>
+  <div class="card__image" style={cover ? '' : (dark ? '' : `background: ${cardBg}`)}>
     {#if cover}
       <img class="card__img" src={cover} alt={listing.title} loading="lazy" />
     {/if}
@@ -212,4 +214,10 @@
     text-transform: uppercase;
     color: var(--evx-fox-orange);
   }
+
+  /* ── Dark-world variant (opt-in; used on /wheels). Surface tokens swap;
+     hairlines remap to the dark rule. cta 'Buy' stays orange (a CTA). */
+  .card--dark { background: var(--evx-surface); --evx-rule-light: var(--evx-rule); }
+  .card--dark .card__title, .card--dark .card__price { color: var(--evx-paper); }
+  .card--dark .card__image { background: var(--evx-surface-2); }
 </style>

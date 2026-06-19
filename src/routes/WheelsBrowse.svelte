@@ -26,7 +26,14 @@
       description: 'The ÉIRVOX wheel catalogue — carbon steering wheels, finished in Dublin. Buy direct.',
       path: '/wheels',
     });
-    all = await getListings({ sort: 'recent', limit: 48 });
+    const rows = await getListings({ sort: 'recent', limit: 48 });
+    // /wheels is the WHEEL catalogue only: DRIVE wheels (is_drive) + the
+    // fitted range (category 'automotive'). Marketplace categories
+    // (watches, tech, fashion, …) live under Marketplace and must never
+    // appear here. This holds regardless of wheel_specialist_mode — when
+    // the flag is off the public allowlist no longer scopes queries, so
+    // /wheels has to scope itself.
+    all = rows.filter(l => l.is_drive === true || l.category_slug === 'automotive');
     loading = false;
   });
 
@@ -46,7 +53,7 @@
   function clearFilters() { make = ''; condition = ''; sortBy = 'recent'; }
 </script>
 
-<Nav />
+<Nav dark />
 
 <main id="main-content" class="wb">
   <div class="page-container">
@@ -106,7 +113,7 @@
           <div class="wb__grid">
             {#each filtered as l (l.id)}
               <ListingCard listing={l} showSeller={false} showFeatured={false} showBookmark={false}
-                           detailBase="/wheels" cta="Buy" />
+                           detailBase="/wheels" cta="Buy" dark />
             {/each}
           </div>
         {/if}
@@ -116,7 +123,7 @@
   </div>
 </main>
 
-<Footer />
+<Footer dark />
 
 <style>
   .wb { flex: 1; padding-bottom: var(--evx-space-3xl); }
@@ -216,4 +223,11 @@
   @media (min-width: 1200px) {
     .wb__grid { grid-template-columns: repeat(4, 1fr); }
   }
+
+  /* ── Dark reskin (/wheels is a Dark-World surface; was flattened white).
+     Cards opt into ListingCard's dark variant. Hairlines remap to dark. */
+  .wb { background: var(--evx-black); color: var(--evx-paper); --evx-rule-light: var(--evx-rule); }
+  .wb__title { color: var(--evx-paper); }
+  .wb__select { color: var(--evx-paper); border-bottom-color: var(--evx-rule-strong); }
+  .wb__select option { color: var(--evx-ink); }
 </style>

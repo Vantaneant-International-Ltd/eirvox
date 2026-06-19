@@ -63,7 +63,7 @@
 
 <div class="di-page">
 
-  <Nav />
+  <Nav dark />
 
   <main id="main-content" class="drive-index">
     <div class="page-container">
@@ -184,7 +184,7 @@
   </div>
   </main>
 
-  <Footer />
+  <Footer dark />
 </div>
 
 <style>
@@ -450,4 +450,24 @@
     .di-issues { grid-template-columns: 1fr; }
     .di-about__inner { grid-template-columns: 1fr; }
   }
+
+  /* ── Dark reskin (DRIVE is a Dark-World surface; the white-rework
+     flattened it). Order-winning override + a scoped --evx-rule-light
+     remap flips every hairline to the dark rule. Nav/Footer dark above. */
+  .di-page {
+    background: var(--evx-black);
+    color: var(--evx-paper);
+    --evx-rule-light: var(--evx-rule);
+  }
+  .di-top { background: rgba(14, 13, 12, 0.92); }
+  .di-top__menu span { background: var(--evx-paper); }
+  .di-header__title, .di-issue__title { color: var(--evx-paper); }
+  .di-issue__image,
+  .di-issue--upcoming .di-issue__image,
+  .di-issue--archived .di-issue__image { background: var(--evx-surface-2); }
+  .di-issue__num,
+  .di-issue__img-text,
+  .di-issue__status-badge--archived { color: var(--evx-paper-soft); }
+  /* Step numbers neutral (orange = signal only, lockfile §3). */
+  .di-about__step-num { color: var(--evx-ink-soft); }
 </style>

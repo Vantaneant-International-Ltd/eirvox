@@ -105,7 +105,7 @@
   }
 </script>
 
-<Nav />
+<Nav dark />
 
 <main id="main-content" class="pr">
   <div class="pr__inner page-container">
@@ -178,7 +178,7 @@
   </div>
 </main>
 
-<Footer />
+<Footer dark />
 
 <style>
   .pr { flex: 1; padding-top: var(--evx-space-3xl); padding-bottom: var(--evx-space-3xl); }
@@ -252,4 +252,8 @@
   @media (max-width: 600px) {
     .pr__receipt-form { flex-direction: column; }
   }
+
+  /* Dark reskin (checkout/pay state = Dark World). */
+  .pr { background: var(--evx-black); color: var(--evx-paper); --evx-rule-light: var(--evx-rule); }
+  .pr__h, .pr__meta dd { color: var(--evx-paper); }
 </style>
