@@ -3,6 +3,11 @@
   import { auth, signOut } from './auth';
   import { siteFlags } from './flags';
 
+  // Dark surface variant (lockfile §6 shared skeleton: same structure +
+  // spacing, only surface tokens swap). Dark house-front pages pass
+  // dark; Paper marketplace/utility pages leave it false.
+  export let dark = false;
+
   let menuOpen = false;
   let userMenuOpen = false;
   let userMenuEl: HTMLDivElement;
@@ -44,17 +49,19 @@
     navigate('/');
   }
 
-  const categories = [
-    { label: 'Cars', path: '/cars' },
-    { label: 'Automotive', path: '/automotive' },
-    { label: 'Watches', path: '/watches' },
-    { label: 'Fashion', path: '/fashion' },
-    { label: 'Tech', path: '/tech' },
+  // House-led IA (full-vision homepage + dark house-front pages).
+  // Wheels first (the desire engine), then the marketplace + TRADE.
+  // Mirrors the approved eirvox-home-full / dc mocks.
+  const houseNav = [
+    { label: 'All wheels', path: '/wheels', mono: false },
+    { label: 'DRIVE', path: '/drive', mono: true },
+    { label: 'BMW fitted', path: '/wheels#range', mono: false },
+    { label: 'Finder', path: '/wheels#fitment', mono: false },
   ];
-
-  const directories = [
-    { label: 'DRIVE', path: '/drive' },
-    { label: 'TRADE', path: '/trade' },
+  const houseNavMarket = [
+    { label: 'Marketplace', path: '/search', mono: false },
+    { label: 'TRADE', path: '/trade', mono: true },
+    { label: 'Sell', path: '/sell', mono: false },
   ];
 
   // Wheel-specialist focused nav (lockfile §6 shared skeleton):
@@ -104,7 +111,7 @@
 
 <svelte:window on:click={handleClickOutside} />
 
-<header class="nav">
+<header class="nav" class:nav--dark={dark}>
   <div class="nav__inner page-container" class:nav__inner--wheel={wheelMode}>
     <!-- Wordmark -->
     <div class="nav__left">
@@ -127,7 +134,7 @@
           <input
             type="search"
             class="nav__search evx-caption"
-            placeholder="Search listings - make, model, category…"
+            placeholder="Find your fit — enter your model, e.g. F80 M3"
             aria-label="Search listings"
             bind:value={navSearch}
           />
@@ -158,10 +165,11 @@
     <nav class="nav__right" aria-label="Main navigation">
       {#if !wheelMode}
         <ul class="nav__links">
-          {#each categories as cat}
+          {#each houseNav as cat}
             <li>
               <button
                 class="nav__link"
+                class:nav__link--directory={cat.mono}
                 class:nav__link--active={isActive(cat.path, $currentPath)}
                 on:click={() => handleNav(cat.path)}
               >
@@ -170,10 +178,11 @@
             </li>
           {/each}
           <li class="nav__sep" aria-hidden="true"></li>
-          {#each directories as d}
+          {#each houseNavMarket as d}
             <li>
               <button
-                class="nav__link nav__link--directory"
+                class="nav__link"
+                class:nav__link--directory={d.mono}
                 class:nav__link--active={isActive(d.path, $currentPath)}
                 on:click={() => handleNav(d.path)}
               >
@@ -183,8 +192,8 @@
           {/each}
         </ul>
 
-        <button class="evx-btn evx-btn--primary evx-btn--sm nav__sell" on:click={() => handleNav('/sell')}>
-          Sell
+        <button class="evx-btn evx-btn--primary evx-btn--sm nav__sell" on:click={() => handleNav('/wheels#fitment')}>
+          Find your fit
         </button>
       {/if}
 
@@ -272,16 +281,13 @@
             </li>
           {/each}
         {:else}
-          {#each categories as cat}
+          {#each [...houseNav, ...houseNavMarket] as cat}
             <li>
               <button class="nav__drawer-link" on:click={() => handleNav(cat.path)}>
                 {cat.label}
               </button>
             </li>
           {/each}
-          <li><button class="nav__drawer-link" on:click={() => handleNav('/drive')}>DRIVE</button></li>
-          <li><button class="nav__drawer-link" on:click={() => handleNav('/trade')}>TRADE</button></li>
-          <li><button class="nav__drawer-link nav__drawer-link--sell" on:click={() => handleNav('/sell')}>Sell on Éirvox</button></li>
         {/if}
 
         {#if signedIn}
@@ -720,4 +726,25 @@
 
     .nav__hamburger { display: flex; }
   }
+
+  /* ── Dark surface variant (lockfile §6) ──────────────────────
+     Same skeleton, only surface tokens swap. Fox orange behaviour is
+     identical to Paper; champagne is never introduced in chrome. */
+  .nav--dark { background: var(--evx-black); border-bottom-color: var(--evx-rule); }
+  .nav--dark .nav__search-wrap { border-bottom-color: var(--evx-rule); }
+  .nav--dark .nav__search { color: var(--evx-paper); }
+  .nav--dark .nav__search::placeholder { color: var(--evx-ink-faint); }
+  .nav--dark .nav__search-icon { color: var(--evx-paper-soft); }
+  .nav--dark .nav__link { color: var(--evx-paper); }
+  .nav--dark .nav__link:hover { opacity: 0.62; }
+  .nav--dark .nav__login { color: var(--evx-paper); }
+  .nav--dark .nav__sep { background: var(--evx-rule); }
+  .nav--dark .nav__bar { background: var(--evx-paper); }
+  .nav--dark .nav__drawer { background: var(--evx-black); border-top-color: var(--evx-rule); }
+  .nav--dark .nav__drawer-link { color: var(--evx-paper); }
+  .nav--dark .nav__avatar { background: var(--evx-paper); color: var(--evx-black); }
+  /* Wordmark PNG is dark-on-transparent; invert to paper on dark. */
+  .nav--dark .nav__wordmark-img { filter: invert(1) brightness(1.05); }
+  .nav--dark .nav__user-menu,
+  .nav--dark .nav__drawer { color: var(--evx-paper); }
 </style>
