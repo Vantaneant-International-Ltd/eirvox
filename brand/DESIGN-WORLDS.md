@@ -54,6 +54,30 @@ feeling sacred and the marketplace stops feeling like daylight.
 **Rule of thumb:** house product + the buying ritual = **Dark**. Marketplace
 browsing + reading/utility = **Paper**.
 
+## Commerce model differs by world (why the verbs differ)
+
+The two worlds are also two **commerce models** — this is *why* the buying verbs
+differ, and it is deliberate:
+
+- **Dark World = the ÉIRVOX shop.** House products (the DRIVE line, the fitted
+  wheels) at a **set price**. Verbs: **Pay** and **Enquire** only. No offers, no
+  haggling, no "Make an offer" / "Message seller" / "Express interest" — the price
+  is the price.
+- **Paper World = the marketplace.** A real classifieds-style market (think
+  DoneDeal / Adverts): listings carry a genuine **offer + messaging** system and
+  buyers negotiate with sellers. ÉIRVOX sells here too, but as **one seller among
+  many, not at a fixed house price**. **"Make an offer" and "Message seller" are
+  correct and expected here — they are NOT banned-verb violations.**
+
+So the voice rule "no Express Interest / Message seller / Make an offer" applies
+**only to fixed-price house products** (Dark World). On the marketplace those verbs
+*are* the product. A wording audit must **not** strip them from `/listing/:slug`
+or the messaging surfaces.
+
+(A house product that is gated and still carries pre-BUY-verb copy — e.g.
+DriveIssue's "Express interest" — must get the Pay/Enquire pass *before* it
+un-gates. That is a real fix, not an exception to this rule.)
+
 ## The seam bridge — why it doesn't feel like two sites
 
 The **Nav and Footer are one shared skeleton** (same structure, spacing,
