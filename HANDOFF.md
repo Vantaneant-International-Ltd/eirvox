@@ -99,7 +99,7 @@ Long-term differentiator: per-item serialized records ("DRIVE 001 — 001/250"; 
 
 Pre-launch, in order:
 1. Truth edits: remove hardcoded cohort date + slot counter (`Sell.svelte`), fix commission wording (`Trust.svelte`).
-2. Footer imprint: entity / CRO 712304 / address / support@eirvox.ie. NO VAT until verified. No personal emails.
+2. Footer imprint: entity / CRO 806648 / address / support@eirvox.ie. NO VAT until verified. No personal emails.
 3. OG image: interim type-only 1200×630 PNG (the SVG fails WhatsApp/X/iMessage scrapers).
 4. Mobile money-path manual QA (finder → variant → pay) on iPhone + Android; fix payment-blocking breakages only.
 5. Product photography (minimal grade: honest + well-lit beats editorial + late). Until it lands: designed photo slots (`--evx-surface-2` fill + mono shot annotation). The carbon-weave CSS placeholder is retired.
