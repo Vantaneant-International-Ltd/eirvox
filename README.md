@@ -2,7 +2,7 @@
 
 Ireland's premium marketplace for enthusiast objects.
 
-**Who owns it.** ÉIRVOX Systems Ltd, trading as ÉIRVOX, a Vantanéant International
+**Who owns it.** EIRVOX LIMITED, trading as ÉIRVOX, a Vantanéant International
 Ltd company. Dublin, Ireland. CRO 806648. Contact: renato@eirvox.ie, eirvox.ie.
 
 **Status.** The site is behind `COMING_SOON = true` in `src/lib/config.ts` with a
