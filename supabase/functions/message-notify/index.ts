@@ -143,7 +143,7 @@ Deno.serve(async (req: Request) => {
         Replies are not monitored. Reply inside ÉIRVOX, or write to <a href="mailto:support@eirvox.ie" style="color:#1A1A1A;text-decoration:underline;">support@eirvox.ie</a>.
       </td></tr>
     </table>
-    <div style="max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8A8680;text-align:center;">ÉIRVOX SYSTEMS LTD · DUBLIN, IRELAND</div>
+    <div style="max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:#8A8680;text-align:center;">EIRVOX LIMITED, TRADING AS ÉIRVOX · DUBLIN, IRELAND</div>
   </td></tr>
 </table>
 </body></html>`;

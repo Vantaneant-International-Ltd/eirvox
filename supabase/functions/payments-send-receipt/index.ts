@@ -92,7 +92,7 @@ Deno.serve(async (req: Request) => {
       </td></tr>
     </table>
     <div style="max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:10px;letter-spacing:0.06em;color:#8A8680;text-align:center;">
-      ÉIRVOX SYSTEMS LTD · DUBLIN, IRELAND
+      EIRVOX LIMITED, TRADING AS ÉIRVOX · DUBLIN, IRELAND
     </div>
   </td></tr>
 </table>
