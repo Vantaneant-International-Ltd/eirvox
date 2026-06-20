@@ -76,7 +76,7 @@
 
 <div class="nf-page">
   <header class="nf-top">
-    <div class="nf-brand">ÉIRVOX</div>
+    <img src="/brand/wordmark.png" alt="ÉIRVOX" class="nf-brand-img" />
     <div class="nf-status">Page not found</div>
   </header>
 
@@ -160,7 +160,9 @@
     padding: 0 42px;
     border-bottom: 1px solid var(--evx-rule);
   }
-  .nf-brand { font-weight: 500; font-size: 18px; letter-spacing: 0.42em; }
+  /* Real brand wordmark (PNG), inverted to paper on the dark surface —
+     consistent with Nav / Footer / the gate heroes. */
+  .nf-brand-img { height: 20px; width: auto; display: block; filter: invert(1) brightness(1.05); }
   .nf-status {
     font-family: var(--evx-font-mono);
     font-size: 11px;

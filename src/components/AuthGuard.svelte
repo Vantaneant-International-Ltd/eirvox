@@ -73,8 +73,8 @@
             Apply to sell
           </button>
         {/if}
-        <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/account')}>
-          Your account
+        <button class="evx-btn evx-btn--ghost" on:click={() => navigate('/')}>
+          Back to home
         </button>
       </div>
     </div>

@@ -11,6 +11,7 @@
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import ListingCard from '../lib/ListingCard.svelte';
+  import WheelFinder from '../lib/WheelFinder.svelte';
   import { getListings, type ListingWithExtras } from '../lib/api';
   import { applySeo } from '../lib/seo';
 
@@ -19,6 +20,11 @@
   let make = '';
   let condition = '';
   let sortBy: 'recent' | 'price_asc' | 'price_desc' = 'recent';
+
+  // Fitment finder (the nav 'Finder' lands here). Opens the WheelFinder
+  // ritual against the live BMW consignment listing among the wheels.
+  let finderOpen = false;
+  $: consignment = all.find(l => l.slug?.includes('consignment')) ?? null;
 
   onMount(async () => {
     applySeo({
@@ -63,6 +69,11 @@
       <h1 class="wb__title">Wheels</h1>
       <p class="wb__stand evx-editorial">The catalogue.</p>
       <p class="wb__registry">Every ÉIRVOX wheel is recorded. Registry coming soon.</p>
+      {#if consignment}
+        <button id="fitment" class="wb__finder-cta" type="button" on:click={() => (finderOpen = true)}>
+          Find your fit →
+        </button>
+      {/if}
     </header>
 
     <div class="wb__layout">
@@ -123,10 +134,33 @@
   </div>
 </main>
 
+{#if finderOpen && consignment}
+  <WheelFinder
+    consignmentSlug={consignment.slug ?? ''}
+    consignmentId={consignment.id}
+    basePriceEur={consignment.price}
+    on:close={() => (finderOpen = false)}
+  />
+{/if}
+
 <Footer dark />
 
 <style>
   .wb { flex: 1; padding-bottom: var(--evx-space-3xl); }
+  .wb__finder-cta {
+    margin-top: var(--evx-space-lg);
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-fox-orange);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.18s;
+  }
+  .wb__finder-cta:hover { opacity: 0.8; }
 
   .wb__head {
     padding-top: var(--evx-space-2xl);

@@ -50,7 +50,8 @@
   function routeAfterAuth() {
     if (isAdmin()) navigate('/admin');
     else if (isSeller()) navigate('/sell/dashboard');
-    else navigate('/account');
+    // /account is gated (mock-backed) — never land a buyer on a 404.
+    else navigate('/');
   }
 
   async function handleLogin(e: Event) {
@@ -84,7 +85,7 @@
     });
 
     if (settled) routeAfterAuth();
-    else navigate('/account');
+    else navigate('/');
   }
 
   async function handleSignup(e: Event) {

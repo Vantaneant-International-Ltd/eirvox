@@ -48,11 +48,10 @@
     { path: '/sell/dashboard',  label: 'Seller dashboard',      desc: 'Manage listings + reservations.' },
   ];
 
+  // Account surfaces (/account*) are gated (mock-backed) and 404 right
+  // now, so they are intentionally omitted from the public sitemap until
+  // they ship for real. Sign-in stays.
   const buyer = [
-    { path: '/account',           label: 'Account overview',  desc: 'Welcome strip · stat cards · recent activity.' },
-    { path: '/account/orders',    label: 'Reservations',      desc: 'Expandable timeline + per-status actions.' },
-    { path: '/account/saved',     label: 'Saved items',       desc: 'Listings you\'ve kept for later.' },
-    { path: '/account/settings',  label: 'Settings',          desc: 'Profile · notifications · account actions.' },
     { path: '/login',             label: 'Sign in',           desc: 'Email + password sign-in.' },
   ];
 
@@ -80,7 +79,7 @@
     ? [
         { title: 'Wheels',  rows: marketplace },
         { title: 'DRIVE',   rows: drive },
-        { title: 'Account', rows: buyer },
+        { title: 'Sign in', rows: buyer },
         { title: 'House',   rows: trust },
         { title: 'Utility', rows: utility },
       ]
