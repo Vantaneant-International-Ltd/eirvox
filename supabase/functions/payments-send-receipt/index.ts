@@ -60,7 +60,7 @@ Deno.serve(async (req: Request) => {
     `Date          ${dateFmt}`,
     `State         ${order.state}`,
     '', 'This is an automated receipt from ÉIRVOX. Keep it for your records.', '',
-    'ÉIRVOX Systems Ltd · Dublin, Ireland', 'https://eirvox.ie',
+    'EIRVOX LIMITED, trading as ÉIRVOX · Dublin, Ireland', 'https://eirvox.ie',
   ].join('\n');
 
   const html = `

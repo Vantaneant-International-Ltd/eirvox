@@ -116,7 +116,7 @@ async function sendSellerNewOrderEmail(data: any): Promise<void> {
     '',
     'Replies are not monitored.',
     '',
-    'ÉIRVOX Systems Ltd · Dublin, Ireland',
+    'EIRVOX LIMITED, trading as ÉIRVOX · Dublin, Ireland',
   ].filter(Boolean).join('\n');
   const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${subject}</title></head>
 <body style="margin:0;background:#F5F2ED;font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#1A1A1A;">
@@ -183,7 +183,7 @@ async function sendBuyerConfirmationEmail(data: any): Promise<void> {
     'Replies to this email are not monitored.',
     'For help: support@eirvox.ie',
     '',
-    'ÉIRVOX Systems Ltd · Dublin, Ireland',
+    'EIRVOX LIMITED, trading as ÉIRVOX · Dublin, Ireland',
   ].filter(Boolean).join('\n');
   const html = `<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>${subject}</title></head>
 <body style="margin:0;background:#F5F2ED;font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#1A1A1A;">

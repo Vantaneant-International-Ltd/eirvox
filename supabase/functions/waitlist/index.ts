@@ -37,7 +37,7 @@ async function sendWelcomeEmail(to: string): Promise<void> {
     '',
     'Replies are not monitored. Questions go to support@eirvox.ie.',
     '',
-    'ÉIRVOX Systems Ltd · Dublin, Ireland',
+    'EIRVOX LIMITED, trading as ÉIRVOX · Dublin, Ireland',
     'https://eirvox.ie',
   ].join('\n');
   const html = `<!doctype html>
