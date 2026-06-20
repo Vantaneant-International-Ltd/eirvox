@@ -1,8 +1,39 @@
-<!--
-  Paste this block into the TOP of the ÉIRVOX brand/site repo's README.md
-  (or docs/brand/README.md), above existing brand contents.
-  It makes the emotional bible authoritative rather than just-a-file.
--->
+# ÉIRVOX
+
+Ireland's premium marketplace for enthusiast objects.
+
+**Who owns it.** ÉIRVOX Systems Ltd, trading as ÉIRVOX, a Vantaneant International
+Ltd company. Dublin, Ireland. CRO 712304. Contact: renato@eirvox.ie, eirvox.ie.
+
+**Status.** The site is behind `COMING_SOON = true` in `src/lib/config.ts` with a
+`#dev` bypass. Not publicly exposed.
+
+## Stack
+
+Svelte 5 + Vite. Hash-based SPA router. Supabase (Postgres + Auth + Storage).
+Vercel (SPA static + Edge serverless `/api/*`).
+
+## Run
+
+```
+npm install
+npm run dev          # Vite SPA only, /api/* calls 404
+npm run dev:api      # Vercel CLI: SPA + /api/* on one port (needs `vercel login` once)
+```
+
+You need a `.env` file (copy from `.env.example`). For full server-route testing
+add `SUPABASE_SERVICE_ROLE_KEY` (server-only, no `VITE_` prefix). `npm run dev` is
+enough for browsing; `npm run dev:api` is needed to exercise enquiries, waitlist,
+and seller-application submissions.
+
+## Build
+
+```
+npm run build
+```
+
+Vite outputs to `docs/`. Vercel deploy is configured via `vercel.json` to use
+`docs/` as its output directory.
 
 ## Brand source of truth
 
@@ -11,48 +42,20 @@ emotional bible before making anything for ÉIRVOX.
 
 | Document | Governs | Question it answers |
 |---|---|---|
-| **Brand / visual guidelines** | How ÉIRVOX **looks** | typography, colour, layout, listing design |
-| **Emotional bible** (`eirvox-emotional-bible.md`) | How ÉIRVOX **feels** | trust, desire, tone, what it stands against |
+| Brand / visual guidelines | How ÉIRVOX **looks** | typography, colour, layout, listing design |
+| Emotional bible (`brand/EMOTIONAL-BIBLE.md`) | How ÉIRVOX **feels** | trust, desire, tone, what it stands against |
 
-**Rule of precedence:** when visual guidelines and emotional direction conflict,
-resolve in favour of the **feeling**. A page can be visually clean and still be
-wrong if it reads as a junk marketplace, performs trust with loud badges, or
-pushes desire instead of awakening it.
+Rule of precedence: when visual guidelines and emotional direction conflict,
+resolve in favour of the feeling. A page can be visually clean and still be wrong
+if it reads as a junk marketplace, performs trust with loud badges, or pushes
+desire instead of awakening it.
 
-**Core distinction from Vendr:** Vendr is subtractive calm (away from junk).
-ÉIRVOX is trustworthy desire (toward a beautiful object, safely). ÉIRVOX has a
-pulse, do not let it inherit Vendr's stillness.
+Core distinction from Vendr: Vendr is subtractive calm (away from junk). ÉIRVOX is
+trustworthy desire (toward a beautiful object, safely). ÉIRVOX has a pulse; do not
+let it inherit Vendr's stillness.
 
 The emotional bible is authoritative for all ÉIRVOX content: site, listings,
 captions, video (Higgsfield or otherwise), and any brief given to a human or an AI.
-
-# ÉIRVOX
-
-Ireland's premium marketplace for enthusiast objects.
-
-## Stack
-
-Svelte 5 + Vite · Hash-based SPA router · Supabase (Postgres + Auth + Storage) · Vercel (SPA static + Edge serverless `/api/*`)
-
-The site is currently behind `COMING_SOON = true` in `src/lib/config.ts` with a `#dev` bypass. Not publicly exposed.
-
-## Run
-
-```
-npm install
-npm run dev          # Vite SPA only — /api/* calls 404
-npm run dev:api      # Vercel CLI: SPA + /api/* on one port (needs `vercel login` once)
-```
-
-You need a `.env` file (copy from `.env.example`). For full server-route testing add `SUPABASE_SERVICE_ROLE_KEY` (server-only, no `VITE_` prefix). `npm run dev` is enough for browsing; `npm run dev:api` is needed to exercise enquiries / waitlist / seller-application submissions.
-
-## Build
-
-```
-npm run build
-```
-
-Vite outputs to `docs/`. Vercel deploy is configured via `vercel.json` to use `docs/` as its output directory.
 
 ## Project layout
 
@@ -81,7 +84,8 @@ eirvox/
 └── vite.config.ts
 ```
 
-See [HANDOFF.md](HANDOFF.md) for the locked architecture decisions, security status of the live DB, and the current open-issue list.
+See [HANDOFF.md](HANDOFF.md) for the locked architecture decisions, security status
+of the live DB, and the current open-issue list.
 
 ## Routes
 
@@ -152,7 +156,7 @@ See [HANDOFF.md](HANDOFF.md) for the locked architecture decisions, security sta
 - **DRIVE.** Limited-run OEM+ pieces. One specification per issue.
 - **TRADE.** Verified directory of independent tradespeople across Ireland.
 
-## Key decisions (locked — see HANDOFF.md)
+## Key decisions (locked, see HANDOFF.md)
 
 - **Public writes** (waitlist, seller applications, enquiries) go through `/api/*` Vercel serverless routes using the service-role key. No browser-to-Supabase anon inserts.
 - **Reservations are out of v1.** Replaced by "Express Interest" wired into `enquiries`. The `reservations` table is retained for admin history.
@@ -161,14 +165,6 @@ See [HANDOFF.md](HANDOFF.md) for the locked architecture decisions, security sta
 - **Storage.** Public-read buckets with LIST disabled. Image canonical column is `storage_path`; URL derived at read time.
 - **Audit log.** Append-only `audit_log` table with triggers on `listings` and `sellers`. Admin-read only; writes only via the SECURITY DEFINER `log_audit_event()` helper invoked by triggers.
 
-## Brand
+## Brand assets
 
 Wordmark and symbol live at `public/brand/`.
-
-## Entity
-
-ÉIRVOX Systems Ltd · Trading as ÉIRVOX
-A Vantaneant International Ltd company
-Dublin, Ireland · CRO 712304
-
-renato@eirvox.ie · eirvox.ie

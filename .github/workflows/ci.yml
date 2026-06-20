@@ -1,0 +1,5 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  ci:
+    uses: Vantaneant-International-Ltd/.github/.github/workflows/node-ci.yml@main
