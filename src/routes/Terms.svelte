@@ -41,7 +41,7 @@
     <h2 id="s-intro" class="legal-section__h">Introduction and acceptance.</h2>
     <p>
       ÉIRVOX is operated by <strong>EIRVOX LIMITED</strong>. A company registered in Ireland, CRO 806648,
-      registered office in Dublin. Part of the Vantaneant International Ltd group.
+      registered office in Dublin. Part of the Vantanéant International Ltd group.
       Referred to here as "ÉIRVOX", "we", "us", "our".
     </p>
     <p>
@@ -302,7 +302,7 @@
       <strong>EIRVOX LIMITED</strong> · Dublin, Ireland · CRO 806648
     </p>
     <p>
-      Trading as ÉIRVOX. Part of Vantaneant International Ltd.
+      Trading as ÉIRVOX. Part of Vantanéant International Ltd.
     </p>
     <p>
       Email: <a href="mailto:support@eirvox.ie">support@eirvox.ie</a>

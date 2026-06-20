@@ -61,7 +61,7 @@
           <p class="legal-corporate__body">
             ÉIRVOX is operated by <strong>EIRVOX LIMITED</strong>, trading as ÉIRVOX.
             EIRVOX LIMITED is a wholly owned subsidiary of
-            <strong>Vantaneant International Ltd</strong>
+            <strong>Vantanéant International Ltd</strong>
             (<a href="https://vnta.xyz" class="legal-link" target="_blank" rel="noopener noreferrer">vnta.xyz</a>),
             which also operates <strong>Vendr</strong>
             (<a href="https://vendr.ie" class="legal-link" target="_blank" rel="noopener noreferrer">vendr.ie</a>).
