@@ -168,7 +168,17 @@
   );
 </script>
 
-{#if gate === 'maintenance'}
+<!-- Permanent gate-preview routes (parity with the SvelteKit client-buildt
+     site, which exposes /coming-soon and /maintenance as always-reachable
+     pages). These render the gate hero regardless of the live flag state or
+     admin bypass, so an admin browsing the live site can jump back to view
+     either gate screen by URL. Hash form: /#/coming-soon · /#/maintenance.
+     Branches sit ABOVE gate resolution so they win over flags + bypass. -->
+{#if path === '/coming-soon'}
+  <ComingSoonHero />
+{:else if path === '/maintenance'}
+  <MaintenanceHero />
+{:else if gate === 'maintenance'}
   {#if maintenancePreview}
     <div class="dev-banner">
       PREVIEW MODE - Maintenance gate is OFF for the public · visit <code>/#exit-preview</code> to leave
