@@ -1,39 +1,44 @@
 // ============================================================
-// GET /functions/v1/payments-order-status?id=<revolut-order-id>
-// Public-safe pass-through to Revolut's order lookup.
-// Called by /payment/return after the buyer comes back.
+// GET /functions/v1/payments-order-status?session_id=<stripe_checkout_session_id>
+// Server source of truth: reads the reservation status from our DB by
+// Stripe Checkout session id. Called by /#/payment/return after the
+// buyer comes back from Stripe. (More robust than trusting a PSP echo:
+// the reservation is only 'completed'/'deposit_paid' once the verified
+// stripe-webhook has run complete_order_stripe.)
 // ============================================================
 
 import { handleCors } from '../_shared/cors.ts';
-import { getOrder, minorToEuros } from '../_shared/revolut.ts';
-import { ok, bad, oops } from '../_shared/supabase-admin.ts';
+import { supabaseAdmin, ok, bad, oops } from '../_shared/supabase-admin.ts';
 
 Deno.serve(async (req: Request) => {
   const preflight = handleCors(req);
   if (preflight) return preflight;
-
   if (req.method !== 'GET') return bad(req, 'Method not allowed.');
 
   const url = new URL(req.url);
-  const id = url.searchParams.get('id');
-  if (!id || !/^[a-zA-Z0-9-]{8,}$/.test(id)) {
-    return bad(req, 'Missing or invalid order id.');
-  }
+  const id = url.searchParams.get('session_id') ?? url.searchParams.get('id');
+  if (!id || !/^[a-zA-Z0-9_-]{8,}$/.test(id)) return bad(req, 'Missing or invalid session_id.');
 
   try {
-    const order = await getOrder(id);
+    const { data, error } = await supabaseAdmin
+      .from('reservations')
+      .select('status, reference, item_price, deposit_amount, is_deposit, delivery_preference')
+      .eq('stripe_session_id', id)
+      .maybeSingle();
+    if (error) return oops(req, 'Could not read order status.');
+    if (!data) return ok(req, { ok: true, found: false, state: 'PENDING' });
+
+    const paid = data.status === 'completed' || data.status === 'deposit_paid';
     return ok(req, {
       ok: true,
-      id: order.id,
-      state: order.state,
-      amount_eur: minorToEuros(order.amount),
-      currency: order.currency,
-      created_at: order.created_at,
-      updated_at: order.updated_at,
-      description: (order.metadata && order.metadata.amount_eur) ? order.metadata : undefined,
+      found: true,
+      state: paid ? 'COMPLETED' : data.status === 'cancelled' ? 'CANCELLED' : 'PENDING',
+      reference: data.reference,
+      amount_eur: data.is_deposit ? data.deposit_amount : data.item_price,
+      is_deposit: data.is_deposit,
+      delivery_preference: data.delivery_preference,
     });
-  } catch (err) {
-    console.error('[order-status] failed:', err);
+  } catch {
     return oops(req, 'Could not read order status.');
   }
 });

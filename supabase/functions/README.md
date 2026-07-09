@@ -16,7 +16,7 @@ supabase/functions/
 ├── _shared/                 ← imported by every function. NOT itself a function.
 │   ├── cors.ts              ← shared CORS headers + preflight responder
 │   ├── supabase-admin.ts    ← service-role client (bypasses RLS — handle with care)
-│   ├── revolut.ts           ← Revolut Merchant API wrapper (REST, fetch-based)
+│   ├── stripe.ts           ← Stripe wrapper (REST, fetch-based)
 │   ├── email.ts             ← Resend REST wrapper
 │   ├── ratelimit.ts         ← Upstash Redis rate-limit
 │   └── turnstile.ts         ← Cloudflare Turnstile verifier
@@ -25,7 +25,7 @@ supabase/functions/
 ├── enquiries/               ← POST  buyer enquiry form
 ├── report/                  ← POST  "report this listing" from any listing detail
 ├── seller-applications/     ← POST  Cohort apply form
-├── payments-create-order/   ← POST  starts a Revolut hosted checkout
+├── payments-create-order/   ← POST  starts a Stripe hosted checkout
 ├── payments-order-status/   ← GET   polls order state after redirect
 └── payments-send-receipt/   ← POST  fires the receipt email after success
 ```
@@ -97,8 +97,8 @@ Set via the Supabase CLI or MCP, **never** committed to the repo:
 
 ```bash
 # One-time setup. Re-run when rotating.
-supabase secrets set REVOLUT_API_KEY=sk_xxx --project-ref arokrumaxjiidsqfpiii
-supabase secrets set REVOLUT_WEBHOOK_SECRET=whsec_xxx --project-ref arokrumaxjiidsqfpiii
+supabase secrets set STRIPE_SECRET_KEY=sk_xxx --project-ref arokrumaxjiidsqfpiii
+supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_xxx --project-ref arokrumaxjiidsqfpiii
 supabase secrets set RESEND_API_KEY=re_xxx --project-ref arokrumaxjiidsqfpiii
 supabase secrets set UPSTASH_REDIS_REST_URL=https://xxx --project-ref arokrumaxjiidsqfpiii
 supabase secrets set UPSTASH_REDIS_REST_TOKEN=xxx --project-ref arokrumaxjiidsqfpiii
@@ -225,7 +225,7 @@ will silently break**:
 
 | Source | URL it sends to | What happens if broken |
 |---|---|---|
-| Revolut Merchant Webhook | `/functions/v1/revolut-webhook` (not yet ported) | Payment confirmations don't reach us; orders sit in `pending` forever. |
+| Stripe Merchant Webhook | `/functions/v1/stripe-webhook` (not yet ported) | Payment confirmations don't reach us; orders sit in `pending` forever. |
 
 Keep this table updated as new webhooks are added.
 
@@ -272,9 +272,9 @@ client-side `setInterval` is hammering an endpoint (it's happened).
    it on the functions side."
 3. **Local repro**: `supabase functions serve --env-file .env.local` and curl it.
 4. **Roll back** (above) if the issue traces to the last deploy.
-5. **External**: if it's a Revolut/Resend/Upstash outage, check their
+5. **External**: if it's a Stripe/Resend/Upstash outage, check their
    status pages before assuming it's us:
-   - https://status.revolut.com
+   - https://status.stripe.com
    - https://status.resend.com
    - https://status.upstash.com
 
@@ -287,7 +287,7 @@ client-side `setInterval` is hammering an endpoint (it's happened).
 - **Don't read `process.env`.** Use `Deno.env.get('FOO')`. `process` is
   undefined in Deno; this throws at module-load time, before your handler
   runs, and the function silently 500s with a generic error.
-- **Don't bypass `_shared/`** by inlining a Supabase client or Revolut call
+- **Don't bypass `_shared/`** by inlining a Supabase client or Stripe call
   in a function. The shared helpers are the boundary; bug fixes propagate.
 - **Don't return raw error.message to the browser** without sanitising.
   Stack traces and SQL fragments leak schema details.

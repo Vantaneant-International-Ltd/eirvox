@@ -181,7 +181,7 @@
     await messageSeller(draft);
   }
 
-  // Mobile sticky CTA can't host the embedded Revolut button cleanly
+  // Mobile sticky CTA can't host the embedded Stripe button cleanly
   // (it would create a second order alongside the panel button). On
   // payable listings the sticky button scrolls the user up to the
   // main PayButton instead.

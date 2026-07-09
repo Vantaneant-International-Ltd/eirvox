@@ -27,7 +27,7 @@
     <span class="legal-section__num">01 · DEPOSITS</span>
     <h2 id="r-deposits" class="legal-section__h">Reservation deposits.</h2>
     <p>
-      Marketplace reservation deposits are paid <strong>directly to the seller</strong> via Revolut at
+      Marketplace reservation deposits are paid <strong>directly to the seller</strong> via Stripe at
       checkout. ÉIRVOX is a venue and never holds buyer funds for marketplace transactions.
     </p>
     <p>
@@ -36,10 +36,10 @@
     <ul>
       <li>
         Contact the seller using the email or phone shown on the listing. Quote the
-        reference shown on your Revolut receipt.
+        reference shown on your Stripe receipt.
       </li>
       <li>
-        The seller refunds via their Revolut Business dashboard. Funds typically return to your
+        The seller refunds via their Stripe dashboard. Funds typically return to your
         original payment method within 3 business days.
       </li>
       <li>
@@ -49,7 +49,7 @@
       </li>
       <li>
         If the seller does not respond or refuses a refund you're entitled to, raise a dispute with
-        your card issuer or Revolut for a chargeback. ÉIRVOX cannot process refunds on a seller's behalf,
+        your card issuer or Stripe for a chargeback. ÉIRVOX cannot process refunds on a seller's behalf,
         but we will suspend sellers who repeatedly ignore legitimate refund requests
         (see Acceptable Use).
       </li>

@@ -3,10 +3,10 @@
   // ÉIRVOX - payment method icon strip
   // ============================================================
   //
-  // Inline SVG badges for the methods Revolut hosted checkout offers.
+  // Inline SVG badges for the methods Stripe hosted checkout offers.
   // Same visual treatment as Shopify's standard payment row:
   // small white mini-cards (~40×24, 4px corners) with the brand mark
-  // inside. Dark variants for Apple Pay / Revolut Pay (their official
+  // inside. Dark variants for Apple Pay / Stripe (their official
   // dark badges) for visual rhythm against the dark footer.
   //
   // These are simplified silhouettes used as "accepted payment
@@ -18,13 +18,13 @@
 
 <div class="pmi" aria-label="Accepted payment methods" role="list">
 
-  <!-- Revolut Pay - wordmark single-piece per Revolut rebrand guidelines
+  <!-- Stripe - wordmark single-piece per Stripe rebrand guidelines
        (don't split R from rest of wordmark). Solid black bg #000 per
        primary palette. "Pay" is a small sub-mark in the lockup. -->
-  <span class="pmi__card pmi__card--dark" role="listitem" title="Revolut Pay">
+  <span class="pmi__card pmi__card--dark" role="listitem" title="Stripe">
     <svg viewBox="0 0 64 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <rect width="64" height="24" rx="3" fill="#000000"/>
-      <text x="8" y="16" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="-0.2">Revolut</text>
+      <text x="8" y="16" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="-0.2">Stripe</text>
       <text x="44" y="16" fill="#FFFFFF" font-family="Inter Tight, system-ui, sans-serif" font-size="9" font-weight="500" letter-spacing="0.3">Pay</text>
     </svg>
   </span>

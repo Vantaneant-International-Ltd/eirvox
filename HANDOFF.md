@@ -14,7 +14,7 @@ If this file and the lockfile conflict on a design/copy matter, the lockfile win
 
 ## What ÉIRVOX is
 
-**Launch posture (current): a Dublin carbon-steering-wheel specialist.** DRIVE limited-edition line + BMW fitted range, sold via direct Revolut payment (full or deposit). Controlled by `wheel_specialist_mode` flag in `public.site_settings.flags` — when on, Home renders the dark `/wheels` surface and the nav collapses to WHEELS · DRIVE · FINDER · ABOUT.
+**Launch posture (current): a Dublin carbon-steering-wheel specialist.** DRIVE limited-edition line + BMW fitted range, sold via direct Stripe payment (full or deposit). Controlled by `wheel_specialist_mode` flag in `public.site_settings.flags` — when on, Home renders the dark `/wheels` surface and the nav collapses to WHEELS · DRIVE · FINDER · ABOUT.
 
 **Long-term: a verification-led curated marketplace** ("StockX for enthusiast objects, starting where we can verify with our own hands") — NOT liquidity-led classifieds. The full marketplace (7 categories, sellers, TRADE) exists in this codebase, dormant behind the flag. Categories open only when their verification operation exists. While gated: zero visible references to marketplace surfaces anywhere — no nav items, no footer links, no teasers.
 
@@ -81,9 +81,9 @@ Reconciliation tasks (scheduled: first post-launch week, BEFORE any other migrat
 
 ## Architecture (current, verified against repo)
 
-- **Public writes** (waitlist, enquiries, seller applications, reports, payments) go through **Supabase Edge Functions** in `supabase/functions/` using the service-role key — NOT Vercel `api/` routes (that earlier architecture was removed; any doc or comment referencing `api/*.ts` routes is stale). Shared modules: `_shared/` (cors, email, ratelimit, turnstile, revolut, supabase-admin).
+- **Public writes** (waitlist, enquiries, seller applications, reports, payments) go through **Supabase Edge Functions** in `supabase/functions/` using the service-role key — NOT Vercel `api/` routes (that earlier architecture was removed; any doc or comment referencing `api/*.ts` routes is stale). Shared modules: `_shared/` (cors, email, ratelimit, turnstile, stripe, supabase-admin).
 - **Rate limiting + Turnstile**: implemented on the public-write Edge Functions (waitlist, enquiries, seller-applications, report, payments-create-order). The former "no rate limiting" launch blocker is RESOLVED.
-- **Payments:** direct Revolut checkout per listing (card / Apple Pay / Google Pay). **No cart — ever.** Full payment or deposit (deposit holds incoming stock; balance on collection). `payments-create-order` re-resolves price + stock server-side; the client never sets amounts. Webhook + order persistence wired.
+- **Payments:** direct Stripe checkout per listing (card / Apple Pay / Google Pay). **No cart — ever.** Full payment or deposit (deposit holds incoming stock; balance on collection). `payments-create-order` re-resolves price + stock server-side; the client never sets amounts. Webhook + order persistence wired.
 - **Deposits ARE the launch commerce model** for wheels/DRIVE. (The older "reservations are out of v1, use Express Interest" decision applied to the marketplace surface and predates wheel mode — do not remove deposit flows. "Express Interest"/enquiries remain the fallback verb for non-payable listings.)
 - **Auth:** Supabase magic link, PKCE flow. Auth is primarily an admin door today. Browsing and buying stay anonymous.
 - **Storage:** public-read-by-URL buckets, LIST disabled. Canonical image column is `storage_path`; URL derived at read time.
