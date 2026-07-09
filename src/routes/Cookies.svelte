@@ -58,7 +58,7 @@
     <span class="legal-section__num">04 · THIRD-PARTY</span>
     <h2 id="c-third" class="legal-section__h">Third-party.</h2>
     <p>
-      When you pay a reservation deposit, the payment provider (Revolut, Stripe) may set cookies on their
+      When you pay a reservation deposit, the payment provider (Stripe, Stripe) may set cookies on their
       payment pages. These are subject to their own privacy policies and we have no control over them.
     </p>
   </section>

@@ -1,308 +1,92 @@
 <script lang="ts">
-  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-  import { createCheckoutInstance, type RevolutCheckoutInstance } from './revolutCheckout';
-  import { callFunction } from './supabase';
+  // ÉIRVOX pay button — Stripe Checkout (hosted redirect).
+  // Replaces the Revolut embed/popup flow. On click we ask the edge
+  // function for a Checkout Session and navigate to Stripe's hosted
+  // page; the buyer returns to /#/payment/return where the order status
+  // is verified server-side (PaymentReturn.svelte). The charge amount is
+  // resolved SERVER-SIDE from the listing — props here are display-only.
+  import { createEventDispatcher } from 'svelte';
+  import { startCheckout } from './stripeCheckout';
   import { auth } from './auth';
 
-  /** Amount in euros. Two roles depending on mode:
-   *   - Admin mode (no listingId): the amount the server charges.
-   *   - Listing mode (listingId set): DISPLAY ONLY in the success state.
-   *     The server resolves the actual charge from the listing record;
-   *     anything sent here is ignored server-side.
-   *  See api/payments/create-order.ts for the LISTING MODE / ADMIN MODE
-   *  contract. */
+  /** Display-only amount (server resolves the real charge from the listing). */
   export let amountEur: number;
-
-  /** ÉIRVOX-owned listing id. When set, the request to create-order is
-   *  in LISTING MODE: the server looks up the listing, verifies its
-   *  seller has is_house=true, and resolves the charge amount from
-   *  the v06 stock_state + fulfilment + is_deposit matrix. The client
-   *  cannot influence the amount in this mode. */
+  /** ÉIRVOX-owned listing id (LISTING MODE). */
   export let listingId: string | null = null;
-
-  /** v06. Required when listingId is set. The buyer's chosen
-   *  fulfilment. Server rejects if not enabled on the listing or if
-   *  it conflicts with is_deposit (deposit + delivery rejected;
-   *  full + incoming + collection rejected). */
+  /** Buyer's chosen fulfilment. Required when listingId is set. */
   export let fulfilment: 'collection' | 'delivery' | null = null;
-
-  /** v06. Optional when listingId is set; defaults to false. If true,
-   *  server charges the listing's deposit_amount. Server rejects if
-   *  fulfilment is 'delivery' (deposit is collection-only this phase)
-   *  or if the listing has no deposit_amount configured. */
+  /** Charge the listing's deposit_amount instead of the full price. */
   export let isDeposit: boolean = false;
-
-  /** Free text shown on the Revolut checkout / Revolut Pay sheet.
-   *  Ignored server-side in LISTING MODE (server builds the description
-   *  from the listing title). */
-  export let description: string = 'ÉIRVOX';
-
-  /** Free-form metadata attached to the order (visible in admin queue).
-   *  In LISTING MODE the server prepends its own canonical fields
-   *  (listing_id, seller_id, payment_mode, resolved_amount_eur) and only
-   *  appends up to 4 non-conflicting client fields. */
-  export let metadata: Record<string, string> = {};
-
-  /** Path Revolut should redirect to on completion if the buyer uses
-   *  the redirect/popup flow (popup also fires onSuccess in-place). */
+  /** Path Stripe returns to after payment. */
   export let redirectPath: string = '/#/payment/return';
-
-  /** When true, render a small "Refund policy" link in the subline.
-   *  Auto-enabled in LISTING MODE since the public Pay flow must link
-   *  to a real refund policy; defaults to false for admin testing. */
+  /** Render a "Refund policy" link in the subline. Auto-on in LISTING MODE. */
   export let showRefundLink: boolean = false;
-
-  /** v20 wheel consignment 2-axis variant selection. Required server-side
-   *  when the listing carries listing_variants rows. Server re-resolves
-   *  the (style, family) cell, validates stock, and adds price_delta to
-   *  the resolved charge. Nothing here is trusted by the server; these
-   *  are just identifiers. */
+  /** v20 wheel consignment 2-axis variant selection (identifiers only). */
   export let variantStyleKey: string | null = null;
   export let variantFamilyKey: string | null = null;
 
   $: refundLinkVisible = showRefundLink || !!listingId;
 
-  const dispatch = createEventDispatcher<{
-    success: { orderId: string };
-    error: { message: string };
-    cancel: undefined;
-  }>();
+  const dispatch = createEventDispatcher<{ error: { message: string } }>();
 
-  // Mount target for the native Revolut Pay button.
-  let payTarget: HTMLDivElement;
-  let instance: RevolutCheckoutInstance | null = null;
+  let submitting = false;
+  let error = '';
 
-  let booting = true;
-  let orderId = '';
-  let bootError = '';
-  // True after a successful payment (popup onSuccess or Revolut Pay onSuccess).
-  let paid = false;
-  // Set while the popup is open.
-  let popupOpen = false;
-
-  async function bootOrder() {
-    booting = true;
-    bootError = '';
-    try {
-      // LISTING MODE: send listing_id + fulfilment (required by server)
-      // + is_deposit. Server resolves amount, description, validation;
-      // any local amountEur is display-only.
-      // ADMIN MODE: send the legacy { amount_eur, description, metadata }
-      // body the /admin/settings €1 self-test page uses.
-      let reqBody: Record<string, unknown>;
-      if (listingId) {
-        if (fulfilment !== 'collection' && fulfilment !== 'delivery') {
-          bootError = "Choose 'collection' or 'delivery' before paying.";
-          booting = false;
-          return;
-        }
-        reqBody = {
-          listing_id: listingId,
-          fulfilment,
-          is_deposit: isDeposit,
-          metadata,
-          redirect_path: redirectPath,
-          buyer_email: $auth.profile?.email ?? $auth.user?.email,
-          buyer_profile_id: $auth.user?.id,
-          ...(variantStyleKey && variantFamilyKey
-            ? { variant_style_key: variantStyleKey, variant_family_key: variantFamilyKey }
-            : {}),
-        };
-      } else {
-        reqBody = {
-          amount_eur: amountEur,
-          description,
-          metadata,
-          redirect_path: redirectPath,
-        };
-      }
-
-      const res = await callFunction('payments-create-order', { body: reqBody });
-      const ct = res.headers.get('content-type') ?? '';
-      if (!ct.includes('application/json')) {
-        bootError = res.status === 404
-          ? 'Payments function not found. Check Supabase Functions are deployed.'
-          : `Server returned non-JSON (${res.status}).`;
-        booting = false;
-        return;
-      }
-      const body = await res.json();
-      if (!res.ok || !body.token) {
-        bootError = body.error ?? 'Could not create the payment order.';
-        booting = false;
-        return;
-      }
-      orderId = body.order_id;
-      instance = await createCheckoutInstance(body.token, 'prod');
-
-      // Mount the native Revolut Pay button into our slot.
-      if (payTarget && instance.revolutPay) {
-        instance.revolutPay(payTarget, {
-          // Sensible defaults; Revolut renders the branded button with its R icon.
-          buttonStyle: { size: 'large', radius: 'none' },
-        });
-      }
-    } catch (err) {
-      bootError = err instanceof Error ? err.message : 'Could not load Revolut.';
+  async function pay() {
+    error = '';
+    if (!listingId) { error = 'Nothing to pay for.'; return; }
+    if (fulfilment !== 'collection' && fulfilment !== 'delivery') {
+      error = "Choose 'collection' or 'delivery' before paying.";
+      return;
     }
-    booting = false;
-  }
-
-  function openOtherMethods() {
-    if (!instance || popupOpen) return;
-    popupOpen = true;
-    instance.payWithPopup({
-      onSuccess: () => { popupOpen = false; paid = true; dispatch('success', { orderId }); },
-      onError: (err: unknown) => {
-        popupOpen = false;
-        const message = err instanceof Error ? err.message : 'Payment failed.';
-        dispatch('error', { message });
-      },
-      onCancel: () => { popupOpen = false; dispatch('cancel'); },
+    submitting = true;
+    const res = await startCheckout({
+      listingId,
+      fulfilment,
+      isDeposit,
+      buyerEmail: $auth.profile?.email ?? $auth.user?.email,
+      buyerProfileId: $auth.user?.id,
+      variantStyleKey,
+      variantFamilyKey,
+      redirectPath,
     });
+    // On success the browser has already navigated to Stripe.
+    if (!res.ok) {
+      submitting = false;
+      error = res.error ?? 'Could not start checkout.';
+      dispatch('error', { message: error });
+    }
   }
 
-  onMount(() => {
-    if (typeof window === 'undefined') return;
-    void bootOrder();
-  });
-
-  onDestroy(() => {
-    try { instance?.destroy?.(); } catch { /* ignore */ }
-  });
-
-  $: amountFmt = new Intl.NumberFormat('en-IE', {
-    style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 2,
-  }).format(amountEur || 0);
+  const fmt = (n: number) => new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(n);
 </script>
 
 <div class="paybtn">
-  {#if booting}
-    <div class="paybtn__loading" aria-live="polite">Loading payment…</div>
-  {:else if bootError}
-    <div class="paybtn__err" role="alert">{bootError}</div>
-    <button class="paybtn__retry" type="button" on:click={bootOrder}>Try again</button>
-  {:else if paid}
-    <div class="paybtn__ok" role="status">
-      <span class="paybtn__ok-label">PAYMENT RECEIVED</span>
-      <span class="paybtn__ok-amount">{amountFmt}</span>
-    </div>
-  {:else}
-    <!-- Native Revolut Pay button (rendered by embed.js into this target) -->
-    <div class="paybtn__rev" bind:this={payTarget}></div>
+  <button type="button" class="paybtn__go" onclick={pay} disabled={submitting}>
+    {submitting ? 'Starting checkout…' : `Pay ${fmt(amountEur)}${isDeposit ? ' deposit' : ''}`}
+  </button>
 
-    <button class="paybtn__card" type="button" on:click={openOtherMethods} disabled={popupOpen || !instance}>
-      {popupOpen ? 'Opening…' : 'Pay with a card'}
-    </button>
-    <span class="paybtn__also">Apple Pay · Google Pay · Pay by bank also available</span>
-    {#if refundLinkVisible}
-      <a class="paybtn__refund" href="#/refund-policy">Refund policy</a>
-    {/if}
+  {#if error}
+    <p class="paybtn__err" role="alert">{error}</p>
   {/if}
+
+  <p class="paybtn__sub">
+    Secure payment by Stripe.
+    {#if refundLinkVisible}
+      <a href="/#/refund-policy">Refund policy</a>.
+    {/if}
+  </p>
 </div>
 
 <style>
-  .paybtn {
-    display: flex;
-    flex-direction: column;
-    gap: var(--evx-space-sm);
-    width: 100%;
-    max-width: 420px;
+  .paybtn { display: flex; flex-direction: column; gap: 8px; }
+  .paybtn__go {
+    padding: 14px 20px; border: none; cursor: pointer;
+    background: #1A1A1A; color: #fff;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
   }
-
-  /* Revolut Pay button injects its own styled <button>. We just give
-     the wrapper sensible width and let Revolut handle the visuals. */
-  .paybtn__rev { width: 100%; min-height: 48px; }
-
-  /* Prominent Fox-Orange "Pay with a card" - visual sibling to the
-     native Revolut Pay button above. Matches the rest of the site's
-     primary CTAs. Opens Revolut's popup with all methods available. */
-  .paybtn__card {
-    font-family: var(--evx-font-display);
-    font-size: 15px;
-    font-weight: 500;
-    color: #FFFFFF;
-    background: var(--evx-fox-orange);
-    border: none;
-    border-radius: 0;
-    padding: 14px 18px;
-    cursor: pointer;
-    transition: opacity 200ms ease;
-    text-align: center;
-    min-height: 48px;
-  }
-  .paybtn__card:hover:not(:disabled) { opacity: 0.9; }
-  .paybtn__card:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .paybtn__also {
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    color: var(--evx-ink-soft);
-    text-align: center;
-    padding: 2px 0;
-  }
-
-  .paybtn__refund {
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    color: var(--evx-ink-soft);
-    text-align: center;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    padding: 0;
-    transition: color 200ms ease;
-  }
-  .paybtn__refund:hover { color: var(--evx-warm-black); }
-
-  .paybtn__loading {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    color: var(--evx-ink-soft);
-    padding: 12px 0;
-  }
-
-  .paybtn__err {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    color: #C9665A;
-    padding: 12px;
-    border: 1px solid #C9665A;
-    border-radius: 0;
-  }
-  .paybtn__retry {
-    font-family: var(--evx-font-display);
-    font-size: 13px;
-    background: var(--evx-warm-black);
-    color: var(--evx-paper);
-    border: none;
-    border-radius: 0;
-    padding: 10px 16px;
-    cursor: pointer;
-    align-self: flex-start;
-  }
-
-  .paybtn__ok {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 16px;
-    border: 1px solid rgba(232, 116, 44, 0.3);
-    background: rgba(232, 116, 44, 0.04);
-    border-radius: 0;
-  }
-  .paybtn__ok-label {
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--evx-fox-orange);
-  }
-  .paybtn__ok-amount {
-    font-family: var(--evx-font-display);
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--evx-warm-black);
-  }
+  .paybtn__go:disabled { opacity: 0.6; cursor: default; }
+  .paybtn__err { color: #B4402C; font-size: 13px; margin: 0; }
+  .paybtn__sub { color: #8A8680; font-size: 12px; margin: 0; }
+  .paybtn__sub a { color: #1A1A1A; }
 </style>

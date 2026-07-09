@@ -18,29 +18,29 @@
   let receiptError = '';
 
   onMount(async () => {
-    // Revolut redirects back with ?order_id=... (or sometimes just ?id=...).
-    // We read either. Hash routing means the query is on the path *after*
-    // the #, so window.location.hash carries '/payment/return?id=...'.
+    // Stripe Checkout redirects back to our success_url with ?session_id=…
+    // Hash routing puts the query on the path *after* the '#'.
+    // (orderId holds the Stripe Checkout session id.)
     const hash = window.location.hash;
     const qIdx = hash.indexOf('?');
     const search = qIdx >= 0 ? hash.slice(qIdx + 1) : '';
     const params = new URLSearchParams(search);
-    orderId = params.get('id') || params.get('order_id') || '';
+    orderId = params.get('session_id') || params.get('id') || '';
 
     if (!orderId) {
       // Fallback: real URL query string (some integrations land here instead).
       const fallback = new URLSearchParams(window.location.search);
-      orderId = fallback.get('id') || fallback.get('order_id') || '';
+      orderId = fallback.get('session_id') || fallback.get('id') || '';
     }
 
     if (!orderId) {
-      error = 'No order id in URL. The redirect from Revolut was incomplete.';
+      error = 'No session id in URL. The redirect from Stripe was incomplete.';
       loading = false;
       return;
     }
 
     try {
-      const res = await callFunction('payments-order-status', { method: 'GET', query: { id: orderId } });
+      const res = await callFunction('payments-order-status', { method: 'GET', query: { session_id: orderId } });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {
         error = res.status === 404
@@ -83,7 +83,7 @@
     receiptSending = true;
     try {
       const res = await callFunction('payments-send-receipt', {
-        body: { order_id: orderId, to: receiptEmail.trim().toLowerCase() },
+        body: { session_id: orderId, to: receiptEmail.trim().toLowerCase() },
       });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {

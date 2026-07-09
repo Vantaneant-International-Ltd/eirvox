@@ -6,7 +6,7 @@
 //   - creds missing -> fail-OPEN with one-time warning
 //     The site has no Upstash account yet. Until one is wired,
 //     submissions go through. Risk is spam, not financial loss —
-//     payments are still rate-limited by Revolut at the hosted-
+//     payments are still rate-limited by Stripe at the hosted-
 //     checkout layer, and DB unique constraints catch dupes.
 //
 // To re-tighten to fail-CLOSED later, change the early return in

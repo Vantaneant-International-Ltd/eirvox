@@ -2,7 +2,7 @@
   // ============================================================
   // /trust — warm paper. Wheel/DRIVE commerce proof only.
   //
-  // ÉIRVOX sells its own wheels directly: pay ÉIRVOX via Revolut,
+  // ÉIRVOX sells its own wheels directly: pay ÉIRVOX via Stripe,
   // deposits hold a wheel from an incoming run, collection in Dublin or
   // post within Ireland, refunds at our discretion as merchant of
   // record. No marketplace, no sellers, no cohorts, no commission — that
@@ -67,14 +67,14 @@
         <div class="trust-section__left">
           <h2 class="trust-section__heading">How you pay.</h2>
           <p class="trust-section__sub">
-            Every wheel is bought directly from ÉIRVOX through Revolut. There is no cart,
+            Every wheel is bought directly from ÉIRVOX through Stripe. There is no cart,
             and no third party in the middle.
           </p>
         </div>
         <ol class="trust-steps">
           {#each [
             { n: '01', title: 'You pay ÉIRVOX directly.', body: 'We design, finish and sell these wheels. We are the merchant of record for every one.' },
-            { n: '02', title: 'Card, Apple Pay or Google Pay.', body: 'Checkout runs through Revolut. The price is resolved on our server at the moment you pay.' },
+            { n: '02', title: 'Card, Apple Pay or Google Pay.', body: 'Checkout runs through Stripe. The price is resolved on our server at the moment you pay.' },
             { n: '03', title: 'Pay in full, or place a deposit.', body: 'A deposit holds a wheel from an incoming run; the balance follows before it ships.' },
             { n: '04', title: 'We never hold funds for anyone else.', body: 'There is no escrow. You are paying ÉIRVOX for an ÉIRVOX wheel.' },
           ] as step}
