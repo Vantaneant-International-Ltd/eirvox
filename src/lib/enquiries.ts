@@ -48,8 +48,9 @@ export type SubmitOutcome =
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const isValidEmail = (v: string) => EMAIL_RE.test(v.trim());
 
-/** Submit an enquiry via /api/enquiries (service-role insert).
- *  Anonymous-friendly. Local dev needs `npm run dev:api`. */
+/** Submit an enquiry via the `enquiries` Edge Function (service-role
+ *  insert). Anonymous-friendly. Works in local dev against the deployed
+ *  Supabase project; there is no separate API dev server. */
 export async function submitEnquiry(input: SubmitEnquiryInput): Promise<SubmitOutcome> {
   // Client-side guards mirror the server. Server is authoritative.
   if (!input.name?.trim()) {

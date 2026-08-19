@@ -97,8 +97,8 @@ export interface SellerApplicationStub {
  *  Writes to seller_applications (not sellers - sellers only gets
  *  rows on admin approval via approve_seller_application()).
  *
- *  Local dev: `npm run dev:api` (vercel dev) to exercise the API.
- *  Plain `npm run dev` (vite only) will 404 the call. */
+ *  Goes through the `seller-applications` Edge Function. Works under
+ *  plain `npm run dev` against the deployed Supabase project. */
 export async function applyAsSeller(input: SellerApplyInput): Promise<Result<SellerApplicationStub>> {
   // Attach profile_id when signed in so admins can link the application
   // back to a user account; anonymous applications send null.
