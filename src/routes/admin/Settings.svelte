@@ -121,10 +121,27 @@
           <label for="flag-wheel-specialist" style="cursor: pointer;">
             <strong style="display: block; font-size: 14px;">Wheel-specialist scope</strong>
             <span class="adm-field__hint" style="display: block; margin-top: 4px;">
-              When on: Home renders the /wheels landing, Nav shows only Wheels / How / About / Contact,
-              and public listing queries are filtered to category_slug IN public_category_allowlist.
-              Non-automotive listings and TRADE remain in the database but are hidden from public view.
-              Flip off to expose the full marketplace; nothing is destructively removed.
+              When on: the marketplace is locked behind /marketplace (its coming-soon page), and public
+              listing queries are filtered to category_slug IN public_category_allowlist. Marketplace,
+              TRADE, seller and search surfaces stay in the database and render the lock page instead.
+              Flip off to open the full marketplace; nothing is destructively removed.
+            </span>
+          </label>
+        </div>
+
+        <!-- Klarna (Stripe), alongside the Revolut card path -->
+        <div class="adm-field" style="display: flex; align-items: flex-start; gap: 16px; padding: 12px 0; border-top: 1px solid var(--evx-rule-light); margin-top: 8px;">
+          <input type="checkbox" id="flag-klarna" bind:checked={flagsDraft.klarna_enabled}
+                 style="margin-top: 4px; transform: scale(1.2); accent-color: var(--evx-fox-orange);" />
+          <label for="flag-klarna" style="cursor: pointer;">
+            <strong style="display: block; font-size: 14px;">Klarna (via Stripe)</strong>
+            <span class="adm-field__hint" style="display: block; margin-top: 4px;">
+              Shows the "Pay with Klarna" option on wheel pages, alongside the Revolut card button.
+              <strong>Do not switch this on until a real Klarna payment has completed end to end.</strong>
+              It requires STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET set on the Supabase project, and
+              the payments-stripe-create-session, payments-stripe-session-status and stripe-webhook
+              functions deployed. Setup steps are in HANDOFF.md. Offering Klarna on a checkout that
+              cannot take a Klarna payment is a false payment claim.
             </span>
           </label>
         </div>

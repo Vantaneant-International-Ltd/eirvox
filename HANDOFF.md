@@ -88,7 +88,27 @@ Reconciliation tasks (scheduled: first post-launch week, BEFORE any other migrat
 - **Payments:** direct Revolut checkout per listing (card / Apple Pay / Google Pay). **No cart — ever.** Full payment or deposit (deposit holds incoming stock; balance on collection). `payments-create-order` re-resolves price + stock server-side; the client never sets amounts. Webhook + order persistence wired.
 - **Deposits are REMOVED (19 Aug 2026, Renato).** One price, paid in full. This supersedes the earlier "deposits ARE the launch commerce model" note. Nothing was dropped from the database: `listings.deposit_amount` and the `is_deposit` branch in `payments-create-order` are intact, so deposits revert by putting the control back in the UI.
   - **One live consequence:** `payments-create-order` still rejects full payment on `stock_state='incoming'` collected in person, because that combination used to require a deposit. The product page therefore shows incoming stock as made-to-order and routes to email, instead of showing a pay button the server would refuse. To make incoming stock payable in full, remove that guard in `supabase/functions/payments-create-order/index.ts` (search: "collection requires a deposit") and redeploy.
-- **Klarna is wanted but NOT integrated.** Revolut Merchant does not offer Klarna. It needs either a Klarna merchant account (Klarna Payments API, its own edge function + webhook) or a provider that resells it (Stripe, Mollie, Adyen). No Klarna mark ships until a Klarna payment actually completes. Blocked on a provider decision.
+- **Klarna: built, shipped dark, NOT live.** Revolut Merchant does not offer Klarna, so Klarna runs through **Stripe, alongside Revolut** (Renato's decision, 19 Aug 2026). Revolut keeps card / Apple Pay / Google Pay / Pay by Bank and was deliberately left untouched.
+
+  Code that exists now:
+  - `supabase/functions/_shared/stripe.ts` — fetch-based Stripe client (no SDK), session create + read, and `stripe-signature` verification.
+  - `supabase/functions/payments-stripe-create-session/` — Klarna-only Checkout Session. Resolves the amount server-side from the listing + variant matrix; a client-supplied amount is never trusted. Persists via the existing `record_order_created` RPC (its `p_revolut_order_id` arg takes the Stripe `cs_…` session id; no migration needed).
+  - `supabase/functions/payments-stripe-session-status/` — what `/payment/return` reads when `provider=stripe`.
+  - `supabase/functions/stripe-webhook/` — verifies the signature, maps Stripe states onto the same `complete_order` RPC Revolut uses.
+  - `src/lib/KlarnaButton.svelte`, gated on `flags.klarna_enabled`.
+
+  **`klarna_enabled` defaults FALSE and nothing Klarna-branded renders until it is on.** A Klarna mark on a checkout that cannot take a Klarna payment is a false payment claim and a trademark misuse.
+
+  To go live:
+  1. Stripe account, Klarna enabled in Dashboard → Settings → Payment methods.
+  2. `supabase secrets set STRIPE_SECRET_KEY=sk_… STRIPE_WEBHOOK_SECRET=whsec_… SITE_ORIGIN=https://eirvox.ie`
+  3. `supabase functions deploy payments-stripe-create-session payments-stripe-session-status` and `supabase functions deploy stripe-webhook --no-verify-jwt` (Stripe cannot present a Supabase JWT; the signature check is the authentication).
+  4. Stripe webhook endpoint → `https://<ref>.supabase.co/functions/v1/stripe-webhook`, events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`.
+  5. Test in Stripe test mode end to end, confirm the order row flips to paid, THEN flip `klarna_enabled` in `/admin/settings`.
+
+  **Klarna settles asynchronously.** `checkout.session.completed` can arrive with `payment_status: 'unpaid'` while Klarna underwrites; the webhook only treats `paid` as money received. Do not "simplify" that: it is the difference between shipping a wheel and shipping a wheel for free.
+
+  **Known duplication to converge:** `payments-stripe-create-session` mirrors `payments-create-order`'s listing/variant/amount resolution. The Revolut function was left untouched so adding Klarna could not break a working checkout. Two copies of price resolution is two chances to charge the wrong amount, so extract a shared `_shared/listing-charge.ts` the next time either is edited.
 - "Express Interest"/enquiries remain the fallback verb for non-payable listings.
 - **Auth:** Supabase magic link, PKCE flow. Auth is primarily an admin door today. Browsing and buying stay anonymous.
 - **Storage:** public-read-by-URL buckets, LIST disabled. Canonical image column is `storage_path`; URL derived at read time.

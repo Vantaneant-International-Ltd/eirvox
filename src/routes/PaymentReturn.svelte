@@ -39,8 +39,17 @@
       return;
     }
 
+    // Klarna returns through Stripe, which is a different provider with
+    // a different id space. The success_url carries provider=stripe.
+    const provider = params.get('provider')
+      ?? new URLSearchParams(window.location.search).get('provider')
+      ?? (orderId.startsWith('cs_') ? 'stripe' : 'revolut');
+    const fn = provider === 'stripe'
+      ? 'payments-stripe-session-status'
+      : 'payments-order-status';
+
     try {
-      const res = await callFunction('payments-order-status', { method: 'GET', query: { id: orderId } });
+      const res = await callFunction(fn, { method: 'GET', query: { id: orderId } });
       const ct = res.headers.get('content-type') ?? '';
       if (!ct.includes('application/json')) {
         error = res.status === 404

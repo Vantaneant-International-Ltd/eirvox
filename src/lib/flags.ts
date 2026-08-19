@@ -44,6 +44,15 @@ export interface SiteFlags {
   /** Whitelist of category_slug values surfaced to the public site
    *  when wheel_specialist_mode is on. Order is preserved for nav. */
   public_category_allowlist: string[];
+  /** Klarna, via Stripe, alongside the Revolut card path.
+   *
+   *  DEFAULT FALSE, and it must stay false until a Klarna payment has
+   *  actually completed end to end. A Klarna mark on a checkout that
+   *  cannot take a Klarna payment is a false payment claim and a
+   *  trademark misuse. Flipping this on requires, on the Supabase
+   *  project: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, and the
+   *  payments-stripe-* functions deployed. See HANDOFF.md. */
+  klarna_enabled: boolean;
 }
 
 const CACHE_KEY = 'eirvox_site_flags';
@@ -65,6 +74,8 @@ const DEFAULT_FLAGS: SiteFlags = {
   // hidden. The BMW consignment wheel carries category 'automotive'.
   // Keep in lockstep with the v22 RLS fail-closed default.
   public_category_allowlist: ['automotive'],
+  // Fail closed: no Klarna UI until it is switched on deliberately.
+  klarna_enabled: false,
 };
 
 /** Read cached flags from localStorage. Returns the defaults if no cache. */

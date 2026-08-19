@@ -19,6 +19,7 @@
     type ListingWithExtras,
   } from '../lib/api';
   import PayButton from '../lib/PayButton.svelte';
+  import KlarnaButton from '../lib/KlarnaButton.svelte';
   import VariantPicker from '../lib/VariantPicker.svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
@@ -210,6 +211,8 @@
                 description={`ÉIRVOX · ${listing.title}`}
                 showRefundLink={true}
               />
+              <!-- Renders nothing unless flags.klarna_enabled is on. -->
+              <KlarnaButton listingId={listing.id} fulfilment={fulfilment} />
             {:else if incomingCollection}
               <p class="pd__hint">
                 This one is made to order on the next run.
