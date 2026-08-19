@@ -1,28 +1,41 @@
 /* ============================================================
-   ÉIRVOX - Design Token System & Base Styles
-   Inter Tight + Newsreader Italic + JetBrains Mono
-   Paper #F7F6F3 · Ink #1A1A1A · Fox Orange #E8742C
+   ÉIRVOX, Design tokens & base styles
+   Single light system. White ground, near-black ink, one accent.
+   Inter Tight (display) · JetBrains Mono (labels) · Newsreader (italic)
+
+   DIRECTION NOTE (19 Aug 2026, authorised by Renato, recorded in
+   brand/DIRECTION-LOCKFILE.md §13): the two-world architecture is
+   retired. Every public surface is light. The legacy dark tokens at
+   the bottom of this file are kept ONLY so gated/dormant surfaces
+   (marketplace, TRADE, seller flows, admin) keep rendering until each
+   is re-papered. Do not use them on a public surface.
    ============================================================ */
 
-/* Fonts are loaded via <link> in index.html (parallel fetch), not an
-   @import here (which would block on CSS parse). Same families/weights. */
+/* Fonts load via <link> in index.html (parallel fetch), not @import. */
 
 /* ── Tokens ── */
 :root {
-  /* Colour — palette freed from lockfile §3 (Renato, 18 Jun 2026): warm
-     cream retired for a clean white + neutral-grey system (mock direction). */
-  --evx-paper:          #FFFFFF; /* was #F5F2ED cream → pure white page/cards */
-  --evx-paper-panel:    #F4F3F1; /* light recessed panel/band (replaces cream-on-cream) */
-  --evx-ink:            #161616; /* near-black, neutral (was warm #1A1A1A) */
-  --evx-warm-black:     #161616; /* kept name for compatibility; now neutral */
+  /* Ground + ink */
+  --evx-paper:          #FFFFFF; /* page ground */
+  --evx-paper-panel:    #F5F5F4; /* recessed band / section ground */
+  --evx-paper-tile:     #F0EFED; /* product image tile */
   --evx-white:          #FFFFFF;
-  --evx-graphite:       #232323; /* neutral charcoal (was warm #2A2825) */
-  --evx-graphite-mid:   #383838; /* neutral mid (was warm #3D3A36) */
+  --evx-ink:            #141414; /* headings, primary text */
+  --evx-warm-black:     #141414; /* legacy alias */
+  --evx-ink-soft:       #6B6B6B; /* meta, secondary text (AA on white) */
+  --evx-ink-faint:      #9A9A98; /* captions, disabled */
+  --evx-graphite:       #232323;
+  --evx-graphite-mid:   #383838;
+
+  /* Accent, the only one. CTAs and live markers. Never headlines,
+     never decoration, never a background wash. */
   --evx-fox-orange:     #E8742C;
-  --evx-champagne:      #C9A961;
-  --evx-ink-soft:       #8A8A88; /* neutral grey (was warm #8A8680) */
-  --evx-rule-light:     rgba(22, 22, 22, 0.12);
-  --evx-rule-dark:      rgba(255, 255, 255, 0.12);
+  --evx-champagne:      #C9A961; /* DRIVE editions only */
+
+  /* Rules, 1px hairlines only */
+  --evx-rule-light:     rgba(20, 20, 20, 0.12);
+  --evx-rule-hair:      rgba(20, 20, 20, 0.07);
+  --evx-rule-dark:      rgba(255, 255, 255, 0.14);
 
   /* Spacing */
   --evx-space-xs:   4px;
@@ -32,21 +45,24 @@
   --evx-space-xl:   32px;
   --evx-space-2xl:  48px;
   --evx-space-3xl:  80px;
+  --evx-space-4xl:  120px;
 
   /* Typography */
   --evx-font-display:   'Inter Tight', system-ui, sans-serif;
   --evx-font-editorial: 'Newsreader', Georgia, serif;
   --evx-font-mono:      'JetBrains Mono', 'Courier New', monospace;
 
-  /* Motion - 200ms opacity fade only */
+  /* Motion, reveal only, never decorate */
   --evx-transition: opacity 200ms ease;
 
   /* Layout */
-  --evx-page-margin: 96px;
+  --evx-page-margin: 64px;
+  --evx-max-width:   1320px;
+  --evx-nav-height:  68px;
 }
 
 @media (max-width: 1023px) {
-  :root { --evx-page-margin: 48px; }
+  :root { --evx-page-margin: 32px; --evx-nav-height: 60px; }
 }
 
 @media (max-width: 767px) {
@@ -61,6 +77,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -83,67 +100,114 @@ ul, ol { list-style: none; }
 button { font-family: inherit; cursor: pointer; }
 input, textarea, select { font-family: inherit; }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+a { color: inherit; text-decoration: none; }
 
-/* ── Layout util ── */
+/* ── Layout ── */
 .page-container {
   width: 100%;
-  max-width: 1440px;
+  max-width: var(--evx-max-width);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--evx-page-margin);
   padding-right: var(--evx-page-margin);
 }
 
-/* ── Typography utilities ── */
+/* Section rhythm. One idea per band. */
+.evx-section { padding-top: var(--evx-space-3xl); padding-bottom: var(--evx-space-3xl); }
+.evx-section--tight { padding-top: var(--evx-space-2xl); padding-bottom: var(--evx-space-2xl); }
+.evx-band { background: var(--evx-paper-panel); }
 
-/* JetBrains Mono - labels, captions, meta */
+@media (max-width: 767px) {
+  .evx-section { padding-top: var(--evx-space-2xl); padding-bottom: var(--evx-space-2xl); }
+}
+
+/* ── Typography ── */
+
+/* Mono, labels, eyebrows, specs, captions. Never headlines, never
+   paragraph length. */
 .evx-label {
   font-family: var(--evx-font-mono);
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.10em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1.4;
+  color: var(--evx-ink-soft);
 }
 
 .evx-caption {
   font-family: var(--evx-font-mono);
   font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   line-height: 1.5;
+  color: var(--evx-ink-soft);
 }
 
-/* Inter Tight - display headings */
+.evx-meta {
+  font-family: var(--evx-font-mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--evx-ink-soft);
+}
+
+/* Inter Tight, every heading. Weight 500 max. */
 .evx-display {
   font-family: var(--evx-font-display);
   font-weight: 500;
-  font-size: clamp(40px, 5vw, 72px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-size: clamp(38px, 5.2vw, 68px);
+  line-height: 1.04;
+  letter-spacing: -0.028em;
 }
 
 .evx-heading {
   font-family: var(--evx-font-display);
   font-weight: 500;
-  font-size: clamp(28px, 3vw, 44px);
-  line-height: 1.10;
-  letter-spacing: -0.015em;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
 }
 
-/* Newsreader - editorial accent, used sparingly */
-.evx-accent {
+.evx-subhead {
+  font-family: var(--evx-font-display);
+  font-weight: 500;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+}
+
+.evx-body {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--evx-ink-soft);
+}
+
+.evx-lede {
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.55;
+  color: var(--evx-ink-soft);
+  max-width: 58ch;
+}
+
+/* Newsreader, ITALIC ONLY, one phrase per screen. */
+.evx-accent,
+.evx-editorial {
   font-family: var(--evx-font-editorial);
   font-style: italic;
-  font-size: 20px;
-  line-height: 1.40;
+  font-weight: 400;
+}
+.evx-accent { font-size: 20px; line-height: 1.4; }
+
+.evx-wordmark {
+  font-family: var(--evx-font-display);
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
 }
 
-/* ── Button primitives ── */
+/* ── Buttons ── */
 .evx-btn {
   display: inline-flex;
   align-items: center;
@@ -152,9 +216,10 @@ a {
   font-family: var(--evx-font-display);
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.01em;
-  padding: 13px 24px;
+  letter-spacing: 0.005em;
+  padding: 14px 26px;
   border: 1px solid transparent;
+  background: none;
   cursor: pointer;
   text-decoration: none;
   transition: var(--evx-transition);
@@ -162,6 +227,7 @@ a {
 }
 
 .evx-btn:hover { opacity: 0.82; }
+.evx-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .evx-btn--primary {
   background: var(--evx-fox-orange);
@@ -169,58 +235,104 @@ a {
   border-color: var(--evx-fox-orange);
 }
 
-.evx-btn--ghost {
-  background: transparent;
-  color: var(--evx-warm-black);
-  border-color: var(--evx-warm-black);
+.evx-btn--ink {
+  background: var(--evx-ink);
+  color: var(--evx-white);
+  border-color: var(--evx-ink);
 }
 
+.evx-btn--ghost {
+  background: transparent;
+  color: var(--evx-ink);
+  border-color: var(--evx-ink);
+}
+
+/* Legacy alias, dormant dark surfaces still reference it. */
 .evx-btn--ghost-paper {
   background: transparent;
   color: var(--evx-paper);
   border-color: var(--evx-paper);
 }
 
-.evx-btn--sm {
-  font-size: 12px;
-  padding: 9px 16px;
+.evx-btn--sm { font-size: 12px; padding: 10px 18px; }
+.evx-btn--full { width: 100%; }
+
+/* Quiet inline link-button with a rule under it. */
+.evx-link {
+  font-family: var(--evx-font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--evx-ink);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--evx-ink);
+  padding: 0 0 3px;
+  cursor: pointer;
+  transition: var(--evx-transition);
+}
+.evx-link:hover { opacity: 0.6; }
+
+/* ── Product image tile ──
+   Every product image sits on a neutral tile so mixed photography
+   reads as one catalogue. No radii, no shadows. */
+.evx-tile {
+  position: relative;
+  width: 100%;
+  background: var(--evx-paper-tile);
+  overflow: hidden;
+}
+.evx-tile > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Where a photograph doesn't exist yet, the tile carries a woven
+   field and the house symbol instead of an empty grey box. It reads
+   as a considered brand tile and cannot be mistaken for a photograph
+   of the product, which is the line that matters: we never simulate
+   product photography. Swap it for the real shot when one lands. */
+.evx-tile--woven { background: var(--evx-paper-tile); }
+.evx-tile--woven::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(45deg,  rgba(20,20,20,0.045) 0 3px, transparent 3px 7px),
+    repeating-linear-gradient(-45deg, rgba(20,20,20,0.035) 0 3px, transparent 3px 7px);
+}
+.evx-tile--woven::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/brand/symbol.svg') no-repeat center / 13%;
+  opacity: 0.10;
+}
+/* Same treatment on an ink ground, for tiles inside a dark band. */
+.evx-tile--woven-ink { background: #1B1B1B; }
+.evx-tile--woven-ink::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(45deg,  rgba(255,255,255,0.055) 0 3px, transparent 3px 7px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.035) 0 3px, transparent 3px 7px);
+}
+.evx-tile--woven-ink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/brand/symbol.svg') no-repeat center / 13%;
+  opacity: 0.14;
+  filter: invert(1);
 }
 
 /* ── Divider ── */
-.evx-rule {
-  border: none;
-  border-top: 1px solid var(--evx-rule-light);
-}
+.evx-rule { border: none; border-top: 1px solid var(--evx-rule-light); }
+.evx-rule--hair { border-top-color: var(--evx-rule-hair); }
 
-/* ── Seller pill (standalone usage) ── */
-.tier-house {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--evx-font-mono);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  background: var(--evx-warm-black);
-  color: var(--evx-paper);
-}
-
-.tier-atelier {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--evx-font-mono);
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  border: 1px solid var(--evx-warm-black);
-  color: var(--evx-warm-black);
-}
-
+/* ── Tier marks (mono type + rule, never a badge) ── */
+.tier-house,
+.tier-atelier,
 .tier-verified {
   display: inline-flex;
   align-items: center;
@@ -231,18 +343,15 @@ a {
   letter-spacing: 0.09em;
   text-transform: uppercase;
   padding: 3px 7px;
-  border: 1px solid var(--evx-rule-light);
-  color: var(--evx-ink-soft);
 }
+.tier-house    { background: var(--evx-ink); color: var(--evx-white); }
+.tier-atelier  { border: 1px solid var(--evx-ink); color: var(--evx-ink); }
+.tier-verified { border: 1px solid var(--evx-rule-light); color: var(--evx-ink-soft); }
 
-/* ── Focus ring ── */
+/* ── Focus ── */
 :focus { outline: none; }
 
-:focus-visible {
-  outline: 2px solid var(--evx-fox-orange);
-  outline-offset: 2px;
-}
-
+:focus-visible,
 button:focus-visible,
 a:focus-visible,
 [role="link"]:focus-visible,
@@ -255,14 +364,14 @@ summary:focus-visible {
   outline-offset: 2px;
 }
 
-/* ── Skip-to-content link ── */
+/* ── Skip link ── */
 .skip-link {
   position: absolute;
   top: -100px;
   left: var(--evx-space-md);
   z-index: 9999;
-  background: var(--evx-warm-black);
-  color: var(--evx-paper);
+  background: var(--evx-ink);
+  color: var(--evx-white);
   font-family: var(--evx-font-mono);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -271,27 +380,20 @@ summary:focus-visible {
   text-decoration: none;
   transition: top 200ms ease;
 }
-.skip-link:focus-visible {
-  top: var(--evx-space-md);
-  outline: 2px solid var(--evx-fox-orange);
-  outline-offset: 2px;
-}
+.skip-link:focus-visible { top: var(--evx-space-md); }
 
-/* Screen-reader only */
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
 }
 
-/* Honour reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -300,101 +402,13 @@ summary:focus-visible {
   }
 }
 
-/* ── Scrollbar (webkit) ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--evx-rule-light); }
 
-/* ============================================================
-   Dark cinematic system (wheels-mode)
-   Used by /wheels, WheelFinder, and the consignment detail page.
-   Brand DNA preserved. Fox Orange #E8742C remains the only UI
-   accent. Champagne #C9A961 is reserved for DRIVE eyebrow + LED
-   wash. Wheel finish swatches (blue / red) come from
-   listing_variants.accent_hex and are ONLY rendered as small
-   product-finish dots; they must never colour UI chrome.
-   ============================================================ */
-:root {
-  /* Warm near-blacks */
-  --evx-black:        #0E0D0C;
-  --evx-surface:      #141210;
-  --evx-surface-2:    #1B1815;
-  --evx-graphite-2:   #2E2A25;
-
-  /* Light on dark */
-  --evx-paper-soft:   #C7C2B9;
-  --evx-ink-faint:    #5C574F;
-
-  /* Accents (surgical) */
-  --evx-orange-glow:  rgba(232,116,44,0.55);
-  --evx-champagne-dim:#9C854E;
-
-  /* Rules on dark */
-  --evx-rule:         rgba(244,241,236,0.10);
-  --evx-rule-soft:    rgba(244,241,236,0.055);
-  --evx-rule-strong:  rgba(244,241,236,0.20);
-}
-
-/* Type primitives (dark-context). Re-usable everywhere. */
-.evx-label {
-  font-family: var(--evx-font-mono);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  line-height: 1.4;
-  color: var(--evx-ink-soft);
-}
-.evx-meta {
-  font-family: var(--evx-font-mono);
-  font-size: 11.5px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  line-height: 1.5;
-  color: var(--evx-paper-soft);
-}
-.evx-editorial {
-  font-family: var(--evx-font-editorial);
-  font-style: italic;
-  font-weight: 400;
-}
-.evx-wordmark {
-  font-family: var(--evx-font-display);
-  font-weight: 600;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-}
-
-/* Carbon-weave placeholder (frames for studio photos not yet shot). */
-.evx-carbon {
-  position: relative;
-  background:
-    repeating-linear-gradient(45deg,  rgba(255,255,255,0.022) 0 2px, rgba(0,0,0,0) 2px 5px),
-    repeating-linear-gradient(-45deg, rgba(0,0,0,0.30) 0 2px, rgba(0,0,0,0) 2px 5px),
-    radial-gradient(135% 105% at 50% 24%, #353029 0%, #221f1a 42%, #110f0d 78%, #0b0a09 100%);
-  overflow: hidden;
-}
-.evx-carbon::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(116deg, transparent 28%, rgba(244,241,236,0.13) 47%, rgba(244,241,236,0.02) 55%, transparent 68%);
-  pointer-events: none;
-}
-/* DRIVE = LED-lit mood. Lights the bottom of a PhotoFrame. */
-.evx-carbon--lit::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(60% 42% at 50% 88%, var(--evx-led, var(--evx-orange-glow)) 0%, transparent 62%),
-    radial-gradient(80% 60% at 50% 30%, rgba(201,169,97,0.10) 0%, transparent 60%);
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
+/* ── Entrance (the only ambient motion; plays once) ── */
 @keyframes evx-rise {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes evx-fade {
@@ -402,6 +416,41 @@ summary:focus-visible {
   to   { opacity: 1; }
 }
 @keyframes evx-pulse {
-  0%,100% { opacity: 0.55; }
-  50%     { opacity: 1; }
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
 }
+
+/* ============================================================
+   LEGACY DARK TOKENS, dormant surfaces only.
+   Kept so gated marketplace / TRADE / seller / admin screens keep
+   rendering until each is re-papered onto the light system. No
+   public surface may use these. Delete the block once the last
+   dormant surface is converted.
+   ============================================================ */
+:root {
+  --evx-black:         #0E0D0C;
+  --evx-surface:       #141210;
+  --evx-surface-2:     #1B1815;
+  --evx-graphite-2:    #2E2A25;
+  --evx-paper-soft:    #C7C2B9;
+  --evx-orange-glow:   rgba(232, 116, 44, 0.55);
+  --evx-champagne-dim: #9C854E;
+  --evx-rule:          rgba(244, 241, 236, 0.10);
+  --evx-rule-soft:     rgba(244, 241, 236, 0.055);
+  --evx-rule-strong:   rgba(244, 241, 236, 0.20);
+}
+
+/* ── Dark editorial band ──
+   A full-bleed dark section INSIDE a light page (process strip, DRIVE
+   band). This is sectional punctuation, not the retired Dark World:
+   the page ground stays white and the buying path stays light. */
+.evx-dark {
+  background: var(--evx-ink);
+  color: var(--evx-white);
+}
+.evx-dark .evx-label,
+.evx-dark .evx-caption,
+.evx-dark .evx-meta,
+.evx-dark .evx-body,
+.evx-dark .evx-lede { color: rgba(255, 255, 255, 0.62); }
+.evx-dark .evx-rule { border-top-color: var(--evx-rule-dark); }
