@@ -41,57 +41,56 @@
 </script>
 
 <main class="cs">
-  <!-- top bar -->
-  <div class="cs__top cs__fade cs__fade--wordmark">
-    <img src="/brand/wordmark.png" alt="ÉIRVOX" class="cs__wordmark-img" />
-    <span class="cs__top-note">Finished in Dublin</span>
-  </div>
+  <header class="cs__top page-container">
+    <img src="/brand/wordmark.png" alt="ÉIRVOX" class="cs__wordmark" />
+    <span class="cs__note">Finished in Dublin</span>
+  </header>
 
-  <!-- centre -->
-  <div class="cs__centre">
+  <div class="cs__centre page-container">
     <div class="cs__inner">
-      <span class="cs__eyebrow cs__fade cs__fade--tagline"><span class="cs__dot" aria-hidden="true"></span>First access</span>
+      <span class="evx-label cs__eyebrow">FIRST ACCESS</span>
 
-      <h1 class="cs__headline cs__fade cs__fade--tagline">Carbon steering wheels,<br />finished in Dublin.</h1>
-      <p class="cs__standfirst cs__fade cs__fade--tagline">
-        <span class="cs__italic">A small line, made once.</span> Designed in Ireland, finished in Dublin, almost ready.
+      <h1 class="cs__headline">Carbon steering wheels,<br />finished in Dublin.</h1>
+      <p class="cs__stand">
+        <span class="evx-editorial">A small line, made once.</span>
+        Designed in Ireland, assembled abroad, finished in Dublin.
       </p>
 
-      <div class="cs__group cs__fade cs__fade--group">
+      <div class="cs__group">
         {#if subscribed}
           <p class="cs__confirm">You're on the list.</p>
-          <button type="button" class="cs__reset"
+          <button type="button" class="evx-link"
                   on:click={() => { localStorage.removeItem(STORAGE_KEY); subscribed = false; email = ''; errorMsg = ''; }}>
             Use a different email →
           </button>
         {:else}
           <form class="cs__form" on:submit={submit}>
-            <label class="cs__sr" for="cs-email">Email address</label>
+            <label class="sr-only" for="cs-email">Email address</label>
             <input
               id="cs-email"
               type="email"
               class="cs__input"
               placeholder="Your email"
+              autocomplete="email"
               bind:value={email}
               disabled={submitting}
               required
             />
-            <button type="submit" class="cs__btn" disabled={submitting}>
+            <button type="submit" class="evx-btn evx-btn--primary" disabled={submitting}>
               {submitting ? 'Sending…' : 'Request access'}
             </button>
           </form>
           {#if errorMsg}
             <p class="cs__error" role="alert">{errorMsg}</p>
           {:else}
-            <p class="cs__note">No spam · one email when we open</p>
+            <p class="cs__hint">One email when we open. Nothing else.</p>
           {/if}
         {/if}
       </div>
     </div>
   </div>
 
-  <!-- imprint -->
-  <footer class="cs__footer cs__fade cs__fade--footer">
+  <footer class="cs__footer page-container">
     <span class="cs__entity">EIRVOX LIMITED · a Vantanéant International Ltd company · CRO 806648</span>
     <div class="cs__legal">
       <a href="#/privacy">Privacy</a>
@@ -108,221 +107,105 @@
 <style>
   .cs {
     min-height: 100vh;
-    background:
-      radial-gradient(120% 90% at 78% 0%, rgba(232,116,44,0.05), transparent 46%),
-      radial-gradient(90% 70% at 12% 100%, rgba(255,255,255,0.025), transparent 50%),
-      var(--evx-black);
-    color: var(--evx-paper);
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     display: flex;
     flex-direction: column;
   }
 
-  /* top bar */
   .cs__top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 30px 40px;
-    max-width: 1280px;
-    margin: 0 auto;
-    width: 100%;
+    gap: var(--evx-space-md);
+    height: var(--evx-nav-height);
+    border-bottom: 1px solid var(--evx-rule-light);
   }
-  .cs__wordmark-img { height: 30px; width: auto; display: block; filter: invert(1) brightness(1.05); }
-  .cs__top-note {
+  .cs__wordmark { height: 17px; width: auto; }
+  .cs__note {
     font-family: var(--evx-font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.16em;
+    font-size: 10px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--evx-ink-faint);
+    color: var(--evx-ink-soft);
   }
 
-  /* centre */
   .cs__centre {
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 40px;
+    padding-top: var(--evx-space-3xl);
+    padding-bottom: var(--evx-space-3xl);
   }
-  .cs__inner {
-    width: 100%;
-    max-width: 720px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
+  .cs__inner { max-width: 620px; animation: evx-rise 500ms ease both; }
 
-  .cs__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font-family: var(--evx-font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--evx-ink-soft);
-    margin-bottom: 30px;
-  }
-  .cs__dot { width: 6px; height: 6px; background: var(--evx-paper-soft); flex: none; }
+  .cs__eyebrow { display: block; margin-bottom: var(--evx-space-lg); }
 
   .cs__headline {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: clamp(40px, 6vw, 72px);
-    line-height: 0.98;
-    letter-spacing: -0.035em;
-    color: var(--evx-paper);
-    margin: 0 0 24px;
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
   }
-  .cs__standfirst {
-    font-family: var(--evx-font-display);
-    font-size: 18px;
-    line-height: 1.5;
+  .cs__stand {
+    margin-top: var(--evx-space-lg);
+    font-size: clamp(15px, 1.3vw, 18px);
+    line-height: 1.55;
     color: var(--evx-ink-soft);
-    margin: 0 0 40px;
-    max-width: 30em;
-  }
-  .cs__italic { font-family: var(--evx-font-editorial); font-style: italic; color: var(--evx-paper); }
-
-  /* group: form */
-  .cs__group {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    max-width: 460px;
+    max-width: 48ch;
   }
 
-  .cs__form {
-    display: flex;
-    height: 54px;
-    border: 1px solid var(--evx-rule-strong);
-    background: var(--evx-surface);
-    transition: border-color 200ms ease;
-  }
-  .cs__form:focus-within { border-color: rgba(232,116,44,0.42); }
-
-  .cs__sr {
-    position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    border: 0;
-  }
-
+  .cs__group { margin-top: var(--evx-space-2xl); }
+  .cs__form { display: flex; flex-wrap: wrap; gap: var(--evx-space-sm); max-width: 460px; }
   .cs__input {
-    flex: 1;
-    min-width: 0;
-    background: transparent;
-    border: none;
-    color: var(--evx-paper);
-    font-family: var(--evx-font-display);
-    font-size: 15px;
-    padding: 0 18px;
-    outline: none;
-  }
-  .cs__input::placeholder { color: var(--evx-ink-faint); }
-
-  .cs__btn {
-    flex: none;
-    background: var(--evx-fox-orange);
-    color: #FFFFFF;
-    border: none;
+    flex: 1 1 220px;
     font-family: var(--evx-font-display);
     font-size: 14px;
-    font-weight: 500;
-    padding: 0 24px;
-    cursor: pointer;
-    transition: filter 200ms ease;
-    white-space: nowrap;
+    color: var(--evx-ink);
+    background: var(--evx-paper);
+    border: 1px solid var(--evx-rule-light);
+    padding: 13px 14px;
   }
-  .cs__btn:hover { filter: brightness(1.08); }
-  .cs__btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .cs__input:disabled { opacity: 0.6; cursor: not-allowed; }
+  .cs__input::placeholder { color: var(--evx-ink-faint); }
+  .cs__input:focus-visible { border-color: var(--evx-fox-orange); }
 
-  .cs__note, .cs__error {
+  .cs__hint, .cs__error {
+    margin-top: var(--evx-space-md);
     font-family: var(--evx-font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--evx-ink-faint);
-    margin-top: 14px;
-  }
-  .cs__error { color: #C9665A; }
-
-  .cs__confirm {
-    font-family: var(--evx-font-display);
-    font-size: 15px;
-    color: var(--evx-paper);
-    padding: 16px 0 8px;
-  }
-  .cs__reset {
-    background: none; border: none; padding: 0; cursor: pointer;
-    font-family: var(--evx-font-mono);
-    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
     color: var(--evx-ink-soft);
-    transition: color 200ms ease;
   }
-  .cs__reset:hover { color: var(--evx-fox-orange); }
+  .cs__error { color: var(--evx-fox-orange); }
+  .cs__confirm {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin-bottom: var(--evx-space-md);
+  }
 
-  /* imprint */
   .cs__footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px 24px;
+    gap: var(--evx-space-md);
+    padding-top: var(--evx-space-lg);
+    padding-bottom: var(--evx-space-lg);
+    border-top: 1px solid var(--evx-rule-light);
     flex-wrap: wrap;
-    padding: 26px 40px;
-    max-width: 1280px;
-    margin: 0 auto;
-    width: 100%;
-    border-top: 1px solid var(--evx-rule);
   }
-  .cs__entity {
+  .cs__entity, .cs__legal {
     font-family: var(--evx-font-mono);
     font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--evx-ink-faint);
+    letter-spacing: 0.1em;
+    color: var(--evx-ink-soft);
   }
-  .cs__legal {
-    display: flex;
-    gap: 8px;
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--evx-ink-faint);
-  }
-  .cs__legal a { color: var(--evx-ink-soft); text-decoration: none; transition: color 200ms ease; }
-  .cs__legal a:hover { color: var(--evx-paper); }
+  .cs__legal { display: flex; align-items: center; gap: 8px; }
+  .cs__legal a { transition: var(--evx-transition); }
+  .cs__legal a:hover { color: var(--evx-ink); }
 
-  /* ── Sequential fade-in (film title card cadence) ── */
-  .cs__fade {
-    opacity: 0;
-    animation-fill-mode: forwards;
-    animation-timing-function: ease-out;
-  }
-  .cs__fade--wordmark { animation: cs-fade 1.2s ease-out 0.3s forwards; }
-  .cs__fade--tagline  { animation: cs-fade 0.8s ease-out 1.0s forwards; }
-  .cs__fade--group    { animation: cs-fade 0.8s ease-out 1.5s forwards; }
-  .cs__fade--footer   { animation: cs-fade 0.6s ease-out 2.0s forwards; }
-
-  @keyframes cs-fade {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  /* ── Mobile ── */
-  @media (max-width: 600px) {
-    .cs__top { padding: 22px 20px; }
-    .cs__centre { padding: 32px 20px; }
-    .cs__standfirst { font-size: 16px; }
-    .cs__footer { padding: 20px; flex-direction: column; align-items: flex-start; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cs__fade { animation: none !important; opacity: 1 !important; }
+  @media (max-width: 767px) {
+    .cs__footer { flex-direction: column; align-items: flex-start; gap: var(--evx-space-sm); }
   }
 </style>
