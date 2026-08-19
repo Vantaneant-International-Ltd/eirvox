@@ -252,6 +252,11 @@
           <li>If it isn't right, it doesn't ship.</li>
           {#if hasCollection}<li>Collect it from us in Dublin if you would rather.</li>{/if}
         </ul>
+
+        <p class="pd__ask">
+          Need exact dimensions, or not sure it suits your car?
+          <a href="mailto:support@eirvox.ie?subject={encodeURIComponent(`Question about ${listing.title}`)}">Ask us before you buy.</a>
+        </p>
       </div>
     </div>
 
@@ -459,6 +464,19 @@
     padding-top: var(--evx-space-md);
     border-top: 1px solid var(--evx-rule-light);
   }
+  .pd__ask {
+    margin-top: var(--evx-space-md);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--evx-ink-soft);
+  }
+  .pd__ask a {
+    color: var(--evx-ink);
+    border-bottom: 1px solid var(--evx-rule-light);
+    transition: var(--evx-transition);
+  }
+  .pd__ask a:hover { border-bottom-color: var(--evx-ink); }
+
   .pd__assure li {
     font-family: var(--evx-font-mono);
     font-size: 10.5px;
