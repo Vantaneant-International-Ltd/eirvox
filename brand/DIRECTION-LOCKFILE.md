@@ -206,14 +206,16 @@ Strategic note: the long-term marketplace model is verification-led ("StockX for
 | DRIVE | A collection inside the shop plus one dark band. Champagne on the issue plate and the band eyebrow only. Live edition **size** only; per-unit serials stay gated by §8. |
 | Marketplace lock (`/marketplace`) | Head → how it opens (01–03) → email capture (dark band) → back to the shop. Never names a category, a date, or a count. |
 | About | Company-led. Head → what ÉIRVOX is → process 01–04 ("assembled abroad" at full prominence) → how buying works. NO founder content required. |
-| Trust | Numbered skeleton kept. Mechanisms shown: payment row, worked deposit example, procedural FAQ. |
+| Trust | Numbered skeleton kept. Mechanisms shown: payment row, procedural FAQ. Sections renumbered after the deposits section was removed. |
 | 404 / system pages | Light, shop voice, "Go to the shop". Gated marketplace paths render the lock, not a 404. |
 
 ---
 
 ## 10 · Commerce model constraints
 
-- **No cart. Ever "CART (0)" appears, the output is wrong.** Direct pay per listing via Revolut (card / Apple Pay / Google Pay). Deposits hold incoming stock; balance on collection.
+- **No cart. Ever "CART (0)" appears, the output is wrong.** Direct pay per listing via Revolut (card / Apple Pay / Google Pay / Pay by Bank).
+- **Deposits are removed (19 Aug 2026, Renato — see §13).** One price, paid in full. No holds, no instalments, no "balance due on collection" copy anywhere.
+- **No instalment or buy-now-pay-later mark may appear until it actually processes a payment.** Klarna is wanted but not integrated: Revolut Merchant does not offer it, so it needs its own merchant account or a provider that resells it. A Klarna badge on a site that cannot take a Klarna payment is a false payment claim and a trademark misuse, and it belongs in the same bin as escrow and insured shipping.
 - Launch verb set: **Pay** and **Enquire**. No "Express Interest," no "Message seller," no "Make an offer" on fixed-price house products.
 - Server resolves price and stock; UI never implies otherwise.
 - No SIGN IN / REGISTER as primary header actions — admission model, not open signup.
@@ -280,6 +282,8 @@ HARD CONSTRAINTS — violating any of these makes the output unusable:
 | 19 Aug 2026 | **Direction reset.** The two-world architecture is retired; the public site is one light system, calibrated to carbondistrict.ie — white commerce with full-bleed dark editorial bands as punctuation. §1, §2, §3, §5, §6 and §9 amended accordingly; `brand/DESIGN-WORLDS.md` superseded (kept as history). The anti-flatten rule is void: a light wheels / DRIVE / checkout surface is now correct. Authorised by Renato. | LOCKED |
 | 19 Aug 2026 | **Marketplace lock replaces total hiding.** One MARKETPLACE nav item, marked `Soon`, routes to `/marketplace` — a coming-soon page explaining the opening model with waitlist capture (`source='marketplace'`). Everything built stays built behind it; gated paths render the lock instead of a 404. Category names, dates and counts remain forbidden. Supersedes §2's "no nav items, no coming soon". Authorised by Renato. | LOCKED |
 | 19 Aug 2026 | **DRIVE folded into the shop.** `/drive` and `/drive/:slug` are retired as surfaces; DRIVE is a collection at `/wheels#drive` plus one dark band. `DriveIndex.svelte` and `DriveIssue.svelte` deleted — the latter also cleared the orphaned pre-BUY-verb copy flagged in HANDOFF. Old `/drive` links redirect to the shop. Authorised by Renato. | LOCKED |
+| 19 Aug 2026 | **Deposits removed.** One price, paid in full, on every house product. The deposit control, the Trust deposits section, the FAQ entry and all "balance on collection" copy are gone. Supersedes §10's deposit line and HANDOFF's "deposits ARE the launch commerce model". `listings.deposit_amount` and the server's deposit branch are untouched, so it reverts without a migration. Authorised by Renato. | LOCKED |
+| 19 Aug 2026 | **Klarna requested, NOT integrated.** Revolut Merchant does not offer Klarna, so it needs a Klarna merchant account or a provider that resells it (Stripe / Mollie / Adyen), plus credentials and a webhook. Until a Klarna payment actually completes, no Klarna mark, badge, or "pay in 3" copy ships. Pending a provider decision from Renato. | OPEN |
 | — | (changelog continues here; one line per change, with reason) | |
 
 **Drift check, run on every new design output:** banned phrases? · cart? · icons in trust strips? · mono headline? · upright serif? · orange decorating? · champagne off-DRIVE? · invented claims? · invented nav? · a dark band grown into a whole page or onto the buying path? · marketplace dates, counts or category names? — any YES = reject before evaluating aesthetics.

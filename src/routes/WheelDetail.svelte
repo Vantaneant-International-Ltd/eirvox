@@ -70,24 +70,26 @@
   $: stockState = (listing?.stock_state ?? 'in_stock') as 'in_stock' | 'incoming';
   $: hasShipping = !!listing?.shipping_available;
   $: hasCollection = !!listing?.collection_available;
-  $: depositConfigured = (listing?.deposit_amount ?? 0) > 0;
   $: shippingCostSet = (listing?.shipping_cost ?? 0) > 0;
 
+  // Deposits removed 19 Aug 2026 (Renato). One price, paid in full.
+  // The listing's deposit_amount column and the server's deposit branch
+  // are left alone, so this is reversible without a migration.
   let fulfilment: 'collection' | 'delivery' | null = null;
-  let isDeposit = false;
   $: if (listing?.id && fulfilment === null) {
     if (hasShipping && shippingCostSet)   fulfilment = 'delivery';
     else if (hasCollection)               fulfilment = 'collection';
     else if (hasShipping)                 fulfilment = 'delivery';
   }
-  $: canDeposit = fulfilment === 'collection' && depositConfigured;
-  $: mustDeposit = stockState === 'incoming' && fulfilment === 'collection';
-  $: if (mustDeposit && !isDeposit) isDeposit = true;
-  $: if (!canDeposit && isDeposit) isDeposit = false;
   $: deliverySelectedWithoutShipping = fulfilment === 'delivery' && !shippingCostSet;
-  $: canShowPayButton = !!fulfilment && !deliverySelectedWithoutShipping;
+  // payments-create-order still rejects full payment on incoming stock
+  // collected in person, because that combination used to require a
+  // deposit. Rather than show a button the server will refuse, incoming
+  // stock reads as made-to-order and routes to a conversation. Lift the
+  // guard in the edge function to make it payable.
+  $: incomingCollection = stockState === 'incoming' && fulfilment === 'collection';
+  $: canShowPayButton = !!fulfilment && !deliverySelectedWithoutShipping && !incomingCollection;
   $: payAmount = !listing ? 0
-    : isDeposit ? (listing.deposit_amount ?? 0)
     : fulfilment === 'delivery' ? listing.price + (listing.shipping_cost ?? 0)
     : listing.price;
 </script>
@@ -194,17 +196,8 @@
               </div>
             {/if}
 
-            {#if canDeposit}
-              <div class="pd__seg" role="group" aria-label="Payment">
-                <button class="pd__opt" class:pd__opt--on={!isDeposit}
-                        type="button" on:click={() => (isDeposit = false)}>Pay in full · {formatPrice(listing.price)}</button>
-                <button class="pd__opt" class:pd__opt--on={isDeposit}
-                        type="button" on:click={() => (isDeposit = true)}>Deposit · {formatPrice(listing.deposit_amount ?? 0)}</button>
-              </div>
-            {/if}
-
             <div class="pd__total">
-              <span class="evx-label">{isDeposit ? 'DEPOSIT NOW' : fulfilment === 'delivery' ? 'FULL PRICE + SHIPPING' : 'FULL PRICE'}</span>
+              <span class="evx-label">{fulfilment === 'delivery' ? 'TOTAL INCLUDING POSTAGE' : 'TOTAL'}</span>
               <span class="pd__total-fig">{formatPrice(payAmount)}</span>
             </div>
 
@@ -213,16 +206,17 @@
                 listingId={listing.id}
                 amountEur={payAmount}
                 fulfilment={fulfilment}
-                isDeposit={isDeposit}
+                isDeposit={false}
                 description={`ÉIRVOX · ${listing.title}`}
                 showRefundLink={true}
               />
+            {:else if incomingCollection}
+              <p class="pd__hint">
+                This one is made to order on the next run.
+                <a href="mailto:support@eirvox.ie?subject={encodeURIComponent(`Order ${listing.title}`)}">Tell us your car and we will sort it.</a>
+              </p>
             {:else}
               <p class="pd__hint">Choose collection or delivery to continue.</p>
-            {/if}
-
-            {#if isDeposit}
-              <p class="pd__hint">The deposit holds it for you. The balance is due when you collect.</p>
             {/if}
           </div>
 
@@ -299,8 +293,7 @@
         <details class="pd__acc">
           <summary>Payment &amp; returns</summary>
           <div class="pd__acc-body">
-            <p>Payment is taken directly by card, Apple Pay or Google Pay. There is no cart. Each wheel is paid for on its own page.</p>
-            <p>Where a deposit is offered, it holds the wheel and the balance is due on collection.</p>
+            <p>One price, paid in full, by card, Apple Pay or Google Pay. There is no cart. Each wheel is paid for on its own page.</p>
             <p><button class="evx-link" on:click={() => navigate('/refund-policy')}>Read the refund policy</button></p>
           </div>
         </details>

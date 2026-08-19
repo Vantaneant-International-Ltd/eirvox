@@ -146,8 +146,8 @@
         <span class="proof__cap">TWILL CARBON · SATIN LACQUER</span>
       </div>
       <div class="proof__cell">
-        <span class="proof__fig">Deposit</span>
-        <span class="proof__cap">OR PAY IN FULL · CARD, APPLE PAY, GOOGLE PAY</span>
+        <span class="proof__fig">One price</span>
+        <span class="proof__cap">CARD · APPLE PAY · GOOGLE PAY · PAY BY BANK</span>
       </div>
     </div>
   </section>

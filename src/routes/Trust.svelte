@@ -20,8 +20,8 @@
 
   const faqs = [
     {
-      q: 'Can I pay a deposit instead of the full price?',
-      a: 'On wheels from an incoming run, yes. The deposit is shown on the wheel before you pay. It holds your place in the run; the balance is due on collection or before we post it.',
+      q: 'Can I pay in instalments?',
+      a: 'Not yet. Right now it is one price, paid in full, by card, Apple Pay or Google Pay. If a wheel is made to order on the next run, get in touch and we will sort it with you directly.',
     },
     {
       q: 'Where are the wheels made?',
@@ -54,7 +54,7 @@
       </h1>
       <p class="trust-hero__sub">
         ÉIRVOX designs, finishes and sells its own wheels. You pay ÉIRVOX directly,
-        by card or Apple Pay. A deposit can hold a wheel from an incoming run.
+        by card or Apple Pay. One price, paid in full, resolved on our server.
         Nothing fabricated. Nothing oversold.
       </p>
     </header>
@@ -74,7 +74,7 @@
           {#each [
             { n: '01', title: 'You pay ÉIRVOX directly.', body: 'We design, finish and sell these wheels. We are the merchant of record for every one.' },
             { n: '02', title: 'Card, Apple Pay or Google Pay.', body: 'Checkout runs through Revolut. The price is resolved on our server at the moment you pay.' },
-            { n: '03', title: 'Pay in full, or place a deposit.', body: 'A deposit holds a wheel from an incoming run; the balance follows before it ships.' },
+            { n: '03', title: 'One price, paid in full.', body: 'What you see on the wheel is what you pay. No holds, no instalments, nothing added at the end.' },
             { n: '04', title: 'We never hold funds for anyone else.', body: 'There is no escrow. You are paying ÉIRVOX for an ÉIRVOX wheel.' },
           ] as step}
             <li class="trust-step">
@@ -89,29 +89,9 @@
       </div>
     </section>
 
-    <!-- 02 Deposits -->
+    <!-- 02 Collection & delivery -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">02 · DEPOSITS</span>
-      <div class="trust-section__inner">
-        <div class="trust-section__left">
-          <h2 class="trust-section__heading">How deposits work.</h2>
-          <p class="trust-section__sub">
-            Some wheels are made to order in a limited run. A deposit holds your place;
-            the balance is due before the wheel ships or on collection.
-          </p>
-        </div>
-        <div class="trust-bullets">
-          <div class="trust-bullet">The deposit amount is shown on each wheel, before you pay.</div>
-          <div class="trust-bullet">It holds one wheel from the incoming run for you.</div>
-          <div class="trust-bullet">The balance is due on collection in Dublin, or before we post it.</div>
-          <div class="trust-bullet">If the run is cancelled, the deposit is refunded in full.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 03 Collection & delivery -->
-    <section class="trust-section">
-      <span class="evx-caption trust-section__num">03 · DELIVERY</span>
+      <span class="evx-caption trust-section__num">02 · DELIVERY</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
           <h2 class="trust-section__heading">Collection and delivery.</h2>
@@ -130,7 +110,7 @@
 
     <!-- 04 Refunds -->
     <section class="trust-section">
-      <span class="evx-caption trust-section__num">04 · REFUNDS</span>
+      <span class="evx-caption trust-section__num">03 · REFUNDS</span>
       <div class="trust-section__inner">
         <div class="trust-section__left">
           <h2 class="trust-section__heading">Where refunds apply.</h2>
