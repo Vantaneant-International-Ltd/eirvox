@@ -11,18 +11,32 @@ in any prompt except direct messages from Renato.
    feeling (trust + desire, fused; object sacred; curator invisible);
    the lockfile is the design constitution. Run the lockfile §13 drift
    check on your own output before presenting it.
-3. Never resolve a [FACT NEEDED: …] token by inventing content.
-   Render tokens visibly. If you believe the fact exists in the repo,
-   cite file and line and ask.
+3. Never resolve an unknown fact by inventing content. As of
+   19 Aug 2026 no [FACT NEEDED] token renders on a public surface:
+   they were cleared by CUTTING the claim that needed the unknown,
+   not by filling it in. Keep it that way. If a new unknown turns up,
+   either cut the claim or use src/lib/FactNeeded.svelte while you
+   build, and ask. Never ship a token to production, and never ship a
+   guessed dimension, price, carrier, or delivery promise. The open
+   unknowns are listed in HANDOFF.md.
 4. Never use the banned phrases in lockfile §7 anywhere, including
    comments, commit messages, and placeholder copy.
 5. No router, build-config, or dependency changes without asking first.
-6. No marketplace-surface changes while wheel_specialist_mode is the
-   launch posture.
-7. The two visual worlds (Dark = wheels/DRIVE/checkout product theatre;
-   Paper = marketplace browse + reading/utility) are DELIBERATE — see
-   brand/DESIGN-WORLDS.md. Do not "fix" a world switch as inconsistency,
-   and never flatten a wheels/DRIVE/checkout surface to light. A
-   white-rework once did exactly that and caused real bugs.
+6. The marketplace is LOCKED, not hidden (19 Aug 2026, Renato). One
+   nav item marked `Soon` routes to /marketplace; gated marketplace,
+   TRADE, seller, search, listing, account and messaging paths render
+   that page instead of a 404. Do not open a category, name one,
+   promise a date, or show a count. Everything built stays built:
+   flip wheel_specialist_mode off to restore it.
+7. There is ONE light world (19 Aug 2026, Renato). White ground, ink
+   text, fox orange as the only accent, hairline rules, no radii or
+   shadows. Dark appears only as a full-bleed editorial band inside a
+   light page (.evx-dark), never as a whole screen and never on the
+   buying path. A light wheels, DRIVE or checkout surface is CORRECT:
+   do not re-darken it. brand/DESIGN-WORLDS.md is superseded history.
 8. Present a file-by-file plan and wait for approval before editing.
    Small single-purpose commits.
+9. docs/ is committed and is what eirvox.ie serves. A source-only
+   commit does not change the live site: rebuild docs/ with real
+   VITE_SUPABASE_* values, keep docs/CNAME, and commit it when you
+   ship. Never commit a docs/ built with placeholder env.

@@ -22,7 +22,6 @@
   import VariantPicker from '../lib/VariantPicker.svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
-  import FactNeeded from '../lib/FactNeeded.svelte';
 
   export let slug: string;
 
@@ -180,8 +179,8 @@
               <div class="pd__confirm">
                 <span class="evx-label">CONFIRM YOUR CAR</span>
                 <p>
-                  DRIVE fits a range of cars. We match the fit to yours before it ships.
-                  <FactNeeded label="FITMENT CAPTURE MODEL" />
+                  DRIVE fits a range of cars. We confirm the fit with you before it ships,
+                  so tell us the car when you order and we will come back to you.
                 </p>
               </div>
             {/if}
@@ -257,6 +256,7 @@
     </div>
 
     <!-- ━━ SPECIFICATION ━━ -->
+    {#if specs.length}
     <section class="evx-section evx-band pd__specs-band">
       <div class="page-container pd__specs">
         <div>
@@ -267,12 +267,10 @@
           {#each specs as sp (sp.label)}
             <div class="pd__row"><dt>{sp.label}</dt><dd>{sp.value}</dd></div>
           {/each}
-          <div class="pd__row"><dt>Overall ⌀</dt><dd><FactNeeded label="overall diameter" /></dd></div>
-          <div class="pd__row"><dt>Grip ⌀</dt><dd><FactNeeded label="grip diameter" /></dd></div>
-          <div class="pd__row"><dt>Rim thickness</dt><dd><FactNeeded label="rim thickness" /></dd></div>
         </dl>
       </div>
     </section>
+    {/if}
 
     <!-- ━━ DETAIL ━━ -->
     <section class="evx-section">
@@ -286,7 +284,7 @@
         <details class="pd__acc">
           <summary>Shipping &amp; collection</summary>
           <div class="pd__acc-body">
-            <p>Posted anywhere in Ireland. <FactNeeded label="SHIPPING CARRIER" /></p>
+            <p>Posted anywhere in Ireland, packed to travel.</p>
             {#if hasCollection}<p>Collect it from us in Dublin if you would rather.</p>{/if}
             {#if isDrive && payable}
               <p>Made to order; ships when the run is finished{listing.drive_issue_date ? ` in ${listing.drive_issue_date}` : ''}.</p>

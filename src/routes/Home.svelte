@@ -18,7 +18,6 @@
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
   import ProductCard from '../lib/ProductCard.svelte';
-  import FactNeeded from '../lib/FactNeeded.svelte';
   import WheelFinder from '../lib/WheelFinder.svelte';
   import {
     getDriveListings, getListings, getListingVariants,
@@ -210,7 +209,7 @@
               <span class="dcard__issue">DRIVE {d.drive_issue ?? ''}</span>
               <span class="dcard__title">{d.title}</span>
               <span class="dcard__price">
-                {#if d.price > 0}{formatPrice(d.price)}{:else}<FactNeeded label="DRIVE {d.drive_issue} PRICE" dark />{/if}
+                {#if d.price > 0}{formatPrice(d.price)}{:else}Price on enquiry{/if}
               </span>
             </button>
           {/each}
@@ -263,8 +262,8 @@
           <span class="evx-label proc__num">03</span>
           <strong class="proc__title">Finished</strong>
           <p class="proc__body">
-            In Dublin. Inspection, trim and LED fitting, function test, packing.
-            <FactNeeded label="EXACT FINISHING STEPS" />
+            In Dublin. Every wheel is inspected, trimmed, LED-fitted, function
+            tested and packed here before it goes anywhere.
           </p>
         </li>
         <li class="proc__step">
@@ -272,7 +271,6 @@
           <strong class="proc__title">Fitted &amp; shipped</strong>
           <p class="proc__body">
             Collect it from us in Dublin, or we post it anywhere in Ireland.
-            <FactNeeded label="SHIPPING CARRIER · FITTING OFFERED / PRICE" />
           </p>
         </li>
       </ol>

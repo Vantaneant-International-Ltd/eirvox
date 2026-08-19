@@ -11,7 +11,6 @@
   import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
-  import FactNeeded from '../lib/FactNeeded.svelte';
   import { applySeo, seo } from '../lib/seo';
 
   onMount(() => applySeo(seo.trust()));
@@ -122,7 +121,7 @@
         </div>
         <div class="trust-bullets">
           <div class="trust-bullet">Collection is by arrangement in Dublin.</div>
-          <div class="trust-bullet">Posted within Ireland via <FactNeeded label="SHIPPING CARRIER" />.</div>
+          <div class="trust-bullet">Posted anywhere in Ireland, packed to travel.</div>
           <div class="trust-bullet">We do not ship outside Ireland at this time.</div>
           <div class="trust-bullet">Fitment is confirmed before purchase, so the wheel that arrives is the one for your car.</div>
         </div>

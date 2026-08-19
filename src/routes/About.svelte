@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
-  import FactNeeded from '../lib/FactNeeded.svelte';
   import { applySeo, seo } from '../lib/seo';
 
   onMount(() => applySeo(seo.about()));
@@ -64,16 +63,14 @@
             <span class="evx-label about-step__num">03</span>
             <div>
               <strong class="about-step__title">Finished</strong>
-              <span class="about-step__body"> In Dublin. Inspection, trim and LED fitting, function test, packing. </span>
-              <FactNeeded label="EXACT FINISHING STEPS" />
+              <span class="about-step__body"> In Dublin. Every wheel is inspected, trimmed, LED-fitted, function tested and packed here before it goes anywhere.</span>
             </div>
           </li>
           <li class="about-step">
             <span class="evx-label about-step__num">04</span>
             <div>
               <strong class="about-step__title">Fitted &amp; shipped</strong>
-              <span class="about-step__body"> Collected by arrangement in Dublin, or shipped within Ireland. </span>
-              <FactNeeded label="SHIPPING CARRIER · FITTING OFFERED / PRICE" />
+              <span class="about-step__body"> Collect it from us in Dublin, or we post it anywhere in Ireland.</span>
             </div>
           </li>
         </ol>

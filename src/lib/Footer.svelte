@@ -252,19 +252,19 @@
     color: var(--evx-ink-soft);
   }
 
-  /* Ghosted wordmark, the sign over the door, cropped by the page edge. */
+  /* Ghosted wordmark, the sign over the door. Shown whole: the crop
+     that used to sit here cut the letterforms in half. */
   .ft__ghost {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: clamp(72px, 19vw, 260px);
-    line-height: 0.8;
+    font-size: clamp(56px, 16vw, 210px);
+    line-height: 1.06;
     letter-spacing: -0.03em;
     text-align: center;
     color: var(--evx-ink);
     opacity: 0.055;
     user-select: none;
-    margin-bottom: -0.16em;
-    padding-top: var(--evx-space-md);
+    padding: var(--evx-space-lg) 0 var(--evx-space-xl);
   }
 
   @media (max-width: 767px) {

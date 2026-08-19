@@ -176,7 +176,7 @@
     display: flex; align-items: center; justify-content: center;
     width: 100%; height: 100%; padding: var(--evx-space-xl);
   }
-  .card__placeholder-text { color: rgba(245, 242, 237, 0.25); text-align: center; line-height: 1.5; }
+  .card__placeholder-text { color: rgba(255, 255, 255, 0.25); text-align: center; line-height: 1.5; }
 
   .card__body {
     padding: var(--evx-space-md) 0;

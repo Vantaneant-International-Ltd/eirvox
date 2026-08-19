@@ -334,10 +334,9 @@
 
 <style>
   .dev-banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    /* In flow, not fixed. Fixed put it on top of the sticky nav and
+       clipped the wordmark. */
+    position: relative;
     z-index: 9999;
     background: #1A1A1A;
     color: #E8742C;

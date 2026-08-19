@@ -94,7 +94,7 @@
   .banner__copy {
     font-size: 13px;
     line-height: 1.6;
-    color: rgba(245, 242, 237, 0.85);
+    color: rgba(255, 255, 255, 0.85);
   }
 
   .banner__pre {

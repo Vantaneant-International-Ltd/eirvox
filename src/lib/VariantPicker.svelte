@@ -329,7 +329,7 @@
     bottom: 0;
     margin: 20px -16px -16px;
     padding: 14px 16px max(20px, env(safe-area-inset-bottom));
-    background: rgba(245, 242, 237, 0.92);
+    background: rgba(245, 245, 244, 0.94);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--evx-rule-light);

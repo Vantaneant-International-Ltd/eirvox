@@ -8,15 +8,17 @@ Context for anyone (human or AI) picking up this project. Read before changing c
 2. **`CLAUDE.md`** (repo root) — standing instructions for AI contributors. Auto-read by Claude Code.
 3. **`brand/EMOTIONAL-BIBLE.md`** — the source of feeling. Trust + desire fused; object sacred; curator invisible but present. Read before any copy or content work. (Top-level `brand/`, not `docs/brand/` — `docs/` is the Vite build output and is wiped on every build.)
 4. **`brand/DIRECTION-LOCKFILE.md`** — the design constitution. Read before touching ANY UI, route, style, or user-facing copy. Locked direction, banned phrases, world boundaries, per-surface rules, drift check.
-5. **`brand/DESIGN-WORLDS.md`** — canonical rationale + route map for the two-world architecture (Dark = wheels/DRIVE/checkout; Paper = marketplace + reading/utility). Read before changing any page's surface palette. **The world switch is deliberate; do not flatten Dark surfaces to light.**
+5. **`brand/DESIGN-WORLDS.md`** — **SUPERSEDED 19 Aug 2026.** The two-world architecture is retired; the site is one light system. Kept as history, with a banner at the top. The commerce split it documents still holds: house products take Pay and Enquire only. **Do not re-darken a wheels, DRIVE or checkout surface. Light is correct there now.**
 
 If this file and the lockfile conflict on a design/copy matter, the lockfile wins. If they conflict on database/architecture, this file wins.
 
 ## What ÉIRVOX is
 
-**Launch posture (current): a Dublin carbon-steering-wheel specialist.** DRIVE limited-edition line + BMW fitted range, sold via direct Revolut payment (full or deposit). Controlled by `wheel_specialist_mode` flag in `public.site_settings.flags` — when on, Home renders the dark `/wheels` surface and the nav collapses to WHEELS · DRIVE · FINDER · ABOUT.
+**Launch posture (current): a Dublin carbon-steering-wheel specialist.** DRIVE limited-edition line + BMW fitted range, sold via direct Revolut payment (full or deposit). Controlled by `wheel_specialist_mode` in `public.site_settings.flags` — when on, the marketplace is locked behind `/marketplace`. The front page and nav are the same either way: Wheels · DRIVE · Fitment · Marketplace (`Soon`) · About. DRIVE is a collection inside `/wheels`, not a route of its own.
 
-**Long-term: a verification-led curated marketplace** ("StockX for enthusiast objects, starting where we can verify with our own hands") — NOT liquidity-led classifieds. The full marketplace (7 categories, sellers, TRADE) exists in this codebase, dormant behind the flag. Categories open only when their verification operation exists. While gated: zero visible references to marketplace surfaces anywhere — no nav items, no footer links, no teasers.
+**Long-term: a verification-led curated marketplace** ("StockX for enthusiast objects, starting where we can verify with our own hands") — NOT liquidity-led classifieds. The full marketplace (7 categories, sellers, TRADE) exists in this codebase, dormant behind the flag. Categories open only when their verification operation exists.
+
+**Changed 19 Aug 2026 (Renato):** total hiding is replaced by one acknowledged lock. The nav carries a single MARKETPLACE item marked `Soon` routing to `/marketplace`, which explains the opening model and takes an email (waitlist `source='marketplace'`). Gated marketplace, TRADE, seller, search, listing, account and messaging paths render that page instead of a 404. Still forbidden: naming categories, promising dates, showing counts, previewing marketplace screens.
 
 Stack: Svelte 5 + Vite SPA, hash routing, Supabase (Postgres + Auth + Storage + Edge Functions), Vercel static deploy.
 
@@ -88,7 +90,7 @@ Reconciliation tasks (scheduled: first post-launch week, BEFORE any other migrat
 - **Auth:** Supabase magic link, PKCE flow. Auth is primarily an admin door today. Browsing and buying stay anonymous.
 - **Storage:** public-read-by-URL buckets, LIST disabled. Canonical image column is `storage_path`; URL derived at read time.
 - **Audit log:** append-only `audit_log`, trigger-written on `listings` and `sellers`, admin-read only.
-- **Deployment:** Vite `outDir: 'docs'`, Vercel output directory `docs`. Do not remove `docs/` or `CNAME` until a Vercel deploy is verified.
+- **Deployment:** Vite `outDir: 'docs'`, Vercel output directory `docs`. **`docs/` is committed and is what the live site serves** — a source-only commit does not change eirvox.ie. Run `npm run build` with real `VITE_SUPABASE_*` values and commit `docs/` (keep `docs/CNAME`) whenever you ship. Never commit a `docs/` built with placeholder env.
 - **Role enum:** untouched. `profiles.role` = platform access; seller status derives from `sellers.status`.
 
 ## The registry (signature mechanic — strict gate)
@@ -109,16 +111,43 @@ Deferred to post-launch week one: `v23-security-reconciliation.sql`, code splitt
 
 ## [FACT NEEDED] protocol
 
-Unknown facts render as visible `[FACT NEEDED: …]` tokens — never invented, never silently filled. Open tokens: registered address (blocks footer) · verified VAT · exact finishing steps · shipping carrier · fitting offer/price · support response commitment · all product photography · real wheel dimensions for the detail-page annotation layer.
+Unknown facts are never invented and never silently filled. That rule is
+unchanged.
+
+**Changed 19 Aug 2026 (Renato):** the tokens no longer render on public
+surfaces. They were cleared by **cutting the claim that needed the unknown
+fact**, not by filling it in. Nothing on the site now asserts a fact nobody
+has confirmed. Concretely:
+
+- The wheel dimension rows (overall ⌀, grip ⌀, rim thickness) were removed
+  from the product page. A buyer acts on a diameter, so an invented one is
+  worse than an ugly placeholder. The spec table renders live `listing_specs`
+  rows only, and hides itself when there are none. **Put the rows back the
+  moment real measurements exist.**
+- No carrier is named anywhere. Copy says "Posted anywhere in Ireland, packed
+  to travel" and "Collect it from us in Dublin". No tracking, insurance,
+  speed or fitting-price claim is made.
+- The finishing step reads as the known list (inspected, trimmed, LED-fitted,
+  function tested, packed). It does not claim to be exhaustive.
+- A DRIVE issue with no price shows "Price on enquiry", never a number.
+- The registry stays gated by lockfile §8 regardless.
+
+`src/lib/FactNeeded.svelte` is kept: use it for any NEW unknown that turns up
+mid-build rather than guessing. Just do not ship one to production.
+
+**Still unknown, and still blocking the copy that would need them:**
+registered address (blocks the footer imprint) · verified VAT · exact
+finishing steps · shipping carrier · fitting offer and price · support
+response commitment · all product photography · real wheel dimensions.
 
 ## Known frontend issues (current)
 
 - **MED.** PKCE auth `?code=…` lands at `/#/login`; outbound link clicks can leak the code in `Referer`. `<meta name="referrer" content="strict-origin-when-cross-origin">` is in `index.html`; verify `exchangeCodeForSession` + URL scrub on Login mount.
 - **LOW.** Unsalted SHA-256 IP hash in edge functions. Add `IP_HASH_PEPPER` env var.
 - **LOW.** `{@html item}` in `src/routes/Trust.svelte` — safe today (hardcoded array), XSS-prone if dynamic. Replace when Trust is next touched.
-- **DEFERRED.** Single ~838KB bundle, all routes eager in `App.svelte`; Google Fonts via CSS `@import`; `ListingCard` per-card saved-items fetch (N+1, logged-in only). Post-launch.
+- **DEFERRED.** Single large bundle, all routes eager in `App.svelte`; Google Fonts via CSS `@import`; `ListingCard` per-card saved-items fetch (N+1, logged-in only). Post-launch.
 - Mock data residue: `src/data/user.ts` backs Account/Messages — these routes are gated out of wheel-mode nav; wire or remove before any account features ship.
-- `DriveIssue.svelte` (`/drive/:slug`) is **gated in wheel mode** (added to `hiddenByWheelMode` in `App.svelte`) — it's orphaned (DRIVE detail is served by `WheelDetail` at `/wheels/:slug`) and still carries **pre-BUY-verb copy** ("Express interest", deposit/reservation language) plus possibly un-flipped styling. Do NOT expose it: it must get the copy/paper pass (BUY verb, no reserve/deposit/express-interest) before the route is ever un-gated. `/drive` (the index) stays visible.
+- `DriveIssue.svelte` and `DriveIndex.svelte` were **deleted** on 19 Aug 2026. DRIVE is a collection at `/wheels#drive`. Deleting DriveIssue also cleared the pre-BUY-verb copy that made it unsafe to un-gate. `/drive` and `/drive/:slug` redirect to the shop. Git history has both files if wanted.
 
 Architecture follow-ups (tracked, not bugs):
 - Browser-side direct Supabase writes remain in `src/lib/api.ts`, `listings.ts`, `sellers.ts`, most of `admin.ts`. v1 grandfathers admin ones (defended at DB layer by `is_admin()` RLS + the privilege trigger). Move to Edge Functions whenever each surface gets touched.
