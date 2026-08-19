@@ -1,5 +1,35 @@
 # ÉIRVOX — The two worlds
 
+> ## ⚠️ SUPERSEDED — 19 August 2026
+>
+> **The two-world architecture is retired.** Authorised by Renato, recorded in
+> `DIRECTION-LOCKFILE.md` §13. The public site is now **one light system**:
+> white ground, near-black ink, fox orange as the only accent. There is no
+> Dark World and no Paper World — there is the site.
+>
+> **What replaced it.** Full-bleed **dark editorial bands** (`.evx-dark` in
+> `src/app.css`) punctuate a light page — the DRIVE band, the process strip,
+> the marketplace band. That is sectional contrast inside one world, not a
+> second world. The page ground stays white and **the buying path stays
+> light**: `/wheels`, `/wheels/:slug`, the finder and `/payment/return` are
+> all light surfaces now.
+>
+> **The old anti-flatten rule is void.** Finding a wheels / DRIVE / checkout
+> surface rendering light is now *correct*. Do not re-darken it. If you are
+> here because something reads light and you were about to "restore" it —
+> stop; this is the intended state.
+>
+> **What survives from this document**, because it was never about palette:
+> the commerce split below. House products at a set price take **Pay** and
+> **Enquire** only. The marketplace, when it opens, carries genuine offers and
+> messaging — "Make an offer" and "Message seller" are correct there and must
+> not be audited out.
+>
+> Everything below this line is kept as the record of the retired model. Read
+> it as history, not as instruction.
+
+---
+
 **Status: canonical.** The lockfile (`DIRECTION-LOCKFILE.md` §2), `CLAUDE.md`, and
 `HANDOFF.md` all defer to this file for the *why*. If you are about to make a
 wheels / DRIVE / checkout surface light, or a marketplace / reading surface dark,
