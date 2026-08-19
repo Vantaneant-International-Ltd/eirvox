@@ -24,7 +24,9 @@ Stack: Svelte 5 + Vite SPA, hash routing, Supabase (Postgres + Auth + Storage + 
 
 **Dependencies are deliberately thin (19 Aug 2026).** The `vercel` CLI devDependency was removed: it only ever served the `api/*` routes, which no longer exist, so `vercel dev` served nothing. Deployment runs on Vercel's own infrastructure via the GitHub app and does not use the local CLI. That single removal cleared 35 of 37 npm advisories; a Vite patch bump cleared the rest. **`npm audit` is at zero, so keep it there** — if a new dependency drags in a tree the size of the Vercel CLI's, that is the question to ask before adding it.
 
-`@upstash/ratelimit` and `@upstash/redis` sit in `dependencies` but are NOT imported anywhere in `src/`; the edge functions pin their own copies via Deno `npm:` specifiers. They are harmless dead weight, not a vulnerability, and were left alone rather than widening a security fix into unrelated cleanup.
+`@upstash/ratelimit` and `@upstash/redis` were also removed. Nothing in `src/` imported them: rate limiting lives in `supabase/functions/_shared/ratelimit.ts`, which runs on Deno and pins its own copies via `npm:@upstash/ratelimit@2.0.5` and `npm:@upstash/redis@1.34.3`. Listing them as npm `dependencies` implied the browser bundle used them, which it never did. **Rate limiting is unaffected** — the edge functions do not read package.json.
+
+The dependency list is now two runtime packages (`@supabase/supabase-js`, `heic-to`) and five dev packages. Keep it near that.
 
 - Supabase project ref: `arokrumaxjiidsqfpiii`
 - Active branch: `main`. Dormant branches keep the `archive/` prefix (do not push).
