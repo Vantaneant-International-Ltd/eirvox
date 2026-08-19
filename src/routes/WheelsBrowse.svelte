@@ -1,267 +1,323 @@
 <script lang="ts">
   // ============================================================
-  // /wheels — the curated browse grid (warm paper). ÉIRVOX is the
-  // single seller; the grid IS the catalogue. Live DB rows only — no
-  // fabricated listings, counts, conditions, or seller layer. Filters
-  // are derived from the real stock (MAKE + CONDITION) so they never
-  // promise options that don't exist. Cards route to the paper wheel
-  // detail (/wheels/:slug) and read BUY. Registry is coming-soon.
+  // /wheels, the shop. One catalogue, one light surface.
+  //
+  // DRIVE is folded in here as a collection rather than a separate
+  // editorial surface (19 Aug 2026 direction change). #drive and
+  // #fitment are the anchors the nav and footer deep-link to.
+  //
+  // Live DB rows only. Filter options are derived from real stock so
+  // the UI never offers an option that returns nothing.
   // ============================================================
   import { onMount } from 'svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
-  import ListingCard from '../lib/ListingCard.svelte';
+  import ProductCard from '../lib/ProductCard.svelte';
   import WheelFinder from '../lib/WheelFinder.svelte';
   import { getListings, type ListingWithExtras } from '../lib/api';
   import { applySeo } from '../lib/seo';
 
+  const CONSIGNMENT_SLUG = 'bmw-m-sport-carbon-consignment';
+
+  type Collection = 'all' | 'range' | 'drive';
+
   let all: ListingWithExtras[] = [];
   let loading = true;
+  let collection: Collection = 'all';
   let make = '';
-  let condition = '';
   let sortBy: 'recent' | 'price_asc' | 'price_desc' = 'recent';
-
-  // Fitment finder (the nav 'Finder' lands here). Opens the WheelFinder
-  // ritual against the live BMW consignment listing among the wheels.
   let finderOpen = false;
-  $: consignment = all.find(l => l.slug?.includes('consignment')) ?? null;
+
+  $: consignment = all.find(l => l.slug === CONSIGNMENT_SLUG)
+    ?? all.find(l => l.slug?.includes('consignment'))
+    ?? all.find(l => l.is_drive !== true)
+    ?? null;
 
   onMount(async () => {
     applySeo({
       title: 'Wheels',
-      description: 'The ÉIRVOX wheel catalogue. Carbon steering wheels, finished in Dublin. Buy direct.',
+      description: 'The ÉIRVOX wheel catalogue. A fitted BMW range and the DRIVE line. Designed in Ireland, assembled abroad, finished in Dublin.',
       path: '/wheels',
     });
+
     const rows = await getListings({ sort: 'recent', limit: 48 });
-    // /wheels is the WHEEL catalogue only: DRIVE wheels (is_drive) + the
-    // fitted range (category 'automotive'). Marketplace categories
-    // (watches, tech, fashion, …) live under Marketplace and must never
-    // appear here. This holds regardless of wheel_specialist_mode — when
-    // the flag is off the public allowlist no longer scopes queries, so
-    // /wheels has to scope itself.
+    // The shop is wheels only: DRIVE plus the fitted range. Marketplace
+    // categories never appear here, whatever the flag state.
     all = rows.filter(l => l.is_drive === true || l.category_slug === 'automotive');
     loading = false;
   });
 
-  // Filter option lists derived from live stock only — never hardcoded.
   $: makes = Array.from(new Set(all.map(l => l.vehicle_make).filter(Boolean))) as string[];
-  $: conditions = Array.from(new Set(all.map(l => l.condition).filter(Boolean))) as string[];
 
   $: filtered = all
+    .filter(l => collection === 'all'
+      || (collection === 'drive' && l.is_drive === true)
+      || (collection === 'range' && l.is_drive !== true))
     .filter(l => !make || l.vehicle_make === make)
-    .filter(l => !condition || l.condition === condition)
     .slice()
     .sort((a, b) =>
-      sortBy === 'price_asc' ? a.price - b.price :
+      sortBy === 'price_asc'  ? a.price - b.price :
       sortBy === 'price_desc' ? b.price - a.price : 0);
 
-  $: dirty = !!make || !!condition || sortBy !== 'recent';
-  function clearFilters() { make = ''; condition = ''; sortBy = 'recent'; }
+  $: driveItems = all.filter(l => l.is_drive === true);
+
+  $: dirty = collection !== 'all' || !!make || sortBy !== 'recent';
+  function clearFilters() { collection = 'all'; make = ''; sortBy = 'recent'; }
 </script>
 
-<Nav dark />
+<Nav />
 
-<main id="main-content" class="wb">
-  <div class="page-container">
+<main id="main-content">
 
-    <header class="wb__head">
-      <span class="evx-caption wb__pre">01 · WHEELS</span>
-      <h1 class="wb__title">Wheels</h1>
-      <p class="wb__stand evx-editorial">The catalogue.</p>
-      <p class="wb__registry">Every ÉIRVOX wheel is recorded. Registry coming soon.</p>
-      {#if consignment}
-        <button id="fitment" class="wb__finder-cta" type="button" on:click={() => (finderOpen = true)}>
-          Find your fit →
-        </button>
-      {/if}
-    </header>
+  <!-- ━━ HEAD ━━ -->
+  <header class="wb__head page-container">
+    <span class="evx-label">THE SHOP</span>
+    <h1 class="evx-display wb__title">Wheels</h1>
+    <p class="evx-lede wb__lede">
+      The fitted BMW range and the DRIVE line. Every wheel is designed in Ireland,
+      assembled abroad, and finished in Dublin before it goes out to you.
+    </p>
+  </header>
 
-    <div class="wb__layout">
-      <!-- Filter rail -->
-      <aside class="wb__filters">
-        <div class="wb__filter-head">
-          <span class="evx-label">Filters</span>
-          {#if dirty}<button class="wb__clear" type="button" on:click={clearFilters}>Clear</button>{/if}
-        </div>
+  <!-- ━━ FILTER BAR ━━ -->
+  <div class="fbar">
+    <div class="fbar__inner page-container">
+      <div class="fbar__tabs" role="group" aria-label="Collection">
+        <button class="fbar__tab" class:fbar__tab--on={collection === 'all'}   on:click={() => (collection = 'all')}>All wheels</button>
+        <button class="fbar__tab" class:fbar__tab--on={collection === 'range'} on:click={() => (collection = 'range')}>The range</button>
+        <button class="fbar__tab" class:fbar__tab--on={collection === 'drive'} on:click={() => (collection = 'drive')}>DRIVE</button>
+      </div>
 
-        <div class="wb__group">
-          <label class="evx-label wb__label" for="wb-make">Make</label>
-          <select id="wb-make" class="wb__select" bind:value={make}>
-            <option value="">All makes</option>
-            {#each makes as m}<option value={m}>{m}</option>{/each}
-          </select>
-        </div>
-
-        <div class="wb__group">
-          <label class="evx-label wb__label" for="wb-cond">Condition</label>
-          <select id="wb-cond" class="wb__select" bind:value={condition}>
-            <option value="">All conditions</option>
-            {#each conditions as c}<option value={c}>{c}</option>{/each}
-          </select>
-        </div>
-
-        <div class="wb__group">
-          <label class="evx-label wb__label" for="wb-sort">Sort</label>
-          <select id="wb-sort" class="wb__select" bind:value={sortBy}>
+      <div class="fbar__controls">
+        {#if makes.length > 1}
+          <label class="fbar__field">
+            <span class="sr-only">Make</span>
+            <select bind:value={make}>
+              <option value="">All makes</option>
+              {#each makes as m}<option value={m}>{m}</option>{/each}
+            </select>
+          </label>
+        {/if}
+        <label class="fbar__field">
+          <span class="sr-only">Sort</span>
+          <select bind:value={sortBy}>
             <option value="recent">Newest</option>
             <option value="price_asc">Price: low to high</option>
             <option value="price_desc">Price: high to low</option>
           </select>
-        </div>
-      </aside>
-
-      <!-- Results -->
-      <section class="wb__results">
-        <div class="wb__count evx-caption">
-          {#if loading}Loading.{:else}{filtered.length} {filtered.length === 1 ? 'wheel' : 'wheels'}{/if}
-        </div>
-
-        {#if loading}
-          <p class="wb__empty">Loading.</p>
-        {:else if filtered.length === 0}
-          <p class="wb__empty">{all.length === 0 ? 'No wheels live yet.' : 'No wheels match those filters.'}</p>
-        {:else}
-          <div class="wb__grid">
-            {#each filtered as l (l.id)}
-              <ListingCard listing={l} showSeller={false} showFeatured={false} showBookmark={false}
-                           detailBase="/wheels" cta="Buy" dark />
-            {/each}
-          </div>
-        {/if}
-      </section>
+        </label>
+        {#if dirty}<button class="fbar__clear" on:click={clearFilters}>Clear</button>{/if}
+      </div>
     </div>
-
   </div>
+
+  <!-- ━━ GRID ━━ -->
+  <section class="evx-section--tight">
+    <div class="page-container">
+      <p class="wb__count">
+        {#if loading}Loading.{:else}{filtered.length} {filtered.length === 1 ? 'wheel' : 'wheels'}{/if}
+      </p>
+
+      {#if loading}
+        <div class="grid">{#each Array(6) as _, i (i)}<div class="grid__skel"></div>{/each}</div>
+      {:else if filtered.length}
+        <div class="grid">{#each filtered as l (l.id)}<ProductCard listing={l} />{/each}</div>
+      {:else}
+        <p class="wb__empty">Nothing in this collection yet.</p>
+      {/if}
+    </div>
+  </section>
+
+  <!-- ━━ FITMENT ━━ -->
+  <section class="evx-section evx-band" id="fitment">
+    <div class="page-container fit">
+      <div class="fit__copy">
+        <span class="evx-label">FITMENT</span>
+        <h2 class="evx-heading">Check it fits before you pay.</h2>
+        <p class="evx-lede">
+          Give us the chassis and the finder comes back with the fit, the finish
+          options, and the price for your car.
+        </p>
+        <button class="evx-btn evx-btn--ink fit__cta" on:click={() => (finderOpen = true)} disabled={!consignment}>
+          {consignment ? 'Check fitment' : 'Fitment opens with the range'}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ━━ DRIVE ━━ -->
+  <section class="evx-dark" id="drive">
+    <div class="page-container evx-section">
+      <span class="evx-label drive__eyebrow">DRIVE</span>
+      <h2 class="evx-heading drive__h">Made once. Not reprinted.</h2>
+      <p class="evx-lede drive__lede">
+        One specification per issue, with integrated LED. When an issue closes, it stays closed.
+      </p>
+
+      {#if driveItems.length}
+        <div class="drive__row">
+          {#each driveItems.slice(0, 4) as d (d.id)}
+            <button class="dchip" type="button" on:click={() => { collection = 'drive'; window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+              <span class="dchip__issue">DRIVE {d.drive_issue ?? ''}</span>
+              <span class="dchip__title">{d.title}</span>
+            </button>
+          {/each}
+        </div>
+        <button class="drive__all" on:click={() => { collection = 'drive'; window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+          Show the DRIVE collection →
+        </button>
+      {:else}
+        <p class="drive__empty">The next issue is in preparation.</p>
+      {/if}
+    </div>
+  </section>
 </main>
+
+<Footer />
 
 {#if finderOpen && consignment}
   <WheelFinder
-    consignmentSlug={consignment.slug ?? ''}
+    consignmentSlug={consignment.slug ?? CONSIGNMENT_SLUG}
     consignmentId={consignment.id}
     basePriceEur={consignment.price}
     on:close={() => (finderOpen = false)}
   />
 {/if}
 
-<Footer dark />
-
 <style>
-  .wb { flex: 1; padding-bottom: var(--evx-space-3xl); }
-  .wb__finder-cta {
-    margin-top: var(--evx-space-lg);
+  .wb__head { padding-top: var(--evx-space-3xl); padding-bottom: var(--evx-space-xl); }
+  .wb__title { margin-top: var(--evx-space-sm); }
+  .wb__lede { margin-top: var(--evx-space-md); }
+
+  /* ── Filter bar ── */
+  .fbar {
+    position: sticky;
+    top: var(--evx-nav-height);
+    z-index: 20;
+    background: var(--evx-paper);
+    border-top: 1px solid var(--evx-rule-light);
+    border-bottom: 1px solid var(--evx-rule-light);
+  }
+  .fbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--evx-space-lg);
+    min-height: 54px;
+    flex-wrap: wrap;
+  }
+  .fbar__tabs { display: flex; align-items: center; gap: var(--evx-space-lg); }
+  .fbar__tab {
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--evx-ink-soft);
+    background: none;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 4px 0;
+    transition: var(--evx-transition);
+  }
+  .fbar__tab:hover { color: var(--evx-ink); }
+  .fbar__tab--on { color: var(--evx-ink); border-bottom-color: var(--evx-fox-orange); }
+
+  .fbar__controls { display: flex; align-items: center; gap: var(--evx-space-md); }
+  .fbar__field select {
     font-family: var(--evx-font-mono);
-    font-size: 12px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--evx-ink);
+    background: var(--evx-paper);
+    border: 1px solid var(--evx-rule-light);
+    padding: 7px 10px;
+  }
+  .fbar__clear {
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--evx-fox-orange);
+    color: var(--evx-ink-soft);
     background: none;
     border: none;
     padding: 0;
-    cursor: pointer;
-    transition: opacity 0.18s;
   }
-  .wb__finder-cta:hover { opacity: 0.8; }
+  .fbar__clear:hover { color: var(--evx-ink); }
 
-  .wb__head {
-    padding-top: var(--evx-space-2xl);
-    padding-bottom: var(--evx-space-xl);
-    border-bottom: 1px solid var(--evx-rule-light);
-    margin-bottom: var(--evx-space-2xl);
-  }
-  .wb__pre { color: var(--evx-ink-soft); display: block; margin-bottom: var(--evx-space-md); }
-  .wb__title {
-    font-family: var(--evx-font-display);
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    color: var(--evx-ink);
-  }
-  .wb__stand {
-    font-family: var(--evx-font-editorial);
-    font-style: italic;
-    font-size: 19px;
-    color: var(--evx-ink-soft);
-    margin-top: var(--evx-space-md);
-  }
-  .wb__registry {
+  /* ── Grid ── */
+  .wb__count {
     font-family: var(--evx-font-mono);
     font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--evx-ink-soft);
-    margin-top: var(--evx-space-lg);
-  }
-
-  .wb__layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--evx-space-2xl);
-  }
-
-  /* Filter rail */
-  .wb__filters { display: flex; flex-direction: column; gap: var(--evx-space-lg); }
-  .wb__filter-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    padding-bottom: var(--evx-space-sm);
-    border-bottom: 1px solid var(--evx-rule-light);
-  }
-  .wb__clear {
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--evx-ink-soft);
-    background: none; border: none; padding: 0; cursor: pointer;
-    transition: var(--evx-transition);
-  }
-  .wb__clear:hover { color: var(--evx-fox-orange); }
-  .wb__group { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
-  .wb__label { color: var(--evx-ink-soft); }
-  .wb__select {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--evx-ink-soft);
-    border-radius: 0;
-    color: var(--evx-ink);
-    font-family: var(--evx-font-display);
-    font-size: 14px;
-    padding: 6px 0;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  .wb__select:focus { outline: none; border-bottom-color: var(--evx-fox-orange); }
-
-  /* Results */
-  .wb__count {
+    letter-spacing: 0.06em;
     color: var(--evx-ink-soft);
     margin-bottom: var(--evx-space-lg);
   }
-  .wb__empty {
-    font-family: var(--evx-font-mono);
-    font-size: 12px;
-    color: var(--evx-ink-soft);
-    padding: var(--evx-space-xl) 0;
-  }
-  .wb__grid {
+  .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--evx-space-lg) var(--evx-space-md);
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--evx-space-lg);
   }
+  .grid__skel {
+    aspect-ratio: 5 / 7;
+    background: var(--evx-paper-panel);
+    border: 1px solid var(--evx-rule-light);
+  }
+  .wb__empty { color: var(--evx-ink-soft); font-size: 15px; }
 
-  @media (min-width: 768px) {
-    .wb__layout { grid-template-columns: 200px 1fr; gap: var(--evx-space-3xl); }
-    .wb__grid { grid-template-columns: repeat(3, 1fr); gap: var(--evx-space-2xl) var(--evx-space-lg); }
-  }
-  @media (min-width: 1200px) {
-    .wb__grid { grid-template-columns: repeat(4, 1fr); }
-  }
+  /* ── Fitment ── */
+  .fit__copy { max-width: 56ch; }
+  .fit__copy .evx-heading { margin-top: var(--evx-space-sm); }
+  .fit__copy .evx-lede { margin-top: var(--evx-space-sm); }
+  .fit__cta { margin-top: var(--evx-space-lg); }
 
-  /* ── Dark reskin (/wheels is a Dark-World surface; was flattened white).
-     Cards opt into ListingCard's dark variant. Hairlines remap to dark. */
-  .wb { background: var(--evx-black); color: var(--evx-paper); --evx-rule-light: var(--evx-rule); }
-  .wb__title { color: var(--evx-paper); }
-  .wb__select { color: var(--evx-paper); border-bottom-color: var(--evx-rule-strong); }
-  .wb__select option { color: var(--evx-ink); }
+  /* ── DRIVE ── */
+  .drive__eyebrow { color: var(--evx-champagne); }
+  .drive__h { color: #FFFFFF; margin-top: var(--evx-space-sm); }
+  .drive__lede { margin-top: var(--evx-space-sm); }
+  .drive__row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--evx-space-md);
+    margin-top: var(--evx-space-xl);
+  }
+  .dchip {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--evx-space-md);
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    text-align: left;
+    transition: var(--evx-transition);
+  }
+  .dchip:hover { opacity: 0.7; }
+  .dchip__issue {
+    font-family: var(--evx-font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: var(--evx-champagne);
+  }
+  .dchip__title { font-size: 14px; font-weight: 500; color: #FFFFFF; letter-spacing: -0.01em; }
+  .drive__all {
+    margin-top: var(--evx-space-xl);
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    background: none;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 0 0 3px;
+  }
+  .drive__all:hover { opacity: 0.65; }
+  .drive__empty { color: rgba(255, 255, 255, 0.6); font-size: 15px; margin-top: var(--evx-space-lg); }
+
+  @media (max-width: 1023px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .drive__row { grid-template-columns: repeat(2, 1fr); }
+    .fbar { position: static; }
+  }
+  @media (max-width: 599px) {
+    .grid { grid-template-columns: 1fr; }
+    .drive__row { grid-template-columns: 1fr; }
+    .fbar__inner { align-items: flex-start; padding-top: var(--evx-space-md); padding-bottom: var(--evx-space-md); }
+  }
 </style>
