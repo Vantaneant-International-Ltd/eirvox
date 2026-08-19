@@ -37,8 +37,12 @@
     })),
   ];
 
+  // DRIVE folded into the shop (19 Aug 2026): it is a collection at
+  // /wheels#drive, not a surface of its own. The marketplace is built
+  // and locked behind /marketplace until a category can be verified.
   const drive = [
-    { path: '/drive', label: 'DRIVE - all issues', desc: 'Issue index. House-produced enthusiast objects.' },
+    { path: '/wheels#drive',  label: 'DRIVE',       desc: 'The limited line, inside the shop.' },
+    { path: '/marketplace',   label: 'Marketplace', desc: 'Coming soon. Opens one category at a time.' },
   ];
 
   const seller = [
