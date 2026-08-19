@@ -7,7 +7,7 @@
 
 <span class="money" style="font-family: var(--evx-font-mono);">
   <span class="money__price"
-        style="font-size: {size}px; color: {dim ? 'var(--evx-paper-soft)' : 'var(--evx-paper)'};">
+        style="font-size: {size}px; color: {dim ? 'var(--evx-ink-soft)' : 'var(--evx-ink)'};">
     €{price}
   </span>
   {#if was && was > price}

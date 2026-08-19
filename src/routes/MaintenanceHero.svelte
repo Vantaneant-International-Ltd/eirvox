@@ -43,9 +43,9 @@
     min-height: 100vh;
     background:
       radial-gradient(120% 90% at 78% 0%, rgba(232,116,44,0.05), transparent 46%),
-      radial-gradient(90% 70% at 12% 100%, rgba(255,255,255,0.025), transparent 50%),
-      var(--evx-black);
-    color: var(--evx-paper);
+      radial-gradient(90% 70% at 12% 100%, rgba(20, 20, 20, 0.025), transparent 50%),
+      var(--evx-paper);
+    color: var(--evx-ink);
     display: flex;
     flex-direction: column;
   }
@@ -95,7 +95,7 @@
     color: var(--evx-ink-soft);
     margin-bottom: 30px;
   }
-  .mt__dot { width: 6px; height: 6px; background: var(--evx-paper-soft); flex: none; }
+  .mt__dot { width: 6px; height: 6px; background: var(--evx-ink-soft); flex: none; }
   /* The support action is the page's primary CTA — its dot stays the signal colour. */
   .mt__support .mt__dot { background: var(--evx-fox-orange); }
 
@@ -115,15 +115,15 @@
     margin: 0 0 38px;
     max-width: 28em;
   }
-  .mt__italic { font-family: var(--evx-font-editorial); font-style: italic; color: var(--evx-paper); }
+  .mt__italic { font-family: var(--evx-font-editorial); font-style: italic; color: var(--evx-ink); }
 
   .mt__support {
     display: inline-flex;
     align-items: center;
     gap: 11px;
-    border: 1px solid var(--evx-rule-strong);
-    background: var(--evx-surface);
-    color: var(--evx-paper);
+    border: 1px solid var(--evx-rule-light);
+    background: var(--evx-paper-panel);
+    color: var(--evx-ink);
     text-decoration: none;
     height: 52px;
     padding: 0 26px;
@@ -145,7 +145,7 @@
     max-width: 1280px;
     margin: 0 auto;
     width: 100%;
-    border-top: 1px solid var(--evx-rule);
+    border-top: 1px solid var(--evx-rule-light);
   }
   .mt__entity {
     font-family: var(--evx-font-mono);
@@ -164,7 +164,7 @@
     color: var(--evx-ink-faint);
   }
   .mt__legal a { color: var(--evx-ink-soft); text-decoration: none; transition: color 200ms ease; }
-  .mt__legal a:hover { color: var(--evx-paper); }
+  .mt__legal a:hover { color: var(--evx-ink); }
 
   /* Sequential fade-in (opacity only) */
   .mt__fade { opacity: 0; animation-fill-mode: forwards; animation-timing-function: ease-out; }

@@ -1,198 +1,218 @@
 <script lang="ts">
   // ============================================================
-  // Footer — ÉIRVOX imprint. One skeleton, two surface contexts.
-  //   dark=false  → Paper (light pages: About, Trust, legal, …)
-  //   dark=true   → dark surface (the wheels pages)
-  // Only the surface tokens swap (local --f-* aliases map to existing
-  // --evx-* tokens). Zero new colours, radii, shadows or typefaces.
+  // Footer, ÉIRVOX imprint. One light surface.
   //
-  // Zones: 1 identity + registry, 2 launch nav, 3 legal + payments.
-  // No newsletter, no social, no personal emails, no VAT (commented
-  // until verified). Registry carries the registered-address FACT token.
+  // Zones: 1 identity + registry · 2 nav columns · 3 legal + payment
+  // marks · 4 ghosted wordmark.
+  //
+  // No newsletter here (the marketplace waitlist lives on /marketplace),
+  // no social, no personal emails, no VAT line until verified. The
+  // registered office is withheld, private address, and the open
+  // [FACT NEEDED] token for it is tracked in HANDOFF.md.
+  //
+  // `dark` is accepted and ignored; dormant surfaces still pass it.
   // ============================================================
   import { navigate } from './router';
   import PaymentIcons from './PaymentIcons.svelte';
 
   export let dark = false;
+  dark; // intentionally unused, one light chrome now
+
+  function go(path: string) {
+    const hashIdx = path.indexOf('#');
+    if (hashIdx > 0) {
+      const route = path.slice(0, hashIdx);
+      const anchor = path.slice(hashIdx + 1);
+      navigate(route);
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 90);
+      return;
+    }
+    navigate(path);
+  }
 </script>
 
-<footer class="footer" class:footer--dark={dark}>
-  <div class="footer__body page-container">
+<footer class="ft">
+  <div class="ft__body page-container">
 
     <!-- Zone 1 · identity + registry -->
-    <div class="footer__identity">
-      <button class="footer__wordmark" on:click={() => navigate('/wheels')} aria-label="ÉIRVOX home">
-        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="footer__logo" class:footer__logo--dark={dark} />
+    <div class="ft__identity">
+      <button class="ft__wordmark" on:click={() => go('/')} aria-label="ÉIRVOX home">
+        <img src="/brand/wordmark.png" alt="ÉIRVOX" class="ft__logo" />
       </button>
 
-      <p class="footer__origin">
-        Designed in Ireland. <span class="footer__origin-em">Finished in Dublin.</span>
+      <p class="ft__origin">
+        Designed in Ireland. <span class="ft__origin-em">Finished in Dublin.</span>
       </p>
 
-      <div class="footer__registry">
+      <div class="ft__registry">
         <span>EIRVOX LIMITED</span>
-        <span class="footer__registry-dim">A VANTANÉANT INTERNATIONAL LTD COMPANY</span>
-        <span>REGISTERED IN IRELAND · <a class="footer__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 806648</a> · DUBLIN, IRELAND</span>
+        <span class="ft__registry-dim">A VANTANÉANT INTERNATIONAL LTD COMPANY</span>
+        <span>REGISTERED IN IRELAND · <a class="ft__verify" href="https://core.cro.ie" target="_blank" rel="noopener noreferrer">CRO 806648</a> · DUBLIN, IRELAND</span>
         <span>SUPPORT@EIRVOX.IE</span>
-        <!-- Legal name EIRVOX LIMITED (no accent); brand wordmark stays ÉIRVOX
-             (acute). Registered office withheld (private address); no VAT line
-             until verified. -->
+        <!-- Legal name EIRVOX LIMITED (no accent); brand wordmark keeps
+             the acute. No VAT line until verified. -->
       </div>
     </div>
 
-    <!-- Zone 2 · launch nav -->
-    <div class="footer__nav">
-      <div class="footer__col">
-        <span class="footer__head">SHOP</span>
-        <ul class="footer__links">
-          <li><button on:click={() => navigate('/wheels')}>Wheels</button></li>
-          <li><button on:click={() => navigate('/wheels')}>Find your fit</button></li>
-          <li><button on:click={() => navigate('/drive')}>DRIVE</button></li>
-        </ul>
-      </div>
-      <div class="footer__col">
-        <span class="footer__head">HOUSE</span>
-        <ul class="footer__links">
-          <li><button on:click={() => navigate('/about')}>About</button></li>
-          <li><button on:click={() => navigate('/trust')}>Trust</button></li>
-          <li><a href="mailto:support@eirvox.ie">Contact</a></li>
-        </ul>
-      </div>
+    <!-- Zone 2 · nav -->
+    <div class="ft__col">
+      <span class="ft__head">SHOP</span>
+      <ul class="ft__links">
+        <li><button on:click={() => go('/wheels')}>All wheels</button></li>
+        <li><button on:click={() => go('/wheels#drive')}>DRIVE</button></li>
+        <li><button on:click={() => go('/wheels#fitment')}>Find your fit</button></li>
+      </ul>
+    </div>
+
+    <div class="ft__col">
+      <span class="ft__head">HOUSE</span>
+      <ul class="ft__links">
+        <li><button on:click={() => go('/about')}>About</button></li>
+        <li><button on:click={() => go('/trust')}>How buying works</button></li>
+        <li><button on:click={() => go('/marketplace')}>Marketplace <span class="ft__soon">Soon</span></button></li>
+        <li><a href="mailto:support@eirvox.ie">Contact</a></li>
+      </ul>
     </div>
   </div>
 
   <!-- Zone 3 · legal + payments -->
-  <div class="footer__meta page-container">
-    <div class="footer__legal">
-      <button on:click={() => navigate('/terms')}>TERMS</button>
-      <span class="footer__sep">·</span>
-      <button on:click={() => navigate('/privacy')}>PRIVACY</button>
-      <span class="footer__sep">·</span>
-      <button on:click={() => navigate('/cookies')}>COOKIES</button>
-      <span class="footer__sep">·</span>
-      <button on:click={() => navigate('/acceptable-use')}>ACCEPTABLE USE</button>
-      <span class="footer__sep">·</span>
-      <button on:click={() => navigate('/refund-policy')}>REFUND POLICY</button>
+  <div class="ft__meta page-container">
+    <div class="ft__legal">
+      <button on:click={() => go('/terms')}>TERMS</button>
+      <span class="ft__sep">·</span>
+      <button on:click={() => go('/privacy')}>PRIVACY</button>
+      <span class="ft__sep">·</span>
+      <button on:click={() => go('/cookies')}>COOKIES</button>
+      <span class="ft__sep">·</span>
+      <button on:click={() => go('/acceptable-use')}>ACCEPTABLE USE</button>
+      <span class="ft__sep">·</span>
+      <button on:click={() => go('/refund-policy')}>REFUND POLICY</button>
     </div>
-    <div class="footer__pay">
-      <PaymentIcons />
-    </div>
+    <div class="ft__pay"><PaymentIcons /></div>
   </div>
 
-  <div class="footer__bar page-container">
-    <span class="footer__bar-text">© 2026 EIRVOX LIMITED</span>
-    <span class="footer__bar-text">DUBLIN, IRELAND</span>
+  <div class="ft__bar page-container">
+    <span class="ft__bar-text">© 2026 EIRVOX LIMITED</span>
+    <span class="ft__bar-text">DUBLIN, IRELAND</span>
   </div>
+
+  <!-- Zone 4 · ghosted wordmark -->
+  <div class="ft__ghost" aria-hidden="true">ÉIRVOX</div>
 </footer>
 
 <style>
-  /* Surface tokens — local aliases over the existing --evx-* system. */
-  .footer {
-    --f-bg:   var(--evx-paper);
-    --f-ink:  var(--evx-ink);
-    --f-soft: var(--evx-ink-soft);
-    --f-rule: var(--evx-rule-light);
-    background: var(--f-bg);
-    color: var(--f-ink);
+  .ft {
+    background: var(--evx-paper);
+    border-top: 1px solid var(--evx-rule-light);
     margin-top: auto;
-  }
-  .footer--dark {
-    --f-bg:   var(--evx-surface);
-    --f-ink:  var(--evx-paper);
-    --f-soft: var(--evx-paper-soft);
-    --f-rule: var(--evx-rule);
+    overflow: hidden;
   }
 
-  /* Body: identity + nav */
-  .footer__body {
+  .ft__body {
     display: grid;
-    grid-template-columns: 2.2fr 1fr 1fr;
+    grid-template-columns: 2.4fr 1fr 1fr;
     gap: var(--evx-space-2xl);
     padding-top: var(--evx-space-3xl);
     padding-bottom: var(--evx-space-2xl);
   }
 
-  .footer__identity { display: flex; flex-direction: column; gap: var(--evx-space-md); padding-right: var(--evx-space-xl); }
+  .ft__identity {
+    display: flex;
+    flex-direction: column;
+    gap: var(--evx-space-md);
+    padding-right: var(--evx-space-xl);
+  }
+  .ft__wordmark {
+    display: inline-flex;
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .ft__logo { height: 20px; width: auto; }
 
-  .footer__wordmark { display: inline-flex; align-self: flex-start; background: none; border: none; padding: 0; cursor: pointer; }
-  /* Canonical miniature wordmark: brand PNG. Identity zone, slightly
-     larger than the 16px chrome bars. Inverted to paper on dark. */
-  .footer__logo { height: 22px; width: auto; display: block; }
-  .footer__logo--dark { filter: invert(1) brightness(1.05); }
-
-  .footer__origin {
-    font-family: var(--evx-font-display);
+  .ft__origin {
     font-size: 14px;
-    color: var(--f-ink);
+    color: var(--evx-ink);
     margin-top: var(--evx-space-xs);
   }
-  .footer__origin-em {
+  .ft__origin-em {
     font-family: var(--evx-font-editorial);
     font-style: italic;
-    color: var(--f-soft);
+    color: var(--evx-ink-soft);
   }
 
-  .footer__registry {
+  .ft__registry {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin-top: var(--evx-space-md);
+    margin-top: var(--evx-space-sm);
     font-family: var(--evx-font-mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: 0.04em;
     line-height: 1.5;
-    color: var(--f-soft);
+    color: var(--evx-ink-soft);
   }
-  .footer__registry-dim { opacity: 0.7; }
-  .footer__verify {
+  .ft__registry-dim { opacity: 0.72; }
+  .ft__verify {
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 2px;
     transition: var(--evx-transition);
   }
-  .footer__verify:hover { color: var(--f-ink); }
+  .ft__verify:hover { color: var(--evx-ink); }
 
-  /* Nav columns */
-  .footer__nav { display: contents; }
-  .footer__col { display: flex; flex-direction: column; gap: var(--evx-space-md); }
-  .footer__head {
+  .ft__col { display: flex; flex-direction: column; gap: var(--evx-space-md); }
+  .ft__head {
     font-family: var(--evx-font-mono);
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--f-soft);
-    margin-bottom: var(--evx-space-sm);
+    color: var(--evx-ink-soft);
+    margin-bottom: var(--evx-space-xs);
   }
-  .footer__links { display: flex; flex-direction: column; gap: 12px; }
-  .footer__links button,
-  .footer__links a {
+  .ft__links { display: flex; flex-direction: column; gap: 12px; }
+  .ft__links button,
+  .ft__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     font-family: var(--evx-font-display);
     font-size: 14px;
-    color: var(--f-ink);
+    color: var(--evx-ink);
     background: none;
     border: none;
     padding: 0;
-    cursor: pointer;
     text-align: left;
-    text-decoration: none;
     transition: var(--evx-transition);
   }
-  .footer__links button:hover,
-  .footer__links a:hover { opacity: 0.6; }
+  .ft__links button:hover,
+  .ft__links a:hover { opacity: 0.55; }
+  .ft__soon {
+    font-family: var(--evx-font-mono);
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--evx-ink-faint);
+    border: 1px solid var(--evx-rule-light);
+    padding: 2px 4px;
+    line-height: 1;
+  }
 
-  /* Meta: legal + payments */
-  .footer__meta {
+  .ft__meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: var(--evx-space-lg);
     padding-top: var(--evx-space-lg);
     padding-bottom: var(--evx-space-lg);
-    border-top: 1px solid var(--f-rule);
+    border-top: 1px solid var(--evx-rule-light);
     flex-wrap: wrap;
   }
-  .footer__legal {
+  .ft__legal {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -200,50 +220,56 @@
     font-family: var(--evx-font-mono);
     font-size: 10px;
     letter-spacing: 0.14em;
-    color: var(--f-soft);
+    color: var(--evx-ink-soft);
   }
-  .footer__legal button {
+  .ft__legal button {
     font: inherit;
     letter-spacing: inherit;
     color: inherit;
     background: none;
     border: none;
     padding: 0;
-    cursor: pointer;
     transition: var(--evx-transition);
   }
-  .footer__legal button:hover { color: var(--f-ink); }
-  .footer__sep { color: var(--f-rule); }
-  .footer__pay :global(.pmi) { gap: 6px; }
-  .footer__pay :global(.pmi__card svg) { height: 22px; }
+  .ft__legal button:hover { color: var(--evx-ink); }
+  .ft__sep { color: var(--evx-rule-light); }
+  .ft__pay :global(.pmi) { gap: 6px; }
+  .ft__pay :global(.pmi__card svg) { height: 22px; }
 
-  /* Bottom bar */
-  .footer__bar {
+  .ft__bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: var(--evx-space-md);
     padding-top: var(--evx-space-md);
-    padding-bottom: var(--evx-space-xl);
+    padding-bottom: var(--evx-space-lg);
     flex-wrap: wrap;
   }
-  .footer__bar-text {
+  .ft__bar-text {
     font-family: var(--evx-font-mono);
     font-size: 10px;
     letter-spacing: 0.14em;
-    color: var(--f-soft);
+    color: var(--evx-ink-soft);
+  }
+
+  /* Ghosted wordmark, the sign over the door, cropped by the page edge. */
+  .ft__ghost {
+    font-family: var(--evx-font-display);
+    font-weight: 500;
+    font-size: clamp(72px, 19vw, 260px);
+    line-height: 0.8;
+    letter-spacing: -0.03em;
+    text-align: center;
+    color: var(--evx-ink);
+    opacity: 0.055;
+    user-select: none;
+    margin-bottom: -0.16em;
+    padding-top: var(--evx-space-md);
   }
 
   @media (max-width: 767px) {
-    .footer__body {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--evx-space-xl);
-    }
-    .footer__identity { grid-column: 1 / -1; padding-right: 0; }
-    .footer__meta, .footer__bar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--evx-space-sm);
-    }
+    .ft__body { grid-template-columns: 1fr 1fr; gap: var(--evx-space-xl); }
+    .ft__identity { grid-column: 1 / -1; padding-right: 0; }
+    .ft__meta, .ft__bar { flex-direction: column; align-items: flex-start; gap: var(--evx-space-sm); }
   }
 </style>

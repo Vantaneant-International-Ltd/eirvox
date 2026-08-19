@@ -105,7 +105,7 @@
   }
 </script>
 
-<Nav dark />
+<Nav />
 
 <main id="main-content" class="pr">
   <div class="pr__inner page-container">
@@ -178,7 +178,7 @@
   </div>
 </main>
 
-<Footer dark />
+<Footer />
 
 <style>
   .pr { flex: 1; padding-top: var(--evx-space-3xl); padding-bottom: var(--evx-space-3xl); }
@@ -254,6 +254,6 @@
   }
 
   /* Dark reskin (checkout/pay state = Dark World). */
-  .pr { background: var(--evx-black); color: var(--evx-paper); --evx-rule-light: var(--evx-rule); }
-  .pr__h, .pr__meta dd { color: var(--evx-paper); }
+  .pr { background: var(--evx-paper); color: var(--evx-ink); --evx-rule-light: var(--evx-rule-light); }
+  .pr__h, .pr__meta dd { color: var(--evx-ink); }
 </style>

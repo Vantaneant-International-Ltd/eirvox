@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { currentPath, matchRoute } from './lib/router';
+  import { currentPath, matchRoute, navigate } from './lib/router';
   import { auth, initAuth } from './lib/auth';
   import { initAnalytics } from './lib/analytics';
   import { isDevBypassed, isMaintenancePreviewed, isComingSoonPreviewed, siteFlags, flagsLoading, loadSiteFlags, resolveGate, gatedLegalMode } from './lib/flags';
@@ -12,8 +12,7 @@
   import WheelDetail from './routes/WheelDetail.svelte';
   import CategoryPage from './routes/CategoryPage.svelte';
   import ListingDetail from './routes/ListingDetail.svelte';
-  import DriveIndex from './routes/DriveIndex.svelte';
-  import DriveIssue from './routes/DriveIssue.svelte';
+  import MarketplaceLocked from './routes/MarketplaceLocked.svelte';
   import Sell from './routes/Sell.svelte';
   import SellerApply from './routes/SellerApply.svelte';
   import SellerCreate from './routes/SellerCreate.svelte';
@@ -114,7 +113,6 @@
 
   $: wheelDetailParams = matchRoute('/wheels/:slug', path);
   $: listingParams = matchRoute('/listing/:slug', path);
-  $: driveParams = matchRoute('/drive/:slug', path);
   $: tradeProfileParams = matchRoute('/trade/:categorySlug/:slug', path);
   $: tradeCategoryParams = matchRoute('/trade/:categorySlug', path);
   $: sellEditParams = matchRoute('/sell/edit/:listingId', path);
@@ -124,48 +122,36 @@
   // Trade slugs that should NOT match as categories
   const TRADE_RESERVED_PATHS = ['apply'];
 
-  // ── Wheel-specialist route gate ────────────────────────────
-  // When wheel_specialist_mode is on, the public site is narrowed to
-  // wheels. Marketplace browse, seller flows (incl. the AuthGuarded
-  // ones), TRADE, broad search, and any non-allowlisted category render
-  // NotFound (hard 404). Reuses the launch flag + allowlist and deletes
-  // nothing: flip the flag in /admin/settings to restore the full
-  // marketplace. /listing/:slug stays mounted - an out-of-scope slug
-  // returns null (RLS + api guard) and ListingDetail shows not-found.
+  // ── Marketplace lock ───────────────────────────────────────
+  // The marketplace, TRADE, seller flows, search, accounts and
+  // messaging are BUILT and sit behind /marketplace, the coming-soon
+  // page reached from the nav. Gated paths render that page rather
+  // than a hard 404, so a visitor who lands on one gets an
+  // explanation instead of a wall.
+  //
+  // Nothing is deleted. Flip wheel_specialist_mode off in
+  // /admin/settings and every one of these surfaces returns.
   $: wheelMode = $siteFlags.wheel_specialist_mode;
-  $: allowedCats = Array.isArray($siteFlags.public_category_allowlist) ? $siteFlags.public_category_allowlist : [];
 
-  // ── Not-ready gate (flag-INDEPENDENT) ──────────────────────
-  // Three surfaces must stay hidden even once wheel_specialist_mode is
-  // flipped off, because flipping the flag un-gates the whole
-  // hiddenByWheelMode block at once:
-  //   /account/*  · /messages/* — backed by mock data (src/data/user.ts),
-  //                 not real Supabase data; must not ship mock account data.
-  //   /drive/:slug — DriveIssue still carries pre-BUY-verb copy
-  //                  (Express interest / reserve / deposit). Orphaned in
-  //                  wheel mode; DRIVE detail is served by WheelDetail.
-  // This is deliberately separate from hiddenByWheelMode so the wheel-mode
-  // off-ramp stays intact and reversible. Remove a clause here only when
-  // that surface is real / re-papered. /drive (index) stays visible.
-  $: notReady = (
+  // Locked regardless of the flag: Account and Messages are still
+  // backed by mock rows (src/data/user.ts). Flipping the flag must not
+  // ship account screens over invented data.
+  $: alwaysLocked = (
     path === '/account' || path.startsWith('/account/') ||
-    path === '/messages' || path.startsWith('/messages/') ||
-    driveParams !== null
+    path === '/messages' || path.startsWith('/messages/')
   );
 
-  $: hiddenByWheelMode = wheelMode && (
-    path === '/sell' || path.startsWith('/sell/') ||
-    path === '/trade' || path.startsWith('/trade/') ||
+  $: marketplaceLocked = wheelMode && (
+    path === '/sell'    || path.startsWith('/sell/') ||
+    path === '/trade'   || path.startsWith('/trade/') ||
+    path === '/listing' || path.startsWith('/listing/') ||
     path === '/search' ||
-    path === '/account' || path.startsWith('/account/') ||
-    path === '/messages' || path.startsWith('/messages/') ||
-    // /drive (index) stays visible; /drive/:slug (DriveIssue) is gated —
-    // it's orphaned in wheel mode (DRIVE detail is served by WheelDetail
-    // at /wheels/:slug) and still carries pre-BUY-verb copy. Closes the
-    // direct-URL exposure until it gets the copy/paper pass.
-    path.startsWith('/drive/') ||
-    (categoryMatch !== null && !allowedCats.includes(categoryMatch))
+    categoryMatch !== null
   );
+
+  // DRIVE is folded into the shop (19 Aug 2026). Old /drive links keep
+  // working by landing on the shop, where the DRIVE collection lives.
+  $: if (path === '/drive' || path.startsWith('/drive/')) navigate('/wheels');
 </script>
 
 <!-- Permanent gate-preview routes (parity with the SvelteKit client-buildt
@@ -193,8 +179,8 @@
     DEV MODE - {$siteFlags.maintenance ? 'Maintenance' : 'Coming soon'} is active for visitors
   </div>
 {/if}
-{#if hiddenByWheelMode || notReady}
-  <NotFound />
+{#if marketplaceLocked || alwaysLocked}
+  <MarketplaceLocked />
 {:else if path === '/'}
   <Home />
 {:else if path === '/wheels'}
@@ -205,10 +191,8 @@
   <CategoryPage category={categoryMatch} />
 {:else if listingParams}
   <ListingDetail slug={listingParams.slug} />
-{:else if path === '/drive'}
-  <DriveIndex />
-{:else if driveParams}
-  <DriveIssue issueSlug={driveParams.slug} />
+{:else if path === '/marketplace'}
+  <MarketplaceLocked />
 
 <!-- ════ Seller routes ════ -->
 {:else if path === '/sell/apply'}

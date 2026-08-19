@@ -32,9 +32,8 @@
         and finished in Dublin before it ships. If it isn't right, it doesn't ship.
       </p>
       <p>
-        The site changes mood on purpose. Where a wheel is shown and sold, the room goes dark and
-        the light falls on the object. Where you browse the wider marketplace or read the detail,
-        it opens into daylight. One company, two rooms. The change in light tells you which you're in.
+        The wider marketplace is built and not yet open. It opens one category at a time, each
+        when there is a real operation behind it. Until then this is a wheel shop, and it says so.
       </p>
     </section>
 

@@ -1,5 +1,5 @@
 # ÉIRVOX — Direction Lockfile
-**v1.0 · 11 June 2026**
+**v2.0 · 19 August 2026** (v1.0 · 11 June 2026)
 **Status: LOCKED. Changes require a written decision from Renato, recorded in this file's changelog.**
 **Usage: paste relevant sections verbatim into every design prompt, design brief, copy task, and implementation ticket. If an output conflicts with this file, the output is wrong.**
 
@@ -7,64 +7,89 @@
 
 ## 1 · The direction, in one sentence
 
-**A single dark world where light reveals the product, edited with editorial restraint — one event, one idea, one object per screen; engineering voice as annotation only.**
+> **AMENDED 19 Aug 2026** (Renato — see §13). The direction below replaces the
+> previous single-dark-world sentence. The two-world model is retired;
+> `brand/DESIGN-WORLDS.md` is superseded and kept only as history.
 
-Mix ratio: ~60% Ignition Ritual (atmosphere, light, sequence) · ~30% Newsroom (restraint, pacing, editorial discipline) · ~10% Atelier (technical drawing system, used only where specified).
+**One clean light shop where the product carries the page — conventional, legible commerce, punctuated by dark editorial bands, with engineering voice as annotation only.**
 
-Reference frame: the approved "The two seconds before ignition" homepage mockup. That frame is the calibration standard. Anything noticeably darker-louder (nightclub) or whiter-quieter (brochure) has drifted.
+Mix ratio: ~55% Clean Commerce (white ground, product tiles, obvious price and buy) · ~35% Newsroom (restraint, pacing, editorial discipline) · ~10% Atelier (technical annotation, used only where specified).
+
+Reference frame: carbondistrict.ie — white commerce, a hairline trust strip, a hairline-divided figures bar, bordered collection cards, and full-bleed dark bands used as punctuation between light sections. Anything noticeably darker (the retired product-theatre) or busier (generic Shopify density) has drifted.
 
 Anti-references: DoneDeal, Adverts, Facebook Marketplace, generic Shopify premium themes, dropship-luxury aesthetics, crypto-landing-page black-and-glow.
 
 ---
 
-## 2 · World boundaries
+## 2 · The one world
 
-> **⚠️ DELIBERATE — do not flatten.** The two worlds are the *trust* and *desire*
-> beats made visual; collapsing them into one palette is a brand regression, not a
-> cleanup. A white-rework once flattened the Dark surfaces and caused the
-> black→white→black journey + a white `/wheels` (fixed 20 Jun 2026). If a
-> wheels/DRIVE/checkout surface renders light, restore it to Dark — don't whiten
-> the rest to match. **Canonical rationale + route map: `brand/DESIGN-WORLDS.md`.**
+> **REPLACES the two-world architecture, 19 Aug 2026 (Renato — see §13).** The
+> Dark World / Paper World split and the anti-flatten rule that guarded it are
+> void. `brand/DESIGN-WORLDS.md` carries a superseded banner and is history.
 
-The brand has exactly two worlds plus one shared thread. Every surface belongs to one world. No surface mixes worlds.
+There is one surface: **light**. White ground, near-black ink, fox orange as the
+only accent, no radii, no shadows, hairline rules.
 
-### The Dark World — product theatre
-Surfaces: wheels home · wheel detail · fitment finder · DRIVE index · DRIVE issues · checkout/pay states.
-Tokens: `--evx-black #0E0D0C` · `--evx-surface #141210` · `--evx-surface-2 #1B1815` · light-on-dark text tokens.
-Behavior: photography dominant and full-bleed; UI recedes to thin rules and mono whispers; light is the only ornament; one idea per screen section.
-
-### The Paper World — reading and utility
-Surfaces: About · Trust · legal set · (future) marketplace browsing, search, listings, seller flows, accounts, messaging.
-Tokens: `--evx-paper #F5F2ED` · `--evx-ink #1A1A1A` · existing light system.
-Behavior: editorial density; words and tools; daylight mode of the same company.
+### Dark bands (the only dark that ships)
+A full-bleed dark section *inside* a light page — the DRIVE band, the process
+strip, the marketplace band. Utility: `.evx-dark` in `src/app.css`. It is
+sectional contrast, not a second world.
 
 ### Hard rules
-- The buying path for house products never leaves the Dark World.
-- High-density browsing (grids, filters, search results) never enters the Dark World.
-- The seam is bridged by shared skeletons (§6), never by blending palettes.
-- The future marketplace is the Paper World's existing system + the registry mark — it is NOT a new design and NOT a dark grid.
+- The buying path is **light**, end to end: shop, product page, finder,
+  payment return. A dark checkout is a regression now.
+- A dark band never carries a form field that takes money, and never a whole
+  page. If a band grows into a full screen, it has become a world again — cut it.
+- Nav and Footer are one light chrome. Their `dark` prop is accepted and ignored
+  by dormant surfaces; delete it once those are re-papered.
+- Champagne stays DRIVE-only. Fox orange stays surgical: CTAs and live markers,
+  never headlines, never decoration, never a background wash.
 
 ### Launch visibility
-- SHOWING: Wheels home, wheel detail, finder, DRIVE, About, Trust, legal, imprint footer.
-- HIDDEN (built, flag-gated, zero visible references): all marketplace categories, search, seller flows (/sell), TRADE, accounts, messaging.
-- Hiding is total: no nav items, no footer links, no teasers, no "coming soon," no previews in public decks or socials.
+
+> **AMENDED 19 Aug 2026 (Renato — see §13).** Total hiding is replaced by a
+> single acknowledged lock. The previous rule — "no nav items, no 'coming
+> soon'" — no longer applies to the marketplace.
+
+- SHOWING: front page, the shop (`/wheels`, incl. the DRIVE collection and the
+  finder), product pages, About, Trust, legal, imprint footer.
+- LOCKED, and openly so: **one** MARKETPLACE nav item, marked `Soon`, routing to
+  `/marketplace` — a coming-soon page that explains the opening model and takes
+  an email (waitlist `source='marketplace'`).
+- BEHIND THE LOCK (built, gated, unchanged): categories, search, `/listing/:slug`,
+  seller flows, TRADE, accounts, messaging. Gated paths render `/marketplace`
+  rather than a 404, so a visitor gets an explanation, not a wall.
+- Still forbidden: naming categories, promising dates, showing counts, or
+  previewing marketplace screens. The lock says *that* it is coming and *how* it
+  opens — never *when* or *what*.
 
 ---
 
 ## 3 · Tokens (closed set — nothing may be added)
 
 ### Color
+
+> **AMENDED 19 Aug 2026 (Renato — see §13).** Re-tabled for the one light
+> world. Authority is `src/app.css`.
+
 | Token | Value | Role |
 |---|---|---|
-| `--evx-paper` | #F5F2ED | Paper World ground |
-| `--evx-ink` / `--evx-warm-black` | #1A1A1A | Paper World text / light-world black |
-| `--evx-black` | #0E0D0C | Dark World ground |
-| `--evx-surface` / `--evx-surface-2` | #141210 / #1B1815 | Dark World panels |
-| `--evx-graphite` family | #2A2825 / #2E2A25 / #3D3A36 | mid surfaces |
-| `--evx-fox-orange` | #E8742C | THE accent. CTAs, live dot, redline markers, dimension callouts. Never headlines, never decoration, never backgrounds. |
-| `--evx-champagne` | #C9A961 | DRIVE ONLY: eyebrows, edition plates, LED wash. Never general UI. |
-| `--evx-ink-soft` / `--evx-paper-soft` / `--evx-ink-faint` | greys | meta text |
-| rules | rgba light/dark variants | 1px hairlines only |
+| `--evx-paper` | #FFFFFF | page ground |
+| `--evx-paper-panel` | #F5F5F4 | recessed band / section ground |
+| `--evx-paper-tile` | #F0EFED | product image tile |
+| `--evx-ink` / `--evx-warm-black` | #141414 | headings and primary text |
+| `--evx-ink-soft` | #6B6B6B | meta, secondary text |
+| `--evx-ink-faint` | #9A9A98 | captions, disabled |
+| `--evx-fox-orange` | #E8742C | THE accent. CTAs and live markers. Never headlines, never decoration, never backgrounds. |
+| `--evx-champagne` | #C9A961 | DRIVE ONLY: issue plate, band eyebrow. Never general UI. |
+| `--evx-rule-light` / `--evx-rule-hair` | rgba ink 0.12 / 0.07 | 1px hairlines only |
+| `--evx-ink` as band ground | #141414 | the `.evx-dark` editorial band |
+
+**Legacy dark tokens** (`--evx-black`, `--evx-surface`, `--evx-surface-2`,
+`--evx-paper-soft`, `--evx-rule*`) are kept at the foot of `src/app.css` so the
+dormant marketplace / TRADE / seller / admin screens keep rendering until each
+is re-papered. **No public surface may use them.** Delete the block when the
+last dormant surface is converted.
 
 ### Forbidden visual devices
 No new colors. No gradients (the photographic LED wash is light, not a CSS gradient — CSS gradients only inside the pre-existing carbon/LED utility classes, never new ones). No shadows. No border radii. No glassmorphism/neumorphism. No blur effects. No icons in trust or proof contexts (type and rules only). No stock iconography anywhere new.
@@ -87,13 +112,18 @@ Hierarchy per screen: Inter Tight headline → Newsreader italic standfirst (opt
 
 **The rule:** motion may only *reveal* — the product, light, or information. Never decorate. Nothing loops. Nothing idles. Every motion is an event with a beginning and an end, played once per session.
 
+> **AMENDED 19 Aug 2026 (Renato — see §13).** The ignition event, the light
+> sweep, the self-drawing annotation layer and the black cut belonged to the
+> retired product-theatre and are withdrawn. The rule above is unchanged and
+> still governs.
+
 Permitted vocabulary:
-1. **The ignition event** — hero: LED wakes, one light sweep crosses the weave, headline sets. Once per session.
-2. **The light sweep** — raking highlight across material, scroll-driven or single-trigger.
-3. **Self-drawing annotations** — SVG dimension lines/callouts that draw and set their labels (Dark World product detail only).
-4. **The cut** — 300–400ms black beat between product pages, orange dot persisting.
-5. **Drag-to-rotate** — frame-sequence rotation on product detail (ships only when rotation frames exist).
-6. Existing primitives: 200ms opacity fade, `evx-rise` entrance.
+1. **The entrance** — `evx-rise`, once, on a hero copy block.
+2. **The fade** — 200ms opacity on hover and state change.
+3. **Drag-to-rotate** — frame-sequence rotation on the product page (ships only when rotation frames exist).
+
+The trust strip in the nav is **static type**. A scrolling version would be a
+marquee, which the rule below bans — that ban survives the light rework.
 
 Forbidden: parallax, scroll-jacking, marquees, looping ambient animation, hover gimmicks, easing theatrics, anything that moves the object instead of the light.
 
@@ -101,14 +131,20 @@ Quality gate: each motion ships at 100% timing quality or not at all. One perfec
 
 ---
 
-## 6 · Shared skeletons (the seam bridge)
+## 6 · The chrome
 
-Identical across both worlds, only surface tokens swap:
-- **Nav skeleton** — same structure, spacing, wordmark placement.
-- **Imprint footer** — identity zone (wordmark · origin line · registry block) → pruned nav → legal + PaymentIcons. Single-sourced component.
-- **Type scale and page margins** (96/48/20).
-- **The registry mark** (§8) — rendered identically in both worlds.
-- Fox orange behavior — same role in both worlds.
+> **AMENDED 19 Aug 2026 (Renato — see §13).** There is no seam to bridge; one
+> chrome serves every surface.
+
+- **Trust strip** — static hairline bar above the nav. True facts only: no
+  shipping, insurance or response-time claims, no counts.
+- **Nav** — wordmark left; Wheels · DRIVE · Fitment · Marketplace (`Soon`) ·
+  About; one orange CTA. No cart, no SIGN IN / REGISTER.
+- **Imprint footer** — identity + registry → nav columns → legal + PaymentIcons
+  → ghosted wordmark. Single-sourced component.
+- **Type scale and page margins** (64/32/20; max width 1320).
+- **The registry mark** (§8) — unchanged, still gated.
+- Fox orange behaviour — CTAs and live markers, nothing else.
 
 ---
 
@@ -131,7 +167,7 @@ Identical across both worlds, only surface tokens swap:
 - Ratings, reviews, testimonials, member counts, press logos, "as seen in," sold tickers, "X people viewing"
 
 ### Voice
-Short declarative sentences. Full stops as design. Specifics over adjectives ("2×2 twill carbon, satin lacquer" not "premium quality"). No hype, no urgency language, no exclamation marks. Exclusivity language ("made once, not reprinted") permitted ONLY on DRIVE, because there it is true. Irishness = specificity (address, bench, CRO number), never symbolism (no green, shamrocks, Celtic ornament).
+Short declarative sentences. Full stops as design. Specifics over adjectives ("3K twill carbon, satin lacquer" not "premium quality"). No hype, no urgency language, no exclamation marks. Exclusivity language ("made once, not reprinted") permitted ONLY on DRIVE, because there it is true. Irishness = specificity (address, bench, CRO number), never symbolism (no green, shamrocks, Celtic ornament).
 
 Approved signature lines (use, don't paraphrase):
 - "The two seconds before ignition."
@@ -158,16 +194,20 @@ Strategic note: the long-term marketplace model is verification-led ("StockX for
 
 ## 9 · Per-surface rules
 
-| Surface | World | Specifics |
-|---|---|---|
-| Wheels home | Dark | Ignition hero (one event). Numbered sections. NO dimension lines. Proof band (type + rules, no icons). Registry on its own row, not sharing a strip. |
-| Wheel detail | Dark | Canonical anatomy: hero (LED lit) → one-line statement → spec table (mono label/value) → drawing system ON (dimensions draw here) → macro strip → FIND YOUR FIT (single orange CTA) → accordions → registry line. Price never above the photograph. `original_price` renders as quiet mono "Was €X" — never strikethrough, never "SAVE €X". |
-| Fitment finder | Dark | The ritual: chassis in → spec confirms → fitment plate stamps ("FITS · F80 M3 · 2014–2018"). |
-| DRIVE | Dark | Magazine-on-black. Cover-wall archive, large issue numerals, champagne eyebrows, engraved serial plate. Live edition numbers only on issue pages, never as homepage atmosphere. |
-| About | Paper | Company-led. Head → what ÉIRVOX is → process strip (01–04, "assembled abroad" at full prominence) → how buying works → registry colophon. NO founder content required: no person photo, no surname, no first-person copy, no bio. (Founder presence may be ADDED later as optional; never as dependency.) The white macro-grid editorial treatment lives here and on DRIVE editorial. |
-| Trust | Paper | Numbered skeleton kept. Proof layer: show mechanisms (payment row, worked deposit example), procedural FAQ. Registry echo at close. |
-| 404 / system pages | Match entry world | Wheel-mode voice, "Back to Wheels" — never marketplace copy while gated. |
-| Marketplace (future) | Paper | Existing light system + registry mark + imprint footer + shared nav. Curated catalogue, tier pills, no open-listing furniture. |
+> **REPLACED 19 Aug 2026 (Renato — see §13).** The previous table assigned each
+> surface a world. There is one world now, so it assigns structure instead.
+
+| Surface | Specifics |
+|---|---|
+| Front page (`/`) | Hero (full-bleed shot, statement, one primary action) → proof bar (four hairline-divided figures, all live or true, type and rules only) → the fitted range (collection row) → DRIVE (dark band) → fitment → process 01–04 → marketplace (dark band, links to the lock). |
+| Shop (`/wheels`) | Head → sticky filter bar (All / The range / DRIVE, make, sort) → grid → fitment → DRIVE band. DRIVE is a **collection here**, not a surface of its own. Marketplace categories never appear. |
+| Product (`/wheels/:slug`) | Gallery left (sticky), buy panel right → specification → detail accordions. Price sits **in the buy panel**, never over the photograph. `original_price` renders as quiet mono "Was €X" — never strikethrough, never "SAVE €X". |
+| Fitment finder | The ritual is unchanged: chassis in → spec confirms → fitment stamps. Light surface. |
+| DRIVE | A collection inside the shop plus one dark band. Champagne on the issue plate and the band eyebrow only. Live edition **size** only; per-unit serials stay gated by §8. |
+| Marketplace lock (`/marketplace`) | Head → how it opens (01–03) → email capture (dark band) → back to the shop. Never names a category, a date, or a count. |
+| About | Company-led. Head → what ÉIRVOX is → process 01–04 ("assembled abroad" at full prominence) → how buying works. NO founder content required. |
+| Trust | Numbered skeleton kept. Mechanisms shown: payment row, worked deposit example, procedural FAQ. |
+| 404 / system pages | Light, shop voice, "Go to the shop". Gated marketplace paths render the lock, not a 404. |
 
 ---
 
@@ -206,15 +246,18 @@ HARD CONSTRAINTS — violating any of these makes the output unusable:
   countdown timers, stock counters, "people viewing".
 - No icons in trust/proof strips — type and hairline rules only.
 - No gradients, shadows, rounded corners, glassmorphism. Flat, sharp, matte.
-- Colors: near-black #0E0D0C world OR warm paper #F5F2ED world — never
-  blended. Single accent #E8742C (surgical). Champagne #C9A961 on DRIVE only.
+- Colors: one light world — white #FFFFFF ground, ink #141414. Dark #141414
+  only as a full-bleed editorial BAND inside a light page, never a whole
+  screen and never the buying path. Single accent #E8742C (surgical).
+  Champagne #C9A961 on DRIVE only.
 - Type: Inter Tight headlines (never mono headlines), Newsreader ITALIC
   ONLY (max one phrase per screen), JetBrains Mono for labels/captions only.
 - Wordmark: ÉIRVOX with É ACUTE — never È.
 - No SIGN IN / REGISTER header buttons. No "sell your item" / "free to
   list". No invented nav items (no Collect, Stories, Services).
-- Marketplace surfaces are PAPER (light), curated, with tier pills and a
-  mono "REGISTERED" mark — never a dark classifieds grid.
+- Marketplace surfaces are light, curated, with tier pills and a mono
+  "REGISTERED" mark — never a dark classifieds grid. The marketplace is
+  LOCKED: one nav item marked "Soon", no category names, no dates, no counts.
 ```
 
 ---
@@ -234,6 +277,9 @@ HARD CONSTRAINTS — violating any of these makes the output unusable:
 | 19 Jun 2026 | Dark exception extended to house-front *recruitment* surfaces — Sell (seller tiers / recruitment) renders Dark alongside the wheel surfaces. The browse/transact marketplace (category / listing / seller shop / search) stays Paper. Authorised by Renato. | LOCKED |
 | 20 Jun 2026 | Two-world architecture documented as deliberate (not a bug to flatten) with the *why* + route map in canonical `brand/DESIGN-WORLDS.md`; referenced from CLAUDE.md + HANDOFF.md; one plain-language line added to /about. Prompted by the white-rework flatten regression. | LOCKED |
 | 20 Jun 2026 | Commerce model is split by world (clarifies §10): Dark = the ÉIRVOX *shop* — house products at set price, verbs Pay/Enquire only. Paper = a real *marketplace* (DoneDeal/Adverts-style) with genuine offers + messaging; ÉIRVOX sells there as one seller, not fixed price. "Make an offer" / "Message seller" are correct on the marketplace and must NOT be audited out. Recorded in `brand/DESIGN-WORLDS.md`. Authorised by Renato. | LOCKED |
+| 19 Aug 2026 | **Direction reset.** The two-world architecture is retired; the public site is one light system, calibrated to carbondistrict.ie — white commerce with full-bleed dark editorial bands as punctuation. §1, §2, §3, §5, §6 and §9 amended accordingly; `brand/DESIGN-WORLDS.md` superseded (kept as history). The anti-flatten rule is void: a light wheels / DRIVE / checkout surface is now correct. Authorised by Renato. | LOCKED |
+| 19 Aug 2026 | **Marketplace lock replaces total hiding.** One MARKETPLACE nav item, marked `Soon`, routes to `/marketplace` — a coming-soon page explaining the opening model with waitlist capture (`source='marketplace'`). Everything built stays built behind it; gated paths render the lock instead of a 404. Category names, dates and counts remain forbidden. Supersedes §2's "no nav items, no coming soon". Authorised by Renato. | LOCKED |
+| 19 Aug 2026 | **DRIVE folded into the shop.** `/drive` and `/drive/:slug` are retired as surfaces; DRIVE is a collection at `/wheels#drive` plus one dark band. `DriveIndex.svelte` and `DriveIssue.svelte` deleted — the latter also cleared the orphaned pre-BUY-verb copy flagged in HANDOFF. Old `/drive` links redirect to the shop. Authorised by Renato. | LOCKED |
 | — | (changelog continues here; one line per change, with reason) | |
 
-**Drift check, run on every new design output:** banned phrases? · cart? · icons in trust strips? · mono headline? · upright serif? · orange decorating? · champagne off-DRIVE? · invented claims? · invented nav? · worlds blended? — any YES = reject before evaluating aesthetics.
+**Drift check, run on every new design output:** banned phrases? · cart? · icons in trust strips? · mono headline? · upright serif? · orange decorating? · champagne off-DRIVE? · invented claims? · invented nav? · a dark band grown into a whole page or onto the buying path? · marketplace dates, counts or category names? — any YES = reject before evaluating aesthetics.
