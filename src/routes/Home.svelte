@@ -373,7 +373,8 @@
     align-items: baseline;
     gap: var(--evx-space-lg);
     width: 100%;
-    padding: 9px 0;
+    min-height: 46px;
+    padding: 12px 0;
     background: none;
     border: none;
     border-top: 1px solid var(--evx-rule-hair);
@@ -572,8 +573,8 @@
 
   /* ── Responsive ── */
   @media (max-width: 1023px) {
-    .hero__inner { flex-direction: column; align-items: flex-start; }
-    .hero__popular { min-width: 0; width: 100%; max-width: 380px; }
+    .hero__inner { grid-template-columns: 1fr; gap: var(--evx-space-xl); }
+    .hero__popular { max-width: 100%; }
     .proof__inner { grid-auto-flow: row; grid-template-columns: repeat(2, 1fr); }
     .proof__cell:nth-child(odd) { border-left: none; padding-left: 0; }
     .grid { grid-template-columns: repeat(2, 1fr); }
@@ -582,10 +583,33 @@
   }
 
   @media (max-width: 599px) {
-    .proof__inner { grid-auto-flow: row; grid-template-columns: 1fr; }
-    .proof__cell { border-left: none; padding-left: 0; border-bottom: 1px solid var(--evx-rule-light); }
-    .proof__cell:last-child { border-bottom: none; }
-    .grid { grid-template-columns: 1fr; }
-    .proc { grid-template-columns: 1fr; }
+    /* The woven panel is atmosphere, not information. On a phone it
+       stacked between the shop list and the proof bar as a block of
+       texture with nothing to say, so it is dropped entirely and the
+       hero is carried by type. RESTORE IT when a real hero photograph
+       exists: a photograph of the product does earn the space. */
+    .hero__panel { display: none; }
+    .hero__inner { padding-top: var(--evx-space-2xl); padding-bottom: var(--evx-space-2xl); }
+    .hero__popular { margin-top: var(--evx-space-xl); }
+
+    /* 2x2 rather than four stacked rows: same facts, a quarter of the
+       scroll, and it still reads as a divided bar. */
+    .proof__cell { padding: var(--evx-space-lg) var(--evx-space-md); }
+    .proof__cell:nth-child(-n+2) { border-bottom: 1px solid var(--evx-rule-light); }
+    .proof__fig { font-size: 24px; }
+    .proof__cap { font-size: 9px; }
+
+    /* Two cards across reads like a shop. One card across reads like a
+       list of very large things. */
+    .grid { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-sm); }
+    .proc { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
+    .fit__fig-num { font-size: 56px; }
+  }
+
+  /* Last controls under the touch guidance: they are links by
+     appearance but actions by function. */
+  @media (max-width: 767px) {
+    .drive__all { padding-top: 12px; padding-bottom: 12px; }
+    .mk__cta { padding-top: 12px; padding-bottom: 12px; }
   }
 </style>

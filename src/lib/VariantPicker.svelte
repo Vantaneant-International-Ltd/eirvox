@@ -317,6 +317,12 @@
     flex-wrap: wrap;
     gap: 9px;
   }
+  /* The finish chips and the fitment control are how a wheel gets
+     bought on a phone; they were both under the 44px guidance. */
+  @media (max-width: 767px) {
+    .vp__chip-row > :global(*) { min-height: 46px; }
+    .vp__fit-prompt { min-height: 48px; }
+  }
   .vp__finish-stock {
     font-family: var(--evx-font-mono);
     font-size: 11px;

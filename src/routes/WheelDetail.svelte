@@ -315,14 +315,14 @@
     display: flex;
     align-items: center;
     gap: var(--evx-space-sm);
-    padding-top: var(--evx-space-lg);
+    padding-top: var(--evx-space-sm);
     font-family: var(--evx-font-mono);
     font-size: 10.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--evx-ink-soft);
   }
-  .pd__crumb button { font: inherit; letter-spacing: inherit; color: inherit; background: none; border: none; padding: 0; }
+  .pd__crumb button { font: inherit; letter-spacing: inherit; color: inherit; background: none; border: none; padding: 12px 0; }
   .pd__crumb button:hover { color: var(--evx-ink); }
 
   /* ── Layout ── */
@@ -418,6 +418,7 @@
 
   .pd__seg { display: grid; grid-template-columns: 1fr 1fr; }
   .pd__opt {
+    min-height: 48px;
     font-family: var(--evx-font-display);
     font-size: 13px;
     font-weight: 500;
@@ -474,9 +475,7 @@
   .pd__ask a:hover { border-bottom-color: var(--evx-ink); }
 
   .pd__assure li {
-    font-family: var(--evx-font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.05em;
+    font-size: 13.5px;
     line-height: 1.5;
     color: var(--evx-ink-soft);
   }
@@ -511,6 +510,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    min-height: 56px;
     font-family: var(--evx-font-display);
     font-size: 16px;
     font-weight: 500;
@@ -534,5 +534,15 @@
     .pd__grid { grid-template-columns: 1fr; gap: var(--evx-space-xl); }
     .pd__panel { position: static; }
     .pd__specs { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
+  }
+
+  @media (max-width: 599px) {
+    .pd__grid { padding-top: var(--evx-space-md); gap: var(--evx-space-lg); }
+    /* 1:1 pushed the price below the fold on a phone. */
+    .pd__main { aspect-ratio: 4 / 3; }
+    .pd__thumbs { grid-template-columns: repeat(4, 1fr); }
+    .pd__title { font-size: 26px; }
+    .pd__price { font-size: 26px; }
+    .pd__row { grid-template-columns: 1fr; gap: 2px; padding: 12px 0; }
   }
 </style>

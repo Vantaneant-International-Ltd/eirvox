@@ -208,6 +208,7 @@
   }
   .fbar__tabs { display: flex; align-items: center; gap: var(--evx-space-lg); }
   .fbar__tab {
+    min-height: 44px;
     font-family: var(--evx-font-display);
     font-size: 14px;
     font-weight: 500;
@@ -223,6 +224,7 @@
 
   .fbar__controls { display: flex; align-items: center; gap: var(--evx-space-md); }
   .fbar__field select {
+    min-height: 44px;
     font-family: var(--evx-font-mono);
     font-size: 11px;
     letter-spacing: 0.06em;
@@ -282,7 +284,9 @@
   .dchip {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 6px;
+    min-height: 76px;
     padding: var(--evx-space-md);
     background: none;
     border: 1px solid rgba(255, 255, 255, 0.16);
@@ -313,11 +317,34 @@
   @media (max-width: 1023px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
     .drive__row { grid-template-columns: repeat(2, 1fr); }
-    .fbar { position: static; }
   }
   @media (max-width: 599px) {
-    .grid { grid-template-columns: 1fr; }
-    .drive__row { grid-template-columns: 1fr; }
-    .fbar__inner { align-items: flex-start; padding-top: var(--evx-space-md); padding-bottom: var(--evx-space-md); }
+    .wb__head { padding-top: var(--evx-space-2xl); }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-sm); }
+    .drive__row { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-sm); }
+    /* The collection tabs are the primary control on this page, so they
+       scroll horizontally rather than wrapping into the sort control. */
+    .fbar__inner {
+      align-items: center;
+      gap: var(--evx-space-md);
+      flex-wrap: nowrap;
+      padding-top: var(--evx-space-sm);
+      padding-bottom: var(--evx-space-sm);
+    }
+    .fbar__tabs {
+      gap: var(--evx-space-md);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .fbar__tabs::-webkit-scrollbar { display: none; }
+    .fbar__tab { white-space: nowrap; }
+    .fbar__controls { flex-shrink: 0; }
+  }
+
+  /* Last controls under the touch guidance: they are links by
+     appearance but actions by function. */
+  @media (max-width: 767px) {
+    .drive__all { padding-top: 12px; padding-bottom: 12px; }
   }
 </style>

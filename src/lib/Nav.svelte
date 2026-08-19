@@ -271,9 +271,11 @@
     display: none;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-end;
     gap: 4px;
-    width: 24px;
-    height: 24px;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
     background: none;
     border: none;
     padding: 0;
@@ -301,6 +303,7 @@
     align-items: center;
     gap: var(--evx-space-sm);
     width: 100%;
+    min-height: 52px;
     font-family: var(--evx-font-display);
     font-size: 24px;
     font-weight: 500;
@@ -312,7 +315,8 @@
     text-align: left;
   }
   .nav__panel-link--sm {
-    font-size: 14px;
+    font-size: 15px;
+    min-height: 46px;
     color: var(--evx-ink-soft);
     padding: 7px 0;
   }
@@ -328,6 +332,9 @@
   }
 
   @media (max-width: 767px) {
-    .tb__inner { justify-content: flex-start; }
+    /* Two items did not fit, so the second was cut mid-word. One true
+       line, whole, beats two truncated ones. */
+    .tb__item:not(:first-child) { display: none; }
+    .tb__item { font-size: 9px; letter-spacing: 0.12em; }
   }
 </style>

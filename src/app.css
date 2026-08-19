@@ -392,6 +392,17 @@ summary:focus-visible {
   border: 0;
 }
 
+/* ── Touch targets ──
+   Guidance is ~44px. The rule-underlined link is a text element, so it
+   grows by padding on small screens only: forcing the height on desktop
+   would push the underline off the words. Links that sit INSIDE a
+   sentence are deliberately excluded — they are prose, not controls. */
+@media (max-width: 767px) {
+  .evx-link { padding-top: 12px; padding-bottom: 12px; }
+  .evx-btn { min-height: 48px; }
+  .evx-btn--sm { min-height: 44px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {

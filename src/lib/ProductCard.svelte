@@ -124,4 +124,20 @@
     letter-spacing: 0.04em;
     color: var(--evx-ink-faint);
   }
+
+  /* Two-up on a phone: tighter, and the subtitle held to one line so
+     the cards do not go ragged against each other. */
+  @media (max-width: 599px) {
+    .pc__body { padding: 10px; gap: 3px; }
+    .pc__title { font-size: 13.5px; line-height: 1.3; }
+    .pc__sub {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pc__price { font-size: 13.5px; }
+    .pc__was { font-size: 9.5px; }
+    .pc__tag { font-size: 8px; top: 7px; left: 7px; padding: 2px 5px; }
+  }
 </style>
