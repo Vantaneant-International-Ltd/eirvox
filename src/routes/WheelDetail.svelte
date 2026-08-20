@@ -412,7 +412,7 @@
   .pd__thumb > img { height: 100%; }
 
   /* ── Panel ── */
-  .pd__panel { position: sticky; top: calc(var(--evx-nav-height) + 24px); }
+  .pd__panel { position: sticky; top: calc(var(--evx-chrome-height) + 24px); }
   .pd__tags { display: flex; align-items: center; gap: var(--evx-space-md); }
   .pd__plate {
     font-family: var(--evx-font-mono);
@@ -574,13 +574,13 @@
     padding: var(--evx-space-4xl) var(--evx-space-3xl) var(--evx-space-4xl)
              max(var(--evx-page-margin), calc((100vw - var(--evx-max-width)) / 2 + var(--evx-page-margin)));
   }
-  .pd__material-h { color: #FFFFFF; margin-top: var(--evx-space-sm); }
+  .pd__material-h { color: var(--evx-ink); margin-top: var(--evx-space-sm); }
   .pd__material-lede {
     margin-top: var(--evx-space-lg);
     max-width: 46ch;
     font-size: 16px;
     line-height: 1.65;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--evx-ink-soft);
   }
   .pd__material-media { align-self: stretch; min-height: 420px; }
   .pd__material-media > img { width: 100%; height: 100%; object-fit: cover; }

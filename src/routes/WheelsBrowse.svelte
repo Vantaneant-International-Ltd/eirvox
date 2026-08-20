@@ -192,7 +192,8 @@
   /* ── Filter bar ── */
   .fbar {
     position: sticky;
-    top: var(--evx-nav-height);
+    /* Under the whole pinned slab (ledger + bar), not just the bar. */
+    top: var(--evx-chrome-height);
     z-index: 20;
     background: var(--evx-paper);
     border-top: 1px solid var(--evx-rule-light);
@@ -273,7 +274,7 @@
 
   /* ── DRIVE ── */
   .drive__eyebrow { color: var(--evx-champagne); }
-  .drive__h { color: #FFFFFF; margin-top: var(--evx-space-sm); }
+  .drive__h { color: var(--evx-ink); margin-top: var(--evx-space-sm); }
   .drive__lede { margin-top: var(--evx-space-sm); }
   .drive__row {
     display: grid;
@@ -289,7 +290,7 @@
     min-height: 76px;
     padding: var(--evx-space-md);
     background: none;
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    border: 1px solid var(--evx-rule-light);
     text-align: left;
     transition: var(--evx-transition);
   }
@@ -300,19 +301,19 @@
     letter-spacing: 0.16em;
     color: var(--evx-champagne);
   }
-  .dchip__title { font-size: 14px; font-weight: 500; color: #FFFFFF; letter-spacing: -0.01em; }
+  .dchip__title { font-size: 14px; font-weight: 500; color: var(--evx-ink); letter-spacing: -0.01em; }
   .drive__all {
     margin-top: var(--evx-space-xl);
     font-size: 14px;
     font-weight: 500;
-    color: #FFFFFF;
+    color: var(--evx-ink);
     background: none;
     border: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid var(--evx-ink-faint);
     padding: 0 0 3px;
   }
   .drive__all:hover { opacity: 0.65; }
-  .drive__empty { color: rgba(255, 255, 255, 0.6); font-size: 15px; margin-top: var(--evx-space-lg); }
+  .drive__empty { color: var(--evx-ink-soft); font-size: 15px; margin-top: var(--evx-space-lg); }
 
   @media (max-width: 1023px) {
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
