@@ -207,7 +207,7 @@
     padding: 0;
     flex-shrink: 0;
   }
-  .nav__wordmark-img { height: 17px; width: auto; }
+  .nav__wordmark-img { height: 23px; width: auto; }
 
   .nav__links {
     display: flex;
@@ -323,6 +323,7 @@
   .nav__panel-rule { margin: var(--evx-space-md) 0; }
 
   @media (max-width: 1023px) {
+    .nav__wordmark-img { height: 20px; }
     .tb__item--fold { display: none; }
     .nav__links { display: none; }
     .nav__cta { display: none; }

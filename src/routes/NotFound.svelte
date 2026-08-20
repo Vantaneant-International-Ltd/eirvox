@@ -33,7 +33,8 @@
 
 <Nav />
 
-<main id="main-content" class="nf">
+<main id="main-content" class="nf evx-mark-host">
+  <div class="evx-mark nf__mark" aria-hidden="true"></div>
   <div class="page-container nf__inner">
     <span class="evx-label">404</span>
     <h1 class="evx-display nf__title">There's nothing here.</h1>
@@ -60,6 +61,15 @@
 <Footer />
 
 <style>
+  .nf { overflow: hidden; }
+  .nf__mark {
+    top: 50%;
+    right: -6vw;
+    width: min(48vw, 460px);
+    height: min(48vw, 460px);
+    transform: translateY(-50%);
+  }
+
   .nf__inner {
     padding-top: var(--evx-space-4xl);
     padding-bottom: var(--evx-space-4xl);

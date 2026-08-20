@@ -326,6 +326,30 @@ a { color: inherit; text-decoration: none; }
   filter: invert(1);
 }
 
+/* ── House mark watermark ──
+   The fox, ghosted, presiding over screens where there is no product to
+   show: the coming-soon gate, maintenance, and 404. Deliberately NOT on
+   the shop, the product page or the footer. On the shop it would compete
+   with the thing being sold; in the footer it would compete with the
+   ghosted wordmark already there.
+
+   Uses the real artwork (brand/symbol.png). It reads as a grey silhouette
+   rather than an outline, because the only line-art version in the repo
+   is an approximation of the mark and a slightly-wrong logo is worse than
+   a correctly-shaped ghost. Drop in an outline SVG and switch the url()
+   if a real one exists. */
+.evx-mark {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  background: url('/brand/symbol.png') no-repeat center / contain;
+  opacity: 0.055;
+}
+/* Content sits above it without needing a z-index of its own. */
+.evx-mark-host { position: relative; }
+.evx-mark-host > *:not(.evx-mark) { position: relative; z-index: 1; }
+
 /* ── Divider ── */
 .evx-rule { border: none; border-top: 1px solid var(--evx-rule-light); }
 .evx-rule--hair { border-top-color: var(--evx-rule-hair); }

@@ -5,7 +5,8 @@
   $: supportEmail = $siteFlags.support_email;
 </script>
 
-<main class="mt">
+<main class="mt evx-mark-host">
+  <div class="evx-mark mt__mark" aria-hidden="true"></div>
   <!-- top bar -->
   <div class="mt__top mt__fade mt__fade--wordmark">
     <img src="/brand/wordmark.png" alt="ÉIRVOX" class="mt__wordmark-img" />
@@ -39,8 +40,17 @@
 </main>
 
 <style>
+  .mt__mark {
+    top: 50%;
+    right: -8vw;
+    width: min(52vw, 520px);
+    height: min(52vw, 520px);
+    transform: translateY(-50%);
+  }
+
   .mt {
     min-height: 100vh;
+    overflow: hidden;
     background:
       radial-gradient(120% 90% at 78% 0%, rgba(232,116,44,0.05), transparent 46%),
       radial-gradient(90% 70% at 12% 100%, rgba(20, 20, 20, 0.025), transparent 50%),

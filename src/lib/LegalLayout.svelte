@@ -139,7 +139,7 @@
   .legal-gated-top__back:hover { color: #E8742C; }
   .legal-gated-top__wordmark {
     justify-self: center;
-    height: 20px;
+    height: 23px;
     width: auto;
   }
   .legal-gated-top__spacer { width: 1px; }
