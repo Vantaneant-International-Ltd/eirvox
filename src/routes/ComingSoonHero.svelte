@@ -106,12 +106,12 @@
 </main>
 
 <style>
-  /* Large, bleeding off the right edge, behind everything. */
+  /* Right of the copy column, inset from the edge, whole. */
   .cs__mark {
     top: 50%;
-    right: -8vw;
-    width: min(60vw, 620px);
-    height: min(60vw, 620px);
+    right: var(--evx-page-margin);
+    width: min(42vw, 480px);
+    height: min(42vw, 480px);
     transform: translateY(-50%);
   }
 
@@ -218,8 +218,13 @@
 
   @media (max-width: 767px) {
     .cs__footer { flex-direction: column; align-items: flex-start; gap: var(--evx-space-sm); }
-    /* On a phone it sits behind the headline rather than beside it, so
-       it stays a texture and never fights the words. */
-    .cs__mark { right: -22vw; width: 92vw; height: 92vw; opacity: 0.04; }
+    /* Behind the copy on a phone, still whole, still inset. */
+    .cs__mark {
+      right: 50%;
+      width: 78vw;
+      height: 78vw;
+      transform: translate(50%, -50%);
+      opacity: 0.045;
+    }
   }
 </style>

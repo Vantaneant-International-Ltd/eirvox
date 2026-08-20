@@ -64,9 +64,9 @@
   .nf { overflow: hidden; }
   .nf__mark {
     top: 50%;
-    right: -6vw;
-    width: min(48vw, 460px);
-    height: min(48vw, 460px);
+    right: var(--evx-page-margin);
+    width: min(36vw, 400px);
+    height: min(36vw, 400px);
     transform: translateY(-50%);
   }
 

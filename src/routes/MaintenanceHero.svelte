@@ -40,12 +40,13 @@
 </main>
 
 <style>
+  /* The content is centred, so the mark sits centred behind it, whole. */
   .mt__mark {
     top: 50%;
-    right: -8vw;
-    width: min(52vw, 520px);
-    height: min(52vw, 520px);
-    transform: translateY(-50%);
+    left: 50%;
+    width: min(74vw, 620px);
+    height: min(74vw, 620px);
+    transform: translate(-50%, -50%);
   }
 
   .mt {
@@ -69,7 +70,7 @@
     margin: 0 auto;
     width: 100%;
   }
-  .mt__wordmark-img { height: 30px; width: auto; display: block; filter: invert(1) brightness(1.05); }
+  .mt__wordmark-img { height: 20px; width: auto; display: block; }
   .mt__top-note {
     font-family: var(--evx-font-mono);
     font-size: 10.5px;
