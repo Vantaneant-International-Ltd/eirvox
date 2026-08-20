@@ -20,8 +20,8 @@
   --evx-paper-panel:    #F5F5F4; /* recessed band / section ground */
   --evx-paper-tile:     #F0EFED; /* product image tile */
   --evx-white:          #FFFFFF;
-  --evx-ink:            #141414; /* headings, primary text */
-  --evx-warm-black:     #141414; /* legacy alias */
+  --evx-ink:            #0A0A0A; /* headings, primary text */
+  --evx-warm-black:     #0A0A0A; /* legacy alias */
   --evx-ink-soft:       #6B6B6B; /* meta, secondary text (AA on white) */
   --evx-ink-faint:      #9A9A98; /* captions, disabled */
   --evx-graphite:       #232323;
@@ -33,8 +33,8 @@
   --evx-champagne:      #C9A961; /* DRIVE editions only */
 
   /* Rules, 1px hairlines only */
-  --evx-rule-light:     rgba(20, 20, 20, 0.12);
-  --evx-rule-hair:      rgba(20, 20, 20, 0.07);
+  --evx-rule-light:     rgba(10, 10, 10, 0.13);
+  --evx-rule-hair:      rgba(10, 10, 10, 0.08);
   --evx-rule-dark:      rgba(255, 255, 255, 0.14);
 
   /* Spacing */
@@ -156,18 +156,18 @@ a { color: inherit; text-decoration: none; }
 /* Inter Tight, every heading. Weight 500 max. */
 .evx-display {
   font-family: var(--evx-font-display);
-  font-weight: 500;
-  font-size: clamp(42px, 5.6vw, 82px);
-  line-height: 0.98;
-  letter-spacing: -0.038em;
+  font-weight: 600;
+  font-size: clamp(46px, 6.6vw, 104px);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
 }
 
 .evx-heading {
   font-family: var(--evx-font-display);
-  font-weight: 500;
-  font-size: clamp(30px, 3.4vw, 52px);
-  line-height: 1.06;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  font-size: clamp(34px, 4.2vw, 64px);
+  line-height: 1.0;
+  letter-spacing: -0.038em;
 }
 
 .evx-subhead {
@@ -353,6 +353,24 @@ a { color: inherit; text-decoration: none; }
 /* Content sits above it without needing a z-index of its own. */
 .evx-mark-host { position: relative; }
 .evx-mark-host > *:not(.evx-mark) { position: relative; z-index: 1; }
+
+/* ── Statement band ──
+   One line, full bleed, at size. It carries an approved signature line
+   and never a claim: the volume comes from the type, not from saying
+   something bigger than the truth. */
+.evx-statement {
+  background: var(--evx-ink);
+  color: #FFFFFF;
+  padding: clamp(56px, 9vw, 132px) 0;
+}
+.evx-statement__line {
+  font-family: var(--evx-font-display);
+  font-weight: 600;
+  font-size: clamp(34px, 6vw, 96px);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  max-width: 20ch;
+}
 
 /* ── Divider ── */
 .evx-rule { border: none; border-top: 1px solid var(--evx-rule-light); }

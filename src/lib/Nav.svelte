@@ -17,6 +17,7 @@
   // ============================================================
   import { currentPath, navigate, isActive } from './router';
   import { auth, signOut } from './auth';
+  import WhatsAppButton from './WhatsAppButton.svelte';
 
   export let dark = false;
   dark; // intentionally unused, see header note
@@ -77,6 +78,10 @@
     navigate('/');
   }
 </script>
+
+<!-- Contact, mounted with the chrome so it appears on every public
+     surface and on none of the gates or the admin panel. -->
+<WhatsAppButton />
 
 <!-- 1 · Trust bar -->
 <div class="tb">
