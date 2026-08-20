@@ -136,12 +136,16 @@
   // Locked regardless of the flag: Account and Messages are still
   // backed by mock rows (src/data/user.ts). Flipping the flag must not
   // ship account screens over invented data.
-  $: alwaysLocked = (
+  $: alwaysLocked = !isAdminBypass && (
     path === '/account' || path.startsWith('/account/') ||
     path === '/messages' || path.startsWith('/messages/')
   );
 
-  $: marketplaceLocked = wheelMode && (
+  // Admins are never locked out. The panel's "Edit listing" link points
+  // at /sell/edit/:id, which the lock would otherwise swallow, so
+  // turning the lock on would quietly break listing management. Admins
+  // already bypass the coming-soon gate the same way.
+  $: marketplaceLocked = wheelMode && !isAdminBypass && (
     path === '/sell'    || path.startsWith('/sell/') ||
     path === '/trade'   || path.startsWith('/trade/') ||
     path === '/listing' || path.startsWith('/listing/') ||
@@ -171,7 +175,13 @@
     </div>
   {/if}
   <MaintenanceHero />
-{:else if gate === 'coming_soon' || gate === 'loading'}
+{:else if gate === 'loading'}
+  <!-- Nothing, deliberately. This branch used to render the gate, which
+       meant a first visit with no cached flags flashed "coming soon"
+       before the real flags landed. A bare ground for one frame is
+       correct: it leaks nothing and it announces nothing. -->
+  <div class="boot" aria-hidden="true"></div>
+{:else if gate === 'coming_soon'}
   <ComingSoonHero />
 {:else}
 {#if bypassed && ($siteFlags.maintenance || $siteFlags.coming_soon)}
@@ -333,6 +343,12 @@
 {/if}
 
 <style>
+  /* First-frame ground while the flags resolve. */
+  .boot {
+    min-height: 100vh;
+    background: var(--evx-paper);
+  }
+
   .dev-banner {
     /* In flow, not fixed. Fixed put it on top of the sticky nav and
        clipped the wordmark. */

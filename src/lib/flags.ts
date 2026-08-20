@@ -53,10 +53,9 @@ export interface SiteFlags {
    *  project: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, and the
    *  payments-stripe-* functions deployed. See HANDOFF.md. */
   klarna_enabled: boolean;
-  /** Landing-page hero photograph. Set it to any image URL (a listing
-   *  image, or anything in the listing-images bucket) to change the
-   *  banner without a deploy. Empty falls back to the best available
-   *  product shot. */
+  /** RETIRED 20 Aug 2026: the hero is an animated carbon field, not a
+   *  photograph, so nothing reads this. Kept on the type so existing
+   *  rows in site_settings.flags still parse. */
   hero_image_url: string;
 }
 
@@ -255,8 +254,14 @@ export function resolveGate(
   if (maintenancePreview) return 'maintenance';
   if (comingSoonPreview) return 'coming_soon';
   if (bypassed) return 'live';
+  // Loading is checked BEFORE the flags themselves. The defaults are
+  // fail-safe (coming_soon: true), so testing them first meant a first
+  // visit with no cached flags painted the gate for a frame before the
+  // real values arrived. Fail-safe is preserved: a load that fails ends
+  // with loading false and the defaults still in place, which lands on
+  // the gate. It just never flashes it on the way to a live site.
+  if (loading) return 'loading';
   if (flags.maintenance) return 'maintenance';
   if (flags.coming_soon) return 'coming_soon';
-  if (loading) return 'loading';
   return 'live';
 }
