@@ -53,6 +53,11 @@ export interface SiteFlags {
    *  project: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, and the
    *  payments-stripe-* functions deployed. See HANDOFF.md. */
   klarna_enabled: boolean;
+  /** Landing-page hero photograph. Set it to any image URL (a listing
+   *  image, or anything in the listing-images bucket) to change the
+   *  banner without a deploy. Empty falls back to the best available
+   *  product shot. */
+  hero_image_url: string;
 }
 
 const CACHE_KEY = 'eirvox_site_flags';
@@ -76,6 +81,7 @@ const DEFAULT_FLAGS: SiteFlags = {
   public_category_allowlist: ['automotive'],
   // Fail closed: no Klarna UI until it is switched on deliberately.
   klarna_enabled: false,
+  hero_image_url: '',
 };
 
 /** Read cached flags from localStorage. Returns the defaults if no cache. */

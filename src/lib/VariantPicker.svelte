@@ -67,6 +67,11 @@
   $: selectedFamilyKey = selectedChassis?.family_key ?? null;
 
   // 7 distinct styles, in matrix sort order.
+  // Single-finish run: choose it for them.
+  $: if (styles.length === 1 && selectedStyleKey !== styles[0].key) {
+    selectedStyleKey = styles[0].key;
+  }
+
   $: styles = (() => {
     const seen = new Map<string, { key: string; label: string; sort: number; accent: string | null }>();
     for (const v of variants) {
@@ -150,7 +155,10 @@
       </button>
     {/if}
 
-    <!-- Style chips -->
+    <!-- Style chips. Hidden when the run has a single finish: a picker
+         with one option is furniture, not a choice. The finish is
+         selected automatically instead. -->
+    {#if styles.length > 1}
     <div class="vp__finish">
       <span class="evx-label vp__finish-label">{selectedChassis ? 'Choose your finish' : 'Finish'}</span>
       <div class="vp__chip-row" role="radiogroup" aria-label="Finish">
@@ -172,12 +180,19 @@
         <p class="vp__finish-stock">Pick your fitment to see stock and confirm price.</p>
       {/if}
     </div>
+    {:else if selectedChassis && selectedVariant}
+      <p class="vp__finish-stock">{selectedVariant.stock_count} available for your {selectedChassis.chassis_codes}.</p>
+    {/if}
 
     <!-- Sticky buy bar -->
     <div class="vp__buy">
       <div class="vp__buy-meta">
         <div class="vp__buy-style">
-          {selectedStyleKey ? styles.find(s => s.key === selectedStyleKey)?.label : 'Choose a finish'}
+          {#if styles.length > 1}
+            {selectedStyleKey ? styles.find(s => s.key === selectedStyleKey)?.label : 'Choose a finish'}
+          {:else}
+            {selectedChassis ? selectedChassis.chassis_codes : 'Confirm your car'}
+          {/if}
         </div>
         <Money price={resolvedPriceEur}
                was={originalPriceEur && originalPriceEur > resolvedPriceEur ? originalPriceEur : null}

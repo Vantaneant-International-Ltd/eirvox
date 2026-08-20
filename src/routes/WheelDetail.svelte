@@ -73,6 +73,16 @@
   $: images = listing?.images ?? [];
   $: activeImageUrl = images[activeImage]?.public_url ?? listing?.cover_image ?? null;
   $: specs = (listing?.specs ?? []) as { label: string; value: string }[];
+  // The second photograph, for the material band. Sorted, and only ever
+  // a real shot that exists.
+  $: secondShot = (() => {
+    const urls = images
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map(i => i.public_url)
+      .filter(Boolean) as string[];
+    return urls.find(u => u !== activeImageUrl) ?? null;
+  })();
 
   // ── Pay matrix (unchanged from the previous surface) ──
   $: isHouseListing = !!listing?.seller?.is_house;
@@ -302,6 +312,27 @@
     </section>
     {/if}
 
+    <!-- ━━ MATERIAL ━━ -->
+    <!-- Only runs when a second real photograph exists. Never a
+         simulated shot, never a stock image. -->
+    {#if secondShot}
+      <section class="pd__material evx-dark">
+        <div class="pd__material-inner">
+          <div class="pd__material-copy">
+            <span class="evx-label">THE MATERIAL</span>
+            <h2 class="evx-heading pd__material-h">Engineered to be felt<br />before it's seen.</h2>
+            <p class="pd__material-lede">
+              3K twill carbon under satin lacquer, Alcantara where your hands sit.
+              Designed in Ireland, assembled abroad, finished in Dublin.
+            </p>
+          </div>
+          <div class="pd__material-media">
+            <img src={secondShot} alt={`${listing.title}, detail`} loading="lazy" />
+          </div>
+        </div>
+      </section>
+    {/if}
+
     <!-- ━━ DETAIL ━━ -->
     <section class="evx-section">
       <div class="page-container pd__detail">
@@ -356,10 +387,10 @@
   /* ── Layout ── */
   .pd__grid {
     display: grid;
-    grid-template-columns: 1.35fr 1fr;
-    gap: var(--evx-space-3xl);
-    padding-top: var(--evx-space-xl);
-    padding-bottom: var(--evx-space-3xl);
+    grid-template-columns: 1.6fr 1fr;
+    gap: var(--evx-space-4xl);
+    padding-top: var(--evx-space-lg);
+    padding-bottom: var(--evx-space-4xl);
     align-items: start;
   }
 
@@ -397,17 +428,18 @@
 
   .pd__title {
     font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: clamp(26px, 2.6vw, 36px);
-    line-height: 1.1;
-    letter-spacing: -0.028em;
+    font-weight: 600;
+    font-size: clamp(30px, 3.2vw, 48px);
+    line-height: 1.0;
+    letter-spacing: -0.038em;
     margin-top: var(--evx-space-md);
   }
   .pd__sub {
-    margin-top: var(--evx-space-sm);
+    margin-top: var(--evx-space-md);
     font-family: var(--evx-font-editorial);
     font-style: italic;
-    font-size: 18px;
+    font-size: 21px;
+    line-height: 1.35;
     color: var(--evx-ink-soft);
   }
   .pd__edition {
@@ -428,9 +460,9 @@
   }
   .pd__price {
     font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: 28px;
-    letter-spacing: -0.025em;
+    font-weight: 600;
+    font-size: 38px;
+    letter-spacing: -0.035em;
   }
   .pd__was {
     font-family: var(--evx-font-mono);
@@ -529,6 +561,35 @@
     color: var(--evx-ink-soft);
   }
   .pd__row dd { font-size: 14px; color: var(--evx-ink); }
+
+  /* ── Material band ── */
+  .pd__material { margin-top: var(--evx-space-2xl); }
+  .pd__material-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    align-items: center;
+    gap: var(--evx-space-3xl);
+  }
+  .pd__material-copy {
+    padding: var(--evx-space-4xl) var(--evx-space-3xl) var(--evx-space-4xl)
+             max(var(--evx-page-margin), calc((100vw - var(--evx-max-width)) / 2 + var(--evx-page-margin)));
+  }
+  .pd__material-h { color: #FFFFFF; margin-top: var(--evx-space-sm); }
+  .pd__material-lede {
+    margin-top: var(--evx-space-lg);
+    max-width: 46ch;
+    font-size: 16px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .pd__material-media { align-self: stretch; min-height: 420px; }
+  .pd__material-media > img { width: 100%; height: 100%; object-fit: cover; }
+
+  @media (max-width: 1023px) {
+    .pd__material-inner { grid-template-columns: 1fr; gap: 0; }
+    .pd__material-copy { padding: var(--evx-space-2xl) var(--evx-page-margin); }
+    .pd__material-media { min-height: 0; aspect-ratio: 4 / 3; order: -1; }
+  }
 
   /* ── Accordions ── */
   .pd__detail { max-width: 780px; }

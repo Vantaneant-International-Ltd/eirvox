@@ -20,7 +20,15 @@
   // closed, or nothing is left of the run.
   $: soldOut = isDrive
     && (listing.drive_issue_state === 'archived' || listing.drive_remaining_count === 0);
-  $: image = listing.cover_image ?? listing.images?.[0]?.public_url ?? null;
+  // Sorted, because listing_images comes back in whatever order the
+  // join felt like and the second shot is the one that peeks on hover.
+  $: gallery = (listing.images ?? [])
+    .slice()
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    .map(i => i.public_url)
+    .filter(Boolean) as string[];
+  $: image = listing.cover_image ?? gallery[0] ?? null;
+  $: peek = gallery.find(u => u !== image) ?? null;
   $: tag = isDrive
     ? `DRIVE ${listing.drive_issue ?? ''}`.trim()
     : (listing.vehicle_make ?? 'THE RANGE');
@@ -28,34 +36,43 @@
 </script>
 
 <button class="pc" type="button" on:click={() => navigate(href)}>
-  <div class="pc__tile evx-tile" class:evx-tile--woven={!image}>
+  <div class="pc__tile evx-tile" class:evx-tile--woven={!image} class:pc__tile--sold={soldOut}>
     {#if image}
-      <img src={image} alt={listing.title} loading="lazy" />
+      <img class="pc__img" src={image} alt={listing.title} loading="lazy" />
+      {#if peek}
+        <!-- The second shot, revealed on hover. Hidden from assistive
+             tech: it is the same product, not new information. -->
+        <img class="pc__img pc__img--peek" src={peek} alt="" aria-hidden="true" loading="lazy" />
+      {/if}
     {/if}
     <span class="pc__tag" class:pc__tag--drive={isDrive}>{tag}</span>
-    {#if soldOut}
-      <span class="pc__sold">
-        <span>SOLD OUT</span>
-        <span class="pc__sold-run">{listing.drive_made_count ?? 0} OF {listing.drive_made_count ?? 0}</span>
-      </span>
-    {/if}
   </div>
 
   <div class="pc__body">
     <span class="pc__title">{listing.title}</span>
-    {#if listing.subtitle}<span class="pc__sub">{listing.subtitle}</span>{/if}
-    <span class="pc__price-row">
-      {#if soldOut}
-        <!-- No price and no "Was €X" on a sold-out run: both read as
-             purchasable at a glance, which is the thing to avoid. -->
-        <span class="pc__price pc__price--sold">Sold out</span>
-      {:else if listing.price > 0}
-        <span class="pc__price">{formatPrice(listing.price)}</span>
-        {#if listing.original_price && listing.original_price > listing.price}
-          <span class="pc__was">Was {formatPrice(listing.original_price)}</span>
+    <span class="pc__sub">{listing.subtitle ?? ''}</span>
+
+    <!-- One status line, in the same position on every card. -->
+    <span class="pc__foot">
+      <span class="pc__status" class:pc__status--sold={soldOut}>
+        <span class="pc__dot" aria-hidden="true"></span>
+        {#if soldOut}
+          Sold out · {listing.drive_made_count ?? 0} of {listing.drive_made_count ?? 0}
+        {:else}
+          Available now
         {/if}
-      {:else}
-        <span class="pc__price pc__price--tbc">Price on enquiry</span>
+      </span>
+      {#if !soldOut}
+        <span class="pc__price-row">
+          {#if listing.price > 0}
+            <span class="pc__price">{formatPrice(listing.price)}</span>
+            {#if listing.original_price && listing.original_price > listing.price}
+              <span class="pc__was">Was {formatPrice(listing.original_price)}</span>
+            {/if}
+          {:else}
+            <span class="pc__price pc__price--tbc">On enquiry</span>
+          {/if}
+        </span>
       {/if}
     </span>
   </div>
@@ -74,43 +91,32 @@
     text-align: left;
     transition: var(--evx-transition);
   }
-  .pc:hover { opacity: 0.86; }
+  .pc:hover { border-color: var(--evx-ink); }
 
-  /* Across the foot of the image, unmissable, and clear of the wheel
-     itself so the product still lands. */
-  .pc__sold {
-    position: absolute;
-    z-index: 1;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--evx-space-sm);
-    padding: 9px 12px;
-    background: var(--evx-ink);
-    color: #FFFFFF;
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    line-height: 1;
-  }
-  .pc__sold-run { color: rgba(255, 255, 255, 0.58); letter-spacing: 0.12em; }
-  .pc__price--sold {
-    font-family: var(--evx-font-mono);
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--evx-ink-soft);
-  }
 
   .pc__tile {
     aspect-ratio: 5 / 6;
     border-bottom: 1px solid var(--evx-rule-hair);
   }
-  .pc__tile > img { height: 100%; }
+  /* Reads as unavailable before a word is read, and still lets the
+     wheel look like the reason you came. */
+  .pc__tile--sold .pc__img { filter: saturate(0.25) contrast(0.96); }
+  .pc__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 320ms ease;
+  }
+  .pc__img--peek { opacity: 0; }
+  /* Hover only: on touch there is no hover, so the first shot stands. */
+  @media (hover: hover) {
+    .pc:hover .pc__img--peek { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pc__img { transition: none; }
+  }
 
   .pc__tag {
     position: absolute;
@@ -135,21 +141,67 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    gap: 5px;
-    padding: var(--evx-space-lg) var(--evx-space-md) var(--evx-space-lg);
+    gap: 4px;
+    padding: var(--evx-space-md);
   }
+  /* Clamped so every card in a row is the same height and the status
+     lines share a baseline. Ragged titles were the misalignment. */
   .pc__title {
     font-family: var(--evx-font-display);
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
     line-height: 1.25;
     color: var(--evx-ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    min-height: 2.5em;
   }
   .pc__sub {
-    font-size: 13px;
+    font-size: 12.5px;
     line-height: 1.4;
     color: var(--evx-ink-soft);
+    min-height: 1.4em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pc__foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--evx-space-sm);
+    margin-top: var(--evx-space-sm);
+    padding-top: 10px;
+    border-top: 1px solid var(--evx-rule-hair);
+  }
+  .pc__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pc__dot {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    background: var(--evx-fox-orange);
+  }
+  /* Sold out is a hollow mark, not a black slab across the photograph. */
+  .pc__status--sold .pc__dot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--evx-ink-faint);
   }
   .pc__price-row {
     display: flex;
@@ -184,7 +236,9 @@
       text-overflow: ellipsis;
     }
     .pc__price { font-size: 13.5px; }
-    .pc__was { font-size: 9.5px; }
+    .pc__was { display: none; }
+    .pc__status { font-size: 8.5px; letter-spacing: 0.06em; gap: 5px; }
+    .pc__foot { gap: 6px; }
     .pc__tag { font-size: 8px; top: 7px; left: 7px; padding: 2px 5px; }
   }
 </style>

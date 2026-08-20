@@ -25,6 +25,7 @@
     type ListingWithExtras,
   } from '../lib/api';
   import { navigate } from '../lib/router';
+  import { siteFlags } from '../lib/flags';
   import { applySeo, seo } from '../lib/seo';
 
   const CONSIGNMENT_SLUG = 'bmw-m-sport-carbon-consignment';
@@ -77,6 +78,17 @@
   // Prefer something buyable, but never fall back to a texture while a
   // real photograph exists anywhere. A sold-out wheel still sells the
   // workmanship; a woven placeholder sells nothing.
+  /** The second shot, for the hover peek. Sorted, because the join
+   *  returns images in no particular order. */
+  const secondImage = (l: ListingWithExtras): string | null => {
+    const urls = (l.images ?? [])
+      .slice()
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      .map(i => i.public_url)
+      .filter(Boolean) as string[];
+    return urls.find(u => u !== l.cover_image) ?? null;
+  };
+
   const isSoldOut = (l: ListingWithExtras) =>
     l.is_drive === true && (l.drive_issue_state === 'archived' || l.drive_remaining_count === 0);
   $: heroListing =
@@ -84,7 +96,11 @@
     ?? [...range, ...drive].find(l => l.cover_image)
     ?? null;
   $: heroSoldOut = !!heroListing && isSoldOut(heroListing);
-  $: heroImage = heroListing?.cover_image ?? null;
+  // An explicitly chosen banner wins. It is the one image on the site
+  // that is about the brand rather than a single product, so it is set
+  // in /admin/settings rather than derived.
+  $: heroImage = $siteFlags.hero_image_url?.trim() || heroListing?.cover_image || null;
+  $: heroIsBanner = !!$siteFlags.hero_image_url?.trim();
 
   function go(path: string) {
     const hashIdx = path.indexOf('#');
@@ -140,15 +156,17 @@
       </div>
     </div>
 
-    <div class="hero__figure" class:hero__figure--woven={!heroImage}>
+    <div class="hero__figure evx-sweep" class:hero__figure--woven={!heroImage}>
       {#if heroImage}
-        <img src={heroImage} alt={heroListing?.title ?? 'ÉIRVOX carbon steering wheel'} />
+        <img src={heroImage} alt={heroIsBanner ? 'ÉIRVOX carbon steering wheel, fitted' : (heroListing?.title ?? 'ÉIRVOX carbon steering wheel')} />
+        {#if !heroIsBanner && heroListing}
         <button class="hero__figure-tag" on:click={() => navigate(`/wheels/${heroListing?.slug ?? ''}`)}>
           <span>{heroListing?.title}</span>
           <span class="hero__figure-price">
             {#if heroSoldOut}Sold out{:else}{formatPrice(heroListing?.price ?? 0)}{/if}
           </span>
         </button>
+        {/if}
       {:else}
         <div class="evx-tile evx-tile--woven-ink hero__woven" aria-hidden="true"></div>
       {/if}
@@ -212,9 +230,34 @@
         <div class="grid">
           {#each Array(4) as _, i (i)}<div class="grid__skel"></div>{/each}
         </div>
-      {:else if range.length}
+      {:else if range.length >= 3}
         <div class="grid">
           {#each range.slice(0, 8) as l (l.id)}<ProductCard listing={l} />{/each}
+        </div>
+      {:else}
+        <!-- One or two wheels is a feature, not a grid. A single card
+             stranded in a four-column row is what makes a shop look
+             half-stocked. -->
+        <div class="feat">
+          {#each range.slice(0, 2) as l (l.id)}
+            <button class="feat__item" type="button" on:click={() => navigate(`/wheels/${l.slug ?? l.id}`)}>
+              <div class="feat__media evx-tile" class:evx-tile--woven={!l.cover_image}>
+                {#if l.cover_image}
+                  <img class="feat__img" src={l.cover_image} alt={l.title} />
+                  {#if secondImage(l)}
+                    <img class="feat__img feat__img--peek" src={secondImage(l)} alt="" aria-hidden="true" />
+                  {/if}
+                {/if}
+              </div>
+              <div class="feat__body">
+                <span class="evx-label">{l.vehicle_make ?? 'THE RANGE'}</span>
+                <span class="feat__title">{l.title}</span>
+                {#if l.subtitle}<span class="feat__sub">{l.subtitle}</span>{/if}
+                <span class="feat__price">{l.price > 0 ? formatPrice(l.price) : 'Price on enquiry'}</span>
+                <span class="feat__cta">See the wheel →</span>
+              </div>
+            </button>
+          {/each}
         </div>
       {/if}
     </div>
@@ -247,23 +290,23 @@
         <div class="grid grid--dark">
           {#each drive.slice(0, 4) as d (d.id)}
             <button class="dcard" type="button" on:click={() => navigate(`/wheels/${d.slug ?? d.id}`)}>
-              <div class="dcard__tile evx-tile" class:evx-tile--woven-ink={!d.cover_image}>
+              <div class="dcard__tile evx-tile" class:evx-tile--woven-ink={!d.cover_image}
+                   class:dcard__tile--sold={d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}>
                 {#if d.cover_image}
-                  <img src={d.cover_image} alt={d.title} loading="lazy" />
+                  <img class="dcard__img" src={d.cover_image} alt={d.title} loading="lazy" />
+                  {#if secondImage(d)}
+                    <img class="dcard__img dcard__img--peek" src={secondImage(d)} alt="" aria-hidden="true" loading="lazy" />
+                  {/if}
                 {/if}
-                {#if d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}
-                  <span class="dcard__sold">
-                    <span>SOLD OUT</span>
-                    <span class="dcard__sold-run">{d.drive_made_count ?? 0} OF {d.drive_made_count ?? 0}</span>
-                  </span>
-                {/if}
+
               </div>
               <span class="dcard__issue">DRIVE {d.drive_issue ?? ''}</span>
               <span class="dcard__title">{d.title}</span>
-              <span class="dcard__price">
+              <span class="dcard__status" class:dcard__status--sold={d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}>
+                <span class="dcard__dot" aria-hidden="true"></span>
                 {#if d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}
-                  Sold out
-                {:else if d.price > 0}{formatPrice(d.price)}{:else}Price on enquiry{/if}
+                  Sold out · {d.drive_made_count ?? 0} of {d.drive_made_count ?? 0}
+                {:else if d.price > 0}{formatPrice(d.price)}{:else}On enquiry{/if}
               </span>
             </button>
           {/each}
@@ -548,6 +591,61 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--evx-space-lg);
   }
+  /* Feature layout: used when the range is one or two wheels deep. */
+  .feat { display: grid; gap: var(--evx-space-2xl); }
+  .feat__item {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: var(--evx-space-2xl);
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--evx-rule-light);
+    padding: var(--evx-space-xl) 0 0;
+    text-align: left;
+    transition: var(--evx-transition);
+  }
+  .feat__item:hover { opacity: 0.88; }
+  .feat__media { aspect-ratio: 4 / 3; }
+  .feat__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 320ms ease;
+  }
+  .feat__img--peek { opacity: 0; }
+  @media (hover: hover) {
+    .feat__item:hover .feat__img--peek { opacity: 1; }
+  }
+  .feat__body { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
+  .feat__title {
+    font-family: var(--evx-font-display);
+    font-weight: 600;
+    font-size: clamp(24px, 2.4vw, 36px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    margin-top: var(--evx-space-xs);
+  }
+  .feat__sub { font-size: 15px; color: var(--evx-ink-soft); }
+  .feat__price {
+    font-family: var(--evx-font-display);
+    font-weight: 600;
+    font-size: 22px;
+    margin-top: var(--evx-space-sm);
+  }
+  .feat__cta {
+    font-family: var(--evx-font-display);
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--evx-ink);
+    align-self: flex-start;
+    padding-bottom: 3px;
+    margin-top: var(--evx-space-md);
+  }
+
   .grid__skel {
     aspect-ratio: 5 / 7;
     background: var(--evx-paper-panel);
@@ -587,28 +685,34 @@
     background: #1B1B1B;
     margin-bottom: var(--evx-space-sm);
   }
-  /* On ink the bar inverts: white ground so it still reads at a glance. */
-  .dcard__sold {
-    position: absolute;
-    z-index: 1;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
+  .dcard__tile--sold .dcard__img { filter: saturate(0.25) contrast(0.96); }
+  .dcard__status {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--evx-space-sm);
-    padding: 9px 12px;
-    background: #FFFFFF;
-    color: var(--evx-ink);
+    gap: 7px;
     font-family: var(--evx-font-mono);
     font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
   }
-  .dcard__sold-run { color: var(--evx-ink-soft); letter-spacing: 0.12em; }
-  .dcard__tile > img { height: 100%; }
+  .dcard__dot { width: 6px; height: 6px; flex-shrink: 0; background: var(--evx-fox-orange); }
+  .dcard__status--sold .dcard__dot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+  .dcard__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 320ms ease;
+  }
+  .dcard__img--peek { opacity: 0; }
+  @media (hover: hover) {
+    .dcard:hover .dcard__img--peek { opacity: 1; }
+  }
   .dcard__issue {
     font-family: var(--evx-font-mono);
     font-size: 9.5px;
@@ -616,7 +720,6 @@
     color: var(--evx-champagne);
   }
   .dcard__title { font-size: 15px; font-weight: 500; color: #FFFFFF; letter-spacing: -0.01em; }
-  .dcard__price { font-family: var(--evx-font-mono); font-size: 12px; color: rgba(255, 255, 255, 0.72); }
 
   /* ── 5 · Fitment ── */
   .fit {
@@ -727,6 +830,7 @@
     /* Two cards across reads like a shop. One card across reads like a
        list of very large things. */
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--evx-space-sm); }
+    .feat__item { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
     .proc { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
     .fit__fig-num { font-size: 56px; }
   }
