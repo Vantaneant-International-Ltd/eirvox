@@ -255,14 +255,22 @@ export async function getMarketplaceFees(): Promise<MarketplaceFees> {
 
 // ── Helpers ──────────────────────────────────────────────────
 
-/** Format a price in euros. Accepts whole euros. */
+/** Format a price in euros. Prices carry cents now, so €499.99 shows
+ *  its cents and €450 does not: padding every whole price with a dead
+ *  ".00" reads like a spreadsheet export, not a price. */
 export function formatPrice(price: number): string {
+  const value = Number(price ?? 0);
+  // Compare against the rounded cent value, not the raw float: 0.1+0.2
+  // is not 0.3 in binary floating point and would otherwise show cents
+  // on a whole-euro price.
+  const cents = Math.round(value * 100);
+  const whole = cents % 100 === 0;
   return new Intl.NumberFormat('en-IE', {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price ?? 0);
+    minimumFractionDigits: whole ? 0 : 2,
+    maximumFractionDigits: whole ? 0 : 2,
+  }).format(cents / 100);
 }
 
 /** Map a Supabase seller row's `tier` to the display label. */
@@ -271,12 +279,27 @@ export function sellerTierLabel(tier: SellerTier | string | null | undefined): s
   return tier.toUpperCase();
 }
 
+/** Money columns are numeric(10,2) in Postgres. PostgREST serialises
+ *  numeric as a JSON number, so these arrive as numbers today, but a
+ *  euro that ever arrived as a string would turn `price + shipping`
+ *  into string concatenation and quietly show the wrong total. One
+ *  coercion at the boundary costs nothing and removes that whole class
+ *  of bug. Null stays null: it means "not set", which is not zero. */
+const MONEY_FIELDS = ['price', 'original_price', 'shipping_cost', 'deposit_amount'] as const;
+
+function coerceMoney(row: any): any {
+  for (const f of MONEY_FIELDS) {
+    if (row[f] !== null && row[f] !== undefined) row[f] = Number(row[f]);
+  }
+  return row;
+}
+
 /** Attach cover_image (first image sorted by sort_order) to a row. */
 function attachCover(row: any): ListingWithExtras {
   const imgs: { public_url: string | null; sort_order: number }[] = row.images ?? [];
   imgs.sort((a, b) => a.sort_order - b.sort_order);
   return {
-    ...(row as ListingWithExtras),
+    ...(coerceMoney(row) as ListingWithExtras),
     cover_image: imgs[0]?.public_url ?? null,
     seller: row.seller ?? null,
   };

@@ -109,7 +109,10 @@ Deno.serve(async (req: Request) => {
           p_listing_id: body.listing_id.trim(),
           p_buyer_email: buyerEmail,
           p_buyer_profile_id: buyerProfileId,
-          p_amount_eur: Math.round(resolved.amountEur),
+          // Recorded to the cent. This used to round to whole euros,
+          // which would now file a reservation for an amount the buyer
+          // was never charged. Already settled in resolveListingCharge.
+          p_amount_eur: resolved.amountEur,
           p_is_deposit: !!body.is_deposit,
           p_fulfilment: body.fulfilment ?? 'collection',
         };
@@ -279,6 +282,13 @@ async function resolveListingCharge(req: Request, body: Body): Promise<ResolvedC
     }
     amountEur = price + variantPriceDelta + shipping;
   }
+
+  // Settle the amount to the cent once, here, rather than at each use.
+  // Adding euros as binary floats gives 509.98000000000005, which would
+  // otherwise reach the Revolut metadata verbatim and read as a bug to
+  // anyone reconciling a payment. eurosToMinor would round it correctly
+  // either way; this is about what gets written down.
+  amountEur = Math.round(amountEur * 100) / 100;
 
   const titleSlice = typeof row.title === 'string' ? row.title.slice(0, 160) : 'ÉIRVOX';
   const tag = isDeposit ? ' (deposit)' : '';

@@ -145,7 +145,7 @@
     if (!editingField) return;
     const { id, field } = editingField;
     const patch: any = field === 'price'
-      ? { price: Math.max(0, Math.round(Number(editValue) || 0)) }
+      ? { price: Math.max(0, Math.round((Number(editValue) || 0) * 100) / 100) }
       : { title: editValue.trim() };
     editingField = null;
     const r = await adminUpdateListing(id, patch);
@@ -306,7 +306,8 @@
               <td on:click={() => openDetail(row.id)}>{row.category?.name ?? row.category_slug ?? '-'}</td>
               <td on:click|stopPropagation>
                 {#if editingField?.id === row.id && editingField.field === 'price'}
-                  <input class="adm-input" type="number" bind:value={editValue} style="width: 100px;"
+                  <input class="adm-input" type="number" step="0.01" min="0" inputmode="decimal"
+                         bind:value={editValue} style="width: 100px;"
                          on:blur={commitEdit}
                          on:keydown={(e) => e.key === 'Enter' && commitEdit()} />
                 {:else}
@@ -381,7 +382,8 @@
           <div class="adm-field--row">
             <div class="adm-field">
               <span class="adm-field__label">Price (€)</span>
-              <input type="number" class="adm-field__input" bind:value={detail.listing.price}
+              <input type="number" step="0.01" min="0" inputmode="decimal" class="adm-field__input"
+                     bind:value={detail.listing.price}
                      on:blur={() => adminUpdateListing(detail.listing.id, { price: detail.listing.price })} />
             </div>
             <div class="adm-field">
@@ -461,23 +463,23 @@
 
               <div class="adm-field">
                 <span class="adm-field__label">Shipping cost (€)</span>
-                <input type="number" class="adm-field__input" min="0"
+                <input type="number" step="0.01" min="0" inputmode="decimal" class="adm-field__input"
                        bind:value={detail.listing.shipping_cost}
                        on:blur={() => saveDetail({ shipping_cost: detail!.listing.shipping_cost })} />
                 <span class="adm-field__hint">
-                  Whole euros. Added to price when the buyer picks delivery. Required if delivery is offered.
+                  Added to price when the buyer picks delivery. Required if delivery is offered.
                 </span>
               </div>
             </div>
 
             <div class="adm-field">
               <span class="adm-field__label">Deposit (€)</span>
-              <input type="number" class="adm-field__input"
-                     min="1" max={Math.max(1, detail.listing.price - 1)}
+              <input type="number" step="0.01" inputmode="decimal" class="adm-field__input"
+                     min="0.01" max={Math.max(0.01, detail.listing.price - 0.01)}
                      bind:value={detail.listing.deposit_amount}
                      on:blur={() => saveDetail({ deposit_amount: detail!.listing.deposit_amount })} />
               <span class="adm-field__hint">
-                Whole euros. Must be 1 to €{Math.max(0, detail.listing.price - 1).toLocaleString()} (strictly less than price). Leave empty if no deposit is offered. Only used when collection is available; balance is paid in person on collection.
+                Must be less than the price, up to €{Math.max(0, detail.listing.price - 0.01).toLocaleString()}. Leave empty if no deposit is offered. Only used when collection is available; balance is paid in person on collection.
               </span>
             </div>
           {/if}

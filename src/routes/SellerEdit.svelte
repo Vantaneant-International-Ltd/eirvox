@@ -409,11 +409,11 @@
           <div class="form-row form-row--2">
             <div class="field">
               <label class="evx-caption field-label" for="e-price">ASKING PRICE</label>
-              <div class="field-prefix"><span class="field-prefix__sym">€</span><input id="e-price" type="number" class="field-input" bind:value={price} /></div>
+              <div class="field-prefix"><span class="field-prefix__sym">€</span><input id="e-price" type="number" step="0.01" min="0" inputmode="decimal" class="field-input" bind:value={price} /></div>
             </div>
             <div class="field">
               <label class="evx-caption field-label" for="e-orig">ORIGINAL RETAIL</label>
-              <div class="field-prefix"><span class="field-prefix__sym">€</span><input id="e-orig" type="number" class="field-input" bind:value={originalPrice} /></div>
+              <div class="field-prefix"><span class="field-prefix__sym">€</span><input id="e-orig" type="number" step="0.01" min="0" inputmode="decimal" class="field-input" bind:value={originalPrice} /></div>
             </div>
           </div>
           <div class="toggle-list">
@@ -424,7 +424,7 @@
           {#if shipsNationwide}
             <div class="field">
               <label class="evx-caption field-label" for="e-ship">SHIPPING COST (€)</label>
-              <div class="field-prefix"><span class="field-prefix__sym">€</span><input id="e-ship" type="number" class="field-input" bind:value={shippingCost} /></div>
+              <div class="field-prefix"><span class="field-prefix__sym">€</span><input id="e-ship" type="number" step="0.01" min="0" inputmode="decimal" class="field-input" bind:value={shippingCost} /></div>
             </div>
           {/if}
         </div>

@@ -216,7 +216,11 @@ Deno.serve(async (req: Request) => {
       p_listing_id: listingId,
       p_buyer_email: buyerEmail,
       p_buyer_profile_id: buyerProfileId,
-      p_amount_eur: Math.round(amountEur),
+      // Recorded to the cent. Prices carry cents now, so rounding
+      // to whole euros here would file a reservation for an amount
+      // the buyer was never charged. The charge itself is unchanged:
+      // eurosToMinor already rounds to the nearest cent.
+      p_amount_eur: Math.round(amountEur * 100) / 100,
       p_is_deposit: false,
       p_fulfilment: fulfilment,
     };

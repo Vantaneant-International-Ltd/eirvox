@@ -528,14 +528,14 @@
                 <label class="evx-caption field-label" for="p-price">ASKING PRICE</label>
                 <div class="field-prefix">
                   <span class="field-prefix__sym">€</span>
-                  <input id="p-price" type="number" class="field-input field-input--lg" placeholder="0" bind:value={price} required />
+                  <input id="p-price" type="number" step="0.01" min="0" inputmode="decimal" class="field-input field-input--lg" placeholder="0" bind:value={price} required />
                 </div>
               </div>
               <div class="field">
                 <label class="evx-caption field-label" for="p-orig">ORIGINAL RETAIL (OPTIONAL)</label>
                 <div class="field-prefix">
                   <span class="field-prefix__sym">€</span>
-                  <input id="p-orig" type="number" class="field-input field-input--lg" placeholder="0" bind:value={originalPrice} />
+                  <input id="p-orig" type="number" step="0.01" min="0" inputmode="decimal" class="field-input field-input--lg" placeholder="0" bind:value={originalPrice} />
                 </div>
               </div>
             </div>
@@ -580,7 +580,7 @@
                 <label class="evx-caption field-label" for="p-ship">SHIPPING COST (€)</label>
                 <div class="field-prefix">
                   <span class="field-prefix__sym">€</span>
-                  <input id="p-ship" type="number" class="field-input" placeholder="12" bind:value={shippingCost} />
+                  <input id="p-ship" type="number" step="0.01" min="0" inputmode="decimal" class="field-input" placeholder="12" bind:value={shippingCost} />
                 </div>
                 <span class="field-hint evx-caption">Leave blank for free shipping.</span>
               </div>
