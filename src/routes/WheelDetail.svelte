@@ -23,6 +23,7 @@
   import VariantPicker from '../lib/VariantPicker.svelte';
   import Nav from '../lib/Nav.svelte';
   import Footer from '../lib/Footer.svelte';
+  import { setWaContext } from '../lib/whatsapp';
 
   export let slug: string;
 
@@ -53,6 +54,19 @@
   $: if (slug) void load();
   onMount(() => { if (slug) void load(); });
 
+  // Open WhatsApp with this wheel already in the message. Reset on
+  // destroy so a product never leaks its context onto the next page.
+  $: if (listing) {
+    setWaContext({
+      label: 'Ask about this wheel',
+      message: driveSoldOut
+        ? `Hi ÉIRVOX, is there a waiting list for ${listing.title} (DRIVE ${listing.drive_issue ?? ''})?`
+        : `Hi ÉIRVOX, I'm looking at the ${listing.title}${listing.price > 0 ? ` (${formatPrice(listing.price)})` : ''}. `
+          + `Can you confirm it fits my car?`,
+    });
+  }
+  onMount(() => () => setWaContext({ message: 'Hi ÉIRVOX, I have a question about your carbon wheels.' }));
+
   // ── Derived ──
   $: isDrive = listing?.is_drive === true;
   $: blurb = listing?.description ?? listing?.subtitle ?? '';
@@ -66,6 +80,8 @@
   // is publicly visible, but the buy controls only open when the issue
   // state is 'open'.
   $: driveOpen = listing?.drive_issue_state === 'open';
+  $: driveSoldOut = isDrive
+    && (listing?.drive_issue_state === 'archived' || listing?.drive_remaining_count === 0);
   $: payable = isHouseListing && listing?.status === 'active' && !hasVariants
     && (!isDrive || driveOpen);
   $: stockState = (listing?.stock_state ?? 'in_stock') as 'in_stock' | 'incoming';
@@ -153,7 +169,13 @@
         {#if isDrive}
           <!-- Edition SIZE only. A per-unit serial is gated until a
                database-backed registry record exists (lockfile §8). -->
-          <p class="pd__edition">Limited to {listing.drive_made_count ?? 10}. Made once. Not reprinted.</p>
+          <p class="pd__edition">
+            {#if driveSoldOut}
+              {listing.drive_made_count ?? 10} made. {listing.drive_made_count ?? 10} sold. Not reprinted.
+            {:else}
+              Limited to {listing.drive_made_count ?? 10}. Made once. Not reprinted.
+            {/if}
+          </p>
         {/if}
 
         <div class="pd__price-row">
@@ -226,9 +248,15 @@
         {:else if isDrive}
           <!-- Visible but not open: an honest state, no buy control. -->
           <div class="pd__buy pd__arrive">
-            {#if listing.drive_issue_state === 'archived'}
-              <span class="evx-label">DRIVE</span>
-              <p class="pd__arrive-line">This issue is closed.</p>
+            {#if driveSoldOut}
+              <span class="evx-label">SOLD OUT</span>
+              <p class="pd__arrive-line">
+                All {listing.drive_made_count ?? 0} went. This issue is closed.
+              </p>
+              <p class="pd__hint">
+                Made once, not reprinted, so this one will not come back.
+                <a href="mailto:support@eirvox.ie?subject={encodeURIComponent('Tell me about the next DRIVE run')}">Tell me about the next run.</a>
+              </p>
             {:else}
               <span class="evx-label">ARRIVING</span>
               <p class="pd__arrive-line">{listing.drive_issue_date ?? 'Date to be confirmed'}</p>

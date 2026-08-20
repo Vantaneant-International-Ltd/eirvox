@@ -42,7 +42,7 @@
     applySeo(seo.home());
 
     const [driveRows, autoRows, chassis, families] = await Promise.all([
-      getDriveListings({ state: 'open', limit: 8 }),
+      getDriveListings({ limit: 8 }),
       getListings({ category: 'automotive', limit: 24 }),
       getFitmentChassis(),
       getFitmentFamilies(),
@@ -71,7 +71,19 @@
   // The hero shows a real wheel. Photography exists now, so the woven
   // house tile that used to sit here is the fallback, not the default:
   // a page selling a physical object should open on the object.
-  $: heroListing = [...range, ...drive].find(l => l.cover_image) ?? null;
+  $: driveSoldOut = drive.length > 0 && drive.every(d =>
+    d.drive_issue_state === 'archived' || d.drive_remaining_count === 0);
+
+  // Prefer something buyable, but never fall back to a texture while a
+  // real photograph exists anywhere. A sold-out wheel still sells the
+  // workmanship; a woven placeholder sells nothing.
+  const isSoldOut = (l: ListingWithExtras) =>
+    l.is_drive === true && (l.drive_issue_state === 'archived' || l.drive_remaining_count === 0);
+  $: heroListing =
+    [...range, ...drive].find(l => l.cover_image && !isSoldOut(l))
+    ?? [...range, ...drive].find(l => l.cover_image)
+    ?? null;
+  $: heroSoldOut = !!heroListing && isSoldOut(heroListing);
   $: heroImage = heroListing?.cover_image ?? null;
 
   function go(path: string) {
@@ -133,7 +145,9 @@
         <img src={heroImage} alt={heroListing?.title ?? 'ÉIRVOX carbon steering wheel'} />
         <button class="hero__figure-tag" on:click={() => navigate(`/wheels/${heroListing?.slug ?? ''}`)}>
           <span>{heroListing?.title}</span>
-          <span class="hero__figure-price">{formatPrice(heroListing?.price ?? 0)}</span>
+          <span class="hero__figure-price">
+            {#if heroSoldOut}Sold out{:else}{formatPrice(heroListing?.price ?? 0)}{/if}
+          </span>
         </button>
       {:else}
         <div class="evx-tile evx-tile--woven-ink hero__woven" aria-hidden="true"></div>
@@ -150,11 +164,22 @@
           <span class="proof__fig">{chassisCount}</span>
           <span class="proof__cap">BMW CHASSIS WITH A CONFIRMED FIT</span>
         </div>
+      {:else}
+        <div class="proof__cell">
+          <span class="proof__fig">BMW</span>
+          <span class="proof__cap">FITTED RANGE, CONFIRMED BEFORE YOU PAY</span>
+        </div>
       {/if}
       {#if styleCount}
         <div class="proof__cell">
           <span class="proof__fig">{styleCount}</span>
           <span class="proof__cap">FINISHES IN THE FITTED RANGE</span>
+        </div>
+      {:else}
+        <!-- Stock-independent, so the band is never a cell short. -->
+        <div class="proof__cell">
+          <span class="proof__fig">Dublin</span>
+          <span class="proof__cap">WHERE EVERY WHEEL IS FINISHED</span>
         </div>
       {/if}
       <div class="proof__cell">
@@ -169,6 +194,7 @@
   </section>
 
   <!-- ━━ 3 · THE RANGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  {#if loading || range.length}
   <section class="evx-section" id="range">
     <div class="page-container">
       <div class="sec-head">
@@ -176,7 +202,7 @@
           <span class="evx-label">THE FITTED RANGE</span>
           <h2 class="evx-heading sec-head__h">BMW, fitted.</h2>
           <p class="evx-lede sec-head__lede">
-            Tell us the car, we will tell you the wheel that fits it.{#if familyCount}{' '}{familyCount} fitment {familyCount === 1 ? 'group' : 'groups'} across the range.{/if}
+            Tell us the car, we will tell you the wheel that fits it.{#if familyCount && range.length}{' '}{familyCount} fitment {familyCount === 1 ? 'group' : 'groups'} across the range.{/if}
           </p>
         </div>
         <button class="evx-link sec-head__all" on:click={() => go('/wheels')}>View all wheels →</button>
@@ -190,11 +216,10 @@
         <div class="grid">
           {#each range.slice(0, 8) as l (l.id)}<ProductCard listing={l} />{/each}
         </div>
-      {:else}
-        <p class="empty">The range opens shortly.</p>
       {/if}
     </div>
   </section>
+  {/if}
 
   <!-- ━━ 4 · DRIVE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <!-- The limited line lives inside the shop now. Champagne is used
@@ -206,8 +231,13 @@
           <span class="evx-label drive__eyebrow">DRIVE</span>
           <h2 class="evx-heading sec-head__h">Made once. Not reprinted.</h2>
           <p class="evx-lede sec-head__lede">
-            A numbered line with integrated LED. Each issue is one specification,
-            made once, and then closed for good.
+            {#if driveSoldOut}
+              A numbered line with integrated LED. One specification per issue, made
+              once, never reprinted. Batch one is gone.
+            {:else}
+              A numbered line with integrated LED. Each issue is one specification,
+              made once, and then closed for good.
+            {/if}
           </p>
         </div>
         <button class="drive__all" on:click={() => go('/wheels')}>See the line →</button>
@@ -221,11 +251,19 @@
                 {#if d.cover_image}
                   <img src={d.cover_image} alt={d.title} loading="lazy" />
                 {/if}
+                {#if d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}
+                  <span class="dcard__sold">
+                    <span>SOLD OUT</span>
+                    <span class="dcard__sold-run">{d.drive_made_count ?? 0} OF {d.drive_made_count ?? 0}</span>
+                  </span>
+                {/if}
               </div>
               <span class="dcard__issue">DRIVE {d.drive_issue ?? ''}</span>
               <span class="dcard__title">{d.title}</span>
               <span class="dcard__price">
-                {#if d.price > 0}{formatPrice(d.price)}{:else}Price on enquiry{/if}
+                {#if d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}
+                  Sold out
+                {:else if d.price > 0}{formatPrice(d.price)}{:else}Price on enquiry{/if}
               </span>
             </button>
           {/each}
@@ -290,7 +328,15 @@
           </p>
         </li>
       </ol>
-      <p class="proc__line"><span class="evx-editorial">If it isn't right, it doesn't ship.</span></p>
+    </div>
+  </section>
+
+  <!-- ━━ STATEMENT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- An approved signature line (lockfile §7), at size. The volume is
+       in the type; the claim is the same one the site already makes. -->
+  <section class="evx-statement">
+    <div class="page-container">
+      <p class="evx-statement__line">If it isn't right,<br />it doesn't ship.</p>
     </div>
   </section>
 
@@ -354,10 +400,10 @@
   }
   .hero__title {
     font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: clamp(40px, 4.4vw, 68px);
-    line-height: 0.98;
-    letter-spacing: -0.04em;
+    font-weight: 600;
+    font-size: clamp(42px, 5vw, 78px);
+    line-height: 0.93;
+    letter-spacing: -0.045em;
   }
   .hero__stand {
     margin-top: var(--evx-space-md);
@@ -469,8 +515,8 @@
   .proof__cell:first-child { border-left: none; padding-left: 0; }
   .proof__fig {
     font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: clamp(30px, 3.2vw, 46px);
+    font-weight: 600;
+    font-size: clamp(32px, 3.6vw, 54px);
     line-height: 1;
     letter-spacing: -0.035em;
     color: #FFFFFF;
@@ -507,7 +553,6 @@
     background: var(--evx-paper-panel);
     border: 1px solid var(--evx-rule-light);
   }
-  .empty { color: var(--evx-ink-soft); font-size: 15px; }
 
   /* ── 4 · DRIVE ── */
   .drive__eyebrow { color: var(--evx-champagne); }
@@ -537,10 +582,32 @@
   }
   .dcard:hover { opacity: 0.82; }
   .dcard__tile {
+    position: relative;
     aspect-ratio: 5 / 6;
     background: #1B1B1B;
     margin-bottom: var(--evx-space-sm);
   }
+  /* On ink the bar inverts: white ground so it still reads at a glance. */
+  .dcard__sold {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--evx-space-sm);
+    padding: 9px 12px;
+    background: #FFFFFF;
+    color: var(--evx-ink);
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    line-height: 1;
+  }
+  .dcard__sold-run { color: var(--evx-ink-soft); letter-spacing: 0.12em; }
   .dcard__tile > img { height: 100%; }
   .dcard__issue {
     font-family: var(--evx-font-mono);
@@ -572,8 +639,8 @@
   }
   .fit__fig-num {
     font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: clamp(48px, 6vw, 84px);
+    font-weight: 600;
+    font-size: clamp(52px, 7vw, 104px);
     line-height: 0.95;
     letter-spacing: -0.04em;
   }
@@ -601,7 +668,6 @@
   .proc__num { color: var(--evx-ink-faint); }
   .proc__title { font-size: 17px; font-weight: 500; letter-spacing: -0.015em; }
   .proc__body { font-size: 14px; line-height: 1.6; color: var(--evx-ink-soft); }
-  .proc__line { margin-top: var(--evx-space-2xl); font-size: 20px; color: var(--evx-ink); }
 
   /* ── 7 · Marketplace ── */
   .mk__inner {

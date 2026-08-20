@@ -16,6 +16,10 @@
   export let base: string = '/wheels';
 
   $: isDrive = listing.is_drive === true;
+  // Sold out is read from live data, never hardcoded: the issue is
+  // closed, or nothing is left of the run.
+  $: soldOut = isDrive
+    && (listing.drive_issue_state === 'archived' || listing.drive_remaining_count === 0);
   $: image = listing.cover_image ?? listing.images?.[0]?.public_url ?? null;
   $: tag = isDrive
     ? `DRIVE ${listing.drive_issue ?? ''}`.trim()
@@ -29,13 +33,23 @@
       <img src={image} alt={listing.title} loading="lazy" />
     {/if}
     <span class="pc__tag" class:pc__tag--drive={isDrive}>{tag}</span>
+    {#if soldOut}
+      <span class="pc__sold">
+        <span>SOLD OUT</span>
+        <span class="pc__sold-run">{listing.drive_made_count ?? 0} OF {listing.drive_made_count ?? 0}</span>
+      </span>
+    {/if}
   </div>
 
   <div class="pc__body">
     <span class="pc__title">{listing.title}</span>
     {#if listing.subtitle}<span class="pc__sub">{listing.subtitle}</span>{/if}
     <span class="pc__price-row">
-      {#if listing.price > 0}
+      {#if soldOut}
+        <!-- No price and no "Was €X" on a sold-out run: both read as
+             purchasable at a glance, which is the thing to avoid. -->
+        <span class="pc__price pc__price--sold">Sold out</span>
+      {:else if listing.price > 0}
         <span class="pc__price">{formatPrice(listing.price)}</span>
         {#if listing.original_price && listing.original_price > listing.price}
           <span class="pc__was">Was {formatPrice(listing.original_price)}</span>
@@ -61,6 +75,36 @@
     transition: var(--evx-transition);
   }
   .pc:hover { opacity: 0.86; }
+
+  /* Across the foot of the image, unmissable, and clear of the wheel
+     itself so the product still lands. */
+  .pc__sold {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--evx-space-sm);
+    padding: 9px 12px;
+    background: var(--evx-ink);
+    color: #FFFFFF;
+    font-family: var(--evx-font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    line-height: 1;
+  }
+  .pc__sold-run { color: rgba(255, 255, 255, 0.58); letter-spacing: 0.12em; }
+  .pc__price--sold {
+    font-family: var(--evx-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--evx-ink-soft);
+  }
 
   .pc__tile {
     aspect-ratio: 5 / 6;
