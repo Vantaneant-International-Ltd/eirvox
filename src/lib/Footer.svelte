@@ -131,7 +131,7 @@
     border: none;
     padding: 0;
   }
-  .ft__logo { height: 23px; width: auto; }
+  .ft__logo { height: 22px; width: auto; }
 
   .ft__origin {
     font-size: 14px;

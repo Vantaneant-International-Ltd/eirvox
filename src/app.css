@@ -58,11 +58,11 @@
   /* Layout */
   --evx-page-margin: 56px;
   --evx-max-width:   1400px;
-  --evx-nav-height:  68px;
+  --evx-nav-height:  76px;
 }
 
 @media (max-width: 1023px) {
-  :root { --evx-page-margin: 32px; --evx-nav-height: 60px; }
+  :root { --evx-page-margin: 32px; --evx-nav-height: 64px; }
 }
 
 @media (max-width: 767px) {
