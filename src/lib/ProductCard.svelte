@@ -177,7 +177,7 @@
   .pc__title {
     font-family: var(--evx-font-display);
     font-size: 15.5px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: -0.015em;
     line-height: 1.25;
     color: var(--evx-ink);

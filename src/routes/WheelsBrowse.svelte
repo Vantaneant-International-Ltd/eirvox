@@ -114,7 +114,7 @@
   <!-- ━━ GRID ━━ -->
   <!-- The catalogue is a light band: nothing on this surface but wheels,
        and they are shot on light grounds. -->
-  <section class="evx-section--tight evx-light wb__grid-band">
+  <section class="evx-section--loose evx-light wb__grid-band">
     <div class="page-container">
       <p class="wb__count">
         {#if loading}Loading.{:else}{filtered.length} {filtered.length === 1 ? 'wheel' : 'wheels'}{/if}
@@ -148,7 +148,7 @@
   </section>
 
   <!-- ━━ DRIVE ━━ -->
-  <section class="evx-dark" id="drive">
+  <section class="evx-pit" id="drive">
     <div class="page-container evx-section">
       <span class="evx-label drive__eyebrow">DRIVE</span>
       <h2 class="evx-heading drive__h">Made once. Not reprinted.</h2>
@@ -195,11 +195,6 @@
   /* The band runs full-bleed and needs breathing room at the seams,
      because a light block butting the dark page with no air reads as a
      mistake rather than a decision. */
-  .wb__grid-band {
-    padding-top: var(--evx-space-2xl);
-    padding-bottom: var(--evx-space-3xl);
-  }
-
   .fbar {
     position: sticky;
     /* Under the whole pinned slab (ledger + bar), not just the bar. */

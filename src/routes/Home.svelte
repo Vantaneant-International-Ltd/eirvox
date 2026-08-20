@@ -157,7 +157,7 @@
 
   <!-- ━━ 2 · PROOF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <!-- Type and hairline rules only. No icons in a proof strip. -->
-  <section class="proof evx-dark">
+  <section class="proof evx-dark evx-section--tight">
     <div class="proof__inner page-container">
       {#if chassisCount}
         <div class="proof__cell">
@@ -197,7 +197,7 @@
   {#if loading || range.length}
   <!-- Light band: this is the block that carries the wheels, and they
        are shot on light grounds. -->
-  <section class="evx-section evx-light" id="range">
+  <section class="evx-section--loose evx-light" id="range">
     <div class="page-container">
       <div class="sec-head">
         <div>
@@ -251,7 +251,7 @@
   <!-- ━━ 4 · DRIVE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <!-- The limited line lives inside the shop now. Champagne is used
        here and nowhere else. -->
-  <section class="evx-dark drive" id="drive">
+  <section class="evx-pit drive" id="drive">
     <div class="page-container evx-section">
       <div class="sec-head sec-head--dark">
         <div>
@@ -324,7 +324,7 @@
   </section>
 
   <!-- ━━ 6 · PROCESS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-  <section class="evx-section">
+  <section class="evx-section--loose evx-light">
     <div class="page-container">
       <span class="evx-label">THE PROCESS</span>
       <h2 class="evx-heading proc__h">From the drawing to your door.</h2>
@@ -361,14 +361,14 @@
   <!-- ━━ STATEMENT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <!-- An approved signature line (lockfile §7), at size. The volume is
        in the type; the claim is the same one the site already makes. -->
-  <section class="evx-statement">
+  <section class="evx-statement evx-pit evx-section--epic">
     <div class="page-container">
       <p class="evx-statement__line">If it isn't right,<br />it doesn't ship.</p>
     </div>
   </section>
 
   <!-- ━━ 7 · MARKETPLACE (locked) ━━━━━━━━━━━━━━━━━━━━━━ -->
-  <section class="evx-section evx-dark mk">
+  <section class="evx-section--tight evx-dark mk">
     <div class="page-container mk__inner">
       <div>
         <span class="evx-label">NEXT</span>
@@ -424,7 +424,7 @@
   }
   .hero__title {
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: clamp(44px, 7.4vw, 132px);
     line-height: 0.9;
     letter-spacing: -0.05em;
@@ -503,7 +503,7 @@
   .proof__cell:first-child { border-left: none; padding-left: 0; }
   .proof__fig {
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: clamp(32px, 3.6vw, 54px);
     line-height: 1;
     letter-spacing: -0.035em;
@@ -571,7 +571,7 @@
   .feat__title {
     color: var(--evx-ink);
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: clamp(24px, 2.4vw, 36px);
     line-height: 1.04;
     letter-spacing: -0.03em;
@@ -581,7 +581,7 @@
   .feat__price {
     color: var(--evx-ink);
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 22px;
     margin-top: var(--evx-space-sm);
   }
@@ -696,7 +696,7 @@
   }
   .fit__fig-num {
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: clamp(52px, 7vw, 104px);
     line-height: 0.95;
     letter-spacing: -0.04em;

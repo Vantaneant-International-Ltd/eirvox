@@ -58,6 +58,17 @@
   --evx-space-3xl:  80px;
   --evx-space-4xl:  120px;
 
+  /* Section rhythm. Every band used to breathe at the same 80px, which
+     is why the site read as one long unbroken note: a page with no
+     change of pace has no emphasis, because emphasis is relative. Four
+     steps, each clearly apart from the next, so a band can be quiet or
+     can take the room. They scale with the viewport, so the rhythm
+     survives a laptop as well as a monitor. */
+  --evx-rhythm-tight: clamp(32px,  4vw,  56px);
+  --evx-rhythm-base:  clamp(56px,  7vw,  104px);
+  --evx-rhythm-loose: clamp(80px,  10vw, 160px);
+  --evx-rhythm-epic:  clamp(104px, 14vw, 232px);
+
   /* Typography */
   --evx-font-display:   'Inter Tight', system-ui, sans-serif;
   --evx-font-editorial: 'Newsreader', Georgia, serif;
@@ -106,13 +117,22 @@ html {
 }
 
 body {
-  background: var(--evx-paper);
+  background-color: var(--evx-paper);
+  /* The whole page sits on carbon. Declared here as well as on .evx-weave
+     so the ground reaches the gaps no section covers, and so a short
+     page still lands on material rather than on flat colour. */
+  background-image:
+    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
+    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
   color: var(--evx-ink);
   font-family: var(--evx-font-display);
   font-weight: 400;
   line-height: 1.6;
   min-height: 100vh;
 }
+
+/* Admin is a tool, not a shopfront: it keeps the flat light ground. */
+.admin-shell { background-image: none; }
 
 #app {
   display: flex;
@@ -137,14 +157,23 @@ a { color: inherit; text-decoration: none; }
   padding-right: var(--evx-page-margin);
 }
 
-/* Section rhythm. One idea per band. */
-.evx-section { padding-top: var(--evx-space-3xl); padding-bottom: var(--evx-space-3xl); }
-.evx-section--tight { padding-top: var(--evx-space-2xl); padding-bottom: var(--evx-space-2xl); }
-.evx-band { background: var(--evx-paper-panel); }
-
-@media (max-width: 767px) {
-  .evx-section { padding-top: var(--evx-space-2xl); padding-bottom: var(--evx-space-2xl); }
+/* Section rhythm. One idea per band, and bands are not all the same
+   size: a utility strip is quiet, a statement takes the room. Pick the
+   step by what the band is for, never to fix a spacing accident. */
+.evx-section        { padding-top: var(--evx-rhythm-base);  padding-bottom: var(--evx-rhythm-base); }
+.evx-section--tight { padding-top: var(--evx-rhythm-tight); padding-bottom: var(--evx-rhythm-tight); }
+.evx-section--loose { padding-top: var(--evx-rhythm-loose); padding-bottom: var(--evx-rhythm-loose); }
+.evx-section--epic  { padding-top: var(--evx-rhythm-epic);  padding-bottom: var(--evx-rhythm-epic); }
+/* background-color, not the shorthand: the shorthand drops the weave. */
+.evx-band {
+  background-color: var(--evx-paper-panel);
+  background-image:
+    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
+    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
 }
+
+/* The clamp already handles small screens: its lower bound IS the
+   phone value, so no breakpoint override is needed here any more. */
 
 /* ── Typography ── */
 
@@ -181,7 +210,7 @@ a { color: inherit; text-decoration: none; }
 /* Inter Tight, every heading. Weight 500 max. */
 .evx-display {
   font-family: var(--evx-font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: clamp(46px, 6.6vw, 104px);
   line-height: 0.92;
   letter-spacing: -0.045em;
@@ -189,7 +218,7 @@ a { color: inherit; text-decoration: none; }
 
 .evx-heading {
   font-family: var(--evx-font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: clamp(34px, 4.2vw, 64px);
   line-height: 1.0;
   letter-spacing: -0.038em;
@@ -227,7 +256,7 @@ a { color: inherit; text-decoration: none; }
 
 .evx-wordmark {
   font-family: var(--evx-font-display);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.32em;
   text-transform: uppercase;
 }
@@ -385,18 +414,57 @@ a { color: inherit; text-decoration: none; }
    One line, full bleed, at size. It carries an approved signature line
    and never a claim: the volume comes from the type, not from saying
    something bigger than the truth. */
-.evx-statement {
-  background: var(--evx-paper-panel);
-  color: var(--evx-ink);
-  padding: clamp(56px, 9vw, 132px) 0;
-}
+/* Purely typographic: the ground comes from a band class and the
+   spacing from a rhythm class, so one thing owns each. It used to set
+   its own background and padding, which meant the rhythm class could
+   not reach it. */
 .evx-statement__line {
   font-family: var(--evx-font-display);
-  font-weight: 600;
+  /* 500, not 600. Inter Tight is capped at 500 by the type constitution
+     and this line was over it. */
+  font-weight: 500;
   font-size: clamp(34px, 6vw, 96px);
   line-height: 0.94;
   letter-spacing: -0.045em;
   max-width: 20ch;
+}
+
+/* ── The weave ground ──
+   The product is 3K twill carbon, so the page sits on carbon rather
+   than on flat colour. This is the same twill vocabulary the empty
+   product tile and the hero field already use, pulled out to a ground
+   and pitched far lower: at this contrast it is felt as material, not
+   read as a pattern. Cross it with a photograph and you would see
+   wallpaper, so it lives on grounds only, never over an image.
+
+   Static, always. The motion constitution bans looping ambient
+   animation and a moving ground would be exactly that.
+
+   Two weights, because a weave that reads on near-black is invisible
+   on paper and one that reads on paper is filthy on near-black. The
+   ink weave is set in shadow, the paper weave in light. */
+:root {
+  --evx-weave-size:  7px;
+  --evx-weave-light: rgba(255, 255, 255, 0.016);
+  --evx-weave-dark:  rgba(0, 0, 0, 0.30);
+}
+
+.evx-weave {
+  background-image:
+    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
+    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
+}
+
+/* The deepest ground. Used where a band should feel like it has floor
+   under it rather than being one more panel: the statement, DRIVE. */
+.evx-pit {
+  --evx-weave-light: rgba(255, 255, 255, 0.022);
+  --evx-weave-dark:  rgba(0, 0, 0, 0.34);
+  background-color: #050505;
+  background-image:
+    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
+    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
+  color: var(--evx-ink);
 }
 
 /* ── Light band ──
@@ -423,7 +491,17 @@ a { color: inherit; text-decoration: none; }
   --evx-rule-hair:      rgba(10, 10, 10, 0.08);
   --evx-invert-ground:  #0A0A0A;
   --evx-invert-ink:     #F7F7F6;
-  background: var(--evx-paper);
+  /* On a light band the twill comes from ink, not from light, and at a
+     fraction of the strength: dark-on-light shows far more readily
+     than light-on-dark at the same alpha. */
+  --evx-weave-light:    rgba(255, 255, 255, 0.5);
+  --evx-weave-dark:     rgba(10, 10, 10, 0.026);
+  /* background-color, not the shorthand: the shorthand would wipe the
+     weave image inherited from .evx-weave. */
+  background-color: var(--evx-paper);
+  background-image:
+    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
+    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
   color: var(--evx-ink);
 }
 /* The seam. A light band butting a dark one needs no rule, but the
@@ -680,7 +758,10 @@ summary:focus-visible {
    direction. Kept under the old class name so every existing usage
    still reads. */
 .evx-dark {
-  background: var(--evx-paper-panel);
+  background-color: var(--evx-paper-panel);
+  background-image:
+    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
+    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
   color: var(--evx-ink);
 }
 .evx-dark .evx-label,

@@ -434,7 +434,7 @@
 
   .pd__title {
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: clamp(30px, 3.2vw, 48px);
     line-height: 1.0;
     letter-spacing: -0.038em;
@@ -466,7 +466,7 @@
   }
   .pd__price {
     font-family: var(--evx-font-display);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 38px;
     letter-spacing: -0.035em;
   }
