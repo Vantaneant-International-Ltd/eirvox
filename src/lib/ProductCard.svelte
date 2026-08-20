@@ -36,7 +36,7 @@
 </script>
 
 <button class="pc" type="button" on:click={() => navigate(href)}>
-  <div class="pc__tile evx-tile" class:evx-tile--woven={!image} class:pc__tile--sold={soldOut}>
+  <div class="pc__tile evx-tile" class:evx-tile--woven={!image} class:pc__tile--shot={!!image} class:pc__tile--sold={soldOut}>
     {#if image}
       <img class="pc__img" src={image} alt={listing.title} loading="lazy" />
       {#if peek}
@@ -104,30 +104,43 @@
   /* Reads as unavailable before a word is read, and still lets the
      wheel look like the reason you came. */
   .pc__tile--sold { background: #DCDAD6; }
-  .pc__tile--sold .pc__img { filter: saturate(0.2) opacity(0.72); }
+  .pc__tile--sold .pc__img { filter: saturate(0.15) brightness(1.06) opacity(0.82); }
+  /* cover, not contain. These are real photographs with their own
+     backgrounds, and contain left each one floating as a brighter
+     rectangle inside a tile of a different tone: band, then tile, then
+     photo, three greys stacked per card. Cover fills the tile edge to
+     edge, so the photo IS the card and there is one tone, not three.
+     It is also how the luxury grids are built. */
   .pc__img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    /* contain, not cover: the wheel floats on the plate instead of
-       being cropped by it. */
-    object-fit: contain;
-    padding: 9%;
-    transition: opacity 320ms ease;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 200ms ease;
   }
   .pc__img--peek { opacity: 0; }
-  /* Hover only: on touch there is no hover, so the first shot stands. */
+  /* Hover only: on touch there is no hover, so the first shot stands.
+     The base shot fades OUT as the second fades in. Crossfading into a
+     still-opaque first shot is what read as a double exposure, and two
+     unrelated photographs blended half way looks like a fault. */
   @media (hover: hover) {
+    .pc:hover .pc__img:not(.pc__img--peek) { opacity: 0; }
     .pc:hover .pc__img--peek { opacity: 1; }
   }
   @media (prefers-reduced-motion: reduce) {
     .pc__img { transition: none; }
   }
 
+  /* The tag sits on photography now rather than on a flat plate, so it
+     carries its own ground. A small solid chip, not a gradient scrim:
+     a scrim leaves a visible light haze across the top of a dark
+     cockpit shot, and a haze reads as a fault rather than a label. */
+
   .pc__tag {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top: 12px;
     left: 12px;
     font-family: var(--evx-font-mono);
@@ -135,14 +148,22 @@
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(10, 10, 10, 0.5);
+    color: rgba(10, 10, 10, 0.62);
     background: none;
     border: none;
     padding: 0;
     line-height: 1;
   }
+  /* Only where there is a photograph under it. On the woven placeholder
+     the tile is already flat and the chip would be a box for nothing. */
+  .pc__tile--shot .pc__tag {
+    color: rgba(10, 10, 10, 0.72);
+    background: rgba(247, 247, 246, 0.94);
+    padding: 5px 7px;
+  }
   /* Champagne is DRIVE-only, and only ever as type on a plate. */
-  .pc__tag--drive { color: #8A6D2F; }
+  .pc__tag--drive,
+  .pc__tile--shot .pc__tag--drive { color: #8A6D2F; }
 
   .pc__body {
     display: flex;
