@@ -117,22 +117,13 @@ html {
 }
 
 body {
-  background-color: var(--evx-paper);
-  /* The whole page sits on carbon. Declared here as well as on .evx-weave
-     so the ground reaches the gaps no section covers, and so a short
-     page still lands on material rather than on flat colour. */
-  background-image:
-    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
-    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
+  background: var(--evx-paper);
   color: var(--evx-ink);
   font-family: var(--evx-font-display);
   font-weight: 400;
   line-height: 1.6;
   min-height: 100vh;
 }
-
-/* Admin is a tool, not a shopfront: it keeps the flat light ground. */
-.admin-shell { background-image: none; }
 
 #app {
   display: flex;
@@ -164,13 +155,7 @@ a { color: inherit; text-decoration: none; }
 .evx-section--tight { padding-top: var(--evx-rhythm-tight); padding-bottom: var(--evx-rhythm-tight); }
 .evx-section--loose { padding-top: var(--evx-rhythm-loose); padding-bottom: var(--evx-rhythm-loose); }
 .evx-section--epic  { padding-top: var(--evx-rhythm-epic);  padding-bottom: var(--evx-rhythm-epic); }
-/* background-color, not the shorthand: the shorthand drops the weave. */
-.evx-band {
-  background-color: var(--evx-paper-panel);
-  background-image:
-    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
-    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
-}
+.evx-band { background: var(--evx-paper-panel); }
 
 /* The clamp already handles small screens: its lower bound IS the
    phone value, so no breakpoint override is needed here any more. */
@@ -429,41 +414,14 @@ a { color: inherit; text-decoration: none; }
   max-width: 20ch;
 }
 
-/* ── The weave ground ──
-   The product is 3K twill carbon, so the page sits on carbon rather
-   than on flat colour. This is the same twill vocabulary the empty
-   product tile and the hero field already use, pulled out to a ground
-   and pitched far lower: at this contrast it is felt as material, not
-   read as a pattern. Cross it with a photograph and you would see
-   wallpaper, so it lives on grounds only, never over an image.
-
-   Static, always. The motion constitution bans looping ambient
-   animation and a moving ground would be exactly that.
-
-   Two weights, because a weave that reads on near-black is invisible
-   on paper and one that reads on paper is filthy on near-black. The
-   ink weave is set in shadow, the paper weave in light. */
-:root {
-  --evx-weave-size:  7px;
-  --evx-weave-light: rgba(255, 255, 255, 0.016);
-  --evx-weave-dark:  rgba(0, 0, 0, 0.30);
-}
-
-.evx-weave {
-  background-image:
-    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
-    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
-}
-
-/* The deepest ground. Used where a band should feel like it has floor
-   under it rather than being one more panel: the statement, DRIVE. */
+/* ── The pit ──
+   The deepest ground. Used where a band should feel like it has floor
+   under it rather than being one more panel: DRIVE and the statement.
+   The point is the seam: near-black meeting the lifted #141414 band is
+   a contrast the page can use over and over without ever reaching for
+   a second colour. */
 .evx-pit {
-  --evx-weave-light: rgba(255, 255, 255, 0.022);
-  --evx-weave-dark:  rgba(0, 0, 0, 0.34);
-  background-color: #050505;
-  background-image:
-    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
-    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
+  background: #050505;
   color: var(--evx-ink);
 }
 
@@ -491,17 +449,7 @@ a { color: inherit; text-decoration: none; }
   --evx-rule-hair:      rgba(10, 10, 10, 0.08);
   --evx-invert-ground:  #0A0A0A;
   --evx-invert-ink:     #F7F7F6;
-  /* On a light band the twill comes from ink, not from light, and at a
-     fraction of the strength: dark-on-light shows far more readily
-     than light-on-dark at the same alpha. */
-  --evx-weave-light:    rgba(255, 255, 255, 0.5);
-  --evx-weave-dark:     rgba(10, 10, 10, 0.026);
-  /* background-color, not the shorthand: the shorthand would wipe the
-     weave image inherited from .evx-weave. */
-  background-color: var(--evx-paper);
-  background-image:
-    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
-    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
+  background: var(--evx-paper);
   color: var(--evx-ink);
 }
 /* The seam. A light band butting a dark one needs no rule, but the
@@ -758,10 +706,7 @@ summary:focus-visible {
    direction. Kept under the old class name so every existing usage
    still reads. */
 .evx-dark {
-  background-color: var(--evx-paper-panel);
-  background-image:
-    repeating-linear-gradient(45deg,  var(--evx-weave-light) 0 3px, transparent 3px var(--evx-weave-size)),
-    repeating-linear-gradient(-45deg, var(--evx-weave-dark)  0 3px, transparent 3px var(--evx-weave-size));
+  background: var(--evx-paper-panel);
   color: var(--evx-ink);
 }
 .evx-dark .evx-label,
