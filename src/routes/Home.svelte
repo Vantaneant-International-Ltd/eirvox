@@ -66,8 +66,11 @@
     loading = false;
   });
 
-  // Popular-now rail: real listings with a real price, nothing else.
-  $: popular = [...range, ...drive].filter(l => l.price > 0).slice(0, 3);
+  // In-the-shop rail: only things somebody can actually buy. Listing a
+  // sold-out run at its old price is the worst kind of wrong.
+  $: popular = [...range, ...drive]
+    .filter(l => l.price > 0 && !isSoldOut(l))
+    .slice(0, 3);
 
   // The hero shows a real wheel. Photography exists now, so the woven
   // house tile that used to sit here is the fallback, not the default:
@@ -78,6 +81,9 @@
   // Prefer something buyable, but never fall back to a texture while a
   // real photograph exists anywhere. A sold-out wheel still sells the
   // workmanship; a woven placeholder sells nothing.
+  const isSoldOut = (l: ListingWithExtras) =>
+    l.is_drive === true && (l.drive_issue_state === 'archived' || l.drive_remaining_count === 0);
+
   /** The second shot, for the hover peek. Sorted, because the join
    *  returns images in no particular order. */
   const secondImage = (l: ListingWithExtras): string | null => {
@@ -89,8 +95,7 @@
     return urls.find(u => u !== l.cover_image) ?? null;
   };
 
-  const isSoldOut = (l: ListingWithExtras) =>
-    l.is_drive === true && (l.drive_issue_state === 'archived' || l.drive_remaining_count === 0);
+
   $: heroListing =
     [...range, ...drive].find(l => l.cover_image && !isSoldOut(l))
     ?? [...range, ...drive].find(l => l.cover_image)
