@@ -172,9 +172,17 @@
     letter-spacing: 0.04em;
     color: var(--evx-ink-soft);
   }
+  /* A row of controls, not prose, so each one gets a thumb-sized box.
+     inline-flex because min-height does nothing on an inline anchor. */
+  .legal-gated-bot__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
   .legal-gated-bot__links {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px;
     justify-content: center;
     font-family: var(--evx-font-mono);
@@ -368,7 +376,12 @@
     gap: var(--evx-space-sm);
   }
   .legal-cross > span { color: var(--evx-ink-soft); }
-  .legal-cross__links { display: flex; flex-wrap: wrap; gap: var(--evx-space-md); }
+  .legal-cross__links { display: flex; flex-wrap: wrap; align-items: center; gap: var(--evx-space-md); }
+  /* The related-policy row is a set of controls, and each one was a
+     16px-tall target. */
+  @media (max-width: 767px) {
+    .legal-cross__links button { min-height: 44px; }
+  }
   .legal-cross__links button {
     background: none; border: none; padding: 0;
     color: var(--evx-warm-black);

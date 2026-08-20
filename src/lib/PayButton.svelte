@@ -280,6 +280,7 @@
     border: none;
     border-radius: 0;
     padding: 10px 16px;
+    min-height: 44px;
     cursor: pointer;
     align-self: flex-start;
   }

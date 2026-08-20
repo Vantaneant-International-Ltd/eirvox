@@ -118,19 +118,16 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: opacity 200ms ease;
   }
   .pc__img--peek { opacity: 0; }
   /* Hover only: on touch there is no hover, so the first shot stands.
-     The base shot fades OUT as the second fades in. Crossfading into a
-     still-opaque first shot is what read as a double exposure, and two
-     unrelated photographs blended half way looks like a fault. */
+     The swap is a cut, not a crossfade. Any opacity transition between
+     two unlike photographs shows both at once in the middle of it, and
+     a cardboard box dissolving through a cockpit reads as a broken
+     image rather than as a second view. */
   @media (hover: hover) {
     .pc:hover .pc__img:not(.pc__img--peek) { opacity: 0; }
     .pc:hover .pc__img--peek { opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pc__img { transition: none; }
   }
 
   /* The tag sits on photography now rather than on a flat plate, so it

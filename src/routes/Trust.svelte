@@ -386,7 +386,11 @@
     width: 100%;
     background: none;
     border: none;
-    padding: 0;
+    /* These are the primary control on this page and were 21px tall.
+       Padding rather than min-height so the whole row is the target,
+       which is what people actually tap on an accordion. */
+    padding: 14px 0;
+    min-height: 48px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;

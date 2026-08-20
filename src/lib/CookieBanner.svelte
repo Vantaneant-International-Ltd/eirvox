@@ -43,7 +43,7 @@
 </script>
 
 {#if visible}
-  <aside class="banner" role="region" aria-label="Cookie consent">
+  <aside class="banner evx-light" role="region" aria-label="Cookie consent">
     <div class="banner__inner">
       <p class="banner__copy">
         <strong class="banner__pre">COOKIES.</strong>
@@ -57,7 +57,7 @@
         >Read the policy →</button>
       </p>
       <div class="banner__actions">
-        <button class="evx-btn evx-btn--ghost-paper evx-btn--sm banner__btn" on:click={essentialOnly}>
+        <button class="evx-btn evx-btn--ghost evx-btn--sm banner__btn" on:click={essentialOnly}>
           Decline
         </button>
         <button class="evx-btn evx-btn--primary evx-btn--sm banner__btn" on:click={accept}>
@@ -75,8 +75,8 @@
     left: 0;
     right: 0;
     z-index: 200;
-    background: var(--evx-warm-black);
-    color: var(--evx-paper);
+    background: var(--evx-paper);
+    color: var(--evx-ink);
     border-top: 2px solid var(--evx-fox-orange);
     padding: var(--evx-space-md);
     padding-bottom: calc(var(--evx-space-md) + env(safe-area-inset-bottom, 0px));
@@ -94,7 +94,7 @@
   .banner__copy {
     font-size: 13px;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--evx-ink-soft);
   }
 
   .banner__pre {
@@ -102,7 +102,9 @@
     font-weight: 500;
     font-size: 10px;
     letter-spacing: 0.12em;
-    color: var(--evx-fox-orange);
+    /* Ink, not orange: orange is the accent for CTAs and live markers,
+       not for labels, and orange on this banner measured 2.81:1. */
+    color: var(--evx-ink);
     margin-right: var(--evx-space-xs);
   }
 
@@ -110,7 +112,7 @@
     background: none; border: none; padding: 0;
     font-family: inherit;
     font-size: inherit;
-    color: var(--evx-paper);
+    color: var(--evx-ink);
     cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 3px;

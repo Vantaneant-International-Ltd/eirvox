@@ -314,7 +314,10 @@
     align-items: center;
     background: none;
     border: none;
-    padding: 0;
+    /* The mark is 20px tall, so the button was a 17px tap target. The
+       padding gives a thumb something to hit without moving the mark. */
+    padding: 12px 0;
+    min-height: 44px;
     flex-shrink: 0;
   }
   .nav__wordmark-img { height: 20px; width: auto; filter: invert(1); transition: height 220ms ease; }

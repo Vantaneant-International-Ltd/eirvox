@@ -123,7 +123,7 @@
 
 <Nav />
 
-<main id="main-content" class="pd">
+<main id="main-content" class="pd evx-light">
   {#if loading}
     <div class="pd__state page-container">Loading.</div>
   {:else if !listing}
@@ -143,10 +143,7 @@
     <div class="pd__grid page-container">
 
       <!-- ━━ GALLERY ━━ -->
-      <!-- The gallery is a lit stage: one light slab holding the main
-           shot and the thumbs, rather than light plates floating in
-           black with dark gutters between them. -->
-      <div class="pd__gallery evx-light">
+      <div class="pd__gallery">
         <div class="pd__main evx-tile" class:evx-tile--woven={!activeImageUrl}>
           {#if activeImageUrl}
             <img src={activeImageUrl} alt={listing.title} />
@@ -319,7 +316,7 @@
     <!-- Only runs when a second real photograph exists. Never a
          simulated shot, never a stock image. -->
     {#if secondShot}
-      <section class="pd__material evx-dark">
+      <section class="pd__material evx-band">
         <div class="pd__material-inner">
           <div class="pd__material-copy">
             <span class="evx-label">THE MATERIAL</span>
@@ -415,9 +412,6 @@
   .pd__thumb > img { height: 100%; }
 
   /* ── Panel ── */
-  /* Padding, so the slab frames the wheel instead of ending at it. */
-  .pd__gallery { padding: var(--evx-space-lg); }
-
   .pd__panel { position: sticky; top: calc(var(--evx-chrome-height) + 24px); }
   .pd__tags { display: flex; align-items: center; gap: var(--evx-space-md); }
   .pd__plate {

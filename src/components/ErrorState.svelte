@@ -10,7 +10,7 @@
   <h3 class="err__h">{title}</h3>
   <p class="err__sub">{message}</p>
   {#if retry}
-    <button class="evx-btn evx-btn--ghost-paper err__btn" on:click={retry}>
+    <button class="evx-btn evx-btn--ghost err__btn" on:click={retry}>
       Try again
     </button>
   {/if}

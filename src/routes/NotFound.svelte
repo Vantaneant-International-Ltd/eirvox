@@ -100,6 +100,16 @@
     padding-top: var(--evx-space-md);
     border-top: 1px solid var(--evx-rule-light);
   }
+  /* This list is the whole way out of a dead end on a phone, and every
+     item was a 12px target. */
+  @media (max-width: 767px) {
+    .nf__links button,
+    .nf__links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
   .nf__links button,
   .nf__links a {
     font-family: var(--evx-font-mono);

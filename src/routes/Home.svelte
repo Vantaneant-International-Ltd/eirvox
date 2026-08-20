@@ -561,11 +561,15 @@
     height: 100%;
     object-fit: contain;
     padding: 6%;
-    transition: opacity 320ms ease;
   }
+  /* No crossfade. Two unlike photographs at 50% opacity each are not a
+     reveal, they are a double exposure, and a box blended into a
+     cockpit reads as a broken image. The second shot cuts in instead:
+     one photo is on screen at any moment, never two. */
   .feat__img--peek { opacity: 0; }
   @media (hover: hover) {
     .feat__item:hover .feat__img--peek { opacity: 1; }
+    .feat__item:hover .feat__img:not(.feat__img--peek) { opacity: 0; }
   }
   .feat__body { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
   .feat__title {
@@ -787,6 +791,6 @@
      appearance but actions by function. */
   @media (max-width: 767px) {
     .drive__all { padding-top: 12px; padding-bottom: 12px; }
-    .mk__cta { padding-top: 12px; padding-bottom: 12px; }
+    .mk__cta { padding-top: 12px; padding-bottom: 12px; min-height: 44px; }
   }
 </style>

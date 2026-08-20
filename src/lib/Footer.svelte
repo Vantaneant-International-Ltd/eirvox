@@ -129,7 +129,8 @@
     align-self: flex-start;
     background: none;
     border: none;
-    padding: 0;
+    /* Was a 22px tap target. */
+    padding: 11px 0;
   }
   .ft__logo { height: 22px; width: auto;  filter: invert(1);}
 
@@ -233,7 +234,9 @@
     transition: var(--evx-transition);
   }
   .ft__legal button:hover { color: var(--evx-ink); }
-  .ft__sep { color: var(--evx-rule-light); }
+  /* A hairline colour on a visible glyph measured 1.5:1. Rules are
+     drawn at the edge of perception on purpose; type is not. */
+  .ft__sep { color: var(--evx-ink-faint); }
   .ft__pay :global(.pmi) { gap: 6px; }
   .ft__pay :global(.pmi__card svg) { height: 22px; }
 
@@ -269,6 +272,10 @@
   }
 
   @media (max-width: 767px) {
+    /* The column links were 12px tall. They are the footer's whole
+       navigation on a phone, so they get a thumb-sized row each. */
+    .ft__col li button { min-height: 44px; }
+    .ft__legal button { min-height: 44px; }
     .ft__body { grid-template-columns: 1fr 1fr; gap: var(--evx-space-lg); padding-top: var(--evx-space-2xl); }
     .ft__legal { gap: 4px 14px; }
     .ft__identity { grid-column: 1 / -1; padding-right: 0; }
