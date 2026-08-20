@@ -28,14 +28,15 @@ in any prompt except direct messages from Renato.
    that page instead of a 404. Do not open a category, name one,
    promise a date, or show a count. Everything built stays built:
    flip wheel_specialist_mode off to restore it.
-7. There is ONE world and it is DARK (20 Aug 2026, Renato). Near-black
-   ground, light text, fox orange as the only accent, hairline rules,
-   no radii or shadows. It is a token inversion in src/app.css: "paper"
-   is the page ground and "ink" is the text on it, whichever way round
-   they sit, so components are never hardcoded to a colour. Two
-   exceptions, both deliberate: the PRODUCT TILE stays light, because
-   the photography is shot on light grounds; and ADMIN stays light,
-   pinned via .admin-shell. brand/DESIGN-WORLDS.md is superseded.
+7. THERE IS NO ONE-WORLD RULE (20 Aug 2026, Renato). The page ground
+   is dark by default, and LIGHT BANDS are used wherever product
+   photography lives, because the wheels are shot on light grounds.
+   Both are token sets, not rewrites: "paper" is the page ground and
+   "ink" is the text on it, whichever way round they sit, so no
+   component is hardcoded to a colour. Reach for `.evx-light` for a
+   light band, `.evx-dark` for a lifted dark one; admin is pinned light
+   via `.admin-shell`. Fox orange stays the only accent, hairline
+   rules, no radii or shadows. brand/DESIGN-WORLDS.md is superseded.
 8. Present a file-by-file plan and wait for approval before editing.
    Small single-purpose commits.
 9. docs/ is committed and is what eirvox.ie serves. A source-only

@@ -399,6 +399,37 @@ a { color: inherit; text-decoration: none; }
   max-width: 20ch;
 }
 
+/* ── Light band ──
+   A full-bleed LIGHT section inside the dark page, used where product
+   photography lives. The wheels are shot on light grounds, so a light
+   tile floating on a black page reads as a hole punched in the page
+   rather than as a lit plate. Giving the whole band the light ground
+   puts the plate back on a surface.
+
+   Same technique as .admin-shell: it re-declares the tokens locally, so
+   every component inside follows without being touched. Tile sits a
+   step below the band ground so it still reads as a plate rather than
+   dissolving into it. */
+.evx-light {
+  --evx-paper:          #F4F3F1;
+  --evx-paper-panel:    #EAE8E4;
+  --evx-paper-tile:     #EAE8E4;
+  --evx-paper-tile-hi:  #E0DDD8;
+  --evx-ink:            #0A0A0A;
+  --evx-warm-black:     #0A0A0A;
+  --evx-ink-soft:       rgba(10, 10, 10, 0.62);
+  --evx-ink-faint:      rgba(10, 10, 10, 0.40);
+  --evx-rule-light:     rgba(10, 10, 10, 0.14);
+  --evx-rule-hair:      rgba(10, 10, 10, 0.08);
+  --evx-invert-ground:  #0A0A0A;
+  --evx-invert-ink:     #F7F7F6;
+  background: var(--evx-paper);
+  color: var(--evx-ink);
+}
+/* The seam. A light band butting a dark one needs no rule, but the
+   band's own top and bottom edges read cleaner with one. */
+.evx-light + .evx-light { border-top: 1px solid var(--evx-rule-hair); }
+
 /* ── Admin keeps the light palette ──
    The panel is an internal tool, it was not part of the dark decision,
    and it reads better bright for dense tabular work. Scoped to the

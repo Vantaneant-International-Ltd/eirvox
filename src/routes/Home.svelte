@@ -195,7 +195,9 @@
 
   <!-- ━━ 3 · THE RANGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   {#if loading || range.length}
-  <section class="evx-section" id="range">
+  <!-- Light band: this is the block that carries the wheels, and they
+       are shot on light grounds. -->
+  <section class="evx-section evx-light" id="range">
     <div class="page-container">
       <div class="sec-head">
         <div>

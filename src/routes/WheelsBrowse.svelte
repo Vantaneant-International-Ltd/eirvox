@@ -112,7 +112,9 @@
   </div>
 
   <!-- ━━ GRID ━━ -->
-  <section class="evx-section--tight">
+  <!-- The catalogue is a light band: nothing on this surface but wheels,
+       and they are shot on light grounds. -->
+  <section class="evx-section--tight evx-light wb__grid-band">
     <div class="page-container">
       <p class="wb__count">
         {#if loading}Loading.{:else}{filtered.length} {filtered.length === 1 ? 'wheel' : 'wheels'}{/if}
@@ -190,6 +192,14 @@
   .wb__lede { margin-top: var(--evx-space-md); }
 
   /* ── Filter bar ── */
+  /* The band runs full-bleed and needs breathing room at the seams,
+     because a light block butting the dark page with no air reads as a
+     mistake rather than a decision. */
+  .wb__grid-band {
+    padding-top: var(--evx-space-2xl);
+    padding-bottom: var(--evx-space-3xl);
+  }
+
   .fbar {
     position: sticky;
     /* Under the whole pinned slab (ledger + bar), not just the bar. */
