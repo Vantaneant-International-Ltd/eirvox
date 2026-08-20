@@ -52,6 +52,8 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    /* Lets the card shrink inside its track so the ellipsis can bite. */
+    min-width: 0;
     background: var(--evx-paper);
     border: 1px solid var(--evx-rule-light);
     padding: 0;
@@ -88,12 +90,13 @@
   .pc__body {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     gap: 5px;
-    padding: var(--evx-space-md);
+    padding: var(--evx-space-lg) var(--evx-space-md) var(--evx-space-lg);
   }
   .pc__title {
     font-family: var(--evx-font-display);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
     letter-spacing: -0.01em;
     line-height: 1.25;
@@ -112,7 +115,7 @@
   }
   .pc__price {
     font-family: var(--evx-font-display);
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 500;
     color: var(--evx-ink);
   }

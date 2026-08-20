@@ -66,7 +66,13 @@
   });
 
   // Popular-now rail: real listings with a real price, nothing else.
-  $: popular = [...range, ...drive].filter(l => l.price > 0).slice(0, 4);
+  $: popular = [...range, ...drive].filter(l => l.price > 0).slice(0, 3);
+
+  // The hero shows a real wheel. Photography exists now, so the woven
+  // house tile that used to sit here is the fallback, not the default:
+  // a page selling a physical object should open on the object.
+  $: heroListing = [...range, ...drive].find(l => l.cover_image) ?? null;
+  $: heroImage = heroListing?.cover_image ?? null;
 
   function go(path: string) {
     const hashIdx = path.indexOf('#');
@@ -85,22 +91,22 @@
 <main id="main-content">
 
   <!-- ━━ 1 · HERO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-  <!-- Type carries the hero. The right panel is a woven house tile,
-       not a photograph: when a real hero shot exists, drop it in and
-       delete the woven modifier. Nothing here pretends to be the
-       product. -->
+  <!-- Full-bleed split. The photograph runs to the viewport edge: a page
+       selling a physical object opens on the object, not on a headline.
+       Falls back to the woven house tile only while no photography
+       exists, and never simulates a product shot. -->
   <section class="hero">
-    <div class="hero__inner page-container">
+    <div class="hero__copy-wrap">
       <div class="hero__copy">
         <span class="hero__eyebrow">FOR IRISH DRIVERS · DUBLIN</span>
         <h1 class="hero__title">Carbon wheels,<br />finished in Dublin.</h1>
         <p class="hero__stand evx-editorial">Engineered to be felt before it's seen.</p>
         <p class="hero__lede">
           For the driver who notices the wheel. A fitted BMW range, and DRIVE, a numbered
-          line made once. Designed in Ireland, assembled abroad, finished in Dublin.
+          line made once.
         </p>
         <div class="hero__actions">
-          <button class="evx-btn evx-btn--primary" on:click={() => go('/wheels#fitment')}>Find your fit</button>
+          <button class="evx-btn evx-btn--primary evx-btn--lg" on:click={() => go('/wheels#fitment')}>Find your fit</button>
           <button class="evx-link" on:click={() => go('/wheels')}>See all wheels</button>
         </div>
 
@@ -108,7 +114,7 @@
           <div class="hero__popular">
             <span class="hero__popular-head">IN THE SHOP</span>
             <ul>
-              {#each popular.slice(0, 3) as p (p.id)}
+              {#each popular as p (p.id)}
                 <li>
                   <button on:click={() => navigate(`/wheels/${p.slug ?? p.id}`)}>
                     <span class="hero__popular-name">{p.title}</span>
@@ -120,14 +126,24 @@
           </div>
         {/if}
       </div>
+    </div>
 
-      <div class="hero__panel evx-tile evx-tile--woven-ink" aria-hidden="true"></div>
+    <div class="hero__figure" class:hero__figure--woven={!heroImage}>
+      {#if heroImage}
+        <img src={heroImage} alt={heroListing?.title ?? 'ÉIRVOX carbon steering wheel'} />
+        <button class="hero__figure-tag" on:click={() => navigate(`/wheels/${heroListing?.slug ?? ''}`)}>
+          <span>{heroListing?.title}</span>
+          <span class="hero__figure-price">{formatPrice(heroListing?.price ?? 0)}</span>
+        </button>
+      {:else}
+        <div class="evx-tile evx-tile--woven-ink hero__woven" aria-hidden="true"></div>
+      {/if}
     </div>
   </section>
 
   <!-- ━━ 2 · PROOF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <!-- Type and hairline rules only. No icons in a proof strip. -->
-  <section class="proof">
+  <section class="proof evx-dark">
     <div class="proof__inner page-container">
       {#if chassisCount}
         <div class="proof__cell">
@@ -307,16 +323,26 @@
 
 <style>
   /* ── 1 · Hero ── */
-  .hero { border-bottom: 1px solid var(--evx-rule-light); }
-  .hero__inner {
+  .hero {
     display: grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap: var(--evx-space-3xl);
+    grid-template-columns: 1fr 1fr;
     align-items: stretch;
+    border-bottom: 1px solid var(--evx-rule-light);
+    min-height: min(78vh, 720px);
+  }
+
+  /* The copy column keeps the page grid's left edge while the figure
+     bleeds to the viewport edge, so nothing looks boxed in. */
+  .hero__copy-wrap {
+    display: flex;
+    align-items: center;
+    padding-left: max(var(--evx-page-margin), calc((100vw - var(--evx-max-width)) / 2 + var(--evx-page-margin)));
+    padding-right: var(--evx-space-3xl);
     padding-top: var(--evx-space-3xl);
     padding-bottom: var(--evx-space-3xl);
   }
-  .hero__copy { animation: evx-rise 500ms ease both; align-self: center; }
+  .hero__copy { width: 100%; max-width: 560px; animation: evx-rise 500ms ease both; }
+
   .hero__eyebrow {
     display: block;
     font-family: var(--evx-font-mono);
@@ -329,20 +355,20 @@
   .hero__title {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: clamp(36px, 4.8vw, 64px);
-    line-height: 1.02;
-    letter-spacing: -0.035em;
+    font-size: clamp(40px, 4.4vw, 68px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
   }
   .hero__stand {
     margin-top: var(--evx-space-md);
-    font-size: clamp(18px, 1.6vw, 22px);
-    line-height: 1.35;
+    font-size: clamp(19px, 1.7vw, 24px);
+    line-height: 1.3;
     color: var(--evx-ink-soft);
   }
   .hero__lede {
     margin-top: var(--evx-space-lg);
-    max-width: 46ch;
-    font-size: clamp(15px, 1.15vw, 16.5px);
+    max-width: 42ch;
+    font-size: clamp(15px, 1.1vw, 16.5px);
     line-height: 1.6;
     color: var(--evx-ink-soft);
   }
@@ -354,10 +380,7 @@
     flex-wrap: wrap;
   }
 
-  .hero__popular {
-    margin-top: var(--evx-space-2xl);
-    max-width: 420px;
-  }
+  .hero__popular { margin-top: var(--evx-space-2xl); max-width: 440px; }
   .hero__popular-head {
     display: block;
     font-family: var(--evx-font-mono);
@@ -389,16 +412,48 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .hero__popular-price {
-    font-family: var(--evx-font-mono);
-    font-size: 12px;
-    color: var(--evx-ink-soft);
-  }
+  .hero__popular-price { font-family: var(--evx-font-mono); font-size: 12px; color: var(--evx-ink-soft); }
 
-  .hero__panel { min-height: clamp(380px, 46vw, 560px); }
+  /* The figure. Full-bleed right, the product large. */
+  .hero__figure {
+    position: relative;
+    background: var(--evx-paper-tile);
+    overflow: hidden;
+    min-height: 420px;
+  }
+  .hero__figure > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__woven { position: absolute; inset: 0; }
+
+  /* Shoppable caption on the hero image, the way a good storefront
+     makes the hero itself the first product. */
+  .hero__figure-tag {
+    position: absolute;
+    left: var(--evx-space-lg);
+    bottom: var(--evx-space-lg);
+    display: flex;
+    align-items: baseline;
+    gap: var(--evx-space-md);
+    max-width: calc(100% - var(--evx-space-2xl));
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--evx-rule-light);
+    font-family: var(--evx-font-display);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--evx-ink);
+    text-align: left;
+    transition: var(--evx-transition);
+  }
+  .hero__figure-tag:hover { opacity: 0.8; }
+  .hero__figure-price { font-family: var(--evx-font-mono); font-size: 12.5px; color: var(--evx-ink-soft); }
 
   /* ── 2 · Proof ── */
-  .proof { border-bottom: 1px solid var(--evx-rule-light); }
+  /* On ink. The hero, the proof strip and the range were three light
+     bands in a row, which is most of why the page read timid. */
   .proof__inner {
     display: grid;
     grid-auto-flow: column;
@@ -408,24 +463,24 @@
     display: flex;
     flex-direction: column;
     gap: var(--evx-space-sm);
-    padding: var(--evx-space-xl) var(--evx-space-lg);
-    border-left: 1px solid var(--evx-rule-light);
+    padding: var(--evx-space-2xl) var(--evx-space-lg);
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
   }
   .proof__cell:first-child { border-left: none; padding-left: 0; }
   .proof__fig {
     font-family: var(--evx-font-display);
     font-weight: 500;
-    font-size: clamp(26px, 2.6vw, 36px);
+    font-size: clamp(30px, 3.2vw, 46px);
     line-height: 1;
-    letter-spacing: -0.03em;
-    color: var(--evx-ink);
+    letter-spacing: -0.035em;
+    color: #FFFFFF;
   }
   .proof__cap {
     font-family: var(--evx-font-mono);
     font-size: 9.5px;
     letter-spacing: 0.12em;
     line-height: 1.5;
-    color: var(--evx-ink-soft);
+    color: rgba(255, 255, 255, 0.62);
   }
 
   /* ── Section heads + grid ── */
@@ -444,7 +499,7 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--evx-space-lg);
   }
   .grid__skel {
@@ -533,7 +588,7 @@
   .proc__h { margin-top: var(--evx-space-sm); margin-bottom: var(--evx-space-2xl); }
   .proc {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--evx-space-xl);
   }
   .proc__step {
@@ -573,35 +628,39 @@
 
   /* ── Responsive ── */
   @media (max-width: 1023px) {
-    .hero__inner { grid-template-columns: 1fr; gap: var(--evx-space-xl); }
+    .hero { grid-template-columns: 1fr; min-height: 0; }
+    /* Image first on a phone, the way a storefront opens. It is a real
+       product photograph now, so it earns the top of the page. */
+    .hero__figure { order: -1; min-height: 0; aspect-ratio: 4 / 3; }
+    .hero__copy-wrap {
+      padding: var(--evx-space-2xl) var(--evx-page-margin);
+    }
+    .hero__copy { max-width: 100%; }
     .hero__popular { max-width: 100%; }
-    .proof__inner { grid-auto-flow: row; grid-template-columns: repeat(2, 1fr); }
+    .proof__inner { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .proof__cell:nth-child(odd) { border-left: none; padding-left: 0; }
-    .grid { grid-template-columns: repeat(2, 1fr); }
-    .proc { grid-template-columns: repeat(2, 1fr); }
+    .proof__cell { padding-top: var(--evx-space-xl); padding-bottom: var(--evx-space-xl); }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .proc { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .fit__figure { padding-left: 0; border-left: none; }
   }
 
   @media (max-width: 599px) {
-    /* The woven panel is atmosphere, not information. On a phone it
-       stacked between the shop list and the proof bar as a block of
-       texture with nothing to say, so it is dropped entirely and the
-       hero is carried by type. RESTORE IT when a real hero photograph
-       exists: a photograph of the product does earn the space. */
-    .hero__panel { display: none; }
-    .hero__inner { padding-top: var(--evx-space-2xl); padding-bottom: var(--evx-space-2xl); }
+    /* The woven fallback is atmosphere, not information: it earns no
+       space on a phone. A real photograph does, and stays. */
+    .hero__figure--woven { display: none; }
     .hero__popular { margin-top: var(--evx-space-xl); }
 
     /* 2x2 rather than four stacked rows: same facts, a quarter of the
        scroll, and it still reads as a divided bar. */
     .proof__cell { padding: var(--evx-space-lg) var(--evx-space-md); }
-    .proof__cell:nth-child(-n+2) { border-bottom: 1px solid var(--evx-rule-light); }
-    .proof__fig { font-size: 24px; }
+    .proof__cell:nth-child(-n+2) { border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+    .proof__fig { font-size: 26px; }
     .proof__cap { font-size: 9px; }
 
     /* Two cards across reads like a shop. One card across reads like a
        list of very large things. */
-    .grid { grid-template-columns: repeat(2, 1fr); gap: var(--evx-space-sm); }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--evx-space-sm); }
     .proc { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
     .fit__fig-num { font-size: 56px; }
   }
