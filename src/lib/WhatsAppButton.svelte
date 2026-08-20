@@ -66,8 +66,10 @@
     height: 52px;
     padding: 0 16px;
 
+    /* A light pill on the dark page: it has to be found without
+       shouting, and inverted is the quietest way to be obvious. */
     background: var(--evx-ink);
-    color: #FFFFFF;
+    color: var(--evx-invert-ink);
     border: 1px solid var(--evx-ink);
     text-decoration: none;
 
@@ -77,7 +79,7 @@
     transition: opacity 220ms ease, transform 220ms ease;
   }
   .wa--shown { opacity: 1; transform: translateY(0); pointer-events: auto; }
-  .wa:hover { background: var(--evx-fox-orange); border-color: var(--evx-fox-orange); }
+  .wa:hover { background: var(--evx-fox-orange); border-color: var(--evx-fox-orange); color: #FFFFFF; }
 
   .wa__glyph { width: 21px; height: 21px; flex-shrink: 0; }
 

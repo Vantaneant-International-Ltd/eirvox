@@ -70,7 +70,7 @@
     margin: 0 auto;
     width: 100%;
   }
-  .mt__wordmark-img { height: 20px; width: auto; display: block; }
+  .mt__wordmark-img { height: 20px; width: auto; display: block;  filter: invert(1);}
   .mt__top-note {
     font-family: var(--evx-font-mono);
     font-size: 10.5px;

@@ -147,17 +147,6 @@
         </div>
 
         <div class="adm-field">
-          <span class="adm-field__label">Landing hero image URL</span>
-          <input type="url" class="adm-field__input" placeholder="https://…/listing-images/…jpg"
-                 bind:value={flagsDraft.hero_image_url} />
-          <span class="adm-field__hint">
-            The photograph on the front page. Paste any image URL from the listing-images
-            bucket. Leave empty to fall back to the best available product shot. An in-car
-            shot works better here than a wheel on white.
-          </span>
-        </div>
-
-        <div class="adm-field">
           <span class="adm-field__label">Maintenance message</span>
           <textarea class="adm-field__input" rows="2" bind:value={flagsDraft.maintenance_message}
                     placeholder="e.g. We're rolling out an update. Back in 30 minutes."></textarea>

@@ -79,34 +79,41 @@
 </button>
 
 <style>
+  /* No border, no card. The tile is the card and the type sits under
+     it on the page ground, the way a luxury grid is built. */
   .pc {
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* Lets the card shrink inside its track so the ellipsis can bite. */
     min-width: 0;
-    background: var(--evx-paper);
-    border: 1px solid var(--evx-rule-light);
+    background: none;
+    border: none;
     padding: 0;
     text-align: left;
-    transition: var(--evx-transition);
   }
-  .pc:hover { border-color: var(--evx-ink); }
 
 
   .pc__tile {
-    aspect-ratio: 5 / 6;
-    border-bottom: 1px solid var(--evx-rule-hair);
+    aspect-ratio: 4 / 5;
+    background: var(--evx-paper-tile);
+    transition: background 300ms ease;
+  }
+  @media (hover: hover) {
+    .pc:hover .pc__tile { background: var(--evx-paper-tile-hi); }
   }
   /* Reads as unavailable before a word is read, and still lets the
      wheel look like the reason you came. */
-  .pc__tile--sold .pc__img { filter: saturate(0.25) contrast(0.96); }
+  .pc__tile--sold { background: #DCDAD6; }
+  .pc__tile--sold .pc__img { filter: saturate(0.2) opacity(0.72); }
   .pc__img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* contain, not cover: the wheel floats on the plate instead of
+       being cropped by it. */
+    object-fit: contain;
+    padding: 9%;
     transition: opacity 320ms ease;
   }
   .pc__img--peek { opacity: 0; }
@@ -121,28 +128,28 @@
   .pc__tag {
     position: absolute;
     z-index: 1;
-    top: 10px;
-    left: 10px;
+    top: 12px;
+    left: 12px;
     font-family: var(--evx-font-mono);
     font-size: 9px;
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--evx-ink-soft);
-    background: var(--evx-paper);
-    border: 1px solid var(--evx-rule-light);
-    padding: 3px 6px;
+    color: rgba(10, 10, 10, 0.5);
+    background: none;
+    border: none;
+    padding: 0;
     line-height: 1;
   }
   /* Champagne is DRIVE-only, and only ever as type on a plate. */
-  .pc__tag--drive { color: var(--evx-champagne); border-color: var(--evx-champagne); }
+  .pc__tag--drive { color: #8A6D2F; }
 
   .pc__body {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    gap: 4px;
-    padding: var(--evx-space-md);
+    gap: 3px;
+    padding: var(--evx-space-md) 2px 0;
   }
   /* Clamped so every card in a row is the same height and the status
      lines share a baseline. Ragged titles were the misalignment. */
@@ -175,9 +182,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: var(--evx-space-sm);
-    margin-top: var(--evx-space-sm);
-    padding-top: 10px;
-    border-top: 1px solid var(--evx-rule-hair);
+    margin-top: 6px;
   }
   .pc__status {
     display: inline-flex;

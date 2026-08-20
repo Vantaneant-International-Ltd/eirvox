@@ -132,7 +132,7 @@
     height: var(--evx-nav-height);
     border-bottom: 1px solid var(--evx-rule-light);
   }
-  .cs__wordmark { height: 17px; width: auto; }
+  .cs__wordmark { height: 17px; width: auto;  filter: invert(1);}
   .cs__note {
     font-family: var(--evx-font-mono);
     font-size: 10px;
