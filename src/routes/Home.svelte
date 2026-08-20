@@ -88,9 +88,13 @@
   // The hero shows a real wheel. Photography exists now, so the woven
   // house tile that used to sit here is the fallback, not the default:
   // a page selling a physical object should open on the object.
+  // The shelf the landing page shows: everything we have made, with
+  // what you can buy first. Sold-out issues are not hidden, they are
+  // marked. Hiding them left one card alone in a four-column row.
+  $: shelf = [...range, ...drive].slice(0, 10);
+
   $: driveSoldOut = drive.length > 0 && drive.every(d =>
     d.drive_issue_state === 'archived' || d.drive_remaining_count === 0);
-
 
   function go(path: string) {
     const hashIdx = path.indexOf('#');
@@ -193,18 +197,21 @@
     </div>
   </section>
 
-  <!-- ━━ 3 · THE RANGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-  {#if loading || range.length}
+  <!-- ━━ 3 · THE SHELF ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- Gated on the shelf it actually renders, not on `range`: sell out
+       of everything that is not DRIVE and the section would otherwise
+       disappear with four wheels still in it. -->
+  {#if loading || shelf.length}
   <!-- Light band: this is the block that carries the wheels, and they
        are shot on light grounds. -->
   <section class="evx-section--loose evx-light" id="range">
     <div class="page-container">
       <div class="sec-head">
         <div>
-          <span class="evx-label">THE FITTED RANGE</span>
-          <h2 class="evx-heading sec-head__h">BMW, fitted.</h2>
+          <span class="evx-label">IN THE SHOP</span>
+          <h2 class="evx-heading sec-head__h">Every wheel we have made.</h2>
           <p class="evx-lede sec-head__lede">
-            Tell us the car, we will tell you the wheel that fits it.{#if familyCount && range.length}{' '}{familyCount} fitment {familyCount === 1 ? 'group' : 'groups'} across the range.{/if}
+            Tell us the car, we will tell you the wheel that fits it.{#if familyCount}{' '}{familyCount} fitment {familyCount === 1 ? 'group' : 'groups'} across the range.{/if}
           </p>
         </div>
         <button class="evx-link sec-head__all" on:click={() => go('/wheels')}>View all wheels →</button>
@@ -212,36 +219,16 @@
 
       {#if loading}
         <div class="grid">
-          {#each Array(4) as _, i (i)}<div class="grid__skel"></div>{/each}
-        </div>
-      {:else if range.length >= 3}
-        <div class="grid">
-          {#each range.slice(0, 8) as l (l.id)}<ProductCard listing={l} />{/each}
+          {#each Array(5) as _, i (i)}<div class="grid__skel"></div>{/each}
         </div>
       {:else}
-        <!-- One or two wheels is a feature, not a grid. A single card
-             stranded in a four-column row is what makes a shop look
-             half-stocked. -->
-        <div class="feat">
-          {#each range.slice(0, 2) as l (l.id)}
-            <button class="feat__item" type="button" on:click={() => navigate(`/wheels/${l.slug ?? l.id}`)}>
-              <div class="feat__media evx-tile" class:evx-tile--woven={!l.cover_image}>
-                {#if l.cover_image}
-                  <img class="feat__img" src={l.cover_image} alt={l.title} />
-                  {#if secondImage(l)}
-                    <img class="feat__img feat__img--peek" src={secondImage(l)} alt="" aria-hidden="true" />
-                  {/if}
-                {/if}
-              </div>
-              <div class="feat__body">
-                <span class="evx-label">{l.vehicle_make ?? 'THE RANGE'}</span>
-                <span class="feat__title">{l.title}</span>
-                {#if l.subtitle}<span class="feat__sub">{l.subtitle}</span>{/if}
-                <span class="feat__price">{l.price > 0 ? formatPrice(l.price) : 'Price on enquiry'}</span>
-                <span class="feat__cta">See the wheel →</span>
-              </div>
-            </button>
-          {/each}
+        <!-- Always a grid. A shop shows a shelf even when the shelf is
+             short; one wheel blown up to the width of the page is a
+             classified ad, not a shop. Available stock leads, the closed
+             DRIVE issues follow and fill the row: they are part of what
+             we have made, and they are marked sold out on the card. -->
+        <div class="grid">
+          {#each shelf as l (l.id)}<ProductCard listing={l} />{/each}
         </div>
       {/if}
     </div>
@@ -251,7 +238,10 @@
   <!-- ━━ 4 · DRIVE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <!-- The limited line lives inside the shop now. Champagne is used
        here and nowhere else. -->
-  <section class="evx-pit drive" id="drive">
+  <!-- Light, like the shelf above it. The cards are white plates and a
+       white plate on near-black is a hole; the shop floor is light and
+       the statement below keeps the pit. -->
+  <section class="evx-light drive" id="drive">
     <div class="page-container evx-section">
       <div class="sec-head sec-head--dark">
         <div>
@@ -271,29 +261,12 @@
       </div>
 
       {#if drive.length}
+        <!-- The same card as the shelf. There were three card
+             implementations on this page and fixing one never fixed the
+             page; the DRIVE issue number already comes through as the
+             card's tag. -->
         <div class="grid grid--dark">
-          {#each drive.slice(0, 4) as d (d.id)}
-            <button class="dcard" type="button" on:click={() => navigate(`/wheels/${d.slug ?? d.id}`)}>
-              <div class="dcard__tile evx-tile" class:evx-tile--woven-ink={!d.cover_image}
-                   class:dcard__tile--sold={d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}>
-                {#if d.cover_image}
-                  <img class="dcard__img" src={d.cover_image} alt={d.title} loading="lazy" />
-                  {#if secondImage(d)}
-                    <img class="dcard__img dcard__img--peek" src={secondImage(d)} alt="" aria-hidden="true" loading="lazy" />
-                  {/if}
-                {/if}
-
-              </div>
-              <span class="dcard__issue">DRIVE {d.drive_issue ?? ''}</span>
-              <span class="dcard__title">{d.title}</span>
-              <span class="dcard__status" class:dcard__status--sold={d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}>
-                <span class="dcard__dot" aria-hidden="true"></span>
-                {#if d.drive_issue_state === 'archived' || d.drive_remaining_count === 0}
-                  Sold out · {d.drive_made_count ?? 0} of {d.drive_made_count ?? 0}
-                {:else if d.price > 0}{formatPrice(d.price)}{:else}On enquiry{/if}
-              </span>
-            </button>
-          {/each}
+          {#each drive.slice(0, 4) as d (d.id)}<ProductCard listing={d} />{/each}
         </div>
       {:else}
         <p class="drive__empty">The next issue is in preparation.</p>
@@ -531,73 +504,21 @@
   .sec-head__all { flex-shrink: 0; }
   .sec-head--dark .evx-heading { color: var(--evx-ink); }
 
+  /* auto-fill, not a fixed four: a fixed count stretches a short shelf
+     into four enormous cards, which is exactly what made this read as
+     classifieds. This keeps card size roughly constant and lets the
+     count follow the screen. */
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--evx-space-lg);
-  }
-  /* Feature layout: used when the range is one or two wheels deep. */
-  .feat { display: grid; gap: var(--evx-space-2xl); }
-  .feat__item {
-    display: grid;
-    grid-template-columns: 1.25fr 1fr;
-    gap: var(--evx-space-2xl);
-    align-items: center;
-    width: 100%;
-    background: none;
-    border: none;
-    border-top: 1px solid var(--evx-rule-light);
-    padding: var(--evx-space-xl) 0 0;
-    text-align: left;
-    transition: var(--evx-transition);
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: var(--evx-space-md);
   }
 
-  .feat__media { aspect-ratio: 4 / 3; background: var(--evx-paper-tile); transition: background 300ms ease; }
-  @media (hover: hover) { .feat__item:hover .feat__media { background: var(--evx-paper-tile-hi); } }
-  .feat__img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 6%;
-  }
   /* No crossfade. Two unlike photographs at 50% opacity each are not a
      reveal, they are a double exposure, and a box blended into a
      cockpit reads as a broken image. The second shot cuts in instead:
      one photo is on screen at any moment, never two. */
-  .feat__img--peek { opacity: 0; }
   @media (hover: hover) {
-    .feat__item:hover .feat__img--peek { opacity: 1; }
-    .feat__item:hover .feat__img:not(.feat__img--peek) { opacity: 0; }
-  }
-  .feat__body { display: flex; flex-direction: column; gap: var(--evx-space-sm); }
-  .feat__title {
-    color: var(--evx-ink);
-    font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: clamp(24px, 2.4vw, 36px);
-    line-height: 1.04;
-    letter-spacing: -0.03em;
-    margin-top: var(--evx-space-xs);
-  }
-  .feat__sub { font-size: 15px; color: var(--evx-ink-soft); }
-  .feat__price {
-    color: var(--evx-ink);
-    font-family: var(--evx-font-display);
-    font-weight: 500;
-    font-size: 22px;
-    margin-top: var(--evx-space-sm);
-  }
-  .feat__cta {
-    color: var(--evx-ink);
-    font-family: var(--evx-font-display);
-    font-size: 14px;
-    font-weight: 500;
-    border-bottom: 1px solid var(--evx-ink);
-    align-self: flex-start;
-    padding-bottom: 3px;
-    margin-top: var(--evx-space-md);
   }
 
   .grid__skel {
@@ -622,62 +543,8 @@
   .drive__all:hover { opacity: 0.65; }
   .drive__empty { color: var(--evx-ink-soft); font-size: 15px; }
 
-  .dcard {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    background: none;
-    border: none;
-    padding: 0;
-    text-align: left;
-    transition: var(--evx-transition);
-  }
-
-  .dcard__tile {
-    position: relative;
-    aspect-ratio: 4 / 5;
-    background: var(--evx-paper-tile);
-    margin-bottom: var(--evx-space-sm);
-    transition: background 300ms ease;
-  }
-  @media (hover: hover) { .dcard:hover .dcard__tile { background: var(--evx-paper-tile-hi); } }
-  .dcard__tile--sold { background: #DCDAD6; }
-  .dcard__tile--sold .dcard__img { filter: saturate(0.2) opacity(0.72); }
-  .dcard__status {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-family: var(--evx-font-mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--evx-ink-soft);
-  }
-  .dcard__dot { width: 6px; height: 6px; flex-shrink: 0; background: var(--evx-fox-orange); }
-  .dcard__status--sold .dcard__dot {
-    background: transparent;
-    box-shadow: inset 0 0 0 1px var(--evx-ink-faint);
-  }
-  .dcard__img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 9%;
-    transition: opacity 320ms ease;
-  }
-  .dcard__img--peek { opacity: 0; }
   @media (hover: hover) {
-    .dcard:hover .dcard__img--peek { opacity: 1; }
   }
-  .dcard__issue {
-    font-family: var(--evx-font-mono);
-    font-size: 9.5px;
-    letter-spacing: 0.16em;
-    color: var(--evx-champagne);
-  }
-  .dcard__title { font-size: 15px; font-weight: 500; color: var(--evx-ink); letter-spacing: -0.01em; }
 
   /* ── 5 · Fitment ── */
   .fit {
@@ -782,7 +649,6 @@
     /* Two cards across reads like a shop. One card across reads like a
        list of very large things. */
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--evx-space-sm); }
-    .feat__item { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
     .proc { grid-template-columns: 1fr; gap: var(--evx-space-lg); }
     .fit__fig-num { font-size: 56px; }
   }

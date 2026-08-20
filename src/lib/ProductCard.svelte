@@ -49,7 +49,20 @@
   </div>
 
   <div class="pc__body">
-    <span class="pc__title">{listing.title}</span>
+    <!-- Name and price on one line, price hard right. A shop puts them
+         together because that is the pair a buyer reads; stacking them
+         down a column with air between is a classified ad. -->
+    <span class="pc__head">
+      <span class="pc__title">{listing.title}</span>
+      <span class="pc__price-row">
+        {#if listing.price > 0}
+          <span class="pc__price" class:pc__price--sold={soldOut}>{formatPrice(listing.price)}</span>
+        {:else}
+          <span class="pc__price pc__price--tbc">On enquiry</span>
+        {/if}
+      </span>
+    </span>
+
     <span class="pc__sub">{listing.subtitle ?? ''}</span>
 
     <!-- One status line, in the same position on every card. -->
@@ -57,44 +70,41 @@
       <span class="pc__status" class:pc__status--sold={soldOut}>
         <span class="pc__dot" aria-hidden="true"></span>
         {#if soldOut}
-          Sold out · {listing.drive_made_count ?? 0} of {listing.drive_made_count ?? 0}
+          Sold out
         {:else}
           Available now
         {/if}
       </span>
-      {#if !soldOut}
-        <span class="pc__price-row">
-          {#if listing.price > 0}
-            <span class="pc__price">{formatPrice(listing.price)}</span>
-            {#if listing.original_price && listing.original_price > listing.price}
-              <span class="pc__was">Was {formatPrice(listing.original_price)}</span>
-            {/if}
-          {:else}
-            <span class="pc__price pc__price--tbc">On enquiry</span>
-          {/if}
-        </span>
+      {#if !soldOut && listing.original_price && listing.original_price > listing.price}
+        <span class="pc__was">Was {formatPrice(listing.original_price)}</span>
       {/if}
     </span>
   </div>
 </button>
 
 <style>
-  /* No border, no card. The tile is the card and the type sits under
-     it on the page ground, the way a luxury grid is built. */
+  /* A bordered plate, not a bare tile on the page ground. The
+     borderless version reads as an editorial spread, which is right for
+     one hero object and wrong for a shelf: a shelf needs each item
+     bounded so the eye can count them. */
   .pc {
     display: flex;
     flex-direction: column;
     width: 100%;
     min-width: 0;
-    background: none;
-    border: none;
+    background: var(--evx-paper);
+    border: 1px solid var(--evx-rule-light);
     padding: 0;
     text-align: left;
+    transition: border-color 200ms ease;
+  }
+  @media (hover: hover) {
+    .pc:hover { border-color: var(--evx-ink-faint); }
   }
 
 
   .pc__tile {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 1 / 1;
     background: var(--evx-paper-tile);
     transition: background 300ms ease;
   }
@@ -151,12 +161,14 @@
     padding: 0;
     line-height: 1;
   }
-  /* Only where there is a photograph under it. On the woven placeholder
-     the tile is already flat and the chip would be a box for nothing. */
-  .pc__tile--shot .pc__tag {
+  /* An outlined chip, the way a shop labels a shelf. Square, because
+     the site has no radii anywhere and the chip is not the exception. */
+  .pc__tile--shot .pc__tag,
+  .pc__tag {
     color: rgba(10, 10, 10, 0.72);
-    background: rgba(247, 247, 246, 0.94);
-    padding: 5px 7px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(10, 10, 10, 0.14);
+    padding: 5px 8px;
   }
   /* Champagne is DRIVE-only, and only ever as type on a plate. */
   .pc__tag--drive,
@@ -166,24 +178,34 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    gap: 3px;
-    padding: var(--evx-space-md) 2px 0;
+    gap: 4px;
+    /* Inside the border now, so it needs real padding on every side. */
+    padding: 13px 13px 14px;
+    border-top: 1px solid var(--evx-rule-light);
+  }
+  .pc__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--evx-space-sm);
+    min-width: 0;
   }
   /* Clamped so every card in a row is the same height and the status
      lines share a baseline. Ragged titles were the misalignment. */
   .pc__title {
     font-family: var(--evx-font-display);
-    font-size: 15.5px;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: -0.015em;
-    line-height: 1.25;
+    letter-spacing: -0.012em;
+    line-height: 1.3;
     color: var(--evx-ink);
+    min-width: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     line-clamp: 2;
     overflow: hidden;
-    min-height: 2.5em;
+    min-height: 2.6em;
   }
   .pc__sub {
     font-size: 12.5px;
@@ -200,7 +222,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: var(--evx-space-sm);
-    margin-top: 6px;
+    margin-top: 2px;
   }
   .pc__status {
     display: inline-flex;
@@ -229,15 +251,18 @@
   .pc__price-row {
     display: flex;
     align-items: baseline;
-    gap: var(--evx-space-sm);
-    margin-top: 3px;
+    gap: 6px;
+    flex-shrink: 0;
   }
   .pc__price {
     font-family: var(--evx-font-display);
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 500;
     color: var(--evx-ink);
+    white-space: nowrap;
   }
+  /* A sold price is history, not an offer, so it steps back. */
+  .pc__price--sold { color: var(--evx-ink-soft); }
   .pc__price--tbc { font-size: 13px; color: var(--evx-ink-soft); }
   /* Never a strikethrough, never "SAVE €X", a quiet mono was-price. */
   .pc__was {

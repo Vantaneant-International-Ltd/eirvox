@@ -458,6 +458,9 @@ a { color: inherit; text-decoration: none; }
   --evx-rule-hair:      rgba(10, 10, 10, 0.08);
   --evx-invert-ground:  #0A0A0A;
   --evx-invert-ink:     #F7F7F6;
+  /* Champagne is tuned for a dark ground. On white it measures 2.25:1,
+     so the light band takes the darker one the DRIVE tag already uses. */
+  --evx-champagne:      #8A6D2F;
   background: var(--evx-paper);
   color: var(--evx-ink);
 }
