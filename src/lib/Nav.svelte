@@ -103,6 +103,15 @@
     { label: 'About',       path: '/about' },
   ];
 
+  // Wheels, DRIVE and Fitment all live at /wheels, so a startsWith test
+  // lit all three orange at once on the shop. Only the plain link marks
+  // the section; the two anchor links never do, because there is no
+  // reliable way to know which one you are parked at.
+  function isLinkActive(link: { path: string }): boolean {
+    if (link.path.includes('#')) return false;
+    return isActive(link.path, $currentPath);
+  }
+
   function handleNav(path: string) {
     menuOpen = false;
 
@@ -163,7 +172,7 @@
           <button
             class="nav__link"
             class:nav__link--mono={link.mono}
-            class:nav__link--active={isActive(link.path.split('#')[0], $currentPath)}
+            class:nav__link--active={isLinkActive(link)}
             on:click={() => handleNav(link.path)}
           >
             {link.label}
